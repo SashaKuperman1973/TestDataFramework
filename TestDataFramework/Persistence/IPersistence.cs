@@ -8,6 +8,6 @@ namespace TestDataFramework.Persistence
 {
     public interface IPersistence
     {
-        void Persist(object[] recordObjects);
+        void Persist(IEnumerable<object> recordObjects);
     }
 }

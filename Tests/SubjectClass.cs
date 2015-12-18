@@ -9,5 +9,7 @@ namespace Tests
     public class SubjectClass
     {
         public int Integer { get; set; }
+
+        public string Text { get; set; }
     }
 }

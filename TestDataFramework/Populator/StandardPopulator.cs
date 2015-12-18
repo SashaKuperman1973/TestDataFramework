@@ -12,12 +12,13 @@ namespace TestDataFramework.Populator
 {
     public class StandardPopulator : IPopulator
     {
-        private static ILog logger = LogManager.GetLogger(typeof (StandardPopulator));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof (StandardPopulator));
 
         private readonly IValueGenerator valueGenerator;
         private IPersistence persistence;
 
         private readonly List<Type> typesToGenerate = new List<Type>();
+        private readonly List<object> recordObjects = new List<object>();
 
         public StandardPopulator(IValueGenerator valueGenerator, IPersistence persistence)
         {
@@ -29,21 +30,22 @@ namespace TestDataFramework.Populator
 
         public void Populate()
         {
-            StandardPopulator.logger.Debug("Entering Populate");
+            StandardPopulator.Logger.Debug("Entering Populate");
 
             this.typesToGenerate.ForEach(this.GenerateRecord);
+            this.persistence.Persist(this.recordObjects);
 
-            StandardPopulator.logger.Debug("Exiting Populate");
+            StandardPopulator.Logger.Debug("Exiting Populate");
         }
 
         public void Add<T>() where T : new()
         {
-            StandardPopulator.logger.Debug("Entering Add<T>");
+            StandardPopulator.Logger.Debug("Entering Add<T>");
 
-            StandardPopulator.logger.Debug("Adding type " + typeof (T));
+            StandardPopulator.Logger.Debug("Adding type " + typeof (T));
             this.typesToGenerate.Add(typeof(T));
 
-            StandardPopulator.logger.Debug("Exiting Add<T>");
+            StandardPopulator.Logger.Debug("Exiting Add<T>");
         }
 
         #endregion Public Methods
@@ -52,9 +54,9 @@ namespace TestDataFramework.Populator
 
         private void GenerateRecord(Type typeToGenerate)
         {
-            StandardPopulator.logger.Debug("Entering GenerateRecord");
+            StandardPopulator.Logger.Debug("Entering GenerateRecord");
 
-            StandardPopulator.logger.Debug("Generaing type " + typeToGenerate);
+            StandardPopulator.Logger.Debug("Generaing type " + typeToGenerate);
 
             PropertyInfo[] propertyInfoCollection = typeToGenerate.GetProperties();
 
@@ -62,21 +64,23 @@ namespace TestDataFramework.Populator
 
             propertyInfoCollection.ToList().ForEach(propertyInfo => this.SetProperty(propertyInfo, recordObject));
 
-            StandardPopulator.logger.Debug("Exiting GenerateRecord");
+            this.recordObjects.Add(recordObject);
+
+            StandardPopulator.Logger.Debug("Exiting GenerateRecord");
         }
 
         private void SetProperty(PropertyInfo propertyInfo, object recordObject)
         {
-            StandardPopulator.logger.Debug("Entering SetProperty");
+            StandardPopulator.Logger.Debug("Entering SetProperty");
 
-            StandardPopulator.logger.Debug("Setting property " + propertyInfo.Name);
+            StandardPopulator.Logger.Debug("Setting property " + propertyInfo.Name);
 
             object value = this.valueGenerator.GetValue(propertyInfo.PropertyType);
 
-            StandardPopulator.logger.Debug("Setting property value: " + value);
+            StandardPopulator.Logger.Debug("Setting property value: " + value);
             propertyInfo.SetValue(recordObject, value);
 
-            StandardPopulator.logger.Debug("Exiting SetProperty");
+            StandardPopulator.Logger.Debug("Exiting SetProperty");
         }
 
         #endregion Private Methods

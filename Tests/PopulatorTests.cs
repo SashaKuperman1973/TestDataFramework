@@ -1,5 +1,7 @@
 ﻿using System;
 using System.CodeDom;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -19,23 +21,30 @@ namespace Tests
             // Arrange
 
             const int integer = 5;
+            const string text = "abcde";
 
             var persistence = new MockPersistence();
 
             var valueGeneratorMock = new Mock<IValueGenerator>();
+
             valueGeneratorMock.Setup(m => m.GetValue(It.Is<Type>(t => t == typeof(int)))).Returns(integer);
+            valueGeneratorMock.Setup(m => m.GetValue(It.Is<Type>(t => t == typeof(string)))).Returns(text);
 
             var populator = new StandardPopulator(valueGeneratorMock.Object, persistence);
 
             // Act
 
             populator.Add<SubjectClass>();
-
             populator.Populate();
 
             // Assert
 
-            Assert.AreEqual(integer, persistence.Persisted);
+            IDictionary<string, object> record = persistence.Storage.FirstOrDefault();
+
+            Assert.IsNotNull(record);
+
+            Assert.AreEqual(record["Integer"], integer);
+            Assert.AreEqual(record["Text"], text);
         }
     }
 }

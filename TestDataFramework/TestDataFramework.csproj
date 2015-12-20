@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Exceptions.cs" />
     <Compile Include="Persistence\IPersistence.cs" />
     <Compile Include="Populator\IPopulator.cs" />
     <Compile Include="Populator\StandardPopulator.cs" />

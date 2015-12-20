@@ -8,6 +8,8 @@ namespace TestDataFramework.Randomizer
 {
     public interface IRandomizer
     {
-
+        int RandomizeInteger();
+        long RandomizeLongInteger();
+        short RandomizeShortInteger();
     }
 }

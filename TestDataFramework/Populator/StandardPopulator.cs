@@ -15,7 +15,7 @@ namespace TestDataFramework.Populator
         private static readonly ILog Logger = LogManager.GetLogger(typeof (StandardPopulator));
 
         private readonly IValueGenerator valueGenerator;
-        private IPersistence persistence;
+        private readonly IPersistence persistence;
 
         private readonly List<Type> typesToGenerate = new List<Type>();
         private readonly List<object> recordObjects = new List<object>();

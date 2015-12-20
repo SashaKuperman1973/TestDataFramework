@@ -16,4 +16,8 @@ namespace Tests
     public class SecondClass
     {        
     }
+
+    public class UnresolvableClass
+    {
+    }
 }

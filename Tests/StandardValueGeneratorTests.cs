@@ -5,6 +5,7 @@ using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework;
+using TestDataFramework.Exceptions;
 using TestDataFramework.Randomizer;
 using TestDataFramework.ValueGenerator;
 
@@ -128,7 +129,7 @@ namespace Tests
             }
             
             Assert.IsNotNull(exception);
-            Assert.AreEqual("Cannot resolve a value generator for type: " + typeof (UnresolvableType), exception.Message);
+            Assert.AreEqual(Messages.UnknownValueGeneratorTypeExceptionMessage + typeof (UnresolvableType), exception.Message);
         }
     }
 }

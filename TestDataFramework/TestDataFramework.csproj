@@ -45,7 +45,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes.cs" />
-    <Compile Include="Exceptions.cs" />
+    <Compile Include="Exceptions\Exceptions.cs" />
+    <Compile Include="Exceptions\Messages.cs" />
     <Compile Include="Persistence\IPersistence.cs" />
     <Compile Include="Populator\IPopulator.cs" />
     <Compile Include="Populator\StandardPopulator.cs" />

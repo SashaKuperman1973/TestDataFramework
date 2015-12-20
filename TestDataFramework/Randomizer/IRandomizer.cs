@@ -11,5 +11,6 @@ namespace TestDataFramework.Randomizer
         int RandomizeInteger();
         long RandomizeLongInteger();
         short RandomizeShortInteger();
+        string RandomizeString(int? length);
     }
 }

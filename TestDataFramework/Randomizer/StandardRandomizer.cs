@@ -18,5 +18,10 @@ namespace TestDataFramework.Randomizer
         {
             throw new NotImplementedException();
         }
+
+        public string RandomizeString(int? length)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

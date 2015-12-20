@@ -76,7 +76,7 @@ namespace TestDataFramework.Populator
 
             StandardPopulator.Logger.Debug("Setting property " + propertyInfo.Name);
 
-            object value = this.valueGenerator.GetValue(propertyInfo.PropertyType);
+            object value = this.valueGenerator.GetValue(propertyInfo);
 
             StandardPopulator.Logger.Debug("Setting property value: " + value);
             propertyInfo.SetValue(recordObject, value);

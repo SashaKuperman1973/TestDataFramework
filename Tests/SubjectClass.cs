@@ -10,7 +10,13 @@ namespace Tests
     {
         public int Integer { get; set; }
 
+        public long LongInteger { get; set; }
+
+        public short ShortInteger { get; set; }
+
         public string Text { get; set; }
+
+
     }
 
     public class SecondClass

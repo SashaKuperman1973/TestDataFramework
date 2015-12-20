@@ -26,8 +26,8 @@ namespace Tests
             var persistence = new MockPersistence();
             var valueGeneratorMock = new Mock<IValueGenerator>();
 
-            valueGeneratorMock.Setup(m => m.GetValue(It.Is<Type>(t => t == typeof(int)))).Returns(integer);
-            valueGeneratorMock.Setup(m => m.GetValue(It.Is<Type>(t => t == typeof(string)))).Returns(text);
+            valueGeneratorMock.Setup(m => m.GetValue(It.Is<PropertyInfo>(p => p.PropertyType == typeof(int)))).Returns(integer);
+            valueGeneratorMock.Setup(m => m.GetValue(It.Is<PropertyInfo>(p => p.PropertyType == typeof(string)))).Returns(text);
 
             var populator = new StandardPopulator(valueGeneratorMock.Object, persistence);
 

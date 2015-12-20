@@ -17,24 +17,24 @@ namespace TestDataFramework.ValueGenerator
 
         private readonly IRandomizer randomizer;
 
-        private delegate object GetValueForTypeDelegate(PropertyInfo type);
+        private delegate object GetValueForTypeDelegate(PropertyInfo propertyInfo);
 
         private readonly Dictionary<Type, GetValueForTypeDelegate> typeValueGetterDictionary;
 
         public StandardValueGenerator(IRandomizer randomizer)
         {
+            this.randomizer = randomizer;
+
             this.typeValueGetterDictionary = new Dictionary<Type, GetValueForTypeDelegate>
             {
-                { typeof(int), this.GetInteger },
-                { typeof(long), this.GetLongInteger },
-                { typeof(short), this.GetShortInteger },
-                { typeof(string), this.GetString },
-                { typeof(char), this.GetChar },
-                { typeof(decimal), this.GetDecimal },
-                { typeof(bool), this.GetBoolean },
+                {typeof (string), this.GetString},
+                {typeof (decimal), this.GetDecimal},
+                {typeof (int), x => this.randomizer.RandomizeInteger()},
+                {typeof (long), x => this.randomizer.RandomizeLongInteger()},
+                {typeof (short), x => this.randomizer.RandomizeShortInteger()},
+                {typeof (bool), x => this.randomizer.RandomizeBoolean()},
+                {typeof (char), x => this.randomizer.RandomizeCharacter()},
             };
-
-            this.randomizer = randomizer;
         }
 
         public object GetValue(PropertyInfo propertyInfo)
@@ -58,36 +58,6 @@ namespace TestDataFramework.ValueGenerator
 
         #region Private Methods
 
-        private object GetInteger(PropertyInfo propertyInfo)
-        {
-            StandardValueGenerator.Logger.Debug("Entering GetInteger");
-
-            int result = this.randomizer.RandomizeInteger();
-
-            StandardValueGenerator.Logger.Debug("Exiting GetInteger");
-            return result;
-        }
-
-        private object GetLongInteger(PropertyInfo propertyInfo)
-        {
-            StandardValueGenerator.Logger.Debug("Entering GetLongInteger");
-
-            long result = this.randomizer.RandomizeLongInteger();
-
-            StandardValueGenerator.Logger.Debug("Exiting GetLongInteger");
-            return result;
-        }
-
-        private object GetShortInteger(PropertyInfo propertyInfo)
-        {
-            StandardValueGenerator.Logger.Debug("Entering GetShortInteger");
-
-            short result = this.randomizer.RandomizeShortInteger();
-
-            StandardValueGenerator.Logger.Debug("Exiting GetShortInteger");
-            return result;
-        }
-
         private object GetString(PropertyInfo propertyInfo)
         {
             StandardValueGenerator.Logger.Debug("Entering GetString");
@@ -101,16 +71,6 @@ namespace TestDataFramework.ValueGenerator
             return result;
         }
 
-        private object GetChar(PropertyInfo propertyInfo)
-        {
-            StandardValueGenerator.Logger.Debug("Entering GetChar");
-
-            char result = this.randomizer.RandomizeCharacter();
-
-            StandardValueGenerator.Logger.Debug("Exiting GetChar");
-            return result;
-        }
-
         private object GetDecimal(PropertyInfo propertyInfo)
         {
             StandardValueGenerator.Logger.Debug("Entering GetDecimal");
@@ -121,16 +81,6 @@ namespace TestDataFramework.ValueGenerator
             decimal result = this.randomizer.RandomizeDecimal(precision);
 
             StandardValueGenerator.Logger.Debug("Exiting GetDecimal");
-            return result;
-        }
-
-        private object GetBoolean(PropertyInfo type)
-        {
-            StandardValueGenerator.Logger.Debug("Entering GetBoolean");
-
-            bool result = this.randomizer.RandomizeBoolean();
-
-            StandardValueGenerator.Logger.Debug("Exiting GetBoolean");
             return result;
         }
 

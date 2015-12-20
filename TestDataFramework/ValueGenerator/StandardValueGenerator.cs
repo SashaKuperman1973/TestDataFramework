@@ -31,6 +31,7 @@ namespace TestDataFramework.ValueGenerator
                 { typeof(string), this.GetString },
                 { typeof(char), this.GetChar },
                 { typeof(decimal), this.GetDecimal },
+                { typeof(bool), this.GetBoolean },
             };
 
             this.randomizer = randomizer;
@@ -112,14 +113,24 @@ namespace TestDataFramework.ValueGenerator
 
         private object GetDecimal(PropertyInfo propertyInfo)
         {
-            StandardValueGenerator.Logger.Debug("Entering GetChar");
+            StandardValueGenerator.Logger.Debug("Entering GetDecimal");
 
             var precisionAttribute = propertyInfo.GetCustomAttribute<PrecisionAttribute>();
             int? precision = precisionAttribute?.Precision;
 
             decimal result = this.randomizer.RandomizeDecimal(precision);
 
-            StandardValueGenerator.Logger.Debug("Exiting GetChar");
+            StandardValueGenerator.Logger.Debug("Exiting GetDecimal");
+            return result;
+        }
+
+        private object GetBoolean(PropertyInfo type)
+        {
+            StandardValueGenerator.Logger.Debug("Entering GetBoolean");
+
+            bool result = this.randomizer.RandomizeBoolean();
+
+            StandardValueGenerator.Logger.Debug("Exiting GetBoolean");
             return result;
         }
 

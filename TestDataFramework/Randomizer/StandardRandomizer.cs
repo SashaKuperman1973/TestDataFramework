@@ -33,5 +33,10 @@ namespace TestDataFramework.Randomizer
         {
             throw new NotImplementedException();
         }
+
+        public bool RandomizeBoolean()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

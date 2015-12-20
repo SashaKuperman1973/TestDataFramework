@@ -32,6 +32,8 @@ namespace Tests
 
         [Precision(SubjectClass.Precision)]
         public decimal DecimalWithPrecision { get; set; }
+
+        public bool Boolean { get; set; }
     }
 
     public class SecondClass

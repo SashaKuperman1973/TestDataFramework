@@ -14,5 +14,6 @@ namespace TestDataFramework.Randomizer
         string RandomizeString(int? length);
         char RandomizeCharacter();
         decimal RandomizeDecimal(int? precision);
+        bool RandomizeBoolean();
     }
 }

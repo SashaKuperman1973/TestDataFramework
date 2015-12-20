@@ -23,6 +23,7 @@ namespace Tests
         private static readonly string StringResult = Guid.NewGuid().ToString("N");
         private const char CharacterResult = 'A';
         private const decimal DecimalResult = 48576.412587m;
+        private const bool BooleanResult = true;
 
         [TestInitialize]
         public void Initialize()
@@ -35,6 +36,7 @@ namespace Tests
             this.randomizerMock.Setup(m => m.RandomizeString(It.Is<int?>(length => length == null))).Returns(StandardValueGeneratorTests.StringResult);
             this.randomizerMock.Setup(m => m.RandomizeCharacter()).Returns(StandardValueGeneratorTests.CharacterResult);
             this.randomizerMock.Setup(m => m.RandomizeDecimal(It.Is<int?>(precision => precision == null))).Returns(StandardValueGeneratorTests.DecimalResult);
+            this.randomizerMock.Setup(m => m.RandomizeBoolean()).Returns(StandardValueGeneratorTests.BooleanResult);
 
             this.valueGenerator = new StandardValueGenerator(this.randomizerMock.Object);
         }
@@ -50,6 +52,7 @@ namespace Tests
                 new Tuple<string, object>("Text", StandardValueGeneratorTests.StringResult),
                 new Tuple<string, object>("Character", StandardValueGeneratorTests.CharacterResult),
                 new Tuple<string, object>("Decimal", StandardValueGeneratorTests.DecimalResult),
+                new Tuple<string, object>("Boolean", StandardValueGeneratorTests.BooleanResult),
             };
 
             list.ForEach(type => this.TypeTest(type.Item1, type.Item2));

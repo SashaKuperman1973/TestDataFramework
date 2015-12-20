@@ -24,7 +24,6 @@ namespace Tests
             const string text = "abcde";
 
             var persistence = new MockPersistence();
-
             var valueGeneratorMock = new Mock<IValueGenerator>();
 
             valueGeneratorMock.Setup(m => m.GetValue(It.Is<Type>(t => t == typeof(int)))).Returns(integer);
@@ -45,6 +44,25 @@ namespace Tests
 
             Assert.AreEqual(record["Integer"], integer);
             Assert.AreEqual(record["Text"], text);
+        }
+
+        [TestMethod]
+        public void StandardPopulator_MutliRecord_Test()
+        {
+            // Arrange
+
+            var persistence = new MockPersistence();
+            var populator = new StandardPopulator(new Mock<IValueGenerator>().Object, persistence);
+
+            // Act
+
+            populator.Add<SubjectClass>();
+            populator.Add<SecondClass>();
+            populator.Populate();
+
+            // Assert
+
+            Assert.AreEqual(2, persistence.Storage.Count);
         }
     }
 }

@@ -33,6 +33,7 @@ namespace TestDataFramework.Populator
             StandardPopulator.Logger.Debug("Entering Populate");
 
             this.typesToGenerate.ForEach(this.GenerateRecord);
+
             this.persistence.Persist(this.recordObjects);
 
             StandardPopulator.Logger.Debug("Exiting Populate");

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using TestDataFramework;
 using TestDataFramework.Randomizer;
 using TestDataFramework.ValueGenerator;
 
@@ -65,9 +66,48 @@ namespace Tests
         }
 
         [TestMethod]
+        public void GetValue_StringLengthAttribute_Test()
+        {
+            // Arrange
+
+            PropertyInfo propertyInfo = typeof(SubjectClass).GetProperty("TextWithLength");
+
+            string expected = Guid.NewGuid().ToString("N");
+
+            this.randomizerMock.Setup(m => m.RandomizeString(It.Is<int?>(length => length == 10))).Returns(expected).Verifiable();
+
+            // Act
+
+            object result = this.valueGenerator.GetValue(propertyInfo);
+
+            // Assert
+
+            this.randomizerMock.Verify();
+            Assert.AreEqual(expected, result);
+        }
+
+        [TestMethod]
         public void GetValue_Generates_UnknownValueGeneratorTypeException()
         {
-            throw new NotImplementedException();
+            // Arrange
+
+            PropertyInfo propertyInfo = typeof(SubjectClass).GetProperty("UnresolvableTypeMember");
+
+            // Act
+
+            UnknownValueGeneratorTypeException exception = null;
+
+            try
+            {
+                this.valueGenerator.GetValue(propertyInfo);
+            }
+            catch (UnknownValueGeneratorTypeException ex)
+            {
+                exception = ex;
+            }
+            
+            Assert.IsNotNull(exception);
+            Assert.AreEqual("Cannot resolve a value generator for type: " + typeof (UnresolvableType), exception.Message);
         }
     }
 }

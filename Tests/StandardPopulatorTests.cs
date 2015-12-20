@@ -13,7 +13,7 @@ using Tests.Mocks;
 namespace Tests
 {
     [TestClass]
-    public class PopulatorTests
+    public class StandardPopulatorTests
     {
         [TestMethod]
         public void StandardPopulatorTest()

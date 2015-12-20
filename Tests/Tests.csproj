@@ -56,7 +56,7 @@
   <ItemGroup>
     <Compile Include="Mocks\MockPersistence.cs" />
     <Compile Include="SubjectClass.cs" />
-    <Compile Include="PopulatorTests.cs" />
+    <Compile Include="StandardPopulatorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

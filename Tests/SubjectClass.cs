@@ -22,6 +22,10 @@ namespace Tests
         public string TextWithLength { get; set; }
 
         public UnresolvableType UnresolvableTypeMember { get; set; }
+
+        public char Character { get; set; }
+
+        public decimal Decimal { get; set; }
     }
 
     public class SecondClass

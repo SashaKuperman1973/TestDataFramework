@@ -23,5 +23,15 @@ namespace TestDataFramework.Randomizer
         {
             throw new NotImplementedException();
         }
+
+        public char RandomizeCharacter()
+        {
+            throw new NotImplementedException();
+        }
+
+        public decimal RandomizeDecimal()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

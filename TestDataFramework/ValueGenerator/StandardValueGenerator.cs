@@ -28,6 +28,8 @@ namespace TestDataFramework.ValueGenerator
                 { typeof(long), this.GetLongInteger },
                 { typeof(short), this.GetShortInteger },
                 { typeof(string), this.GetString },
+                { typeof(char), this.GetChar },
+                { typeof(decimal), this.GetDecimal },
             };
 
             this.randomizer = randomizer;
@@ -94,6 +96,26 @@ namespace TestDataFramework.ValueGenerator
             string result = this.randomizer.RandomizeString(length);
 
             StandardValueGenerator.Logger.Debug("Exiting GetString");
+            return result;
+        }
+
+        private object GetChar(PropertyInfo type)
+        {
+            StandardValueGenerator.Logger.Debug("Entering GetChar");
+
+            char result = this.randomizer.RandomizeCharacter();
+
+            StandardValueGenerator.Logger.Debug("Exiting GetChar");
+            return result;
+        }
+
+        private object GetDecimal(PropertyInfo type)
+        {
+            StandardValueGenerator.Logger.Debug("Entering GetChar");
+
+            decimal result = this.randomizer.RandomizeDecimal();
+
+            StandardValueGenerator.Logger.Debug("Exiting GetChar");
             return result;
         }
 

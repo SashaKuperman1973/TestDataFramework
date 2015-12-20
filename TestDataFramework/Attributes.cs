@@ -15,4 +15,14 @@ namespace TestDataFramework
 
         public int Length { get; }
     }
+
+    public class PrecisionAttribute : Attribute
+    {
+        public PrecisionAttribute(int precision)
+        {
+            this.Precision = precision;
+        }
+
+        public int Precision { get; }
+    }
 }

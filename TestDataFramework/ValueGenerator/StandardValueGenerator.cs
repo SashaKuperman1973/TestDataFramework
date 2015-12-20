@@ -99,7 +99,7 @@ namespace TestDataFramework.ValueGenerator
             return result;
         }
 
-        private object GetChar(PropertyInfo type)
+        private object GetChar(PropertyInfo propertyInfo)
         {
             StandardValueGenerator.Logger.Debug("Entering GetChar");
 
@@ -109,11 +109,14 @@ namespace TestDataFramework.ValueGenerator
             return result;
         }
 
-        private object GetDecimal(PropertyInfo type)
+        private object GetDecimal(PropertyInfo propertyInfo)
         {
             StandardValueGenerator.Logger.Debug("Entering GetChar");
 
-            decimal result = this.randomizer.RandomizeDecimal();
+            var precisionAttribute = propertyInfo.GetCustomAttribute<PrecisionAttribute>();
+            int? precision = precisionAttribute?.Precision;
+
+            decimal result = this.randomizer.RandomizeDecimal(precision);
 
             StandardValueGenerator.Logger.Debug("Exiting GetChar");
             return result;

@@ -29,7 +29,7 @@ namespace TestDataFramework.Randomizer
             throw new NotImplementedException();
         }
 
-        public decimal RandomizeDecimal()
+        public decimal RandomizeDecimal(int? precision)
         {
             throw new NotImplementedException();
         }

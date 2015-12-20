@@ -33,7 +33,7 @@ namespace Tests
             this.randomizerMock.Setup(m => m.RandomizeShortInteger()).Returns(StandardValueGeneratorTests.ShortResult);
             this.randomizerMock.Setup(m => m.RandomizeString(It.Is<int?>(length => length == null))).Returns(StandardValueGeneratorTests.StringResult);
             this.randomizerMock.Setup(m => m.RandomizeCharacter()).Returns(StandardValueGeneratorTests.CharacterResult);
-            this.randomizerMock.Setup(m => m.RandomizeDecimal()).Returns(StandardValueGeneratorTests.DecimalResult);
+            this.randomizerMock.Setup(m => m.RandomizeDecimal(It.Is<int?>(precision => precision == null))).Returns(StandardValueGeneratorTests.DecimalResult);
 
             this.valueGenerator = new StandardValueGenerator(this.randomizerMock.Object);
         }
@@ -78,9 +78,7 @@ namespace Tests
 
             PropertyInfo propertyInfo = typeof(SubjectClass).GetProperty("TextWithLength");
 
-            string expected = Guid.NewGuid().ToString("N");
-
-            this.randomizerMock.Setup(m => m.RandomizeString(It.Is<int?>(length => length == 10))).Returns(expected).Verifiable();
+            this.randomizerMock.Setup(m => m.RandomizeString(It.Is<int?>(length => length == SubjectClass.StringLength))).Verifiable();
 
             // Act
 
@@ -89,7 +87,24 @@ namespace Tests
             // Assert
 
             this.randomizerMock.Verify();
-            Assert.AreEqual(expected, result);
+        }
+
+        [TestMethod]
+        public void GetValue_PrecisionAttribute_Test()
+        {
+            // Arrange
+
+            PropertyInfo propertyInfo = typeof(SubjectClass).GetProperty("DecimalWithPrecision");
+
+            this.randomizerMock.Setup(m => m.RandomizeDecimal(It.Is<int?>(precision => precision == SubjectClass.Precision))).Verifiable();
+
+            // Act
+
+            object result = this.valueGenerator.GetValue(propertyInfo);
+
+            // Assert
+
+            this.randomizerMock.Verify();
         }
 
         [TestMethod]

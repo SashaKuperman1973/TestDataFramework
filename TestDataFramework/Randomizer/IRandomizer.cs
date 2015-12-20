@@ -13,6 +13,6 @@ namespace TestDataFramework.Randomizer
         short RandomizeShortInteger();
         string RandomizeString(int? length);
         char RandomizeCharacter();
-        decimal RandomizeDecimal();
+        decimal RandomizeDecimal(int? precision);
     }
 }

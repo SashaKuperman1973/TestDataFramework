@@ -87,7 +87,6 @@ namespace Tests
                 maxValue--;
             }
 
-
             this.randomMock.Setup(m => m.Next((int)((maxValue >> (16 * 0)) & 0xffff)))
                 .Returns((int)((expected >> (16 * 0)) & 0xffff)).Verifiable();
 
@@ -113,7 +112,22 @@ namespace Tests
         [TestMethod]
         public void RandomizeLongInteger_DefaultMax_Test()
         {
-            throw new NotImplementedException();
+            // Arrange
+
+            this.randomMock.Setup(m => m.Next(It.IsAny<int>())).Returns(1);
+
+            // Act
+
+            long result = this.randomizer.RandomizeLongInteger(null);
+
+            // Assert
+
+            this.randomMock.Verify(m => m.Next(0xffff), Times.Once);
+            this.randomMock.Verify(m => m.Next(0x10000), Times.Exactly(2));
+            this.randomMock.Verify(m => m.Next(0x8000), Times.Once);
+
+            const long expected = 0x0001000100010001;
+            Assert.AreEqual(expected, result);
         }
     }
 }

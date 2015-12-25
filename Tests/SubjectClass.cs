@@ -15,6 +15,8 @@ namespace Tests
 
         public int Integer { get; set; }
 
+        public int? NullableInteger { get; set; }
+
         public long LongInteger { get; set; }
 
         public short ShortInteger { get; set; }
@@ -24,8 +26,6 @@ namespace Tests
         [StringLength(SubjectClass.StringLength)]
         public string TextWithLength { get; set; }
 
-        public UnresolvableType UnresolvableTypeMember { get; set; }
-
         public char Character { get; set; }
 
         public decimal Decimal { get; set; }
@@ -34,13 +34,42 @@ namespace Tests
         public decimal DecimalWithPrecision { get; set; }
 
         public bool Boolean { get; set; }
+
+        public DateTime DateTime { get; set; }
+
+        public byte Byte { get; set; }
+
+        public double Double { get; set; }
+
+        [Precision(SubjectClass.Precision)]
+        public double DoubleWithPrecision { get; set; }
+
+        [Email]
+        public string AnEmailAddress { get; set; }
+
+        [Email]
+        public int NotValidForEmail { get; set; }
+
+        public SecondClass SecondObject { get; set; }
     }
 
     public class SecondClass
-    {        
+    {
+        public int SecondInteger { get; set; }
     }
 
-    public class UnresolvableType
+    public class InfiniteRecursiveClass1
     {
+        public InfiniteRecursiveClass2 InfinietRecursiveClassA { get; set; }
+    }
+
+    public class InfiniteRecursiveClass2
+    {
+        public InfiniteRecursiveClass3 InfiniteRecursiveClassB { get; set; }
+    }
+
+    public class InfiniteRecursiveClass3
+    {
+        public InfiniteRecursiveClass1 InfiniteRecursiveClassC { get; set; }
     }
 }

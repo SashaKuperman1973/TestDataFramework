@@ -8,6 +8,7 @@ namespace TestDataFramework.Exceptions
 {
     public static class Messages
     {
-        public const string UnknownValueGeneratorTypeExceptionMessage = "Cannot resolve a value generator for type: ";
+        public const string NoDefaultConstructorExceptionMessage = "Type has no default constructor: ";
+        public const string TypeRecursionExceptionMessage = "Circular reference for type {0} detected generating complex type graph: {1}";
     }
 }

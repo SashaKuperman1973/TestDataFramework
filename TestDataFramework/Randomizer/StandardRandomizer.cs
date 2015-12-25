@@ -38,5 +38,25 @@ namespace TestDataFramework.Randomizer
         {
             throw new NotImplementedException();
         }
+
+        public DateTime RandomizeDateTime()
+        {
+            throw new NotImplementedException();
+        }
+
+        public byte RandomizeByte()
+        {
+            throw new NotImplementedException();
+        }
+
+        public double RandomizeDouble(int? precision)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object RandomizeEmailAddress()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

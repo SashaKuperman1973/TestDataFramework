@@ -5,9 +5,11 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using log4net;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Populator;
 using TestDataFramework.Randomizer;
+using TestDataFramework.TypeGenerator;
 
 namespace TestDataFramework.ValueGenerator
 {
@@ -17,16 +19,20 @@ namespace TestDataFramework.ValueGenerator
 
         private readonly IRandomizer randomizer;
 
+        private readonly ITypeGenerator typeGenerator;
+
         private delegate object GetValueForTypeDelegate(PropertyInfo propertyInfo);
 
         private readonly Dictionary<Type, GetValueForTypeDelegate> typeValueGetterDictionary;
 
-        public StandardValueGenerator(IRandomizer randomizer)
+        public StandardValueGenerator(IRandomizer randomizer, ITypeGenerator typeGenerator)
         {
             this.randomizer = randomizer;
+            this.typeGenerator = typeGenerator;
 
             this.typeValueGetterDictionary = new Dictionary<Type, GetValueForTypeDelegate>
             {
+                {typeof (EmailAttribute), x => this.randomizer.RandomizeEmailAddress()},
                 {typeof (string), this.GetString},
                 {typeof (decimal), this.GetDecimal},
                 {typeof (int), x => this.randomizer.RandomizeInteger()},
@@ -34,6 +40,9 @@ namespace TestDataFramework.ValueGenerator
                 {typeof (short), x => this.randomizer.RandomizeShortInteger()},
                 {typeof (bool), x => this.randomizer.RandomizeBoolean()},
                 {typeof (char), x => this.randomizer.RandomizeCharacter()},
+                {typeof (DateTime), x => this.randomizer.RandomizeDateTime()},
+                {typeof (byte), x => this.randomizer.RandomizeByte()},
+                {typeof (double), this.GetDouble},
             };
         }
 
@@ -41,18 +50,39 @@ namespace TestDataFramework.ValueGenerator
         {
             StandardValueGenerator.Logger.Debug("Entering GetValue");
 
-            Type forType = propertyInfo.PropertyType;
+            Assert.IsNotNull(propertyInfo, "propertyInfo argument");
 
             GetValueForTypeDelegate getter;
 
-            if (!this.typeValueGetterDictionary.TryGetValue(forType, out getter))
-            {
-                throw new UnknownValueGeneratorTypeException(forType);
-            }
-
-            object result = getter(propertyInfo);
+            object result = this.TryGetGetter(propertyInfo, out getter)
+                ? getter(propertyInfo)
+                : this.typeGenerator.GetObject(propertyInfo.PropertyType);
 
             StandardValueGenerator.Logger.Debug("Exiting GetValue");
+            return result;
+        }
+
+        private bool TryGetGetter(PropertyInfo propertyInfo, out GetValueForTypeDelegate getValueForTypeDelegate)
+        {
+            StandardValueGenerator.Logger.Debug("Entering TryGetGetter");
+
+            GetValueForTypeDelegate tempGetter = null;
+
+            if (
+                propertyInfo.GetCustomAttributesData()
+                    .Any(
+                        attributeData =>
+                            this.typeValueGetterDictionary.TryGetValue(attributeData.AttributeType, out tempGetter)))
+            {
+                getValueForTypeDelegate = tempGetter;
+                return true;
+            }
+
+            Type forType = Nullable.GetUnderlyingType(propertyInfo.PropertyType) ?? propertyInfo.PropertyType;
+
+            bool result = this.typeValueGetterDictionary.TryGetValue(forType, out getValueForTypeDelegate);
+
+            StandardValueGenerator.Logger.Debug("Exiting TryGetGetter");
             return result;
         }
 
@@ -81,6 +111,19 @@ namespace TestDataFramework.ValueGenerator
             decimal result = this.randomizer.RandomizeDecimal(precision);
 
             StandardValueGenerator.Logger.Debug("Exiting GetDecimal");
+            return result;
+        }
+
+        private object GetDouble(PropertyInfo propertyInfo)
+        {
+            StandardValueGenerator.Logger.Debug("Entering GetDouble");
+
+            var precisionAttribute = propertyInfo.GetCustomAttribute<PrecisionAttribute>();
+            int? precision = precisionAttribute?.Precision;
+
+            double result = this.randomizer.RandomizeDouble(precision);
+
+            StandardValueGenerator.Logger.Debug("Exiting GetDouble");
             return result;
         }
 

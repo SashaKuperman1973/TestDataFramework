@@ -15,5 +15,9 @@ namespace TestDataFramework.Randomizer
         char RandomizeCharacter();
         decimal RandomizeDecimal(int? precision);
         bool RandomizeBoolean();
+        DateTime RandomizeDateTime();
+        byte RandomizeByte();
+        double RandomizeDouble(int? precision);
+        object RandomizeEmailAddress();
     }
 }

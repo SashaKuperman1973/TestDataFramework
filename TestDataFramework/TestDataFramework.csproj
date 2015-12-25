@@ -34,6 +34,7 @@
       <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -53,6 +54,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Randomizer\IRandomizer.cs" />
     <Compile Include="Randomizer\StandardRandomizer.cs" />
+    <Compile Include="TypeGenerator\ITypeGenerator.cs" />
+    <Compile Include="TypeGenerator\StandardTypeGenerator.cs" />
     <Compile Include="ValueGenerator\IValueGenerator.cs" />
     <Compile Include="ValueGenerator\StandardValueGenerator.cs" />
   </ItemGroup>

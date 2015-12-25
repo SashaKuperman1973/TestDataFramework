@@ -25,4 +25,8 @@ namespace TestDataFramework
 
         public int Precision { get; }
     }
+
+    public class EmailAttribute : Attribute
+    {        
+    }
 }

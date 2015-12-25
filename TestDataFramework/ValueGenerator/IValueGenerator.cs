@@ -9,6 +9,6 @@ namespace TestDataFramework.ValueGenerator
 {
     public interface IValueGenerator
     {
-        object GetValue(PropertyInfo forType);
+        object GetValue(PropertyInfo propertyInfo);
     }
 }

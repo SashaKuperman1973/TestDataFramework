@@ -61,6 +61,7 @@
     <Compile Include="StandardPopulatorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StandardValueGeneratorTests.cs" />
+    <Compile Include="StandardTypeGeneratorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Tests To Do.txt" />

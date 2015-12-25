@@ -72,4 +72,12 @@ namespace Tests
     {
         public InfiniteRecursiveClass1 InfiniteRecursiveClassC { get; set; }
     }
+
+    public class ClassWithoutADefaultConstructor
+    {
+        private ClassWithoutADefaultConstructor()
+        {
+            
+        }
+    }
 }

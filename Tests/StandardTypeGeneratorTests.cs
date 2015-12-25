@@ -70,5 +70,30 @@ namespace Tests
                 typeof (InfiniteRecursiveClass1) + " -> " + typeof (InfiniteRecursiveClass2) + " -> " +
                 typeof (InfiniteRecursiveClass3), typeof(InfiniteRecursiveClass1)), exception.Message);
         }
+
+        [TestMethod]
+        public void GetObject_NoDefaultConstructorException()
+        {
+            // Arrange
+
+            var typeGenerator = new StandardTypeGenerator(x => this.valueGeneratorMock.Object);
+
+            // Act
+
+
+            NoDefaultConstructorException exception = null;
+
+            try
+            {
+                typeGenerator.GetObject(typeof (ClassWithoutADefaultConstructor));
+            }
+            catch (NoDefaultConstructorException ex)
+            {
+                exception = ex;
+            }
+
+            Assert.IsNotNull(exception);
+            Assert.AreEqual(Messages.NoDefaultConstructorExceptionMessage + typeof(ClassWithoutADefaultConstructor), exception.Message);
+        }
     }
 }

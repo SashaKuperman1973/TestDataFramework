@@ -36,7 +36,7 @@ namespace TestDataFramework.ValueGenerator
                 {typeof (string), this.GetString},
                 {typeof (decimal), this.GetDecimal},
                 {typeof (int), this.GetInteger},
-                {typeof (long), x => this.randomizer.RandomizeLongInteger()},
+                {typeof (long), this.GetLong},
                 {typeof (short), x => this.randomizer.RandomizeShortInteger()},
                 {typeof (bool), x => this.randomizer.RandomizeBoolean()},
                 {typeof (char), x => this.randomizer.RandomizeCharacter()},
@@ -137,6 +137,19 @@ namespace TestDataFramework.ValueGenerator
             int result = this.randomizer.RandomizeInteger(max);
 
             StandardValueGenerator.Logger.Debug("Exiting GetInteger");
+            return result;
+        }
+
+        private object GetLong(PropertyInfo propertyInfo)
+        {
+            StandardValueGenerator.Logger.Debug("Entering GetLong");
+
+            var maxAttribute = propertyInfo.GetCustomAttribute<MaxAttribute>();
+            int? max = maxAttribute?.Max;
+
+            long result = this.randomizer.RandomizeLongInteger(max);
+
+            StandardValueGenerator.Logger.Debug("Exiting GetLong");
             return result;
         }
 

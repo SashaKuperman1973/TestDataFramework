@@ -17,9 +17,30 @@ namespace TestDataFramework.Randomizer
             return result;
         }
 
-        public long RandomizeLongInteger()
+        public long RandomizeLongInteger(long? max)
         {
-            throw new NotImplementedException();
+            long workingMax = max ?? long.MaxValue;
+
+            const int wordMask = 0xffff;
+
+            var lowerMaxWord = (int) (workingMax & wordMask);
+            if (lowerMaxWord == 0)
+            {
+                lowerMaxWord = 0x10000;
+            }
+
+            long result = this.random.Next(lowerMaxWord);
+
+            for (var i = 0; i < 3; i++)
+            {
+                workingMax >>= 16;
+                int maxRandom = (int)(workingMax & wordMask) + 1;
+                long randomValue = this.random.Next(maxRandom);
+                randomValue <<= 16 * (i + 1);
+                result |= randomValue;
+            }
+
+            return result;
         }
 
         public short RandomizeShortInteger()

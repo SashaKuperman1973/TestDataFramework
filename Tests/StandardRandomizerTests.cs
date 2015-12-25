@@ -23,7 +23,6 @@ namespace Tests
         [TestMethod]
         public void RandomizeInteger_Test()
         {
-
             // Arrange
 
             this.randomMock.Setup(m => m.Next()).Returns(StandardRandomizerTests.Integer);
@@ -55,6 +54,66 @@ namespace Tests
             Assert.AreEqual(StandardRandomizerTests.Integer, result);
             this.randomMock.Verify(m => m.Next(), Times.Never());
             this.randomMock.Verify(m => m.Next(It.Is<int>(max => max == 7)), Times.Once());
+        }
+
+        [TestMethod]
+        public void RandomizeLongInteger_Word0Max_Test()
+        {
+            // Arrange
+
+            this.randomMock.Setup(m => m.Next(0x10000)).Returns(StandardRandomizerTests.Integer).Verifiable();
+
+            // Act
+
+            long result = this.randomizer.RandomizeLongInteger(0x10000);
+
+            // Assert
+
+            this.randomMock.Verify();
+            Assert.AreEqual((long)StandardRandomizerTests.Integer, result);
+        }
+
+
+        [TestMethod]
+        public void RandomizeLongInteger_Test()
+        {
+            // Arrange
+
+            long maxValue = long.MaxValue - new Random().Next() - 1;
+            long expected = maxValue - new Random().Next();
+
+            if ((maxValue & 0xffff) == 0)
+            {
+                maxValue--;
+            }
+
+
+            this.randomMock.Setup(m => m.Next((int)((maxValue >> (16 * 0)) & 0xffff)))
+                .Returns((int)((expected >> (16 * 0)) & 0xffff)).Verifiable();
+
+            this.randomMock.Setup(m => m.Next((int)((maxValue >> (16 * 1)) & 0xffff) + 1))
+                .Returns((int)((expected >> (16 * 1)) & 0xffff)).Verifiable();
+
+            this.randomMock.Setup(m => m.Next((int)((maxValue >> (16 * 2)) & 0xffff) + 1))
+                .Returns((int)((expected >> (16 * 2)) & 0xffff)).Verifiable();
+
+            this.randomMock.Setup(m => m.Next((int)((maxValue >> (16 * 3)) & 0xffff) + 1))
+                .Returns((int)((expected >> (16 * 3)) & 0xffff)).Verifiable();
+
+            // Act
+
+            long result = this.randomizer.RandomizeLongInteger(maxValue);
+
+            // Assert
+
+            this.randomMock.Verify();
+            Assert.AreEqual(expected, result);
+        }
+
+        [TestMethod]
+        public void RandomizeLongInteger_DefaultMax_Test()
+        {
+            throw new NotImplementedException();
         }
     }
 }

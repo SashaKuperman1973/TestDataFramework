@@ -10,7 +10,7 @@ namespace TestDataFramework.Randomizer
     {
         int RandomizeInteger(int? max);
 
-        long RandomizeLongInteger();
+        long RandomizeLongInteger(long? max);
 
         short RandomizeShortInteger();
 

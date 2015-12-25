@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using log4net;
 using TestDataFramework.Exceptions;
 using TestDataFramework.ValueGenerator;
 
@@ -9,6 +10,8 @@ namespace TestDataFramework.TypeGenerator
 {
     public class StandardTypeGenerator : ITypeGenerator
     {
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(StandardTypeGenerator));
+
         private readonly IValueGenerator valueGenerator;
 
         private readonly List<Type> complexTypeProcessingRecursionGuard = new List<Type>();
@@ -18,8 +21,10 @@ namespace TestDataFramework.TypeGenerator
             this.valueGenerator = valueGeneratorFactory(this);
         }
 
-        public object GetObject(Type forType)
+        public virtual object GetObject(Type forType)
         {
+            StandardTypeGenerator.Logger.Debug("Entering GetObject");
+
             if (this.complexTypeProcessingRecursionGuard.Contains(forType))
             {
                 throw new TypeRecursionException(forType, this.complexTypeProcessingRecursionGuard);
@@ -34,11 +39,19 @@ namespace TestDataFramework.TypeGenerator
                 throw new NoDefaultConstructorException(forType);
             }
 
-            this.complexTypeProcessingRecursionGuard.Add(forType);
-
             object objectToFill = defaultConstructor.Invoke(null);
 
-            PropertyInfo[] targetProperties = forType.GetProperties();
+            this.FillObject(objectToFill);
+
+            StandardTypeGenerator.Logger.Debug("Exiting GetObject");
+            return objectToFill;
+        }
+
+        protected void FillObject(object objectToFill)
+        {
+            StandardTypeGenerator.Logger.Debug("Entering FillObject");
+
+            PropertyInfo[] targetProperties = objectToFill.GetType().GetProperties();
 
             foreach (PropertyInfo targetPropertyInfo in targetProperties)
             {
@@ -46,7 +59,7 @@ namespace TestDataFramework.TypeGenerator
                 targetPropertyInfo.SetValue(objectToFill, targetPropertyValue);
             }
 
-            return objectToFill;
+            StandardTypeGenerator.Logger.Debug("Exiting FillObject");
         }
     }
 }

@@ -11,9 +11,9 @@ namespace TestDataFramework.Randomizer
             this.random = random;
         }
 
-        public int RandomizeInteger()
+        public int RandomizeInteger(int? max)
         {
-            int result = this.random.Next();
+            int result = max != null ? this.random.Next(max.Value) : this.random.Next();
             return result;
         }
 

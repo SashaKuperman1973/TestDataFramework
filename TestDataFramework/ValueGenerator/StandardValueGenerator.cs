@@ -35,7 +35,7 @@ namespace TestDataFramework.ValueGenerator
                 {typeof (EmailAttribute), x => this.randomizer.RandomizeEmailAddress()},
                 {typeof (string), this.GetString},
                 {typeof (decimal), this.GetDecimal},
-                {typeof (int), x => this.randomizer.RandomizeInteger()},
+                {typeof (int), this.GetInteger},
                 {typeof (long), x => this.randomizer.RandomizeLongInteger()},
                 {typeof (short), x => this.randomizer.RandomizeShortInteger()},
                 {typeof (bool), x => this.randomizer.RandomizeBoolean()},
@@ -124,6 +124,19 @@ namespace TestDataFramework.ValueGenerator
             double result = this.randomizer.RandomizeDouble(precision);
 
             StandardValueGenerator.Logger.Debug("Exiting GetDouble");
+            return result;
+        }
+
+        private object GetInteger(PropertyInfo propertyInfo)
+        {
+            StandardValueGenerator.Logger.Debug("Entering GetInteger");
+
+            var maxAttribute = propertyInfo.GetCustomAttribute<MaxAttribute>();
+            int? max = maxAttribute?.Max;
+
+            int result = this.randomizer.RandomizeInteger(max);
+
+            StandardValueGenerator.Logger.Debug("Exiting GetInteger");
             return result;
         }
 

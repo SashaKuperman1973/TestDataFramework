@@ -29,4 +29,14 @@ namespace TestDataFramework
     public class EmailAttribute : Attribute
     {        
     }
+
+    public class MaxAttribute : Attribute
+    {
+        public MaxAttribute(int max)
+        {
+            this.Max = max;
+        }
+
+        public int Max { get; }
+    }
 }

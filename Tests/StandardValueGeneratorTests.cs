@@ -38,7 +38,7 @@ namespace Tests
             this.randomizerMock = new Mock<IRandomizer>();
             this.typeGeneratorMock = new Mock<ITypeGenerator>();
 
-            this.randomizerMock.Setup(m => m.RandomizeInteger()).Returns(StandardValueGeneratorTests.IntegerResult);
+            this.randomizerMock.Setup(m => m.RandomizeInteger(It.Is<int?>(max => max == null))).Returns(StandardValueGeneratorTests.IntegerResult);
             this.randomizerMock.Setup(m => m.RandomizeLongInteger()).Returns(StandardValueGeneratorTests.LongResult);
             this.randomizerMock.Setup(m => m.RandomizeShortInteger()).Returns(StandardValueGeneratorTests.ShortResult);
             this.randomizerMock.Setup(m => m.RandomizeString(It.Is<int?>(length => length == null))).Returns(StandardValueGeneratorTests.StringResult);
@@ -110,8 +110,9 @@ namespace Tests
             this.randomizerMock.Verify();
         }
 
+  
         [TestMethod]
-        public void GetValue_PrecisionAttribute_Test()
+        public void GetValue_Attribute_Tests()
         {
             // Arrange
 
@@ -131,6 +132,13 @@ namespace Tests
                             m => m.RandomizeDouble(It.Is<int?>(precision => precision == SubjectClass.Precision)),
                             Times.Once())
                 ),
+                new Tuple<string, Action>(
+                    "IntegerWithMax",
+                    () =>
+                        this.randomizerMock.Verify((
+                            m => m.RandomizeInteger(It.Is<int?>(max => max == SubjectClass.Max))),
+                            Times.Once())
+                    ),
             };
 
             // Act and Assert

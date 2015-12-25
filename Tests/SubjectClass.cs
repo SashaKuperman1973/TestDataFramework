@@ -12,8 +12,12 @@ namespace Tests
     {
         public const int StringLength = 10;
         public const int Precision = 2;
+        public const int Max = 7;
 
         public int Integer { get; set; }
+
+        [Max(SubjectClass.Max)]
+        public int IntegerWithMax { get; set; }
 
         public int? NullableInteger { get; set; }
 

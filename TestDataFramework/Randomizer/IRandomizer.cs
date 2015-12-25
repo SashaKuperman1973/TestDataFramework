@@ -8,7 +8,7 @@ namespace TestDataFramework.Randomizer
 {
     public interface IRandomizer
     {
-        int RandomizeInteger();
+        int RandomizeInteger(int? max);
 
         long RandomizeLongInteger();
 

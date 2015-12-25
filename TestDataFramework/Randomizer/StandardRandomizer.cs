@@ -4,9 +4,17 @@ namespace TestDataFramework.Randomizer
 {
     public class StandardRandomizer : IRandomizer
     {
+        private readonly Random random;
+
+        public StandardRandomizer(Random random)
+        {
+            this.random = random;
+        }
+
         public int RandomizeInteger()
         {
-            throw new NotImplementedException();
+            int result = this.random.Next();
+            return result;
         }
 
         public long RandomizeLongInteger()
@@ -58,5 +66,5 @@ namespace TestDataFramework.Randomizer
         {
             throw new NotImplementedException();
         }
-    }
+    };
 }

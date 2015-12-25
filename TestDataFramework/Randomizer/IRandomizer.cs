@@ -9,15 +9,25 @@ namespace TestDataFramework.Randomizer
     public interface IRandomizer
     {
         int RandomizeInteger();
+
         long RandomizeLongInteger();
+
         short RandomizeShortInteger();
+
         string RandomizeString(int? length);
+
         char RandomizeCharacter();
+
         decimal RandomizeDecimal(int? precision);
+
         bool RandomizeBoolean();
+
         DateTime RandomizeDateTime();
+
         byte RandomizeByte();
+
         double RandomizeDouble(int? precision);
+
         object RandomizeEmailAddress();
     }
 }

@@ -40,7 +40,7 @@ namespace Tests
 
             this.randomizerMock.Setup(m => m.RandomizeInteger(It.Is<int?>(max => max == null))).Returns(StandardValueGeneratorTests.IntegerResult);
             this.randomizerMock.Setup(m => m.RandomizeLongInteger(It.Is<long?>(max => max == null))).Returns(StandardValueGeneratorTests.LongResult);
-            this.randomizerMock.Setup(m => m.RandomizeShortInteger()).Returns(StandardValueGeneratorTests.ShortResult);
+            this.randomizerMock.Setup(m => m.RandomizeShortInteger(It.Is<short?>(max => max == null))).Returns(StandardValueGeneratorTests.ShortResult);
             this.randomizerMock.Setup(m => m.RandomizeString(It.Is<int?>(length => length == null))).Returns(StandardValueGeneratorTests.StringResult);
             this.randomizerMock.Setup(m => m.RandomizeCharacter()).Returns(StandardValueGeneratorTests.CharacterResult);
             this.randomizerMock.Setup(m => m.RandomizeDecimal(It.Is<int?>(precision => precision == null))).Returns(StandardValueGeneratorTests.DecimalResult);
@@ -69,6 +69,8 @@ namespace Tests
                 new Tuple<string, object>("Byte", StandardValueGeneratorTests.ByteResult),
                 new Tuple<string, object>("Double", StandardValueGeneratorTests.DoubleResult),
                 new Tuple<string, object>("NullableInteger", StandardValueGeneratorTests.IntegerResult),
+                new Tuple<string, object>("NullableLong", StandardValueGeneratorTests.LongResult),
+                new Tuple<string, object>("NullableShort", StandardValueGeneratorTests.ShortResult),
                 new Tuple<string, object>("AnEmailAddress", StandardValueGeneratorTests.EmailAddress),
             };
 
@@ -139,6 +141,20 @@ namespace Tests
                             m => m.RandomizeInteger(It.Is<int?>(max => max == SubjectClass.Max))),
                             Times.Once())
                     ),
+                new Tuple<string, Action>(
+                    "LongIntegerWithMax",
+                    () =>
+                        this.randomizerMock.Verify((
+                            m => m.RandomizeLongInteger(It.Is<long?>(max => max == SubjectClass.Max))),
+                            Times.Once())
+                    ),
+                new Tuple<string, Action>(
+                    "ShortIntegerWithMax",
+                    () =>
+                        this.randomizerMock.Verify((
+                            m => m.RandomizeShortInteger(It.Is<short?>(max => max == SubjectClass.Max))),
+                            Times.Once())
+                    ),
             };
 
             // Act and Assert
@@ -152,7 +168,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void GetValue_ComplexObject()
+        public void GetValue_ComplexObject_Test()
         {
             // Arrange
 
@@ -171,5 +187,53 @@ namespace Tests
             var secondObject = result as SecondClass;
             Assert.IsNotNull(secondObject);
         }
+
+        [TestMethod]
+        public void GetValue_MaxAttributeOutOfRange_Test()
+        {
+            // Arrange
+
+            var inputs = new[]
+            {
+                new
+                {
+                    Property = "IntegerMaxLessThanZero",
+                    ExceptionType = typeof (ArgumentOutOfRangeException),
+                    Message = Messages.MaxAttributeLessThanZero
+                },
+                new
+                {
+                    Property = "IntegerMaxOutOfRange",
+                    ExceptionType = typeof (ArgumentOutOfRangeException),
+                    Message = string.Format(Messages.MaxAttributeOutOfRange, "int")
+                },
+                new
+                {
+                    Property = "LongMaxLessThanZero",
+                    ExceptionType = typeof (ArgumentOutOfRangeException),
+                    Message = Messages.MaxAttributeLessThanZero
+                },
+                new
+                {
+                    Property = "ShortMaxLessThanZero",
+                    ExceptionType = typeof (ArgumentOutOfRangeException),
+                    Message = Messages.MaxAttributeLessThanZero
+                },
+                new
+                {
+                    Property = "ShortMaxOutOfRange",
+                    ExceptionType = typeof (ArgumentOutOfRangeException),
+                    Message = string.Format(Messages.MaxAttributeOutOfRange, "short")
+                },
+            };
+
+            foreach (var input in inputs)
+            {
+                Action action = () => this.valueGenerator.GetValue(typeof(ClassWithMaxInvalidMaxRanges).GetProperty(input.Property));
+
+                Helpers.ExceptionTest(action, input.ExceptionType, input.Message);
+            }
+        }
+
     }
 }

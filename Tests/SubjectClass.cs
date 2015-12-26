@@ -12,7 +12,7 @@ namespace Tests
     {
         public const int StringLength = 10;
         public const int Precision = 2;
-        public const int Max = 7;
+        public const long Max = 7;
 
         public int Integer { get; set; }
 
@@ -23,7 +23,17 @@ namespace Tests
 
         public long LongInteger { get; set; }
 
+        [Max(SubjectClass.Max)]
+        public long LongIntegerWithMax { get; set; }
+
+        public long? NullableLong { get; set; }
+
         public short ShortInteger { get; set; }
+
+        [Max(SubjectClass.Max)]
+        public short ShortIntegerWithMax { get; set; }
+
+        public short? NullableShort { get; set; }
 
         public string Text { get; set; }
 
@@ -83,5 +93,23 @@ namespace Tests
         {
             
         }
+    }
+
+    public class ClassWithMaxInvalidMaxRanges
+    {
+        [Max(-1)]
+        public int IntegerMaxLessThanZero { get; set; }
+
+        [Max(long.MaxValue)]
+        public int IntegerMaxOutOfRange { get; set; }
+
+        [Max(-1)]
+        public long LongMaxLessThanZero { get; set; }
+
+        [Max(-1)]
+        public short ShortMaxLessThanZero { get; set; }
+
+        [Max(int.MaxValue)]
+        public short ShortMaxOutOfRange { get; set; }
     }
 }

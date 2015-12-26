@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.Randomizer;
@@ -128,6 +129,16 @@ namespace Tests
 
             const long expected = 0x0001000100010001;
             Assert.AreEqual(expected, result);
+        }
+
+        [TestMethod]
+        public void RandomizeShortInteger_Test()
+        {
+            // Act
+
+            short result = this.randomizer.RandomizeShortInteger(7);
+
+            throw new NotImplementedException();
         }
     }
 }

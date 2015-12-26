@@ -43,7 +43,7 @@ namespace TestDataFramework.Randomizer
             return result;
         }
 
-        public short RandomizeShortInteger()
+        public short RandomizeShortInteger(short? max)
         {
             throw new NotImplementedException();
         }

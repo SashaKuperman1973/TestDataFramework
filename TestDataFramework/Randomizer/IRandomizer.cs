@@ -12,7 +12,7 @@ namespace TestDataFramework.Randomizer
 
         long RandomizeLongInteger(long? max);
 
-        short RandomizeShortInteger();
+        short RandomizeShortInteger(short? max);
 
         string RandomizeString(int? length);
 

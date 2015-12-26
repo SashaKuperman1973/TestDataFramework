@@ -37,7 +37,7 @@ namespace TestDataFramework.ValueGenerator
                 {typeof (decimal), this.GetDecimal},
                 {typeof (int), this.GetInteger},
                 {typeof (long), this.GetLong},
-                {typeof (short), x => this.randomizer.RandomizeShortInteger()},
+                {typeof (short), this.GetShort},
                 {typeof (bool), x => this.randomizer.RandomizeBoolean()},
                 {typeof (char), x => this.randomizer.RandomizeCharacter()},
                 {typeof (DateTime), x => this.randomizer.RandomizeDateTime()},
@@ -132,9 +132,19 @@ namespace TestDataFramework.ValueGenerator
             StandardValueGenerator.Logger.Debug("Entering GetInteger");
 
             var maxAttribute = propertyInfo.GetCustomAttribute<MaxAttribute>();
-            int? max = maxAttribute?.Max;
+            long? max = maxAttribute?.Max;
 
-            int result = this.randomizer.RandomizeInteger(max);
+            if (max < 0)
+            {
+                throw new ArgumentOutOfRangeException(Messages.MaxAttributeLessThanZero, (Exception) null);
+            }
+
+            if (max > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException(string.Format(Messages.MaxAttributeOutOfRange, "int"), (Exception) null);
+            }
+
+            int result = this.randomizer.RandomizeInteger((int?)max);
 
             StandardValueGenerator.Logger.Debug("Exiting GetInteger");
             return result;
@@ -145,11 +155,39 @@ namespace TestDataFramework.ValueGenerator
             StandardValueGenerator.Logger.Debug("Entering GetLong");
 
             var maxAttribute = propertyInfo.GetCustomAttribute<MaxAttribute>();
-            int? max = maxAttribute?.Max;
+            long? max = maxAttribute?.Max;
+
+            if (max < 0)
+            {
+                throw new ArgumentOutOfRangeException(Messages.MaxAttributeLessThanZero, (Exception)null);
+            }
 
             long result = this.randomizer.RandomizeLongInteger(max);
 
             StandardValueGenerator.Logger.Debug("Exiting GetLong");
+            return result;
+        }
+
+        private object GetShort(PropertyInfo propertyInfo)
+        {
+            StandardValueGenerator.Logger.Debug("Entering GetShort");
+
+            var maxAttribute = propertyInfo.GetCustomAttribute<MaxAttribute>();
+            long? max = maxAttribute?.Max;
+
+            if (max < 0)
+            {
+                throw new ArgumentOutOfRangeException(Messages.MaxAttributeLessThanZero, (Exception)null);
+            }
+
+            if (max > short.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException(string.Format(Messages.MaxAttributeOutOfRange, "short"), (Exception)null);
+            }
+
+            short result = this.randomizer.RandomizeShortInteger((short?)max);
+
+            StandardValueGenerator.Logger.Debug("Exiting GetShort");
             return result;
         }
 

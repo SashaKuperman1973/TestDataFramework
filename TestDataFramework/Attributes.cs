@@ -32,11 +32,11 @@ namespace TestDataFramework
 
     public class MaxAttribute : Attribute
     {
-        public MaxAttribute(int max)
+        public MaxAttribute(long max)
         {
             this.Max = max;
         }
 
-        public int Max { get; }
+        public long Max { get; }
     }
 }

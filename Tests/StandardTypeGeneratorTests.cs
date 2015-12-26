@@ -43,57 +43,35 @@ namespace Tests
         [TestMethod]
         public void GetObject_RecursiveTypeException()
         {
-            // Arrange
-
             var typeGenerator = new StandardTypeGenerator(x => this.valueGeneratorMock.Object);
 
-            // Act
-
-            typeGenerator.GetObject(typeof (InfiniteRecursiveClass1));
+            typeGenerator.GetObject(typeof(InfiniteRecursiveClass1));
             typeGenerator.GetObject(typeof(InfiniteRecursiveClass2));
             typeGenerator.GetObject(typeof(InfiniteRecursiveClass3));
 
-            TypeRecursionException exception = null;
-
-            try
+            Action action = () =>
             {
-                typeGenerator.GetObject(typeof (InfiniteRecursiveClass1));
-            }
-            catch (TypeRecursionException ex)
-            {
-                exception = ex;
-            }
+                typeGenerator.GetObject(typeof(InfiniteRecursiveClass1));
+            };
 
-            Assert.IsNotNull(exception);
-
-            Assert.AreEqual(string.Format(Messages.TypeRecursionExceptionMessage,
+            string expectedMessage = string.Format(Messages.TypeRecursionExceptionMessage,
                 typeof (InfiniteRecursiveClass1) + " -> " + typeof (InfiniteRecursiveClass2) + " -> " +
-                typeof (InfiniteRecursiveClass3), typeof(InfiniteRecursiveClass1)), exception.Message);
+                typeof (InfiniteRecursiveClass3), typeof (InfiniteRecursiveClass1));
+
+            Helpers.ExceptionTest(action, typeof(TypeRecursionException), expectedMessage);
         }
 
         [TestMethod]
         public void GetObject_NoDefaultConstructorException()
         {
-            // Arrange
-
             var typeGenerator = new StandardTypeGenerator(x => this.valueGeneratorMock.Object);
 
-            // Act
+            Action action = () => typeGenerator.GetObject(typeof (ClassWithoutADefaultConstructor));
 
+            string expectedMessage = Messages.NoDefaultConstructorExceptionMessage +
+                                     typeof (ClassWithoutADefaultConstructor);
 
-            NoDefaultConstructorException exception = null;
-
-            try
-            {
-                typeGenerator.GetObject(typeof (ClassWithoutADefaultConstructor));
-            }
-            catch (NoDefaultConstructorException ex)
-            {
-                exception = ex;
-            }
-
-            Assert.IsNotNull(exception);
-            Assert.AreEqual(Messages.NoDefaultConstructorExceptionMessage + typeof(ClassWithoutADefaultConstructor), exception.Message);
+            Helpers.ExceptionTest(action, typeof (NoDefaultConstructorException), expectedMessage);
         }
     }
 }

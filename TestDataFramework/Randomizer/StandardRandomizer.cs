@@ -80,7 +80,11 @@ namespace TestDataFramework.Randomizer
 
         public bool RandomizeBoolean()
         {
-            throw new NotImplementedException();
+            int value = this.random.Next(2);
+
+            bool result = value == 1;
+
+            return result;
         }
 
         public DateTime RandomizeDateTime()

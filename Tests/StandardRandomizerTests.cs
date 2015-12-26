@@ -291,5 +291,39 @@ namespace Tests
 
             Assert.AreEqual(expected, result);
         }
+
+        [TestMethod]
+        public void RandomizeBoolean_ReturnsTrue_Test()
+        {
+            // Arrange
+
+            this.randomMock.Setup(m => m.Next(2)).Returns(1).Verifiable();
+
+            // Act
+
+            bool result = this.randomizer.RandomizeBoolean();
+
+            // Assert
+
+            this.randomMock.Verify();
+            Assert.AreEqual(true, result);
+        }
+
+        [TestMethod]
+        public void RandomizeBoolean_ReturnsFalse_Test()
+        {
+            // Arrange
+
+            this.randomMock.Setup(m => m.Next(2)).Returns(0).Verifiable();
+
+            // Act
+
+            bool result = this.randomizer.RandomizeBoolean();
+
+            // Assert
+
+            this.randomMock.Verify();
+            Assert.AreEqual(false, result);
+        }
     }
 }

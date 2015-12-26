@@ -45,7 +45,8 @@ namespace TestDataFramework.Randomizer
 
         public short RandomizeShortInteger(short? max)
         {
-            throw new NotImplementedException();
+            int result = max != null ? this.random.Next(max.Value) : this.random.Next(short.MaxValue);
+            return (short)result;
         }
 
         public string RandomizeString(int? length)

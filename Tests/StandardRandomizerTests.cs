@@ -134,11 +134,35 @@ namespace Tests
         [TestMethod]
         public void RandomizeShortInteger_Test()
         {
+            // Arrange
+
+            this.randomMock.Setup(m => m.Next(It.Is<int>(i => i == 7))).Returns(StandardRandomizerTests.Integer).Verifiable();
+
             // Act
 
             short result = this.randomizer.RandomizeShortInteger(7);
 
-            throw new NotImplementedException();
+            // Assert
+
+            this.randomMock.Verify();
+            Assert.AreEqual((short)StandardRandomizerTests.Integer, result);
+        }
+
+        [TestMethod]
+        public void RandomizeShortInteger_DefaultMax_Test()
+        {
+            // Arrange
+
+            this.randomMock.Setup(m => m.Next(It.Is<int>(i => i == short.MaxValue))).Returns(StandardRandomizerTests.Integer).Verifiable();
+
+            // Act
+
+            short result = this.randomizer.RandomizeShortInteger(null);
+
+            // Assert
+
+            this.randomMock.Verify();
+            Assert.AreEqual((short)StandardRandomizerTests.Integer, result);
         }
     }
 }

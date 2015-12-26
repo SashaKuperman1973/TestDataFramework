@@ -1,14 +1,19 @@
 ﻿using System;
+using System.Threading;
+using TestDataFramework.Helpers.Concrete;
+using TestDataFramework.Helpers.Interfaces;
 
 namespace TestDataFramework.Randomizer
 {
     public class StandardRandomizer : IRandomizer
     {
         private readonly Random random;
+        private readonly IRandomSymbolStringGenerator stringRandomizer;
 
-        public StandardRandomizer(Random random)
+        public StandardRandomizer(Random random, IRandomSymbolStringGenerator stringRandomizer)
         {
             this.random = random;
+            this.stringRandomizer = stringRandomizer;
         }
 
         public int RandomizeInteger(int? max)
@@ -51,17 +56,26 @@ namespace TestDataFramework.Randomizer
 
         public string RandomizeString(int? length)
         {
-            throw new NotImplementedException();
+            string result = this.stringRandomizer.GetRandomString(length);
+            return result;
         }
 
         public char RandomizeCharacter()
         {
-            throw new NotImplementedException();
+            int letterCode = this.random.Next(26);
+
+            var result = (char)(letterCode + 65);
+
+            return result;
         }
 
         public decimal RandomizeDecimal(int? precision)
         {
-            throw new NotImplementedException();
+            precision = precision ?? 2;
+
+            var result = (decimal) this.GetReal(precision.Value);
+
+            return result;
         }
 
         public bool RandomizeBoolean()
@@ -81,12 +95,26 @@ namespace TestDataFramework.Randomizer
 
         public double RandomizeDouble(int? precision)
         {
-            throw new NotImplementedException();
+            precision = precision ?? 2;
+
+            double result = this.GetReal(precision.Value);
+
+            return result;
         }
 
         public object RandomizeEmailAddress()
         {
             throw new NotImplementedException();
+        }
+
+        private double GetReal(int precision)
+        {
+            int wholePart = this.random.Next();
+            double decimalPart = this.random.NextDouble();
+            double result = wholePart + decimalPart;
+            result = Math.Round(result, precision);
+
+            return result;
         }
     };
 }

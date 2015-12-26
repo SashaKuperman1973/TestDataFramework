@@ -2,7 +2,9 @@
 using System.Runtime.CompilerServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using TestDataFramework.Helpers.Concrete;
 using TestDataFramework.Randomizer;
+using TestDataFramework.Helpers.Interfaces;
 
 namespace Tests
 {
@@ -11,6 +13,7 @@ namespace Tests
     {
         private StandardRandomizer randomizer;
         private Mock<Random> randomMock;
+        private Mock<IRandomSymbolStringGenerator> stringGeneratorMock;
 
         private const int Integer = 5;
 
@@ -18,7 +21,8 @@ namespace Tests
         public void Initialize()
         {
             this.randomMock = new Mock<Random>();
-            this.randomizer = new StandardRandomizer(this.randomMock.Object);
+            this.stringGeneratorMock = new Mock<IRandomSymbolStringGenerator>();
+            this.randomizer = new StandardRandomizer(this.randomMock.Object, this.stringGeneratorMock.Object);
         }
 
         [TestMethod]
@@ -132,6 +136,24 @@ namespace Tests
         }
 
         [TestMethod]
+        public void RandomizeLongInteger_MaxReturnBoundaryCondition_Test()
+        {
+            // Arrange
+
+            this.randomMock.Setup(m => m.Next(0xffff)).Returns(0xffff);
+            this.randomMock.Setup(m => m.Next(0x10000)).Returns(0xffff);
+            this.randomMock.Setup(m => m.Next(0x8000)).Returns(0x7fff);
+
+            // Act
+
+            long result = this.randomizer.RandomizeLongInteger(null);
+
+            // Assert
+
+            Assert.AreEqual(long.MaxValue, result);
+        }
+
+        [TestMethod]
         public void RandomizeShortInteger_Test()
         {
             // Arrange
@@ -163,6 +185,111 @@ namespace Tests
 
             this.randomMock.Verify();
             Assert.AreEqual((short)StandardRandomizerTests.Integer, result);
+        }
+
+        [TestMethod]
+        public void RandomizeString_Test()
+        {
+            // Arrange
+
+            this.stringGeneratorMock.Setup(m => m.GetRandomString(It.Is<int?>(i => i == 5))).Returns("ABCDE");
+
+            // Act
+
+            string result = this.randomizer.RandomizeString(5);
+
+            // Assert
+
+            Assert.AreEqual("ABCDE", result);
+        }
+
+        [TestMethod]
+        public void RandomizeCharacter_Test()
+        {
+            for (int code = 0; code < 26; code++)
+            {
+                this.randomMock.Setup(m => m.Next(It.Is<int>(i => i == 26))).Returns(code);
+
+                char result = this.randomizer.RandomizeCharacter();
+
+                Assert.AreEqual((char)(code + 65), result);
+            }
+        }
+
+        [TestMethod]
+        public void RandomizeDecimal_DefaultPrecision_Test()
+        {
+            // Arrange
+
+            const decimal expected = 12345.12m;
+
+            this.randomMock.Setup(m => m.Next()).Returns(12345);
+            this.randomMock.Setup(m => m.NextDouble()).Returns(0.12345d);
+
+            // Act
+
+            decimal result = this.randomizer.RandomizeDecimal(null);
+
+            // Assert
+
+            Assert.AreEqual(expected, result);
+        }
+
+        [TestMethod]
+        public void RandomizeDecimal_Test()
+        {
+            // Arrange
+
+            const decimal expected = 12345.1234m;
+
+            this.randomMock.Setup(m => m.Next()).Returns(12345);
+            this.randomMock.Setup(m => m.NextDouble()).Returns(0.12345d);
+
+            // Act
+
+            decimal result = this.randomizer.RandomizeDecimal(4);
+
+            // Assert
+
+            Assert.AreEqual(expected, result);
+        }
+
+        [TestMethod]
+        public void RandomizeDouble_DefaultPrecision_Test()
+        {
+            // Arrange
+
+            const double expected = 12345.12d;
+
+            this.randomMock.Setup(m => m.Next()).Returns(12345);
+            this.randomMock.Setup(m => m.NextDouble()).Returns(0.12345d);
+
+            // Act
+
+            double result = this.randomizer.RandomizeDouble(null);
+
+            // Assert
+
+            Assert.AreEqual(expected, result);
+        }
+
+        [TestMethod]
+        public void RandomizeDouble_Test()
+        {
+            // Arrange
+
+            const double expected = 12345.1234d;
+
+            this.randomMock.Setup(m => m.Next()).Returns(12345);
+            this.randomMock.Setup(m => m.NextDouble()).Returns(0.12345d);
+
+            // Act
+
+            double result = this.randomizer.RandomizeDouble(4);
+
+            // Assert
+
+            Assert.AreEqual(expected, result);
         }
     }
 }

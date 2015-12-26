@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using log4net;
+using TestDataFramework.Helpers;
 using TestDataFramework.Helpers.Concrete;
 using TestDataFramework.Helpers.Interfaces;
 
@@ -12,9 +13,9 @@ namespace TestDataFramework.Randomizer
 
         private readonly Random random;
         private readonly IRandomSymbolStringGenerator stringRandomizer;
-        private readonly Func<DateTime> dateProvider;
+        private readonly DateTimeProvider dateProvider;
 
-        public StandardRandomizer(Random random, IRandomSymbolStringGenerator stringRandomizer, Func<DateTime> dateProvider)
+        public StandardRandomizer(Random random, IRandomSymbolStringGenerator stringRandomizer, DateTimeProvider dateProvider)
         {
             StandardRandomizer.Logger.Debug("Entering constructor");
 
@@ -25,7 +26,7 @@ namespace TestDataFramework.Randomizer
             StandardRandomizer.Logger.Debug("Exiting constructor");
         }
 
-        public int RandomizeInteger(int? max)
+        public virtual int RandomizeInteger(int? max)
         {
             StandardRandomizer.Logger.Debug("Entering RandomizeInteger");
 
@@ -39,7 +40,7 @@ namespace TestDataFramework.Randomizer
             return result;
         }
 
-        public long RandomizeLongInteger(long? max)
+        public virtual long RandomizeLongInteger(long? max)
         {
             StandardRandomizer.Logger.Debug("Entering RandomizeLongInteger");
 
@@ -70,7 +71,7 @@ namespace TestDataFramework.Randomizer
             return result;
         }
 
-        public short RandomizeShortInteger(short? max)
+        public virtual short RandomizeShortInteger(short? max)
         {
             StandardRandomizer.Logger.Debug("Entering RandomizeShortInteger");
 
@@ -84,7 +85,7 @@ namespace TestDataFramework.Randomizer
             return (short)result;
         }
 
-        public string RandomizeString(int? length)
+        public virtual string RandomizeString(int? length)
         {
             StandardRandomizer.Logger.Debug("Entering RandomizeString");
 
@@ -94,7 +95,7 @@ namespace TestDataFramework.Randomizer
             return result;
         }
 
-        public char RandomizeCharacter()
+        public virtual char RandomizeCharacter()
         {
             StandardRandomizer.Logger.Debug("Entering RandomizeCharacter");
 
@@ -106,7 +107,7 @@ namespace TestDataFramework.Randomizer
             return result;
         }
 
-        public decimal RandomizeDecimal(int? precision)
+        public virtual decimal RandomizeDecimal(int? precision)
         {
             StandardRandomizer.Logger.Debug("Entering RandomizeDecimal");
 
@@ -120,7 +121,7 @@ namespace TestDataFramework.Randomizer
             return result;
         }
 
-        public bool RandomizeBoolean()
+        public virtual bool RandomizeBoolean()
         {
             StandardRandomizer.Logger.Debug("Entering RandomizeBoolean");
 
@@ -132,7 +133,7 @@ namespace TestDataFramework.Randomizer
             return result;
         }
 
-        public DateTime RandomizeDateTime(PastOrFuture? pastOrFuture)
+        public virtual DateTime RandomizeDateTime(PastOrFuture? pastOrFuture)
         {
             StandardRandomizer.Logger.Debug("Entering RandomizeBoolean");
 
@@ -150,16 +151,21 @@ namespace TestDataFramework.Randomizer
             return result;
         }
 
-        public byte RandomizeByte()
+        public virtual byte RandomizeByte()
         {
             StandardRandomizer.Logger.Debug("Entering RandomizeByte");
 
-            StandardRandomizer.Logger.Debug("Exiting RandomizeByte");
+            var array = new byte[1];
 
-            throw new NotImplementedException();
+            this.random.NextBytes(array);
+
+            byte result = array[0];
+
+            StandardRandomizer.Logger.Debug("Exiting RandomizeByte");
+            return result;
         }
 
-        public double RandomizeDouble(int? precision)
+        public virtual double RandomizeDouble(int? precision)
         {
             StandardRandomizer.Logger.Debug("Entering RandomizeBoolean");
 
@@ -173,13 +179,15 @@ namespace TestDataFramework.Randomizer
             return result;
         }
 
-        public object RandomizeEmailAddress()
+        public virtual string RandomizeEmailAddress()
         {
             StandardRandomizer.Logger.Debug("Entering RandomizeEmailAddress");
 
-            StandardRandomizer.Logger.Debug("Exiting RandomizeEmailAddress");
+            string namePart = this.stringRandomizer.GetRandomString(10).ToLower();
+            string result = namePart + "@domain.com";
 
-            throw new NotImplementedException();
+            StandardRandomizer.Logger.Debug("Exiting RandomizeEmailAddress");
+            return result;
         }
 
         private double GetReal(int precision)

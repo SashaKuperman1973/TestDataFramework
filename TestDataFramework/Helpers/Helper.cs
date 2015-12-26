@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace TestDataFramework.Helpers
 {
+    public delegate DateTime DateTimeProvider();
+
     public static class Helper
     {
         public static DateTime Now => DateTime.Now;

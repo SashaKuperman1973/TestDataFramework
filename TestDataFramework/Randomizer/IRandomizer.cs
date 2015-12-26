@@ -34,6 +34,6 @@ namespace TestDataFramework.Randomizer
 
         double RandomizeDouble(int? precision);
 
-        object RandomizeEmailAddress();
+        string RandomizeEmailAddress();
     }
 }

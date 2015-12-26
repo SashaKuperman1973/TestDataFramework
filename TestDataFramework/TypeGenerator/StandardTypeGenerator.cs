@@ -47,7 +47,7 @@ namespace TestDataFramework.TypeGenerator
             return objectToFill;
         }
 
-        protected void FillObject(object objectToFill)
+        protected virtual void FillObject(object objectToFill)
         {
             StandardTypeGenerator.Logger.Debug("Entering FillObject");
 

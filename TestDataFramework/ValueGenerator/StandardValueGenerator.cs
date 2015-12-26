@@ -50,7 +50,7 @@ namespace TestDataFramework.ValueGenerator
             StandardValueGenerator.Logger.Debug("Exiting constructor");
         }
 
-        public object GetValue(PropertyInfo propertyInfo)
+        public virtual object GetValue(PropertyInfo propertyInfo)
         {
             StandardValueGenerator.Logger.Debug("Entering GetValue");
 
@@ -65,6 +65,8 @@ namespace TestDataFramework.ValueGenerator
             StandardValueGenerator.Logger.Debug("Exiting GetValue");
             return result;
         }
+
+        #region Private Methods
 
         private bool TryGetGetter(PropertyInfo propertyInfo, out GetValueForTypeDelegate getValueForTypeDelegate)
         {
@@ -89,8 +91,6 @@ namespace TestDataFramework.ValueGenerator
             StandardValueGenerator.Logger.Debug("Exiting TryGetGetter");
             return result;
         }
-
-        #region Private Methods
 
         private object GetString(PropertyInfo propertyInfo)
         {

@@ -32,7 +32,7 @@ namespace TestDataFramework.Populator
 
         #region Public Methods
 
-        public void Populate()
+        public virtual void Populate()
         {
             StandardPopulator.Logger.Debug("Entering Populate");
 
@@ -43,7 +43,7 @@ namespace TestDataFramework.Populator
             StandardPopulator.Logger.Debug("Exiting Populate");
         }
 
-        public void Add<T>() where T : new()
+        public virtual void Add<T>() where T : new()
         {
             StandardPopulator.Logger.Debug("Entering Add<T>");
 

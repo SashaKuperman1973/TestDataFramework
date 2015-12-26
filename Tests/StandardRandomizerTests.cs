@@ -329,7 +329,7 @@ namespace Tests
         [TestMethod]
         public void RandomizeDateTime_Past_Test()
         {
-            // Assert
+            // Arrange
 
             int ticks = new Random().Next();
 
@@ -351,7 +351,7 @@ namespace Tests
         [TestMethod]
         public void RandomizeDateTime_Future_Test()
         {
-            // Assert
+            // Arrange
 
             int ticks = new Random().Next();
 
@@ -366,6 +366,38 @@ namespace Tests
             // Assert
 
             Assert.AreEqual(expected, result);
+        }
+
+        [TestMethod]
+        public void RandomizeByte_Test()
+        {
+            // Arrange
+
+            this.randomMock.Setup(m => m.NextBytes(It.IsAny<byte[]>())).Callback<byte[]>(a => a[0] = 5);
+
+            // Act
+
+            byte result = this.randomizer.RandomizeByte();
+
+            // Assert
+
+            Assert.AreEqual((byte)5, result);
+        }
+
+        [TestMethod]
+        public void RandomizeEmailAddress_Test()
+        {
+            // Arrange
+
+            this.stringGeneratorMock.Setup(m => m.GetRandomString(It.IsAny<int?>())).Returns("abcde");
+
+            // Act
+
+            string result = this.randomizer.RandomizeEmailAddress();
+
+            // Assert
+
+            Assert.AreEqual("abcde@domain.com", result);
         }
     }
 }

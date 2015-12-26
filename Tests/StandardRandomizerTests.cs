@@ -14,6 +14,7 @@ namespace Tests
         private StandardRandomizer randomizer;
         private Mock<Random> randomMock;
         private Mock<IRandomSymbolStringGenerator> stringGeneratorMock;
+        private readonly DateTime now = DateTime.Now;
 
         private const int Integer = 5;
 
@@ -22,7 +23,7 @@ namespace Tests
         {
             this.randomMock = new Mock<Random>();
             this.stringGeneratorMock = new Mock<IRandomSymbolStringGenerator>();
-            this.randomizer = new StandardRandomizer(this.randomMock.Object, this.stringGeneratorMock.Object);
+            this.randomizer = new StandardRandomizer(this.randomMock.Object, this.stringGeneratorMock.Object, () => this.now);
         }
 
         [TestMethod]
@@ -30,7 +31,7 @@ namespace Tests
         {
             // Arrange
 
-            this.randomMock.Setup(m => m.Next()).Returns(StandardRandomizerTests.Integer);
+            this.randomMock.Setup(m => m.Next(It.Is<int>(i => i == int.MaxValue))).Returns(StandardRandomizerTests.Integer).Verifiable();
 
             // Act
 
@@ -38,9 +39,8 @@ namespace Tests
 
             // Assert
 
+            this.randomMock.Verify();
             Assert.AreEqual(StandardRandomizerTests.Integer, result);
-            this.randomMock.Verify(m => m.Next(), Times.Once());
-            this.randomMock.Verify(m => m.Next(It.IsAny<int>()), Times.Never());
         }
 
         [TestMethod]
@@ -324,6 +324,48 @@ namespace Tests
 
             this.randomMock.Verify();
             Assert.AreEqual(false, result);
+        }
+
+        [TestMethod]
+        public void RandomizeDateTime_Past_Test()
+        {
+            // Assert
+
+            int ticks = new Random().Next();
+
+            this.randomMock.Setup(m => m.Next()).Returns(ticks);
+
+            DateTime expected = this.now.AddTicks(-ticks);
+
+            // Act
+
+            DateTime explicitPastResult = this.randomizer.RandomizeDateTime(PastOrFuture.Past);
+            DateTime implicitPastResult = this.randomizer.RandomizeDateTime(null);
+
+            // Assert
+
+            Assert.AreEqual(expected, explicitPastResult);
+            Assert.AreEqual(expected, implicitPastResult);
+        }
+
+        [TestMethod]
+        public void RandomizeDateTime_Future_Test()
+        {
+            // Assert
+
+            int ticks = new Random().Next();
+
+            this.randomMock.Setup(m => m.Next()).Returns(ticks);
+
+            DateTime expected = this.now.AddTicks(ticks);
+
+            // Act
+
+            DateTime result = this.randomizer.RandomizeDateTime(PastOrFuture.Future);
+
+            // Assert
+
+            Assert.AreEqual(expected, result);
         }
     }
 }

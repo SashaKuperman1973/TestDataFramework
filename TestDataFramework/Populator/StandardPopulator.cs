@@ -22,8 +22,12 @@ namespace TestDataFramework.Populator
 
         public StandardPopulator(IValueGenerator valueGenerator, IPersistence persistence)
         {
+            StandardPopulator.Logger.Debug("Entering constructor");
+
             this.valueGenerator = valueGenerator;
             this.persistence = persistence;
+
+            StandardPopulator.Logger.Debug("Entering constructor");
         }
 
         #region Public Methods

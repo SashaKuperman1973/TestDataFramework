@@ -45,7 +45,7 @@ namespace Tests
             this.randomizerMock.Setup(m => m.RandomizeCharacter()).Returns(StandardValueGeneratorTests.CharacterResult);
             this.randomizerMock.Setup(m => m.RandomizeDecimal(It.Is<int?>(precision => precision == null))).Returns(StandardValueGeneratorTests.DecimalResult);
             this.randomizerMock.Setup(m => m.RandomizeBoolean()).Returns(StandardValueGeneratorTests.BooleanResult);
-            this.randomizerMock.Setup(m => m.RandomizeDateTime()).Returns(StandardValueGeneratorTests.DateTimeResult);
+            this.randomizerMock.Setup(m => m.RandomizeDateTime(It.Is<PastOrFuture?>(pastOrFuture => pastOrFuture == null))).Returns(StandardValueGeneratorTests.DateTimeResult);
             this.randomizerMock.Setup(m => m.RandomizeByte()).Returns(StandardValueGeneratorTests.ByteResult);
             this.randomizerMock.Setup(m => m.RandomizeDouble(It.Is<int?>(precision => precision == null))).Returns(StandardValueGeneratorTests.DoubleResult);
             this.randomizerMock.Setup(m => m.RandomizeEmailAddress()).Returns(StandardValueGeneratorTests.EmailAddress);
@@ -153,6 +153,13 @@ namespace Tests
                     () =>
                         this.randomizerMock.Verify((
                             m => m.RandomizeShortInteger(It.Is<short?>(max => max == SubjectClass.Max))),
+                            Times.Once())
+                    ),
+                new Tuple<string, Action>(
+                    "DateTimeWithTense",
+                    () =>
+                        this.randomizerMock.Verify((
+                            m => m.RandomizeDateTime(It.Is<PastOrFuture?>(pastOrFuture => pastOrFuture == PastOrFuture.Future))),
                             Times.Once())
                     ),
             };

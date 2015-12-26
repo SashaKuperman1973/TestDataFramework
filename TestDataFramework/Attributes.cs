@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TestDataFramework.Randomizer;
 
 namespace TestDataFramework
 {
@@ -38,5 +39,15 @@ namespace TestDataFramework
         }
 
         public long Max { get; }
+    }
+
+    public class PastOrFutureAttribute : Attribute
+    {
+        public PastOrFutureAttribute(PastOrFuture pastOrFuture)
+        {
+            this.PastOrFuture = pastOrFuture;
+        }
+
+        public PastOrFuture PastOrFuture { get; }
     }
 }

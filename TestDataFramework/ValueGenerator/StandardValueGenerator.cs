@@ -27,6 +27,8 @@ namespace TestDataFramework.ValueGenerator
 
         public StandardValueGenerator(IRandomizer randomizer, ITypeGenerator typeGenerator)
         {
+            StandardValueGenerator.Logger.Debug("Entering constructor");
+
             this.randomizer = randomizer;
             this.typeGenerator = typeGenerator;
 
@@ -40,10 +42,12 @@ namespace TestDataFramework.ValueGenerator
                 {typeof (short), this.GetShort},
                 {typeof (bool), x => this.randomizer.RandomizeBoolean()},
                 {typeof (char), x => this.randomizer.RandomizeCharacter()},
-                {typeof (DateTime), x => this.randomizer.RandomizeDateTime()},
+                {typeof (DateTime), this.GetDateTime},
                 {typeof (byte), x => this.randomizer.RandomizeByte()},
                 {typeof (double), this.GetDouble},
             };
+
+            StandardValueGenerator.Logger.Debug("Exiting constructor");
         }
 
         public object GetValue(PropertyInfo propertyInfo)
@@ -188,6 +192,19 @@ namespace TestDataFramework.ValueGenerator
             short result = this.randomizer.RandomizeShortInteger((short?)max);
 
             StandardValueGenerator.Logger.Debug("Exiting GetShort");
+            return result;
+        }
+
+        private object GetDateTime(PropertyInfo propertyInfo)
+        {
+            StandardValueGenerator.Logger.Debug("Entering GetDateTime");
+
+            var pastOrFutureAttribute = propertyInfo.GetCustomAttribute<PastOrFutureAttribute>();
+            PastOrFuture? pastOrFuture = pastOrFutureAttribute?.PastOrFuture;
+
+            DateTime result = this.randomizer.RandomizeDateTime((PastOrFuture?)pastOrFuture);
+
+            StandardValueGenerator.Logger.Debug("Exiting GetDateTime");
             return result;
         }
 

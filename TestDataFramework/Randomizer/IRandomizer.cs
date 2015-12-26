@@ -6,6 +6,12 @@ using System.Threading.Tasks;
 
 namespace TestDataFramework.Randomizer
 {
+    public enum PastOrFuture
+    {
+        Past,
+        Future
+    }
+
     public interface IRandomizer
     {
         int RandomizeInteger(int? max);
@@ -22,7 +28,7 @@ namespace TestDataFramework.Randomizer
 
         bool RandomizeBoolean();
 
-        DateTime RandomizeDateTime();
+        DateTime RandomizeDateTime(PastOrFuture? pastOrFuture);
 
         byte RandomizeByte();
 

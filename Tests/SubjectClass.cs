@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TestDataFramework;
+using TestDataFramework.Randomizer;
 
 
 namespace Tests
@@ -50,6 +51,9 @@ namespace Tests
         public bool Boolean { get; set; }
 
         public DateTime DateTime { get; set; }
+
+        [PastOrFuture(PastOrFuture.Future)]
+        public DateTime DateTimeWithTense { get; set; }
 
         public byte Byte { get; set; }
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TestDataFramework.Helpers;
 using TestDataFramework.Helpers.Concrete;
 
 namespace Tests

@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using TestDataFramework.Helpers.Concrete;
-using TestDataFramework.Randomizer;
 using TestDataFramework.Helpers.Interfaces;
+using TestDataFramework.Randomizer;
 
 namespace Tests
 {

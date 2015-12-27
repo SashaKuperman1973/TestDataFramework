@@ -2,13 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using log4net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.ArrayRandomizer;
 using TestDataFramework.Exceptions;
-using TestDataFramework.Populator;
 using TestDataFramework.Randomizer;
 using TestDataFramework.TypeGenerator;
 

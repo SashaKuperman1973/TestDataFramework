@@ -1,12 +1,10 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using TestDataFramework.Persistence;
-using TestDataFramework.Randomizer;
-using TestDataFramework.ValueGenerator;
 using log4net;
+using TestDataFramework.Persistence;
+using TestDataFramework.ValueGenerator;
 
 namespace TestDataFramework.Populator
 {

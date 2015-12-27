@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using log4net;
 using TestDataFramework.Helpers;
 using TestDataFramework.Helpers.Concrete;

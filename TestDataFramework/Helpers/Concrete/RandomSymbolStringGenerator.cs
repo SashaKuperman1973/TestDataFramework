@@ -1,7 +1,6 @@
 ﻿using System;
 using log4net;
 using TestDataFramework.Helpers.Interfaces;
-using TestDataFramework.ValueGenerator;
 
 namespace TestDataFramework.Helpers.Concrete
 {

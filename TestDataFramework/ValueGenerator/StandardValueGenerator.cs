@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using log4net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestDataFramework.ArrayRandomizer;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Populator;
 using TestDataFramework.Randomizer;
@@ -18,19 +19,20 @@ namespace TestDataFramework.ValueGenerator
         private static readonly ILog Logger = LogManager.GetLogger(typeof(StandardValueGenerator));
 
         private readonly IRandomizer randomizer;
-
         private readonly ITypeGenerator typeGenerator;
+        private readonly IArrayRandomizer arrayRandomizer;
 
         private delegate object GetValueForTypeDelegate(PropertyInfo propertyInfo);
 
         private readonly Dictionary<Type, GetValueForTypeDelegate> typeValueGetterDictionary;
 
-        public StandardValueGenerator(IRandomizer randomizer, ITypeGenerator typeGenerator)
+        public StandardValueGenerator(IRandomizer randomizer, ITypeGenerator typeGenerator, Func<IValueGenerator, IArrayRandomizer> getArrayRandomizer)
         {
             StandardValueGenerator.Logger.Debug("Entering constructor");
 
             this.randomizer = randomizer;
             this.typeGenerator = typeGenerator;
+            this.arrayRandomizer = getArrayRandomizer(this);
 
             this.typeValueGetterDictionary = new Dictionary<Type, GetValueForTypeDelegate>
             {
@@ -52,17 +54,50 @@ namespace TestDataFramework.ValueGenerator
 
         public virtual object GetValue(PropertyInfo propertyInfo)
         {
-            StandardValueGenerator.Logger.Debug("Entering GetValue");
+            StandardValueGenerator.Logger.Debug("Entering GetValue(PropertyInfo propertyInfo)");
 
             Assert.IsNotNull(propertyInfo, "propertyInfo argument");
 
+            if (propertyInfo.PropertyType.IsArray)
+            {
+                return this.GetValue(propertyInfo, propertyInfo.PropertyType);
+            }
+
+            GetValueForTypeDelegate getter = null;
+
+            propertyInfo.GetCustomAttributesData()
+                .Any(
+                    attributeData =>
+                        this.typeValueGetterDictionary.TryGetValue(attributeData.AttributeType, out getter));
+
+            object result = getter != null ? getter(propertyInfo) : this.GetValue(propertyInfo, propertyInfo.PropertyType);
+
+            StandardValueGenerator.Logger.Debug("Exiting GetValue(PropertyInfo propertyInfo)");
+            return result;
+        }
+
+        public virtual object GetValue(PropertyInfo propertyInfo, Type type)
+        {
+            StandardValueGenerator.Logger.Debug("Entering GetValue(PropertyInfo propertyInfo, Type type)");
+
+            Assert.IsNotNull(propertyInfo, "propertyInfo argument");
+            Assert.IsNotNull(type, "type argument");
+
+            if (type.IsArray)
+            {
+                return this.arrayRandomizer.GetArray(propertyInfo, type);
+            }
+
+            Type forType = Nullable.GetUnderlyingType(type) ?? type;
+
             GetValueForTypeDelegate getter;
 
-            object result = this.TryGetGetter(propertyInfo, out getter)
+            object result = 
+                this.typeValueGetterDictionary.TryGetValue(forType, out getter)
                 ? getter(propertyInfo)
-                : this.typeGenerator.GetObject(propertyInfo.PropertyType);
+                : this.typeGenerator.GetObject(forType);
 
-            StandardValueGenerator.Logger.Debug("Exiting GetValue");
+            StandardValueGenerator.Logger.Debug("Exiting GetValue(PropertyInfo propertyInfo, Type type)");
             return result;
         }
 

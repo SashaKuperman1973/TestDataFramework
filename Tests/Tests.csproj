@@ -65,6 +65,7 @@
     <Compile Include="StandardTypeGeneratorTests.cs" />
     <Compile Include="StandardRandomizerTests.cs" />
     <Compile Include="RandomSymbolStringGeneratorTest.cs" />
+    <Compile Include="ArrayRandomizerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Tests To Do.txt" />

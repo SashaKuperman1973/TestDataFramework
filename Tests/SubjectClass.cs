@@ -69,6 +69,16 @@ namespace Tests
         public int NotValidForEmail { get; set; }
 
         public SecondClass SecondObject { get; set; }
+
+        public int[] SimpleArray { get; set; }
+
+        public int[,,] MultiDimensionalArray { get; set; }
+
+        public int[][][] JaggedArray { get; set; }
+
+        public int[,,][][,] MultiDimensionalJaggedArray { get; set; }
+
+        public int[][,,][] JaggedMultiDimensionalArray { get; set; }
     }
 
     public class SecondClass

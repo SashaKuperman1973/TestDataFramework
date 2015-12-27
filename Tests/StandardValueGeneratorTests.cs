@@ -6,6 +6,7 @@ using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework;
+using TestDataFramework.ArrayRandomizer;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Randomizer;
 using TestDataFramework.TypeGenerator;
@@ -18,6 +19,7 @@ namespace Tests
     {
         private Mock<IRandomizer> randomizerMock;
         private Mock<ITypeGenerator> typeGeneratorMock;
+        private Mock<IArrayRandomizer> arrayRandomizerMock;
         private StandardValueGenerator valueGenerator;
 
         private const int IntegerResult = 5;
@@ -37,6 +39,7 @@ namespace Tests
         {
             this.randomizerMock = new Mock<IRandomizer>();
             this.typeGeneratorMock = new Mock<ITypeGenerator>();
+            this.arrayRandomizerMock = new Mock<IArrayRandomizer>();
 
             this.randomizerMock.Setup(m => m.RandomizeInteger(It.Is<int?>(max => max == null))).Returns(StandardValueGeneratorTests.IntegerResult);
             this.randomizerMock.Setup(m => m.RandomizeLongInteger(It.Is<long?>(max => max == null))).Returns(StandardValueGeneratorTests.LongResult);
@@ -50,7 +53,7 @@ namespace Tests
             this.randomizerMock.Setup(m => m.RandomizeDouble(It.Is<int?>(precision => precision == null))).Returns(StandardValueGeneratorTests.DoubleResult);
             this.randomizerMock.Setup(m => m.RandomizeEmailAddress()).Returns(StandardValueGeneratorTests.EmailAddress);
 
-            this.valueGenerator = new StandardValueGenerator(this.randomizerMock.Object, this.typeGeneratorMock.Object);
+            this.valueGenerator = new StandardValueGenerator(this.randomizerMock.Object, this.typeGeneratorMock.Object, x => this.arrayRandomizerMock.Object);
         }
 
         [TestMethod]

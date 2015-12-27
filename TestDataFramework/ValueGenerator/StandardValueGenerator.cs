@@ -58,11 +58,6 @@ namespace TestDataFramework.ValueGenerator
 
             Assert.IsNotNull(propertyInfo, "propertyInfo argument");
 
-            if (propertyInfo.PropertyType.IsArray)
-            {
-                return this.GetValue(propertyInfo, propertyInfo.PropertyType);
-            }
-
             GetValueForTypeDelegate getter = null;
 
             propertyInfo.GetCustomAttributesData()

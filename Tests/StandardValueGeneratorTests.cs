@@ -245,5 +245,28 @@ namespace Tests
             }
         }
 
+        [TestMethod]
+        public void GetValue_ArrayTest()
+        {
+            // Arrange
+
+            var expected = new int[0];
+
+            PropertyInfo simpleArrayPropertyInfo = typeof (SubjectClass).GetProperty("SimpleArray");
+
+            this.arrayRandomizerMock.Setup(
+                m =>
+                    m.GetArray(It.Is<PropertyInfo>(p => p == simpleArrayPropertyInfo),
+                        It.Is<Type>(t => t == simpleArrayPropertyInfo.PropertyType)))
+                .Returns(expected);
+            
+            // Act
+
+            object result = this.valueGenerator.GetValue(simpleArrayPropertyInfo);
+
+            // Assert
+
+            Assert.AreEqual(expected, result);
+        }
     }
 }

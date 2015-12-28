@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using log4net;
+using TestDataFramework.Exceptions;
 using TestDataFramework.Persistence;
+using TestDataFramework.TypeGenerator;
 using TestDataFramework.ValueGenerator;
 
 namespace TestDataFramework.Populator
@@ -12,17 +14,16 @@ namespace TestDataFramework.Populator
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof (StandardPopulator));
 
-        private readonly IValueGenerator valueGenerator;
+        private readonly ITypeGenerator typeGenerator;
         private readonly IPersistence persistence;
 
-        private readonly List<Type> typesToGenerate = new List<Type>();
-        private readonly List<object> recordObjects = new List<object>();
+        private readonly List<RecordReference> recordReferences = new List<RecordReference>();
 
-        public StandardPopulator(IValueGenerator valueGenerator, IPersistence persistence)
+        public StandardPopulator(ITypeGenerator typeGenerator, IPersistence persistence)
         {
             StandardPopulator.Logger.Debug("Entering constructor");
 
-            this.valueGenerator = valueGenerator;
+            this.typeGenerator = typeGenerator;
             this.persistence = persistence;
 
             StandardPopulator.Logger.Debug("Entering constructor");
@@ -30,62 +31,52 @@ namespace TestDataFramework.Populator
 
         #region Public Methods
 
-        public virtual void Populate()
+        public virtual IList<RecordReference<T>> Add<T>(int copies, RecordReference primaryRecordReference = null) where T : new()
         {
-            StandardPopulator.Logger.Debug("Entering Populate");
+            StandardPopulator.Logger.Debug("Entering Add<T>(int)");
 
-            this.typesToGenerate.ForEach(this.GenerateRecord);
+            StandardPopulator.Logger.DebugFormat("Adding {0} types of {1} ", copies, typeof(T));
 
-            this.persistence.Persist(this.recordObjects);
+            var result = new List<RecordReference<T>>(copies);
 
-            StandardPopulator.Logger.Debug("Exiting Populate");
+            for (int i = 0; i < copies; i++)
+            {
+                result.Add(this.Add<T>(primaryRecordReference));
+            }
+
+            StandardPopulator.Logger.Debug("Exiting Add<T>(int)");
+
+            return result;
         }
 
-        public virtual void Add<T>() where T : new()
+        public virtual RecordReference<T> Add<T>(RecordReference primaryRecordReference = null) where T : new()
         {
             StandardPopulator.Logger.Debug("Entering Add<T>");
 
             StandardPopulator.Logger.Debug("Adding type " + typeof (T));
-            this.typesToGenerate.Add(typeof(T));
+
+            object recordObject = this.typeGenerator.GetObject(typeof (T));
+
+            var recordReference = new RecordReference<T>((T)recordObject);
+
+            this.recordReferences.Add(recordReference);
+
+            primaryRecordReference?.AddForeignRecordReference(recordReference);
 
             StandardPopulator.Logger.Debug("Exiting Add<T>");
+
+            return recordReference;
+        }
+
+        public virtual void Bind()
+        {
+            StandardPopulator.Logger.Debug("Entering Populate");
+
+            this.persistence.Persist(this.recordReferences);
+
+            StandardPopulator.Logger.Debug("Exiting Populate");
         }
 
         #endregion Public Methods
-
-        #region Private Methods
-
-        private void GenerateRecord(Type typeToGenerate)
-        {
-            StandardPopulator.Logger.Debug("Entering GenerateRecord");
-
-            StandardPopulator.Logger.Debug("Generaing type " + typeToGenerate);
-
-            PropertyInfo[] propertyInfoCollection = typeToGenerate.GetProperties();
-
-            object recordObject = typeToGenerate.GetConstructor(Type.EmptyTypes).Invoke(null);
-
-            propertyInfoCollection.ToList().ForEach(propertyInfo => this.SetProperty(propertyInfo, recordObject));
-
-            this.recordObjects.Add(recordObject);
-
-            StandardPopulator.Logger.Debug("Exiting GenerateRecord");
-        }
-
-        private void SetProperty(PropertyInfo propertyInfo, object recordObject)
-        {
-            StandardPopulator.Logger.Debug("Entering SetProperty");
-
-            StandardPopulator.Logger.Debug("Setting property " + propertyInfo.Name);
-
-            object value = this.valueGenerator.GetValue(propertyInfo);
-
-            StandardPopulator.Logger.Debug("Setting property value: " + value);
-            propertyInfo.SetValue(recordObject, value);
-
-            StandardPopulator.Logger.Debug("Exiting SetProperty");
-        }
-
-        #endregion Private Methods
     }
 }

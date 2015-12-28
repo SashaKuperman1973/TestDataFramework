@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="Helpers.cs" />
     <Compile Include="Mocks\MockPersistence.cs" />
+    <Compile Include="PersistenceSubjects.cs" />
     <Compile Include="SubjectClass.cs" />
     <Compile Include="StandardPopulatorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -66,6 +67,8 @@
     <Compile Include="StandardRandomizerTests.cs" />
     <Compile Include="RandomSymbolStringGeneratorTest.cs" />
     <Compile Include="ArrayRandomizerTests.cs" />
+    <Compile Include="SqlServerPersistenceTests.cs" />
+    <Compile Include="RecordReferenceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Tests To Do.txt" />

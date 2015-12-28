@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TestDataFramework.Populator;
 
 namespace TestDataFramework.Exceptions
 {
@@ -23,6 +24,47 @@ namespace TestDataFramework.Exceptions
                 string.Join(" -> ", stack), currentType);
 
             return message;
+        }
+    }
+
+    public class CircularForeignKeyReferenceException : ApplicationException
+    {
+        public CircularForeignKeyReferenceException(RecordReference current, RecordReference headOfList)
+            : base(CircularForeignKeyReferenceException.GetListMessage(current, headOfList))
+        {
+        }
+
+        private static string GetListMessage(RecordReference current, RecordReference headOfList)
+        {
+            var typeList = new List<Type>();
+
+            RecordReference processingCurrent = headOfList;
+
+            do
+            {
+                typeList.Add(processingCurrent.RecordType);
+
+                processingCurrent = processingCurrent.ForeignReference;
+
+                if (headOfList == processingCurrent)
+                {
+                    throw new InternalErrorException(string.Format(Messages.CircularReferenceInRecordReferenceList,
+                        string.Join(" -> ", typeList)));
+                }
+            } while (processingCurrent != null);
+
+            string message =
+                string.Format(Messages.CircularForeignKeyReferenceException, current.RecordType,
+                    string.Join(" -> ", typeList));
+
+            return message;
+        }
+    }
+
+    public class InternalErrorException : ApplicationException
+    {
+        public InternalErrorException(string message) : base(message)
+        {            
         }
     }
 }

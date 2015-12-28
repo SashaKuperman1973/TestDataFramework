@@ -54,7 +54,10 @@
     <Compile Include="Helpers\Helper.cs" />
     <Compile Include="Helpers\Interfaces\IRandomSymbolStringGenerator.cs" />
     <Compile Include="Persistence\IPersistence.cs" />
+    <Compile Include="Persistence\SqlServerPersistence.cs" />
     <Compile Include="Populator\IPopulator.cs" />
+    <Compile Include="Populator\RecordReference.cs" />
+    <Compile Include="Populator\RecordReferenceOfT.cs" />
     <Compile Include="Populator\StandardPopulator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Randomizer\IRandomizer.cs" />

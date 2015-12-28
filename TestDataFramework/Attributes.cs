@@ -46,4 +46,17 @@ namespace TestDataFramework
 
         public PastOrFuture PastOrFuture { get; }
     }
+
+    public class ForeignKeyAttribute : Attribute
+    {
+        public ForeignKeyAttribute(Type primaryTable, string primaryKey)
+        {
+            this.PrimaryTable = primaryTable;
+            this.PrimaryKey = primaryKey;
+        }
+
+        public Type PrimaryTable { get; }
+
+        public string PrimaryKey { get; }
+    }
 }

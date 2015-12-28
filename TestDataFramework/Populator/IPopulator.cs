@@ -1,9 +1,13 @@
-﻿namespace TestDataFramework.Populator
+﻿using System.Collections.Generic;
+
+namespace TestDataFramework.Populator
 {
     internal interface IPopulator
     {
-        void Populate();
+        void Bind();
 
-        void Add<T>() where T : new();
+        IList<RecordReference<T>> Add<T>(int copies, RecordReference primaryRecordReference = null) where T : new();
+
+        RecordReference<T> Add<T>(RecordReference primaryRecordReference = null) where T : new();
     }
 }

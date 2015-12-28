@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using TestDataFramework.Persistence;
+using TestDataFramework.Populator;
 
 namespace Tests.Mocks
 {
@@ -9,13 +10,9 @@ namespace Tests.Mocks
     {
         public readonly IList<IDictionary<string, object>> Storage = new List<IDictionary<string, object>>();
 
-        public MockPersistence()
+        public void Persist(IEnumerable<RecordReference> recordReferences)
         {
-        }
-
-        public void Persist(IEnumerable<object> recordObjects)
-        {
-            recordObjects.ToList().ForEach(recordObject =>
+            recordReferences.Select(r => r.RecordObject).ToList().ForEach(recordObject =>
             {
                 var propertyDictionary = new Dictionary<string, object>();
 
@@ -28,9 +25,5 @@ namespace Tests.Mocks
                         propertyInfo => propertyDictionary.Add(propertyInfo.Name, propertyInfo.GetValue(recordObject)));
             });
         }
-
-        #region Hard Coded Area
-
-        #endregion Hard Coded Area
     }
 }

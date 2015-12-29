@@ -44,7 +44,7 @@ namespace TestDataFramework.Exceptions
             {
                 typeList.Add(processingCurrent.RecordType);
 
-                processingCurrent = processingCurrent.ForeignReference;
+                processingCurrent = processingCurrent.PrimaryKeyReference;
 
                 if (headOfList == processingCurrent)
                 {
@@ -66,5 +66,17 @@ namespace TestDataFramework.Exceptions
         public InternalErrorException(string message) : base(message)
         {            
         }
+    }
+
+    public class NoForeignKeysException : ApplicationException
+    {
+        public NoForeignKeysException(Type recordType) : base(string.Format(Messages.NoForeignKeysException, recordType))
+        { }
+    }
+
+    public class NoPeersException : ApplicationException
+    {
+        public NoPeersException() : base(Messages.NoPeersException)
+        { }
     }
 }

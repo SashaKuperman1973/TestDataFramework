@@ -61,7 +61,10 @@ namespace TestDataFramework.Populator
 
             this.recordReferences.Add(recordReference);
 
-            primaryRecordReference?.AddForeignRecordReference(recordReference);
+            if (primaryRecordReference != null)
+            {
+                recordReference.AddPrimaryRecordReference(primaryRecordReference);
+            }
 
             StandardPopulator.Logger.Debug("Exiting Add<T>");
 

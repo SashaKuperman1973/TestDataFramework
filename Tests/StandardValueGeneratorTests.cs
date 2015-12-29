@@ -8,6 +8,7 @@ using TestDataFramework.Exceptions;
 using TestDataFramework.Randomizer;
 using TestDataFramework.TypeGenerator;
 using TestDataFramework.ValueGenerator;
+using Tests.TestModels;
 
 namespace Tests
 {

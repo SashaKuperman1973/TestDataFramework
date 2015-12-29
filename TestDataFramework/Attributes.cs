@@ -51,12 +51,22 @@ namespace TestDataFramework
     {
         public ForeignKeyAttribute(Type primaryTable, string primaryKey)
         {
-            this.PrimaryTable = primaryTable;
+            this.PrimaryTableType = primaryTable;
             this.PrimaryKey = primaryKey;
         }
 
-        public Type PrimaryTable { get; }
+        public Type PrimaryTableType { get; }
 
         public string PrimaryKey { get; }
+    }
+
+    public class TableAttribute : Attribute
+    {
+        public string Name { get; set; }
+    }
+
+    public class AutoIdentityAttribute : Attribute
+    {
+        
     }
 }

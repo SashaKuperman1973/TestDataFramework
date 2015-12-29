@@ -2,7 +2,7 @@
 using TestDataFramework;
 using TestDataFramework.Randomizer;
 
-namespace Tests
+namespace Tests.TestModels
 {
     public class SubjectClass
     {

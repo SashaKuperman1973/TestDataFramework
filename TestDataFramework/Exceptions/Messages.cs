@@ -12,5 +12,13 @@
 
         public const string CircularReferenceInRecordReferenceList =
             "Internal error. Circular reference in RecordReference List: {0}";
+
+        public const string AmbigousPropertyAttributeMatch = "More than one {0} found on property {1} in type {2}";
+        public const string AmbigousTypeAttributeMatch = "More than one {0} found on type {1}";
+        public const string AmbigousAttributeMatch = "More than one {0} found on element {1}";
+
+        public const string AmbigousPropertyMatch = "More than one property with {0} found in type {1}";
+        public const string NoForeignKeysException = "No foreign keys in type {0}";
+        public const string NoPeersException = "Peers expected and none found for this repository operation";
     }
 }

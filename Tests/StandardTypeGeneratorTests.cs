@@ -5,6 +5,7 @@ using Moq;
 using TestDataFramework.Exceptions;
 using TestDataFramework.TypeGenerator;
 using TestDataFramework.ValueGenerator;
+using Tests.TestModels;
 
 namespace Tests
 {

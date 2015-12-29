@@ -5,6 +5,6 @@ namespace TestDataFramework.Persistence
 {
     public interface IPersistence
     {
-        void Persist(IEnumerable<RecordReference> recordObjects);
+        void Persist(IEnumerable<RecordReference> recordReferences);
     }
 }

@@ -1,1 +1,24 @@
-﻿IRandomizer
+﻿recordReference.AddPrimaryRecordReference: checking for compatible foreign->primary key definition attributes
+
+
+Scratchpad
+
+        private RecordIdentifier[] GetPrimaryKeyTableIndentifiers()
+        {
+            ForeignKeyAttribute[] foreignKeyAttributes =
+                this.RecordReference.RecordType.GetProperties()
+                    .Select(p => p.GetSingleAttribute<ForeignKeyAttribute>())
+                    .ToArray();
+
+            if (foreignKeyAttributes == null)
+            {
+                throw new NoForeignKeysException(this.RecordReference.RecordType);
+            }
+
+            RecordIdentifier[] result =
+                foreignKeyAttributes.Select(
+                    a => new RecordIdentifier {TableName = Helper.GetTableName(a.PrimaryTable), KeyName = a.PrimaryKey})
+                    .ToArray();
+
+            return result;
+        }

@@ -58,8 +58,8 @@
   <ItemGroup>
     <Compile Include="Helpers.cs" />
     <Compile Include="Mocks\MockPersistence.cs" />
-    <Compile Include="PersistenceSubjects.cs" />
-    <Compile Include="SubjectClass.cs" />
+    <Compile Include="TestModels\PersistenceSubjects.cs" />
+    <Compile Include="TestModels\SubjectClass.cs" />
     <Compile Include="StandardPopulatorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StandardValueGeneratorTests.cs" />

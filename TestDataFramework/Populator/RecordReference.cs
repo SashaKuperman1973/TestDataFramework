@@ -8,9 +8,9 @@ using TestDataFramework.TypeGenerator;
 
 namespace TestDataFramework.Populator
 {
-    public class RecordReference
+    public abstract class RecordReference
     {
-        public RecordReference(object recordObject)
+        protected RecordReference(object recordObject)
         {
             this.RecordObject = recordObject;
         }
@@ -19,24 +19,24 @@ namespace TestDataFramework.Populator
 
         public Type RecordType => this.RecordObject.GetType();
 
-        public RecordReference ForeignReference { get; private set; }
+        public RecordReference PrimaryKeyReference { get; private set; }
 
-        internal void AddForeignRecordReference(RecordReference foreignRecordReference)
+        public void AddPrimaryRecordReference(RecordReference primaryRecordReference)
         {
             RecordReference current = this;
 
             do
             {
-                if (current.RecordType == foreignRecordReference.RecordType)
+                if (current.RecordType == primaryRecordReference.RecordType)
                 {
-                    throw new CircularForeignKeyReferenceException(foreignRecordReference, this);
+                    throw new CircularForeignKeyReferenceException(primaryRecordReference, this);
                 }
 
-                current = current.ForeignReference;
+                current = current.PrimaryKeyReference;
 
             } while (current != null);
 
-            this.ForeignReference = foreignRecordReference;
+            this.PrimaryKeyReference = primaryRecordReference;
         }
     }
 }

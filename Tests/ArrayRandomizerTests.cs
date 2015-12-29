@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.ArrayRandomizer;
 using TestDataFramework.ValueGenerator;
+using Tests.TestModels;
 
 namespace Tests
 {

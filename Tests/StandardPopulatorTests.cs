@@ -8,6 +8,7 @@ using TestDataFramework.Populator;
 using TestDataFramework.TypeGenerator;
 using TestDataFramework.ValueGenerator;
 using Tests.Mocks;
+using Tests.TestModels;
 
 namespace Tests
 {

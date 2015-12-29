@@ -48,15 +48,16 @@ namespace Tests
 
             this.writePrimitivesMock.Verify(m => m.Insert(It.IsAny<List<Column>>()), Times.Once());
             Assert.IsNotNull(primaryTableColumns);
-            Assert.AreEqual(2, primaryTableColumns.Count);
+            Assert.AreEqual(3, primaryTableColumns.Count);
 
-            Assert.AreEqual(primaryTable.Key, 0);
-
-            Assert.AreEqual("Integer", primaryTableColumns[0].Name);
-            Assert.AreEqual(primaryTable.Integer, primaryTableColumns[0].Value);
+            Assert.AreEqual("Key", primaryTableColumns[0].Name);
+            Assert.AreEqual(0, primaryTableColumns[0].Value);
 
             Assert.AreEqual("Text", primaryTableColumns[1].Name);
             Assert.AreEqual(primaryTable.Text, primaryTableColumns[1].Value);
+
+            Assert.AreEqual("Integer", primaryTableColumns[2].Name);
+            Assert.AreEqual(primaryTable.Integer, primaryTableColumns[2].Value);
         }
 
         [TestMethod]

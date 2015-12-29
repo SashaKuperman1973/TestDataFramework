@@ -50,7 +50,7 @@ namespace TestDataFramework.Helpers
 
         public static string DumpMethod(Delegate operation)
         {
-            return operation.Method.Name;
+            return operation.Target.GetType().Name + "." + operation.Method.Name;
         }
     }
 }

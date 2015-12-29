@@ -73,10 +73,4 @@ namespace TestDataFramework.Exceptions
         public NoForeignKeysException(Type recordType) : base(string.Format(Messages.NoForeignKeysException, recordType))
         { }
     }
-
-    public class NoPeersException : ApplicationException
-    {
-        public NoPeersException() : base(Messages.NoPeersException)
-        { }
-    }
 }

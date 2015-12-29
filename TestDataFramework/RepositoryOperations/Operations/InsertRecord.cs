@@ -212,11 +212,6 @@ namespace TestDataFramework.RepositoryOperations.Operations
 
                 }).Cast<InsertRecord>().ToList();
 
-            if (!result.Any())
-            {
-                throw new NoPeersException();
-            }
-
             InsertRecord.Logger.Debug("Exiting GetPrimaryKeyOperations");
 
             return result;
@@ -227,28 +222,45 @@ namespace TestDataFramework.RepositoryOperations.Operations
             InsertRecord.Logger.Debug("Entering WritePrimitives");
 
             writer.Insert(columns);
-
-            if (this.keyType == PrimaryKeyAttribute.KeyTypeEnum.Auto)
-            {
-                string primaryKeyColumnName = this.GetPrimaryKeyColumnName();
-                string identityVariable = writer.SelectIdentity();
-
-                this.primaryKeyValues.Add(new ColumnSymbol
-                {
-                    ColumnName = primaryKeyColumnName,
-                    Value = identityVariable,
-                    TableType = this.RecordReference.RecordType
-                });
-            }
-            else if (this.keyType == PrimaryKeyAttribute.KeyTypeEnum.Manual)
-            {
-                List<ColumnSymbol> primaryKeyValues = Enumerable.ToList<ColumnSymbol>(this.GetPrimaryKeyValues());
-                primaryKeyValues.ForEach(v => this.primaryKeyValues.Add(v));
-            }
+            this.HandlePrimaryKeyValues(writer);
 
             InsertRecord.Logger.Debug("Exiting WritePrimitives");
+        }
 
-            throw new NotImplementedException();
+        private void HandlePrimaryKeyValues(IWritePrimitives writer)
+        {
+            InsertRecord.Logger.Debug("Entering HandlePrimaryKeyValues");
+
+            switch (this.keyType)
+            {
+                case PrimaryKeyAttribute.KeyTypeEnum.Auto:
+                    InsertRecord.Logger.Debug("Taking KeyTypeEnum.Auto branch");
+
+                    string primaryKeyColumnName = this.GetPrimaryKeyColumnName();
+                    string identityVariable = writer.SelectIdentity();
+
+                    this.primaryKeyValues.Add(new ColumnSymbol
+                    {
+                        ColumnName = primaryKeyColumnName,
+                        Value = identityVariable,
+                        TableType = this.RecordReference.RecordType
+                    });
+
+                    break;
+
+                case PrimaryKeyAttribute.KeyTypeEnum.Manual:
+                    InsertRecord.Logger.Debug("Taking KeyTypeEnum.Auto Manual branch");
+
+                    this.primaryKeyValues.AddRange(this.GetPrimaryKeyValues());
+
+                    break;
+
+                default:
+                    InsertRecord.Logger.Debug("No special key type handling fo this branch");
+                    break;
+            }
+
+            InsertRecord.Logger.Debug("Exiting HandlePrimaryKeyValues");
         }
 
         private IEnumerable<ColumnSymbol> GetPrimaryKeyValues()
@@ -262,7 +274,7 @@ namespace TestDataFramework.RepositoryOperations.Operations
             {
                 ColumnName = Helper.GetColunName(pa.PropertyInfo),
                 TableType = this.RecordReference.RecordType,
-                Value = pa.PropertyInfo.GetValue(this.RecordReference.RecordType)
+                Value = pa.PropertyInfo.GetValue(this.RecordReference.RecordObject)
             });
 
             InsertRecord.Logger.Debug("Exiting GetPrimaryKeyValues");

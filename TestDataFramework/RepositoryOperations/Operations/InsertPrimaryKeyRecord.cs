@@ -3,84 +3,61 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using log4net;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
 using TestDataFramework.Populator;
-using TestDataFramework.RepositoryOperations.KindsOfInformation;
+using TestDataFramework.WritePrimitives;
 
 namespace TestDataFramework.RepositoryOperations.Operations
 {
     public class InsertPrimaryKeyRecord : AbstractInsertRecord
     {
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(InsertPrimaryKeyRecord));
+
         public InsertPrimaryKeyRecord(RecordReference recordReference, IEnumerable<AbstractRepositoryOperation> peers, AbstractInsertRecord.KeyTypeEnum keyType)
         {
+            InsertPrimaryKeyRecord.Logger.Debug("Entering constructor");
+
             this.KeyType = keyType;
             this.Peers = peers.ToList();
             this.RecordReference = recordReference;
+
+            InsertPrimaryKeyRecord.Logger.Debug("Exiting constructor");
         }
 
-        public override void Write()
+        public override void Write(IWritePrimitives writer, CircularReferenceBreaker breaker)
         {
+            InsertPrimaryKeyRecord.Logger.Debug("Entering Write");
+
+            if (this.IsWriteDone)
+            {
+                InsertPrimaryKeyRecord.Logger.Debug("Write already done. Exiting.");
+                return;
+            }
+
+            this.WritePrimitives(writer);
+            this.IsWriteDone = true;
+
+            InsertPrimaryKeyRecord.Logger.Debug("Exiting Write");
+        }
+
+        private void WritePrimitives(IWritePrimitives writer)
+        {
+            InsertPrimaryKeyRecord.Logger.Debug("Entering WritePrimitives");
+
+            InsertPrimaryKeyRecord.Logger.Debug("Exiting WritePrimitives");
+
             throw new NotImplementedException();
         }
 
         public override void Read()
         {
+            InsertPrimaryKeyRecord.Logger.Debug("Entering Read");
+
+            InsertPrimaryKeyRecord.Logger.Debug("Exiting Read");
+
             throw new NotImplementedException();
-        }
-
-        public override void QueryPeers(CircularReferenceBreaker breaker)
-        {
-            List<IOrderInformation> operationsToQuery = this.GetOperationsToQuery();
-            long lowestOrder = InsertPrimaryKeyRecord.GetLowestDependencyOrder(operationsToQuery, breaker);
-
-            this.Order = lowestOrder - 1;
-
-            this.Done = true;
-        }
-
-        private List<IOrderInformation> GetOperationsToQuery()
-        {
-            List<IOrderInformation> result = this.Peers.Where(peer =>
-            {
-                var fkRecord = peer as InsertForeignKeyRecord;
-
-                if (fkRecord == null)
-                {
-                    return false;
-                }
-
-                IEnumerable<ForeignKeyAttribute> foreignKeyAttributes =
-                    fkRecord.RecordReference.RecordType.GetUniquePropertyAttributes<ForeignKeyAttribute>();
-
-                bool peersResult =
-                    foreignKeyAttributes.Any(fka => fka.PrimaryTableType == this.RecordReference.RecordType);
-
-                return peersResult;
-
-            }).Cast<IOrderInformation>().ToList();
-
-            if (!result.Any())
-            {
-                throw new NoPeersException();
-            }
-
-            return result;
-        }
-
-        private static long GetLowestDependencyOrder(List<IOrderInformation> operations, CircularReferenceBreaker breaker)
-        {
-            long lowestOrder = long.MaxValue;
-            long order;
-
-            operations.ForEach(
-                o =>
-                {
-                    if ((order = o.GetOrder(breaker)) < lowestOrder)
-                        lowestOrder = order;
-                });
-
-            return lowestOrder;
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TestDataFramework.Populator;
+using TestDataFramework.WritePrimitives;
 
 namespace TestDataFramework.RepositoryOperations
 {
@@ -12,12 +13,11 @@ namespace TestDataFramework.RepositoryOperations
     {
         protected List<AbstractRepositoryOperation> Peers;
 
-        public abstract void Write();
+        public abstract void Write(IWritePrimitives writer, CircularReferenceBreaker breaker);
         public abstract void Read();
 
-        public abstract void QueryPeers(CircularReferenceBreaker breaker);
+        protected bool IsWriteDone { get; set; }
 
-        public virtual long Order { get; protected set; }
         public RecordReference RecordReference { get; protected set; }
     }
 }

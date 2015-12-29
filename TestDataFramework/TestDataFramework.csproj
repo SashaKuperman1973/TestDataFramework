@@ -64,7 +64,6 @@
     <Compile Include="Randomizer\IRandomizer.cs" />
     <Compile Include="Randomizer\StandardRandomizer.cs" />
     <Compile Include="RepositoryOperations\CircularReferenceBreaker.cs" />
-    <Compile Include="RepositoryOperations\KindsOfInformation\IOrderInformation.cs" />
     <Compile Include="RepositoryOperations\Operations\InsertForeignKeyRecord.cs" />
     <Compile Include="RepositoryOperations\Operations\InsertPrimaryKeyRecord.cs" />
     <Compile Include="RepositoryOperations\Operations\AbstractInsertRecord.cs" />
@@ -74,11 +73,15 @@
     <Compile Include="TypeGenerator\StandardTypeGenerator.cs" />
     <Compile Include="ValueGenerator\IValueGenerator.cs" />
     <Compile Include="ValueGenerator\StandardValueGenerator.cs" />
+    <Compile Include="WritePrimitives\IWritePrimitives.cs" />
+    <Compile Include="WritePrimitives\SqlServerWritePrimitives.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="RepositoryOperations\KindsOfInformation\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

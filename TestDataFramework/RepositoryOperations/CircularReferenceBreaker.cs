@@ -21,9 +21,9 @@ namespace TestDataFramework.RepositoryOperations
 
         #region Public methods
 
-        public bool IsVisited<T>(Func<CircularReferenceBreaker, T> operation) => this.IsVisitedDelegate(operation);
+        public bool IsVisited<T1, T2, T3>(Action<CircularReferenceBreaker, T1, T2, T3> operation) => this.IsVisitedDelegate(operation);
 
-        public void Push<T>(Func<CircularReferenceBreaker, T> operation) => this.PushDelegate(operation);
+        public void Push<T1, T2, T3>(Action<CircularReferenceBreaker, T1, T2, T3> operation) => this.PushDelegate(operation);
 
         public void Pop()
         {

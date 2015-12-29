@@ -1,7 +1,9 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using TestDataFramework.Persistence;
 using TestDataFramework.Populator;
+using TestDataFramework.WritePrimitives;
 using Tests.TestModels;
 
 namespace Tests
@@ -10,11 +12,13 @@ namespace Tests
     public class SqlServerPersistenceTests
     {
         private StandardPersistence persistence;
+        private Mock<IWritePrimitives> writePrimitivesMock;
 
         [TestInitialize]
         public void Initialize()
         {
-            this.persistence = new StandardPersistence();
+            this.writePrimitivesMock = new Mock<IWritePrimitives>();
+            this.persistence = new StandardPersistence(this.writePrimitivesMock.Object);
         }
 
         [TestMethod]

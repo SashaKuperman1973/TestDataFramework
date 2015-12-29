@@ -49,15 +49,15 @@ namespace TestDataFramework
 
     public class ForeignKeyAttribute : Attribute
     {
-        public ForeignKeyAttribute(Type primaryTable, string primaryKey)
+        public ForeignKeyAttribute(Type primaryTable, string primaryKeyName)
         {
             this.PrimaryTableType = primaryTable;
-            this.PrimaryKey = primaryKey;
+            this.PrimaryKeyName = primaryKeyName;
         }
 
         public Type PrimaryTableType { get; }
 
-        public string PrimaryKey { get; }
+        public string PrimaryKeyName { get; }
     }
 
     public class TableAttribute : Attribute
@@ -66,7 +66,23 @@ namespace TestDataFramework
     }
 
     public class AutoIdentityAttribute : Attribute
+    {   
+    }
+
+    public class PrimaryKeyAttribute : Attribute
     {
-        
+        public enum KeyTypeEnum
+        {
+            Auto,
+            Manual,
+            None,
+        }
+
+        public PrimaryKeyAttribute(KeyTypeEnum keyType)
+        {
+            this.KeyType = keyType;
+        }
+
+        public KeyTypeEnum KeyType { get; }
     }
 }

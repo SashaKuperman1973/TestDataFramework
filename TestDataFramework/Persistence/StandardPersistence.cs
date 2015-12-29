@@ -2,68 +2,44 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Populator;
-//using TestDataFramework.Repository;
+using TestDataFramework.RepositoryOperations;
+using TestDataFramework.RepositoryOperations.Model;
+using TestDataFramework.RepositoryOperations.Operations;
+using TestDataFramework.WritePrimitives;
 
 namespace TestDataFramework.Persistence
 {
     public class StandardPersistence : IPersistence
     {
-        //private readonly IRepository repository;
+        private readonly IWritePrimitives writePrimitives;
 
-        public void Persist(IEnumerable<RecordReference> recordReferences)
+        public StandardPersistence(IWritePrimitives writePrimitives)
         {
-            foreach (RecordReference recordReference in recordReferences)
-            {
-                this.GenerateAutoPrimaryKey(recordReference);
-            }
+            this.writePrimitives = writePrimitives;
         }
 
-        private void GenerateAutoPrimaryKey(RecordReference recordReference)
+        public virtual void Persist(IEnumerable<RecordReference> recordReferences)
         {
-            throw new NotImplementedException();
+            var insertOperations = new List<InsertRecord>();
 
-            Type recordType = recordReference.RecordType;
-
-            List<PropertyInfo> propertyList = recordType.GetProperties().ToList();
-
-            List<PropertyInfo> autoIdentityPropertyInfoList = propertyList.Where(p =>
+            foreach (RecordReference recordReference in recordReferences)
             {
-                IEnumerable<AutoIdentityAttribute> attrs = p.GetCustomAttributes<AutoIdentityAttribute>();
-
-                if (attrs == null)
-                {
-                    return false;
-                }
-
-                attrs = attrs.ToList();
-
-                if (attrs.Count() > 1)
-                {
-                    throw new AmbiguousMatchException(string.Format(Messages.AmbigousAttributeMatch,
-                        "AutoIdentityAttribute", p.Name, recordType));
-                }
-
-                return true;
-            }).ToList();
-
-            if (autoIdentityPropertyInfoList.Count > 1)
-            {
-                throw new AmbiguousMatchException(string.Format(Messages.AmbigousPropertyMatch, "AutoIdentityAttribute",
-                    recordType));
+                insertOperations.Add(new InsertRecord(recordReference, insertOperations));
             }
 
-            PropertyInfo autoIdentityProerty = autoIdentityPropertyInfoList.FirstOrDefault();
+            var orderedOperations = new AbstractRepositoryOperation[insertOperations.Count];
 
-            if (autoIdentityProerty == null)
+            var currentOrder = new CurrentOrder();
+
+            foreach (AbstractRepositoryOperation orderedOperartion in orderedOperations)
             {
-                return;
+                orderedOperartion.Write(new CircularReferenceBreaker(), this.writePrimitives, currentOrder, orderedOperations);
             }
-
-            string repositoryTableName = recordType.GetCustomAttribute<TableAttribute>()?.Name ?? recordType.Name;
         }
     }
 }

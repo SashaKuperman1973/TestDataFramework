@@ -11,7 +11,7 @@ namespace Tests.TestModels
     {
         public int Key { get; set; }
 
-        [ForeignKey(primaryTable: typeof(PrimaryTable), primaryKey: "Key")]
+        [ForeignKey(primaryTable: typeof(PrimaryTable), primaryKeyName: "Key")]
         public int ForeignKey { get; set; }
     }
 }

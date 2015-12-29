@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using TestDataFramework.Exceptions;
+using TestDataFramework.RepositoryOperations.Model;
 
 namespace TestDataFramework.Helpers
 {
@@ -33,6 +34,26 @@ namespace TestDataFramework.Helpers
         {
             IEnumerable<T> result = type.GetProperties()
                 .Select(p => p.GetSingleAttribute<T>()).ToList();
+
+            return result;
+        }
+
+        public static PropertyAttribute<T> GetPropertyAttribute<T>(this PropertyInfo propertyInfo) where T : Attribute
+        {
+            var result = new PropertyAttribute<T>
+            {
+                PropertyInfo = propertyInfo,
+                Attribute = propertyInfo.GetSingleAttribute<T>()
+            };
+
+            return result;
+        }
+
+        public static IEnumerable<PropertyAttribute<T>> GetPropertyAttributes<T>(
+            this Type type) where T : Attribute
+        {
+            IEnumerable<PropertyAttribute<T>> result =
+                type.GetProperties().Select(pi => pi.GetPropertyAttribute<T>()).Where(pa => pa.Attribute != null);
 
             return result;
         }

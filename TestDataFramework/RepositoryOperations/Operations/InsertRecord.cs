@@ -96,8 +96,6 @@ namespace TestDataFramework.RepositoryOperations.Operations
             InsertRecord.Logger.Debug("Entering Read");
 
             InsertRecord.Logger.Debug("Exiting Read");
-
-            throw new NotImplementedException();
         }
 
         public IEnumerable<ColumnSymbol> GetPrimaryKeySymbols()

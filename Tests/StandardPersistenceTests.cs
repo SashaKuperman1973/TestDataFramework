@@ -1,15 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Configuration;
+using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.Persistence;
 using TestDataFramework.Populator;
+using TestDataFramework.RepositoryOperations.Model;
 using TestDataFramework.WritePrimitives;
 using Tests.TestModels;
 
 namespace Tests
 {
     [TestClass]
-    public class SqlServerPersistenceTests
+    public class StandardPersistenceTests
     {
         private StandardPersistence persistence;
         private Mock<IWritePrimitives> writePrimitivesMock;
@@ -19,11 +23,47 @@ namespace Tests
         {
             this.writePrimitivesMock = new Mock<IWritePrimitives>();
             this.persistence = new StandardPersistence(this.writePrimitivesMock.Object);
+
+            XmlConfigurator.Configure();
+        }
+
+        [TestMethod]
+        public void Insert_Test()
+        {
+            // Arrange
+
+            var primaryTable = new PrimaryTable { Integer = 5, Text = "Text"};
+            var primaryRecordReference = new RecordReference<PrimaryTable>(primaryTable);
+
+            List<Column> primaryTableColumns = null;
+
+            this.writePrimitivesMock.Setup(m => m.Insert(It.IsAny<List<Column>>()))
+                .Callback<List<Column>>(l => primaryTableColumns = l);
+
+            // Act
+
+            this.persistence.Persist(new RecordReference[] { primaryRecordReference });
+
+            // Assert
+
+            this.writePrimitivesMock.Verify(m => m.Insert(It.IsAny<List<Column>>()), Times.Once());
+            Assert.IsNotNull(primaryTableColumns);
+            Assert.AreEqual(2, primaryTableColumns.Count);
+
+            Assert.AreEqual(primaryTable.Key, 0);
+
+            Assert.AreEqual("Integer", primaryTableColumns[0].Name);
+            Assert.AreEqual(primaryTable.Integer, primaryTableColumns[0].Value);
+
+            Assert.AreEqual("Text", primaryTableColumns[1].Name);
+            Assert.AreEqual(primaryTable.Text, primaryTableColumns[1].Value);
         }
 
         [TestMethod]
         public void ForeignKeyBinding_Test()
         {
+            throw new NotImplementedException();
+
             var primaryTable = new PrimaryTable();
             var primaryRecordReference = new RecordReference<PrimaryTable>(primaryTable);
 
@@ -37,13 +77,13 @@ namespace Tests
             this.persistence.Persist(new RecordReference[] { primaryRecordReference, foreignRecordReference });
 
             // Assert
-
-            throw new NotImplementedException();
         }
 
         [TestMethod]
         public void AutoPrimaryKeyGeneration_Test()
         {
+            throw new NotImplementedException();
+
             RecordReference[] recordReferenceList =
             {
                 new RecordReference<PrimaryTable>(new PrimaryTable()),

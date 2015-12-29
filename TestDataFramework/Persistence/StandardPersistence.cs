@@ -25,7 +25,14 @@ namespace TestDataFramework.Persistence
 
         public virtual void Persist(IEnumerable<RecordReference> recordReferences)
         {
-            var insertOperations = new List<InsertRecord>();
+            recordReferences = recordReferences.ToList();
+
+            if (!recordReferences.ToList().Any())
+            {
+                return;
+            }
+
+            var insertOperations = new List<AbstractRepositoryOperation>();
 
             foreach (RecordReference recordReference in recordReferences)
             {
@@ -36,9 +43,11 @@ namespace TestDataFramework.Persistence
 
             var currentOrder = new CurrentOrder();
 
-            foreach (AbstractRepositoryOperation orderedOperartion in orderedOperations)
+            insertOperations[0].Write(new CircularReferenceBreaker(), this.writePrimitives, currentOrder, orderedOperations);
+
+            foreach (AbstractRepositoryOperation orderedOperation in orderedOperations)
             {
-                orderedOperartion.Write(new CircularReferenceBreaker(), this.writePrimitives, currentOrder, orderedOperations);
+                orderedOperation.Read();
             }
         }
     }

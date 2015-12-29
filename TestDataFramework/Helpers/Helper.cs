@@ -47,5 +47,10 @@ namespace TestDataFramework.Helpers
 
             return sb.ToString();
         }
+
+        public static string DumpMethod(Delegate operation)
+        {
+            return operation.Method.Name;
+        }
     }
 }

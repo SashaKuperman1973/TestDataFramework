@@ -6,6 +6,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using log4net;
+using TestDataFramework.Helpers;
 
 namespace TestDataFramework.RepositoryOperations
 {
@@ -28,7 +29,7 @@ namespace TestDataFramework.RepositoryOperations
         public void Pop()
         {
             Delegate operation = this.callStack.Pop();
-            CircularReferenceBreaker.Logger.Debug("Popped " + operation);
+            CircularReferenceBreaker.Logger.Debug("Popped " + Helper.DumpMethod(operation));
         }
 
         #endregion Public methods
@@ -39,7 +40,7 @@ namespace TestDataFramework.RepositoryOperations
 
         private void PushDelegate(Delegate operation)
         {
-            CircularReferenceBreaker.Logger.Debug("Pushing " + operation);
+            CircularReferenceBreaker.Logger.Debug("Pushing " + Helper.DumpMethod(operation));
             this.callStack.Push(operation);
         }
 

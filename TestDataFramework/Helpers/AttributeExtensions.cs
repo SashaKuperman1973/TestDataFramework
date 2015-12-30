@@ -30,10 +30,10 @@ namespace TestDataFramework.Helpers
             throw new AmbiguousMatchException(string.Format(message, typeof(T), memberInfo.Name, memberInfo.DeclaringType));
         }
 
-        public static IEnumerable<T> GetUniquePropertyAttributes<T>(this Type type) where T : Attribute
+        public static IEnumerable<T> GetUniqueAttributes<T>(this Type type) where T : Attribute
         {
             IEnumerable<T> result = type.GetProperties()
-                .Select(p => p.GetSingleAttribute<T>()).ToList();
+                .Select(p => p.GetSingleAttribute<T>()).Where(a => a != null);
 
             return result;
         }

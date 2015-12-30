@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -37,8 +38,8 @@ namespace Tests
 
             List<Column> primaryTableColumns = null;
 
-            this.writePrimitivesMock.Setup(m => m.Insert(It.IsAny<List<Column>>()))
-                .Callback<List<Column>>(l => primaryTableColumns = l);
+            this.writePrimitivesMock.Setup(m => m.Insert(It.IsAny<IEnumerable<Column>>()))
+                .Callback<IEnumerable<Column>>(c => primaryTableColumns = c.ToList());
 
             // Act
 
@@ -46,72 +47,56 @@ namespace Tests
 
             // Assert
 
-            this.writePrimitivesMock.Verify(m => m.Insert(It.IsAny<List<Column>>()), Times.Once());
+            this.writePrimitivesMock.Verify(m => m.Insert(It.IsAny<IEnumerable<Column>>()), Times.Once());
             Assert.IsNotNull(primaryTableColumns);
-            Assert.AreEqual(3, primaryTableColumns.Count);
+            Assert.AreEqual(2, primaryTableColumns.Count);
 
-            Assert.AreEqual("Key", primaryTableColumns[0].Name);
-            Assert.AreEqual(0, primaryTableColumns[0].Value);
+            Assert.AreEqual("Text", primaryTableColumns[0].Name);
+            Assert.AreEqual(primaryTable.Text, primaryTableColumns[0].Value);
 
-            Assert.AreEqual("Text", primaryTableColumns[1].Name);
-            Assert.AreEqual(primaryTable.Text, primaryTableColumns[1].Value);
-
-            Assert.AreEqual("Integer", primaryTableColumns[2].Name);
-            Assert.AreEqual(primaryTable.Integer, primaryTableColumns[2].Value);
+            Assert.AreEqual("Integer", primaryTableColumns[1].Name);
+            Assert.AreEqual(primaryTable.Integer, primaryTableColumns[1].Value);
         }
 
         [TestMethod]
-        public void ForeignKeyBinding_Test()
+        public void InsertsInProperOrder_Test()
         {
-            throw new NotImplementedException();
+            // Arraange
 
-            var primaryTable = new PrimaryTable();
+            var primaryTable = new PrimaryTable { Integer = 1};
             var primaryRecordReference = new RecordReference<PrimaryTable>(primaryTable);
 
-            var foreignTable = new ForeignTable();
+            var foreignTable = new ForeignTable {Integer = 1};
             var foreignRecordReference = new RecordReference<ForeignTable>(foreignTable);
 
-            primaryRecordReference.AddPrimaryRecordReference(foreignRecordReference);
+            foreignRecordReference.AddPrimaryRecordReference(primaryRecordReference);
+
+            List<List<Column>> primaryTableColumns = new List<List<Column>>();
+
+            this.writePrimitivesMock.Setup(m => m.Insert(It.IsAny<IEnumerable<Column>>()))
+                .Callback<IEnumerable<Column>>(c => primaryTableColumns.Add(c.ToList()));
 
             // Act
 
-            this.persistence.Persist(new RecordReference[] { primaryRecordReference, foreignRecordReference });
+            // Note the foreign key record is being passed in before the primary key record 
+            // to test that the primary key record writes first regardless which insert operation's
+            // Write method is called.
+            this.persistence.Persist(new RecordReference[] { foreignRecordReference, primaryRecordReference});
 
-            // Assert
+            Assert.AreEqual(primaryTable.Integer, primaryTableColumns[0].First(c => c.Name == "Integer").Value);
+            Assert.AreEqual(foreignTable.Integer, primaryTableColumns[1].First(c => c.Name == "Integer").Value);
         }
 
         [TestMethod]
-        public void AutoPrimaryKeyGeneration_Test()
+        public void ForeignKeysCopiedFromManualPrimaryKeys()
         {
             throw new NotImplementedException();
+        }
 
-            RecordReference[] recordReferenceList =
-            {
-                new RecordReference<PrimaryTable>(new PrimaryTable()),
-
-                new RecordReference<ForeignTable>(new ForeignTable()),
-
-                new RecordReference<PrimaryTable>(new PrimaryTable()),
-
-                new RecordReference<ForeignTable>(new ForeignTable()),
-            };
-
-
-            // Act
-
-            this.persistence.Persist(recordReferenceList);
-
-            // Assert
-
-            int initialPrimaryTableKey = ((PrimaryTable) recordReferenceList[0].RecordObject).Key;
-            int subsequentPrimaryTableKey = ((PrimaryTable)recordReferenceList[2].RecordObject).Key;
-
-            Assert.IsTrue(subsequentPrimaryTableKey == initialPrimaryTableKey + 1);
-
-            int initialForeignTableKey = ((ForeignTable)recordReferenceList[1].RecordObject).Key;
-            int subsequentForeignTableKey = ((ForeignTable)recordReferenceList[3].RecordObject).Key;
-
-            Assert.IsTrue(subsequentForeignTableKey == initialForeignTableKey + 1);
+        [TestMethod]
+        public void ForeignKeyCopiedFromSutoPrimaryKey()
+        {
+            throw new NotImplementedException();
         }
     }
 }

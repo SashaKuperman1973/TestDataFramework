@@ -32,18 +32,22 @@ namespace TestDataFramework.Persistence
                 return;
             }
 
-            var insertOperations = new List<AbstractRepositoryOperation>();
+            var operations = new List<AbstractRepositoryOperation>();
 
             foreach (RecordReference recordReference in recordReferences)
             {
-                insertOperations.Add(new InsertRecord(recordReference, insertOperations));
+                operations.Add(new InsertRecord(recordReference, operations));
             }
 
-            var orderedOperations = new AbstractRepositoryOperation[insertOperations.Count];
+            var orderedOperations = new AbstractRepositoryOperation[operations.Count];
 
             var currentOrder = new CurrentOrder();
 
-            insertOperations[0].Write(new CircularReferenceBreaker(), this.writePrimitives, currentOrder, orderedOperations);
+            foreach (AbstractRepositoryOperation operation in operations)
+            {
+                operation.Write(new CircularReferenceBreaker(), this.writePrimitives, currentOrder,
+                    orderedOperations);
+            }
 
             foreach (AbstractRepositoryOperation orderedOperation in orderedOperations)
             {

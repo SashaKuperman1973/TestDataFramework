@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using TestDataFramework.Exceptions;
+using TestDataFramework.Helpers;
+using TestDataFramework.RepositoryOperations.Model;
 using TestDataFramework.TypeGenerator;
 
 namespace TestDataFramework.Populator
@@ -19,24 +22,36 @@ namespace TestDataFramework.Populator
 
         public Type RecordType => this.RecordObject.GetType();
 
-        public RecordReference PrimaryKeyReference { get; private set; }
+        public readonly IEnumerable<RecordReference> PrimaryKeyReferences = new List<RecordReference>();
 
         public void AddPrimaryRecordReference(RecordReference primaryRecordReference)
         {
-            RecordReference current = this;
-
-            do
+            if (!this.ValidateRelationship(primaryRecordReference))
             {
-                if (current.RecordType == primaryRecordReference.RecordType)
-                {
-                    throw new CircularForeignKeyReferenceException(primaryRecordReference, this);
-                }
+                throw new NoReferentialIntegrityException(primaryRecordReference.RecordType, this.RecordType);
+            }
 
-                current = current.PrimaryKeyReference;
+            ((List<RecordReference>)this.PrimaryKeyReferences).Add(primaryRecordReference);
+        }
 
-            } while (current != null);
+        private bool ValidateRelationship(RecordReference primaryRecordReference)
+        {
+            IEnumerable<PropertyAttribute<ForeignKeyAttribute>> foreignKeyPropertyAttributes =
+                this.RecordType.GetPropertyAttributes<ForeignKeyAttribute>();
 
-            this.PrimaryKeyReference = primaryRecordReference;
+            bool result =
+                primaryRecordReference.RecordType
+                    .GetPropertyAttributes<PrimaryKeyAttribute>()
+                    .All(
+                        pkPa =>
+                            foreignKeyPropertyAttributes.Any(
+                                fkPa =>
+                                    pkPa.PropertyInfo.DeclaringType == fkPa.Attribute.PrimaryTableType
+                                    &&
+                                    Helper.GetColunName(pkPa.PropertyInfo)
+                                        .Equals(fkPa.Attribute.PrimaryKeyName)));
+
+            return result;
         }
     }
 }

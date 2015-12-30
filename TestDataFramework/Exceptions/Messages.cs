@@ -2,12 +2,12 @@
 {
     public static class Messages
     {
-        public const string NoDefaultConstructorExceptionMessage = "Type has no public default constructor: ";
-        public const string TypeRecursionExceptionMessage = "Circular reference detected generating complex type graph: {0} -> {1}";
+        public const string NoDefaultConstructor = "Type has no public default constructor: ";
+        public const string TypeRecursion = "Circular reference detected generating complex type graph: {0} -> {1}";
         public const string MaxAttributeOutOfRange = "Max attribute value is out of range for {0} property";
         public const string MaxAttributeLessThanZero = "Max attribute value is less than zero";
 
-        public const string CircularForeignKeyReferenceException =
+        public const string CircularForeignKeyReference =
             "Circular Foreign Key relationship detected: Key {0}, Reference List {1}";
 
         public const string CircularReferenceInRecordReferenceList =
@@ -18,7 +18,9 @@
         public const string AmbigousAttributeMatch = "More than one {0} found on element {1}";
 
         public const string AmbigousPropertyMatch = "More than one property with {0} found in type {1}";
-        public const string NoForeignKeysException = "No foreign keys in type {0}";
-        public const string NoPeersException = "Peers expected and none found for this repository operation";
+        public const string NoForeignKeys = "No foreign keys in type {0}";
+
+        public const string NoReferentialIntegrity =
+            "Referential integrity error in scema between primary type {0} and foreign type {1}";
     }
 }

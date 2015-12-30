@@ -55,7 +55,7 @@ namespace Tests
                 typeGenerator.GetObject(typeof(InfiniteRecursiveClass1));
             };
 
-            string expectedMessage = string.Format(Messages.TypeRecursionExceptionMessage,
+            string expectedMessage = string.Format(Messages.TypeRecursion,
                 typeof (InfiniteRecursiveClass1) + " -> " + typeof (InfiniteRecursiveClass2) + " -> " +
                 typeof (InfiniteRecursiveClass3), typeof (InfiniteRecursiveClass1));
 
@@ -69,7 +69,7 @@ namespace Tests
 
             Action action = () => typeGenerator.GetObject(typeof (ClassWithoutADefaultConstructor));
 
-            string expectedMessage = Messages.NoDefaultConstructorExceptionMessage +
+            string expectedMessage = Messages.NoDefaultConstructor +
                                      typeof (ClassWithoutADefaultConstructor);
 
             Helpers.ExceptionTest(action, typeof (NoDefaultConstructorException), expectedMessage);

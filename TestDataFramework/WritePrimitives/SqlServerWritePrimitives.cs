@@ -9,7 +9,7 @@ namespace TestDataFramework.WritePrimitives
 {
     public class SqlServerWritePrimitives : IWritePrimitives
     {
-        public void Insert(List<Column> columns)
+        public void Insert(IEnumerable<Column> columns)
         {
             throw new NotImplementedException();
         }

@@ -48,6 +48,11 @@ namespace TestDataFramework.Helpers
             return sb.ToString();
         }
 
+        public static string PrintType(Type type)
+        {
+            return type.ToString();
+        }
+
         public static string DumpMethod(Delegate operation)
         {
             return operation.Target.GetType().Name + "." + operation.Method.Name;

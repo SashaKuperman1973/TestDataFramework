@@ -9,7 +9,7 @@ namespace TestDataFramework.WritePrimitives
 {
     public interface IWritePrimitives
     {
-        void Insert(List<Column> columns);
+        void Insert(IEnumerable<Column> columns);
         string SelectIdentity();
     }
 }

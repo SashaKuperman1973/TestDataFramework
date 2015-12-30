@@ -39,7 +39,7 @@ namespace TestDataFramework.RepositoryOperations.Operations
         private PrimaryKeyAttribute.KeyTypeEnum DetermineKeyType()
         {
             IEnumerable<PrimaryKeyAttribute> pkAttributes =
-                this.RecordReference.RecordType.GetUniquePropertyAttributes<PrimaryKeyAttribute>().ToList();
+                this.RecordReference.RecordType.GetUniqueAttributes<PrimaryKeyAttribute>().ToList();
 
             if (!pkAttributes.Any())
             {
@@ -73,11 +73,11 @@ namespace TestDataFramework.RepositoryOperations.Operations
 
             breaker.Push<IWritePrimitives, CurrentOrder, AbstractRepositoryOperation[]>(this.Write);
 
-            List<InsertRecord> primaryKeyOperations =  this.GetPrimaryKeyOperations();
+            IEnumerable<InsertRecord> primaryKeyOperations = this.GetPrimaryKeyOperations();
 
             InsertRecord.WritePrimaryKeyOperations(writer, primaryKeyOperations, breaker, currentOrder, orderedOperations);
 
-            List<Column> columnData = this.GetColumnData(primaryKeyOperations);
+            IEnumerable<Column> columnData = this.GetColumnData(primaryKeyOperations);
 
             this.Order = currentOrder.Value++;
             orderedOperations[this.Order] = this;
@@ -112,20 +112,20 @@ namespace TestDataFramework.RepositoryOperations.Operations
             return Helper.DumpObject(this.RecordReference.RecordObject);
         }
 
-        private List<Column> GetColumnData(List<InsertRecord> primaryKeyOperations)
+        private IEnumerable<Column> GetColumnData(IEnumerable<InsertRecord> primaryKeyOperations)
         {
             InsertRecord.Logger.Debug("Entering GetColumnData");
 
-            List<Column> regularColumns = this.GetRegularColumns();
-            List<Column> foreignKeyColumns = this.GetForeignKeyColumns(primaryKeyOperations);
+            IEnumerable<Column> regularColumns = this.GetRegularColumns();
+            IEnumerable<Column> foreignKeyColumns = this.GetForeignKeyColumns(primaryKeyOperations);
 
-            List<Column> result = regularColumns.Concat(foreignKeyColumns).ToList();
+            IEnumerable<Column> result = regularColumns.Concat(foreignKeyColumns).ToList();
 
             InsertRecord.Logger.Debug("Exiting GetColumnData");
             return result;
         }
 
-        private List<Column> GetForeignKeyColumns(List<InsertRecord> primaryKeyOperations)
+        private IEnumerable<Column> GetForeignKeyColumns(IEnumerable<InsertRecord> primaryKeyOperations)
         {
             InsertRecord.Logger.Debug("Entering GetForeignKeyVariables");
 
@@ -133,7 +133,7 @@ namespace TestDataFramework.RepositoryOperations.Operations
 
             IEnumerable<PropertyAttribute<ForeignKeyAttribute>> propertyAttributes = this.RecordReference.RecordType.GetPropertyAttributes<ForeignKeyAttribute>();
 
-            List<Column> foreignKeyColumns = symbolList.Select(sl =>
+            IEnumerable<Column> result = symbolList.Select(sl =>
             {
                 PropertyAttribute<ForeignKeyAttribute> matchingPropertyAttribute =
                     propertyAttributes.First(
@@ -147,14 +147,14 @@ namespace TestDataFramework.RepositoryOperations.Operations
                     Value = sl.Value
                 };
 
-            }).ToList();
+            });
 
             InsertRecord.Logger.Debug("Exiting GetForeignKeyVariables");
 
-            return foreignKeyColumns;
+            return result;
         }
 
-        private List<Column> GetRegularColumns()
+        private IEnumerable<Column> GetRegularColumns()
         {
             InsertRecord.Logger.Debug("Entering GetRegularColumnData");
 
@@ -178,37 +178,30 @@ namespace TestDataFramework.RepositoryOperations.Operations
             return result.ToList();
         }
 
-        private static void WritePrimaryKeyOperations(IWritePrimitives writer, List<InsertRecord> primaryKeyOperations,
+        private static void WritePrimaryKeyOperations(IWritePrimitives writer, IEnumerable<InsertRecord> primaryKeyOperations,
             CircularReferenceBreaker breaker, CurrentOrder currentOrder, AbstractRepositoryOperation[] orderedOperations)
         {
             InsertRecord.Logger.Debug("Entering WriteHigherPriorityOperations");
 
-            primaryKeyOperations.ForEach(o => o.Write(breaker, writer, currentOrder, orderedOperations));
+            primaryKeyOperations.ToList().ForEach(o => o.Write(breaker, writer, currentOrder, orderedOperations));
 
             InsertRecord.Logger.Debug("Exiting WriteHigherPriorityOperations");
         }
 
-        private List<InsertRecord> GetPrimaryKeyOperations()
+        private IEnumerable<InsertRecord> GetPrimaryKeyOperations()
         {
             InsertRecord.Logger.Debug("Entering GetPrimaryKeyOperations");
 
-            List<InsertRecord> result = this.Peers.Where(
+            IEnumerable<InsertRecord> result = this.Peers.Where(
                 peer =>
                 {
                     var pkRecord = peer as InsertRecord;
 
-                    if (pkRecord == this || pkRecord == null)
-                    {
-                        return false;
-                    }
+                    bool peerResult = pkRecord != null & pkRecord != this 
+                                  && this.RecordReference.PrimaryKeyReferences.Any(
+                                      primaryKeyReference => primaryKeyReference == pkRecord.RecordReference);
 
-                    IEnumerable<ForeignKeyAttribute> foreignKeyAttributes =
-                        this.RecordReference.RecordType.GetUniquePropertyAttributes<ForeignKeyAttribute>();
-
-                    bool peersResult =
-                        foreignKeyAttributes.Any(fka => fka.PrimaryTableType == pkRecord.RecordReference.RecordType);
-
-                    return peersResult;
+                    return peerResult;
 
                 }).Cast<InsertRecord>().ToList();
 
@@ -217,7 +210,7 @@ namespace TestDataFramework.RepositoryOperations.Operations
             return result;
         }
 
-        private void WritePrimitives(IWritePrimitives writer, List<Column> columns)
+        private void WritePrimitives(IWritePrimitives writer, IEnumerable<Column> columns)
         {
             InsertRecord.Logger.Debug("Entering WritePrimitives");
 

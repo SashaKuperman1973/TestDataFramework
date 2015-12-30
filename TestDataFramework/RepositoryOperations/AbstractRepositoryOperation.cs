@@ -12,7 +12,7 @@ namespace TestDataFramework.RepositoryOperations
 {
     public abstract class AbstractRepositoryOperation
     {
-        protected List<AbstractRepositoryOperation> Peers;
+        protected IEnumerable<AbstractRepositoryOperation> Peers;
 
         public abstract void Write(CircularReferenceBreaker breaker, IWritePrimitives writer, CurrentOrder order, AbstractRepositoryOperation[] orderedOperations);
         public abstract void Read();

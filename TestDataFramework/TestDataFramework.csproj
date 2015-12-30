@@ -68,7 +68,9 @@
     <Compile Include="RepositoryOperations\Model\ColumnSymbol.cs" />
     <Compile Include="RepositoryOperations\Model\CurrentOrder.cs" />
     <Compile Include="RepositoryOperations\Model\PropertyAttribute.cs" />
+    <Compile Include="RepositoryOperations\Model\Columns.cs" />
     <Compile Include="RepositoryOperations\Operations\InsertRecord.cs" />
+    <Compile Include="RepositoryOperations\Model\Variable.cs" />
     <Compile Include="RepositoryOperations\RecordIdentifier.cs" />
     <Compile Include="RepositoryOperations\AbstractRepositoryOperation.cs" />
     <Compile Include="TypeGenerator\ITypeGenerator.cs" />
@@ -81,9 +83,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="RepositoryOperations\KindsOfInformation\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

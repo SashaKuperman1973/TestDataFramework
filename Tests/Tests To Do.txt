@@ -1,4 +1,5 @@
 ﻿InsertRecord.Read
+Type mismatch check for primary -> foreign key binding
 
 Scratchpad
 

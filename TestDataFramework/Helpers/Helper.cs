@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using TestDataFramework.RepositoryOperations.Model;
+using TestDataFramework.RepositoryOperations.Operations;
 
 namespace TestDataFramework.Helpers
 {
@@ -56,6 +58,17 @@ namespace TestDataFramework.Helpers
         public static string DumpMethod(Delegate operation)
         {
             return operation.Target.GetType().Name + "." + operation.Method.Name;
+        }
+
+        private static readonly List<Type> SpecialTypes = new List<Type>
+        {
+            typeof(Variable),
+        };
+
+        public static bool IsSpecialType(this object value)
+        {
+            bool result = Helper.SpecialTypes.Any(st => st.IsInstanceOfType(value));
+            return result;
         }
     }
 }

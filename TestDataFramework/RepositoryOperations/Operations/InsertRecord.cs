@@ -28,7 +28,7 @@ namespace TestDataFramework.RepositoryOperations.Operations
         {
             InsertRecord.Logger.Debug("Entering constructor");
 
-            this.Peers = peers.ToList();
+            this.Peers = peers;
             this.RecordReference = recordReference;
 
             this.keyType = this.DetermineKeyType();
@@ -73,22 +73,40 @@ namespace TestDataFramework.RepositoryOperations.Operations
 
             breaker.Push<IWritePrimitives, CurrentOrder, AbstractRepositoryOperation[]>(this.Write);
 
-            IEnumerable<InsertRecord> primaryKeyOperations = this.GetPrimaryKeyOperations();
+            IEnumerable<InsertRecord> primaryKeyOperations = this.GetPrimaryKeyOperations().ToList();
 
             InsertRecord.WritePrimaryKeyOperations(writer, primaryKeyOperations, breaker, currentOrder, orderedOperations);
 
-            IEnumerable<Column> columnData = this.GetColumnData(primaryKeyOperations);
+            Columns columnData = this.GetColumnData(primaryKeyOperations);
 
             this.Order = currentOrder.Value++;
             orderedOperations[this.Order] = this;
 
-            this.WritePrimitives(writer, columnData);
+            this.WritePrimitives(writer, columnData.AllColumns);
+
+            this.CopyForeignKeyColumns(columnData.ForeignKeyColumns);
 
             this.IsWriteDone = true;
 
             breaker.Pop();
 
             InsertRecord.Logger.Debug("Exiting Write");
+        }
+
+        private void CopyForeignKeyColumns(IEnumerable<Column> foreignKeyColumns)
+        {
+            foreignKeyColumns.ToList().ForEach(c =>
+            {
+                if (c.Value.IsSpecialType())
+                {
+                    return;
+                }
+
+                PropertyInfo targetProperty =
+                    this.RecordReference.RecordType.GetProperties().First(p => Helper.GetColunName(p).Equals(c.Name));
+
+                targetProperty.SetValue(this.RecordReference.RecordObject, c.Value);
+            });
         }
 
         public override void Read()
@@ -112,14 +130,15 @@ namespace TestDataFramework.RepositoryOperations.Operations
             return Helper.DumpObject(this.RecordReference.RecordObject);
         }
 
-        private IEnumerable<Column> GetColumnData(IEnumerable<InsertRecord> primaryKeyOperations)
+        private Columns GetColumnData(IEnumerable<InsertRecord> primaryKeyOperations)
         {
             InsertRecord.Logger.Debug("Entering GetColumnData");
 
-            IEnumerable<Column> regularColumns = this.GetRegularColumns();
-            IEnumerable<Column> foreignKeyColumns = this.GetForeignKeyColumns(primaryKeyOperations);
+            // ReSharper disable once UseObjectOrCollectionInitializer
+            var result = new Columns();
 
-            IEnumerable<Column> result = regularColumns.Concat(foreignKeyColumns).ToList();
+            result.RegularColumns = this.GetRegularColumns();
+            result.ForeignKeyColumns = this.GetForeignKeyColumns(primaryKeyOperations);
 
             InsertRecord.Logger.Debug("Exiting GetColumnData");
             return result;
@@ -230,7 +249,7 @@ namespace TestDataFramework.RepositoryOperations.Operations
                     InsertRecord.Logger.Debug("Taking KeyTypeEnum.Auto branch");
 
                     string primaryKeyColumnName = this.GetPrimaryKeyColumnName();
-                    string identityVariable = writer.SelectIdentity();
+                    object identityVariable = writer.SelectIdentity();
 
                     this.primaryKeyValues.Add(new ColumnSymbol
                     {

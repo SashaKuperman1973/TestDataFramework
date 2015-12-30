@@ -10,6 +10,6 @@ namespace TestDataFramework.WritePrimitives
     public interface IWritePrimitives
     {
         void Insert(IEnumerable<Column> columns);
-        string SelectIdentity();
+        object SelectIdentity();
     }
 }

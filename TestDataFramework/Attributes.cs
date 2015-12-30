@@ -78,11 +78,11 @@ namespace TestDataFramework
             None,
         }
 
-        public PrimaryKeyAttribute(KeyTypeEnum keyType)
+        public PrimaryKeyAttribute()
         {
-            this.KeyType = keyType;
+            this.KeyType = KeyTypeEnum.Manual;
         }
 
-        public KeyTypeEnum KeyType { get; }
+        public KeyTypeEnum KeyType { get; set; }
     }
 }

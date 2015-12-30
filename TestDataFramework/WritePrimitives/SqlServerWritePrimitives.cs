@@ -14,7 +14,7 @@ namespace TestDataFramework.WritePrimitives
             throw new NotImplementedException();
         }
 
-        public string SelectIdentity()
+        public object SelectIdentity()
         {
             throw new NotImplementedException();
         }

@@ -166,12 +166,12 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             InsertRecordService.Logger.Debug("Entering WritePrimitives");
 
             writer.Insert(columns);
-            this.HandlePrimaryKeyValues(writer, primaryKeyValues);
+            this.PopulatePrimaryKeyValues(writer, primaryKeyValues);
 
             InsertRecordService.Logger.Debug("Exiting WritePrimitives");
         }
 
-        private void HandlePrimaryKeyValues(IWritePrimitives writer, List<ColumnSymbol> primaryKeyValues)
+        private void PopulatePrimaryKeyValues(IWritePrimitives writer, List<ColumnSymbol> primaryKeyValues)
         {
             InsertRecordService.Logger.Debug("Entering HandlePrimaryKeyValues");
 

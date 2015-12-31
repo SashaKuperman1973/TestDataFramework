@@ -1,4 +1,5 @@
 ﻿using System.CodeDom;
+using System.Net.Mime;
 using TestDataFramework;
 
 namespace Tests.TestModels
@@ -42,6 +43,11 @@ namespace Tests.TestModels
 
         [ForeignKey(typeof(ManualKeyPrimaryTable), "Key2")]
         public int ForeignKey2 { get; set; }
+    }
+
+    public class KeyNoneTable
+    {
+        public string Text { get; set; }
     }
 
     #region For referntial integrity tests

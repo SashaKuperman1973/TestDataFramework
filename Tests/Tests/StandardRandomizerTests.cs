@@ -4,7 +4,7 @@ using Moq;
 using TestDataFramework.Helpers.Interfaces;
 using TestDataFramework.Randomizer;
 
-namespace Tests
+namespace Tests.Tests
 {
     [TestClass]
     public class StandardRandomizerTests

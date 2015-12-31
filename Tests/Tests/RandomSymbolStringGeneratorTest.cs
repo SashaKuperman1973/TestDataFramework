@@ -2,7 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.Helpers.Concrete;
 
-namespace Tests
+namespace Tests.Tests
 {
     [TestClass]
     public class RandomSymbolStringGeneratorTest

@@ -1,4 +1,5 @@
-﻿using TestDataFramework;
+﻿using System.CodeDom;
+using TestDataFramework;
 
 namespace Tests.TestModels
 {
@@ -43,15 +44,42 @@ namespace Tests.TestModels
         public int ForeignKey2 { get; set; }
     }
 
-    public class ForeignKeyMismatchPrimaryTable
+    #region For referntial integrity tests
+
+    public class TypeMismatchPrimaryTable
     {
         [PrimaryKey]
         public string Key { get; set; }
     }
-
-    public class ForeignKeyMismatchForeignTable
+    public class TypeMismatchForeignTable
     {
-        [ForeignKey(typeof(ForeignKeyMismatchPrimaryTable), "Key")]
+        [ForeignKey(typeof(TypeMismatchPrimaryTable), "Key")]
         public int ForeignKey { get; set; }
     }
+
+    public class TableTypeMismatchPrimaryTable
+    {
+        [PrimaryKey]
+        public int Key { get; set; }
+    }
+    public class TableTypeMismatchForeignTable
+    {
+        [ForeignKey(typeof(object), "Key")]
+        public int ForeignKey { get; set; }
+    }
+
+    public class PropertyNameMismatchPrimaryTable
+    {
+        [PrimaryKey]
+        public int Key { get; set; }
+
+    }
+
+    public class PropertyNameMismatchForeignTable
+    {
+        [ForeignKey(typeof(PropertyNameMismatchPrimaryTable), "KeyX")]
+        public int ForeignKey { get; set; }
+    }
+
+    #endregion For referntial integrity tests
 }

@@ -24,6 +24,11 @@ namespace TestDataFramework.Populator
 
         public readonly IEnumerable<RecordReference> PrimaryKeyReferences = new List<RecordReference>();
 
+        public void AddPrimaryRecordReference(params RecordReference[] primaryRecordReferences)
+        {
+            primaryRecordReferences.ToList().ForEach(this.AddPrimaryRecordReference);
+        }
+
         public void AddPrimaryRecordReference(RecordReference primaryRecordReference)
         {
             if (!this.ValidateRelationship(primaryRecordReference))
@@ -37,7 +42,7 @@ namespace TestDataFramework.Populator
         protected virtual bool ValidateRelationship(RecordReference primaryRecordReference)
         {
             IEnumerable<PropertyAttribute<ForeignKeyAttribute>> foreignKeyPropertyAttributes =
-                this.RecordType.GetPropertyAttributes<ForeignKeyAttribute>();
+                this.RecordType.GetPropertyAttributes<ForeignKeyAttribute>().ToList();
 
             bool result =
                 primaryRecordReference.RecordType
@@ -49,7 +54,11 @@ namespace TestDataFramework.Populator
                                     pkPa.PropertyInfo.DeclaringType == fkPa.Attribute.PrimaryTableType
                                     &&
                                     Helper.GetColunName(pkPa.PropertyInfo)
-                                        .Equals(fkPa.Attribute.PrimaryKeyName)));
+                                        .Equals(fkPa.Attribute.PrimaryKeyName, StringComparison.Ordinal)
+                                    &&
+                                    pkPa.PropertyInfo.PropertyType == fkPa.PropertyInfo.PropertyType
+                                )
+                    );
 
             return result;
         }

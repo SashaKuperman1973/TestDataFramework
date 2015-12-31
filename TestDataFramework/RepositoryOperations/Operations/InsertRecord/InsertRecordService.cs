@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using log4net;
+using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
 using TestDataFramework.Populator;
 using TestDataFramework.RepositoryOperations.Model;
@@ -18,6 +19,8 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
         private readonly RecordReference recordReference;
 
         private readonly PrimaryKeyAttribute.KeyTypeEnum keyType;
+
+        #region Constructor
 
         public InsertRecordService(RecordReference recordReference)
         {
@@ -43,6 +46,8 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             PrimaryKeyAttribute.KeyTypeEnum result = pkAttributes.First().KeyType;
             return result;
         }
+
+        #endregion Constructor
 
         public virtual IEnumerable<InsertRecord> GetPrimaryKeyOperations(IEnumerable<AbstractRepositoryOperation> peers)
         {
@@ -76,6 +81,8 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             InsertRecordService.Logger.Debug("Exiting WriteHigherPriorityOperations");
         }
 
+        #region GetColumnData
+
         public virtual Columns GetColumnData(IEnumerable<InsertRecord> primaryKeyOperations)
         {
             InsertRecordService.Logger.Debug("Entering GetColumnData");
@@ -94,27 +101,34 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
         {
             InsertRecordService.Logger.Debug("Entering GetForeignKeyVariables");
 
-            IEnumerable<ColumnSymbol> symbolList = primaryKeyOperations.SelectMany(o => o.GetPrimaryKeySymbols());
+            List<IEnumerable<ColumnSymbol>> keyTableList = primaryKeyOperations.Select(o => o.GetPrimaryKeySymbols()).ToList();
 
-            IEnumerable<PropertyAttribute<ForeignKeyAttribute>> propertyAttributes = this.recordReference.RecordType.GetPropertyAttributes<ForeignKeyAttribute>();
+            IEnumerable<PropertyAttribute<ForeignKeyAttribute>> foreignKeyPropertyAttributes = this.recordReference.RecordType.GetPropertyAttributes<ForeignKeyAttribute>();
 
-            IEnumerable<Column> result = symbolList.Select(sl =>
+            var foreignKeys = foreignKeyPropertyAttributes.Select(fk =>
             {
-                PropertyAttribute<ForeignKeyAttribute> matchingPropertyAttribute =
-                    propertyAttributes.First(
-                        pa =>
-                            sl.TableType == pa.Attribute.PrimaryTableType &&
-                            sl.ColumnName == pa.Attribute.PrimaryKeyName);
+                ColumnSymbol pkColumnMatch = null;
 
-                return new Column
-                {
-                    Name = Helper.GetColunName(matchingPropertyAttribute.PropertyInfo),
-                    Value = sl.Value
-                };
+                bool isForeignKeyPrimaryKeyMatch = keyTableList.Any(pkTable =>
 
+                    pkTable.Any(pk =>
+
+                        fk.Attribute.PrimaryTableType == (pkColumnMatch = pk).TableType
+                        && fk.Attribute.PrimaryKeyName.Equals(pk.ColumnName, StringComparison.Ordinal)
+                        )
+                    );
+
+                return new {PkColumnValue = isForeignKeyPrimaryKeyMatch ? pkColumnMatch.Value : null, FkPropertyAttribute = fk};
             });
 
-            InsertRecordService.Logger.Debug("Exiting GetForeignKeyVariables");
+            IEnumerable<Column> result =
+                foreignKeys.Select(
+                    fk =>
+                        new Column
+                        {
+                            Name = Helper.GetColunName(fk.FkPropertyAttribute.PropertyInfo),
+                            Value = fk.PkColumnValue
+                        });
 
             return result;
         }
@@ -143,6 +157,10 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             return result.ToList();
         }
 
+        #endregion GetColumnData
+
+        #region WritePrimitives
+
         public virtual void WritePrimitives(IWritePrimitives writer, IEnumerable<Column> columns, List<ColumnSymbol> primaryKeyValues)
         {
             InsertRecordService.Logger.Debug("Entering WritePrimitives");
@@ -160,6 +178,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             switch (this.keyType)
             {
                 case PrimaryKeyAttribute.KeyTypeEnum.Auto:
+
                     InsertRecordService.Logger.Debug("Taking KeyTypeEnum.Auto branch");
 
                     string primaryKeyColumnName = this.GetPrimaryKeyColumnName();
@@ -175,6 +194,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                     break;
 
                 case PrimaryKeyAttribute.KeyTypeEnum.Manual:
+
                     InsertRecordService.Logger.Debug("Taking KeyTypeEnum.Auto Manual branch");
 
                     primaryKeyValues.AddRange(this.GetPrimaryKeyValues());
@@ -182,6 +202,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                     break;
 
                 default:
+
                     InsertRecordService.Logger.Debug("No special key type handling fo this branch");
                     break;
             }
@@ -219,6 +240,8 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
             return Helper.GetColunName(pkPropertyAttribute.PropertyInfo);
         }
+
+        #endregion WritePrimitives
 
         public virtual void CopyForeignKeyColumns(IEnumerable<Column> foreignKeyColumns)
         {

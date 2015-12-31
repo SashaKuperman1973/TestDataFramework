@@ -1,14 +1,11 @@
-﻿InsertRecord.Read
-StandardPersistence - IWritePrimitives.Read clled for all input RecordReferences
+﻿StandardPersistence - IWritePrimitives.Read called for all input RecordReferences
 Ensure that only properties with both getter and setter are included in processing - both in generation and operation (insertion)
+The randomizers for rest of the special collection types that are implemented in the old system.
+Consider returning null when type recursion detected instead of throwing a TypeRecursionException. Maybe not. Remember to log it.
 
-=InsertRecord Write Outgoing call test prep notes
-
-breaker.IsVisited branch - see if returns when IsVisited
-this.IsWritedone branch
-
-*this.GetPrimaryKeyOperations
-
+=Tests to write
+InsertRecord.Read
+InsertRecordService
 
 =Scratchpad
 

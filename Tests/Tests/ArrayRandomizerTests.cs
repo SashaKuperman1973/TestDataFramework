@@ -6,7 +6,7 @@ using TestDataFramework.ArrayRandomizer;
 using TestDataFramework.ValueGenerator;
 using Tests.TestModels;
 
-namespace Tests
+namespace Tests.Tests
 {
     [TestClass]
     public class ArrayRandomizerTests
@@ -26,7 +26,7 @@ namespace Tests
             this.arrayRandomizer = new StandardArrayRandomizer(this.randomMock.Object, this.valueGeneratorMock.Object);
 
             this.valueGeneratorMock.Setup(m => m.GetValue(It.IsAny<PropertyInfo>(), It.IsAny<Type>())).Returns(ArrayRandomizerTests.Integer);
-            this.valueGeneratorMock.Setup(m => m.GetValue(It.IsAny<PropertyInfo>(), It.Is<Type>(t => t.IsArray))).Returns<PropertyInfo, Type>((p, t) => arrayRandomizer.GetArray(p, t));
+            this.valueGeneratorMock.Setup(m => m.GetValue(It.IsAny<PropertyInfo>(), It.Is<Type>(t => t.IsArray))).Returns<PropertyInfo, Type>((p, t) => this.arrayRandomizer.GetArray(p, t));
             this.randomMock.Setup(m => m.Next(It.IsAny<int>())).Returns(ArrayRandomizerTests.ElementLength - 1);
         }
 

@@ -1,20 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
-using System.Reflection;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using TestDataFramework.Exceptions;
-using TestDataFramework.Helpers;
 using TestDataFramework.Persistence;
 using TestDataFramework.Populator;
 using TestDataFramework.RepositoryOperations.Model;
 using TestDataFramework.WritePrimitives;
 using Tests.TestModels;
 
-namespace Tests
+namespace Tests.Tests
 {
     [TestClass]
     public class StandardPersistenceTests

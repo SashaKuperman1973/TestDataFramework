@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.Populator;
@@ -8,7 +7,7 @@ using TestDataFramework.RepositoryOperations.Model;
 using TestDataFramework.RepositoryOperations.Operations.InsertRecord;
 using TestDataFramework.WritePrimitives;
 
-namespace Tests
+namespace Tests.Tests
 {
     [TestClass]
     public class InsertRecordTests

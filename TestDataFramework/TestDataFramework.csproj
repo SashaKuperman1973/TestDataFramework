@@ -58,7 +58,7 @@
     <Compile Include="Persistence\StandardPersistence.cs" />
     <Compile Include="Populator\IPopulator.cs" />
     <Compile Include="Populator\RecordReference.cs" />
-    <Compile Include="Populator\RecordReferenceOfT.cs" />
+    <Compile Include="Populator\GenericRecordReference.cs" />
     <Compile Include="Populator\StandardPopulator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Randomizer\IRandomizer.cs" />

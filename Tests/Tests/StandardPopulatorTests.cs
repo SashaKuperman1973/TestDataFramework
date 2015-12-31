@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.Populator;
 using TestDataFramework.TypeGenerator;
-using TestDataFramework.ValueGenerator;
 using Tests.Mocks;
 using Tests.TestModels;
 
-namespace Tests
+namespace Tests.Tests
 {
     [TestClass]
     public class StandardPopulatorTests

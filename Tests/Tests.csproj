@@ -64,16 +64,17 @@
     <Compile Include="Mocks\MockPersistence.cs" />
     <Compile Include="TestModels\PersistenceSubjects.cs" />
     <Compile Include="TestModels\SubjectClass.cs" />
-    <Compile Include="StandardPopulatorTests.cs" />
+    <Compile Include="Tests\StandardPopulatorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StandardValueGeneratorTests.cs" />
-    <Compile Include="StandardTypeGeneratorTests.cs" />
-    <Compile Include="StandardRandomizerTests.cs" />
-    <Compile Include="RandomSymbolStringGeneratorTest.cs" />
-    <Compile Include="ArrayRandomizerTests.cs" />
-    <Compile Include="StandardPersistenceTests.cs" />
-    <Compile Include="RecordReferenceTests.cs" />
-    <Compile Include="InsertRecordTests.cs" />
+    <Compile Include="Tests\StandardValueGeneratorTests.cs" />
+    <Compile Include="Tests\StandardTypeGeneratorTests.cs" />
+    <Compile Include="Tests\StandardRandomizerTests.cs" />
+    <Compile Include="Tests\RandomSymbolStringGeneratorTest.cs" />
+    <Compile Include="Tests\ArrayRandomizerTests.cs" />
+    <Compile Include="Tests\StandardPersistenceTests.cs" />
+    <Compile Include="Tests\RecordReferenceTests.cs" />
+    <Compile Include="Tests\InsertRecordTests.cs" />
+    <Compile Include="Tests\InsertRecordServiceTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Tests To Do.txt" />

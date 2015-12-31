@@ -10,7 +10,7 @@ using TestDataFramework.TypeGenerator;
 using TestDataFramework.ValueGenerator;
 using Tests.TestModels;
 
-namespace Tests
+namespace Tests.Tests
 {
     [TestClass]
     public class StandardValueGeneratorTests

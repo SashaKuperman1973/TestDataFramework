@@ -85,5 +85,57 @@ namespace Tests
             this.breakerMock.Verify(m => m.IsVisited<IWritePrimitives, CurrentOrder, AbstractRepositoryOperation[]>(this.insertRecord.Write), Times.Once);
             this.breakerMock.Verify(m => m.Push<IWritePrimitives, CurrentOrder, AbstractRepositoryOperation[]>(this.insertRecord.Write), Times.Never);
         }
+
+        [TestMethod]
+        public void WriteOperationOrder_Test()
+        {
+            // Arrange
+
+            var orderedOpertations = new AbstractRepositoryOperation[2];
+
+            var secondInsertRecord = new InsertRecord(this.serviceMock.Object, this.recordReferenceMock.Object, this.peers);
+            var primaryKeyOperations = new List<InsertRecord> { secondInsertRecord };
+
+            var columns = new Columns { ForeignKeyColumns = new List<Column>(), RegularColumns = new List<Column>() };
+
+            this.serviceMock.Setup(m => m.GetPrimaryKeyOperations(this.peers)).Returns(primaryKeyOperations);
+            this.serviceMock.Setup(m => m.GetColumnData(primaryKeyOperations)).Returns(columns);
+
+            this.serviceMock.Setup(
+                m =>
+                    m.WritePrimaryKeyOperations(It.IsAny<IWritePrimitives>(), It.IsAny<IEnumerable<InsertRecord>>(),
+                        It.IsAny<CircularReferenceBreaker>(), It.IsAny<CurrentOrder>(),
+                        It.IsAny<AbstractRepositoryOperation[]>()))
+                .Callback
+                <IWritePrimitives, IEnumerable<InsertRecord>, CircularReferenceBreaker, CurrentOrder,
+                    AbstractRepositoryOperation[]>(
+                        (writer, secondPrimaryKeyOperations, breaker, secondCurrentOrder, secondOrderedOperations) =>
+                        {
+                            this.serviceMock.Setup(
+                                n =>
+                                    n.WritePrimaryKeyOperations(It.IsAny<IWritePrimitives>(),
+                                        It.IsAny<IEnumerable<InsertRecord>>(),
+                                        It.IsAny<CircularReferenceBreaker>(), It.IsAny<CurrentOrder>(),
+                                        It.IsAny<AbstractRepositoryOperation[]>()));
+
+                            secondInsertRecord.Write(breaker, writer, secondCurrentOrder, secondOrderedOperations);
+                        });
+
+            // Act
+
+            this.insertRecord.Write(this.breakerMock.Object, this.writePrimitivesMock.Object, new CurrentOrder(), orderedOpertations);
+
+            // Assert
+
+            Assert.AreEqual(secondInsertRecord, orderedOpertations[0]);
+            Assert.AreEqual(this.insertRecord, orderedOpertations[1]);
+        }
+
+
+        [TestMethod]
+        public void WriteIsDone_Test()
+        {
+            
+        }
     }
 }

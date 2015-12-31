@@ -135,7 +135,21 @@ namespace Tests
         [TestMethod]
         public void WriteIsDone_Test()
         {
-            
+            // Arrange
+
+            var orderedOpertations = new AbstractRepositoryOperation[1];
+            this.serviceMock.Setup(m => m.GetColumnData(It.IsAny<IEnumerable<InsertRecord>>()))
+                .Returns(new Columns {ForeignKeyColumns = new List<Column>(), RegularColumns = new List<Column>()});
+
+
+            // Act
+
+            this.insertRecord.Write(this.breakerMock.Object, this.writePrimitivesMock.Object, new CurrentOrder(), orderedOpertations);
+
+            // Assert
+
+            this.breakerMock.Verify(m => m.Push<IWritePrimitives, CurrentOrder, AbstractRepositoryOperation[]>(this.insertRecord.Write), Times.Once);
+            Assert.AreEqual(this.insertRecord, orderedOpertations[0]);
         }
     }
 }

@@ -18,11 +18,13 @@ namespace Tests.Tests
     {
         private InsertRecordService insertRecordService;
         private RecordReference recordReference;
+        private ForeignTable mainTable;
 
         [TestInitialize]
         public void Initialize()
         {
-            this.recordReference = new RecordReference<ForeignTable>(new ForeignTable());
+            this.mainTable = new ForeignTable();
+            this.recordReference = new RecordReference<ForeignTable>(this.mainTable);
             this.insertRecordService = new InsertRecordService(this.recordReference);
         }
 
@@ -91,9 +93,12 @@ namespace Tests.Tests
             };
 
             primaryKeyOperations[0].Setup(m => m.GetPrimaryKeySymbols())
-                .Returns(new[] {new ColumnSymbol {ColumnName = "Key", TableType = typeof (PrimaryTable), Value = 1}});
+                .Returns(new[] {new ColumnSymbol {ColumnName = "Key", TableType = typeof (PrimaryTable), Value = 10}});
 
             primaryKeyOperations[1].Setup(m => m.GetPrimaryKeySymbols()).Returns(new[] {new ColumnSymbol()});
+
+            this.mainTable.Text = "Value1";
+            this.mainTable.Integer = 5;
 
             // Act
 
@@ -103,6 +108,15 @@ namespace Tests.Tests
 
             Assert.AreEqual(2, columns.RegularColumns.Count());
             Assert.AreEqual(1, columns.ForeignKeyColumns.Count());
+
+            Assert.AreEqual("Text", columns.RegularColumns.ElementAt(0).Name);
+            Assert.AreEqual(this.mainTable.Text, columns.RegularColumns.ElementAt(0).Value);
+
+            Assert.AreEqual("Integer", columns.RegularColumns.ElementAt(1).Name);
+            Assert.AreEqual(this.mainTable.Integer, columns.RegularColumns.ElementAt(1).Value);
+
+            Assert.AreEqual("ForeignKey", columns.ForeignKeyColumns.ElementAt(0).Name);
+            Assert.AreEqual(10, columns.ForeignKeyColumns.ElementAt(0).Value);
         }
     }
 }

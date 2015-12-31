@@ -73,6 +73,7 @@
     <Compile Include="ArrayRandomizerTests.cs" />
     <Compile Include="StandardPersistenceTests.cs" />
     <Compile Include="RecordReferenceTests.cs" />
+    <Compile Include="InsertRecordTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Tests To Do.txt" />

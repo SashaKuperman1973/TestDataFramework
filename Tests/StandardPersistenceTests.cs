@@ -6,6 +6,8 @@ using System.Reflection;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using TestDataFramework.Exceptions;
+using TestDataFramework.Helpers;
 using TestDataFramework.Persistence;
 using TestDataFramework.Populator;
 using TestDataFramework.RepositoryOperations.Model;
@@ -94,7 +96,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void ForeignKeysCopiedFromManualPrimaryKeys()
+        public void ForeignKeysCopiedFromManualPrimaryKeys_Test()
         {
             // Arrange
 
@@ -122,7 +124,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void ForeignKeyCopiedFromAutoPrimaryKey()
+        public void ForeignKeyCopiedFromAutoPrimaryKey_Test()
         {
             throw new NotImplementedException();
         }

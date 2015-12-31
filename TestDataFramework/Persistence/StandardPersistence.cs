@@ -10,6 +10,7 @@ using TestDataFramework.Populator;
 using TestDataFramework.RepositoryOperations;
 using TestDataFramework.RepositoryOperations.Model;
 using TestDataFramework.RepositoryOperations.Operations;
+using TestDataFramework.RepositoryOperations.Operations.InsertRecord;
 using TestDataFramework.WritePrimitives;
 
 namespace TestDataFramework.Persistence
@@ -36,7 +37,7 @@ namespace TestDataFramework.Persistence
 
             foreach (RecordReference recordReference in recordReferences)
             {
-                operations.Add(new InsertRecord(recordReference, operations));
+                operations.Add(new InsertRecord(new InsertRecordService(recordReference), recordReference, operations));
             }
 
             var orderedOperations = new AbstractRepositoryOperation[operations.Count];

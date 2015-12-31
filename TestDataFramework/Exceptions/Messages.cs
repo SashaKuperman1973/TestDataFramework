@@ -21,6 +21,6 @@
         public const string NoForeignKeys = "No foreign keys in type {0}";
 
         public const string NoReferentialIntegrity =
-            "Referential integrity error in scema between primary type {0} and foreign type {1}";
+            "Referential integrity error in schema between primary type {0} and foreign type {1}. Can also happen if foreign->primary keys are different types.";
     }
 }

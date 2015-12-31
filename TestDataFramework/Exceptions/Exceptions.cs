@@ -43,14 +43,14 @@ namespace TestDataFramework.Exceptions
 
     public class NoReferentialIntegrityException : ApplicationException
     {
-        public NoReferentialIntegrityException(Type primaryKey, Type foreignKey)
-            : base(NoReferentialIntegrityException.GetMessage(primaryKey, foreignKey))
+        public NoReferentialIntegrityException(Type primaryKeyType, Type foreignKeyType)
+            : base(NoReferentialIntegrityException.GetMessage(primaryKeyType, foreignKeyType))
         {            
         }
 
-        private static string GetMessage(Type primaryKey, Type foreignKey)
+        private static string GetMessage(Type primaryKeyType, Type foreignKeyType)
         {
-            return string.Format(Messages.NoReferentialIntegrity, Helper.PrintType(primaryKey), Helper.PrintType(foreignKey));
+            return string.Format(Messages.NoReferentialIntegrity, Helper.PrintType(primaryKeyType), Helper.PrintType(foreignKeyType));
         }
     }
 }

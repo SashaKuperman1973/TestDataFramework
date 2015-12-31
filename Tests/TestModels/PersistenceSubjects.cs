@@ -42,4 +42,16 @@ namespace Tests.TestModels
         [ForeignKey(typeof(ManualKeyPrimaryTable), "Key2")]
         public int ForeignKey2 { get; set; }
     }
+
+    public class ForeignKeyMismatchPrimaryTable
+    {
+        [PrimaryKey]
+        public string Key { get; set; }
+    }
+
+    public class ForeignKeyMismatchForeignTable
+    {
+        [ForeignKey(typeof(ForeignKeyMismatchPrimaryTable), "Key")]
+        public int ForeignKey { get; set; }
+    }
 }

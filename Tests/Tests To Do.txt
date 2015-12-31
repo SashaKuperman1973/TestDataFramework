@@ -1,5 +1,15 @@
 ﻿InsertRecord.Read
-Type mismatch check for primary -> foreign key binding
+StandardPersistence - IWritePrimitives.Read clled for all input RecordReferences
+Ensure that only properties with both getter and setter are included in processing - both in generation and operation (insertion)
 
-Scratchpad
+=InsertRecord Write Outgoing call test prep notes
 
+breaker.IsVisited branch - see if returns when IsVisited
+this.IsWritedone branch
+
+*this.GetPrimaryKeyOperations
+
+
+=Scratchpad
+
+* = curently working on

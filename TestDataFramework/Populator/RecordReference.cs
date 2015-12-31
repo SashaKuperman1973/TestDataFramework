@@ -34,7 +34,7 @@ namespace TestDataFramework.Populator
             ((List<RecordReference>)this.PrimaryKeyReferences).Add(primaryRecordReference);
         }
 
-        private bool ValidateRelationship(RecordReference primaryRecordReference)
+        protected virtual bool ValidateRelationship(RecordReference primaryRecordReference)
         {
             IEnumerable<PropertyAttribute<ForeignKeyAttribute>> foreignKeyPropertyAttributes =
                 this.RecordType.GetPropertyAttributes<ForeignKeyAttribute>();

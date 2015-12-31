@@ -22,11 +22,11 @@ namespace TestDataFramework.RepositoryOperations
 
         #region Public methods
 
-        public bool IsVisited<T1, T2, T3>(Action<CircularReferenceBreaker, T1, T2, T3> operation) => this.IsVisitedDelegate(operation);
+        public virtual bool IsVisited<T1, T2, T3>(Action<CircularReferenceBreaker, T1, T2, T3> operation) => this.IsVisitedDelegate(operation);
 
-        public void Push<T1, T2, T3>(Action<CircularReferenceBreaker, T1, T2, T3> operation) => this.PushDelegate(operation);
+        public virtual void Push<T1, T2, T3>(Action<CircularReferenceBreaker, T1, T2, T3> operation) => this.PushDelegate(operation);
 
-        public void Pop()
+        public virtual void Pop()
         {
             Delegate operation = this.callStack.Pop();
             CircularReferenceBreaker.Logger.Debug("Popped " + Helper.DumpMethod(operation));

@@ -13,12 +13,12 @@ namespace Tests.Tests
         [TestMethod]
         public void ThrowsWhenTypeMismatch_Test()
         {
-            this.ThrowsWhenTypeMismatch<TypeMismatchPrimaryTable, TypeMismatchForeignTable>();
-            this.ThrowsWhenTypeMismatch<TableTypeMismatchPrimaryTable, TableTypeMismatchForeignTable>();
-            this.ThrowsWhenTypeMismatch<PropertyNameMismatchPrimaryTable, PropertyNameMismatchForeignTable>();
+            RecordReferenceTests.ThrowsWhenTypeMismatch<TypeMismatchPrimaryTable, TypeMismatchForeignTable>();
+            RecordReferenceTests.ThrowsWhenTypeMismatch<TableTypeMismatchPrimaryTable, TableTypeMismatchForeignTable>();
+            RecordReferenceTests.ThrowsWhenTypeMismatch<PropertyNameMismatchPrimaryTable, PropertyNameMismatchForeignTable>();
         }
 
-        private void ThrowsWhenTypeMismatch<T1, T2>() where T1 : new() where T2 : new()
+        private static void ThrowsWhenTypeMismatch<T1, T2>() where T1 : new() where T2 : new()
         {
             // Arrange
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using log4net;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
 using TestDataFramework.RepositoryOperations.Model;
@@ -13,6 +14,8 @@ namespace TestDataFramework.Populator
 {
     public abstract class RecordReference
     {
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(RecordReference));
+
         protected RecordReference(object recordObject)
         {
             this.RecordObject = recordObject;
@@ -26,21 +29,31 @@ namespace TestDataFramework.Populator
 
         public void AddPrimaryRecordReference(params RecordReference[] primaryRecordReferences)
         {
+            RecordReference.Logger.Debug("Entering AddPrimaryRecordReference(RecordReference[])");
+
             primaryRecordReferences.ToList().ForEach(this.AddPrimaryRecordReference);
+
+            RecordReference.Logger.Debug("Entering AddPrimaryRecordReference(RecordReference[])");
         }
 
         public void AddPrimaryRecordReference(RecordReference primaryRecordReference)
         {
+            RecordReference.Logger.Debug("Entering AddPrimaryRecordReference(RecordReference)");
+
             if (!this.ValidateRelationship(primaryRecordReference))
             {
                 throw new NoReferentialIntegrityException(primaryRecordReference.RecordType, this.RecordType);
             }
 
             ((List<RecordReference>)this.PrimaryKeyReferences).Add(primaryRecordReference);
+
+            RecordReference.Logger.Debug("Exiting AddPrimaryRecordReference(RecordReference)");
         }
 
         protected virtual bool ValidateRelationship(RecordReference primaryRecordReference)
         {
+            RecordReference.Logger.Debug("Entering ValidateRelationship");
+
             IEnumerable<PropertyAttribute<ForeignKeyAttribute>> foreignKeyPropertyAttributes =
                 this.RecordType.GetPropertyAttributes<ForeignKeyAttribute>().ToList();
 
@@ -59,6 +72,8 @@ namespace TestDataFramework.Populator
                                     pkPa.PropertyInfo.PropertyType == fkPa.PropertyInfo.PropertyType
                                 )
                     );
+
+            RecordReference.Logger.Debug("Exiting ValidateRelationship");
 
             return result;
         }

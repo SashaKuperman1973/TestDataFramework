@@ -25,8 +25,9 @@ namespace Tests.Tests
         {
             // Arrange
 
+            const int expected = 5;
             this.valueGeneratorMock.Setup(m => m.GetValue(It.Is<PropertyInfo>(p => p.PropertyType == typeof (int))))
-                .Returns(5);
+                .Returns(expected);
 
             // Act
 
@@ -38,7 +39,7 @@ namespace Tests.Tests
             SecondClass secondClassObject = result as SecondClass;
             Assert.IsNotNull(secondClassObject);
 
-            Assert.AreEqual(5, secondClassObject.SecondInteger);
+            Assert.AreEqual(expected, secondClassObject.SecondInteger);
         }
 
         [TestMethod]

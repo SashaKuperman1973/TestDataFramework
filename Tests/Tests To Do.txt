@@ -5,7 +5,7 @@ Consider returning null when type recursion detected instead of throwing a TypeR
 
 =Tests to write
 InsertRecord.Read
-InsertRecordService
+InsertRecord.Insert Variable type handling
 
 =Scratchpad
 

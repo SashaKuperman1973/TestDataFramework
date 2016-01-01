@@ -161,11 +161,11 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
         #region WritePrimitives
 
-        public virtual void WritePrimitives(IWritePrimitives writer, IEnumerable<Column> columns, List<ColumnSymbol> primaryKeyValues)
+        public virtual void WritePrimitives(IWritePrimitives writer, string tableName, IEnumerable<Column> columns, List<ColumnSymbol> primaryKeyValues)
         {
             InsertRecordService.Logger.Debug("Entering WritePrimitives");
 
-            writer.Insert(columns);
+            writer.Insert(tableName, columns);
             this.PopulatePrimaryKeyValues(writer, primaryKeyValues);
 
             InsertRecordService.Logger.Debug("Exiting WritePrimitives");

@@ -60,7 +60,9 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             this.Order = currentOrder.Value++;
             orderedOperations[this.Order] = this;
 
-            this.service.WritePrimitives(writer, columnData.AllColumns, this.primaryKeyValues);
+            string tableName = Helper.GetTableName(this.RecordReference.RecordType);
+
+            this.service.WritePrimitives(writer, tableName, columnData.AllColumns, this.primaryKeyValues);
 
             this.service.CopyForeignKeyColumns(columnData.ForeignKeyColumns);
 

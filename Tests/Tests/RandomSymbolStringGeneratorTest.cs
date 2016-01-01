@@ -13,14 +13,15 @@ namespace Tests.Tests
             // Arrange
 
             var randomSymbolStringGenerator = new RandomSymbolStringGenerator(new Random());
+            const int stringLength = 5;
 
             // Act
 
-            string result = randomSymbolStringGenerator.GetRandomString(5);
+            string result = randomSymbolStringGenerator.GetRandomString(stringLength);
 
             // Assert
 
-            Assert.AreEqual(5, result.Length);
+            Assert.AreEqual(stringLength, result.Length);
 
             foreach (char character in result)
             {

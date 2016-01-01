@@ -2,11 +2,11 @@
 {
     public class Variable
     {
-        private string v;
+        public string Symbol { get; }
 
         public Variable(string v)
         {
-            this.v = v;
+            this.Symbol = v;
         }
     }
 }

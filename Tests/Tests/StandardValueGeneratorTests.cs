@@ -112,7 +112,6 @@ namespace Tests.Tests
 
             this.randomizerMock.Verify();
         }
-
   
         [TestMethod]
         public void GetValue_Attribute_Tests()

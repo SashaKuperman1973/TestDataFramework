@@ -42,6 +42,7 @@ namespace Tests.Tests
             var currentOrder = new CurrentOrder();
             var columns = new Columns { ForeignKeyColumns = new List<Column>(), RegularColumns = new List<Column>()};
             var columnList = new List<Column>();
+            const string tableName = "ABCD";
 
             this.serviceMock.Setup(m => m.GetPrimaryKeyOperations(this.peers)).Returns(primaryKeyOperations);
             this.serviceMock.Setup(m => m.GetColumnData(primaryKeyOperations)).Returns(columns);
@@ -63,7 +64,7 @@ namespace Tests.Tests
 
             Assert.AreEqual(this.insertRecord, orderedOperations[0]);
 
-            this.serviceMock.Verify(m => m.WritePrimitives(this.writePrimitivesMock.Object, columnList, It.Is<List<ColumnSymbol>>(l => l.Count == 0)), Times.Once);
+            this.serviceMock.Verify(m => m.WritePrimitives(this.writePrimitivesMock.Object, tableName, columnList, It.Is<List<ColumnSymbol>>(l => l.Count == 0)), Times.Once);
 
             this.serviceMock.Verify(m => m.CopyForeignKeyColumns(columns.ForeignKeyColumns), Times.Once());
         }

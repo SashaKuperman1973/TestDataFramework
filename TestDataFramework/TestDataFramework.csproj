@@ -75,10 +75,12 @@
     <Compile Include="RepositoryOperations\AbstractRepositoryOperation.cs" />
     <Compile Include="TypeGenerator\ITypeGenerator.cs" />
     <Compile Include="TypeGenerator\StandardTypeGenerator.cs" />
+    <Compile Include="ValueFormatter\IValueFormatter.cs" />
     <Compile Include="ValueGenerator\IValueGenerator.cs" />
     <Compile Include="ValueGenerator\StandardValueGenerator.cs" />
+    <Compile Include="ValueFormatter\InsertStatementValueFormatter.cs" />
     <Compile Include="WritePrimitives\IWritePrimitives.cs" />
-    <Compile Include="WritePrimitives\SqlServerWritePrimitives.cs" />
+    <Compile Include="WritePrimitives\DbProviderWritePrimitives.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

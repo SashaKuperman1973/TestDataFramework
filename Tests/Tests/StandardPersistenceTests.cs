@@ -34,10 +34,11 @@ namespace Tests.Tests
 
             var primaryTable = new PrimaryTable { Integer = 5, Text = "Text"};
             var primaryRecordReference = new RecordReference<PrimaryTable>(primaryTable);
+            const string tableName = "ABCD";
 
             List<Column> primaryTableColumns = null;
 
-            this.writePrimitivesMock.Setup(m => m.Insert(It.IsAny<IEnumerable<Column>>()))
+            this.writePrimitivesMock.Setup(m => m.Insert(tableName, It.IsAny<IEnumerable<Column>>()))
                 .Callback<IEnumerable<Column>>(c => primaryTableColumns = c.ToList());
 
             // Act
@@ -46,7 +47,7 @@ namespace Tests.Tests
 
             // Assert
 
-            this.writePrimitivesMock.Verify(m => m.Insert(It.IsAny<IEnumerable<Column>>()), Times.Once());
+            this.writePrimitivesMock.Verify(m => m.Insert(tableName, It.IsAny<IEnumerable<Column>>()), Times.Once());
             Assert.IsNotNull(primaryTableColumns);
             Assert.AreEqual(2, primaryTableColumns.Count);
 
@@ -71,8 +72,9 @@ namespace Tests.Tests
             foreignRecordReference.AddPrimaryRecordReference(primaryRecordReference);
 
             var columns = new List<List<Column>>();
+            const string tableName = "ABCD";
 
-            this.writePrimitivesMock.Setup(m => m.Insert(It.IsAny<IEnumerable<Column>>()))
+            this.writePrimitivesMock.Setup(m => m.Insert(tableName, It.IsAny<IEnumerable<Column>>()))
                 .Callback<IEnumerable<Column>>(c => columns.Add(c.ToList()));
 
             this.writePrimitivesMock.Setup(m => m.SelectIdentity()).Returns(new Variable(null));
@@ -103,10 +105,11 @@ namespace Tests.Tests
             var foreignRecordReference = new RecordReference<ManualKeyForeignTable>(foreignTable);
 
             foreignRecordReference.AddPrimaryRecordReference(primaryRecordReference);
+            const string tableName = "ABCD";
 
             var columns = new List<List<Column>>();
 
-            this.writePrimitivesMock.Setup(m => m.Insert(It.IsAny<IEnumerable<Column>>()))
+            this.writePrimitivesMock.Setup(m => m.Insert(tableName, It.IsAny<IEnumerable<Column>>()))
                 .Callback<IEnumerable<Column>>(c => columns.Add(c.ToList()));
 
             // Act

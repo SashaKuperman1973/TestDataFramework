@@ -95,8 +95,10 @@ namespace Tests.Tests
                 new Mock<InsertRecord>(null, null, null),
             };
 
+            const int primaryKeyValue = 10;
+
             primaryKeyOperations[0].Setup(m => m.GetPrimaryKeySymbols())
-                .Returns(new[] {new ColumnSymbol {ColumnName = "Key", TableType = typeof (PrimaryTable), Value = 10}});
+                .Returns(new[] {new ColumnSymbol {ColumnName = "Key", TableType = typeof (PrimaryTable), Value = primaryKeyValue}});
 
             primaryKeyOperations[1].Setup(m => m.GetPrimaryKeySymbols()).Returns(new[] {new ColumnSymbol()});
 
@@ -119,7 +121,7 @@ namespace Tests.Tests
             Assert.AreEqual(this.mainTable.Integer, columns.RegularColumns.ElementAt(1).Value);
 
             Assert.AreEqual("ForeignKey", columns.ForeignKeyColumns.ElementAt(0).Name);
-            Assert.AreEqual(10, columns.ForeignKeyColumns.ElementAt(0).Value);
+            Assert.AreEqual(primaryKeyValue, columns.ForeignKeyColumns.ElementAt(0).Value);
         }
 
         [TestMethod]
@@ -127,14 +129,15 @@ namespace Tests.Tests
         {
             var columns = new Column[0];
             var primaryKeyValues = new List<ColumnSymbol>();
+            const string tableName = "ABCD";
 
             // Act
 
-            this.insertRecordService.WritePrimitives(this.writerMock.Object, columns, primaryKeyValues);
+            this.insertRecordService.WritePrimitives(this.writerMock.Object, tableName, columns, primaryKeyValues);
 
             // Assert
 
-            this.writerMock.Verify(m => m.Insert(columns));
+            this.writerMock.Verify(m => m.Insert(tableName, columns));
         }
 
         [TestMethod]
@@ -143,11 +146,14 @@ namespace Tests.Tests
             var columns = new Column[0];
             var primaryKeyValues = new List<ColumnSymbol>();
 
-            this.writerMock.Setup(m => m.SelectIdentity()).Returns("ABCD");
+            const string identityVariableSymbol = "ABCD";
+            const string tableName = "XYZ";
+
+            this.writerMock.Setup(m => m.SelectIdentity()).Returns(identityVariableSymbol);
 
             // Act
 
-            this.insertRecordService.WritePrimitives(this.writerMock.Object, columns, primaryKeyValues);
+            this.insertRecordService.WritePrimitives(this.writerMock.Object, tableName, columns, primaryKeyValues);
 
             // Assert
 
@@ -157,7 +163,7 @@ namespace Tests.Tests
 
             Assert.AreEqual("Key", primaryKeyValues[0].ColumnName);
             Assert.AreEqual(typeof(ForeignTable), primaryKeyValues[0].TableType);
-            Assert.AreEqual("ABCD", primaryKeyValues[0].Value);
+            Assert.AreEqual(identityVariableSymbol, primaryKeyValues[0].Value);
         }
 
         [TestMethod]
@@ -168,24 +174,28 @@ namespace Tests.Tests
             var columns = new Column[0];
             var primaryKeyValues = new List<ColumnSymbol>();
 
+            const string keyValue1 = "ABCD";
+            const int keyValue2 = 5;
+            const string tableName = "XYZ";
+
             this.insertRecordService =
                 new InsertRecordService(
-                    new RecordReference<ManualKeyPrimaryTable>(new ManualKeyPrimaryTable {Key1 = "ABCD", Key2 = 5}));
+                    new RecordReference<ManualKeyPrimaryTable>(new ManualKeyPrimaryTable {Key1 = keyValue1, Key2 = keyValue2 }));
 
             // Act
 
-            this.insertRecordService.WritePrimitives(this.writerMock.Object, columns, primaryKeyValues);
+            this.insertRecordService.WritePrimitives(this.writerMock.Object, tableName, columns, primaryKeyValues);
 
             // Assert
 
             Assert.AreEqual(2, primaryKeyValues.Count);
 
             Assert.AreEqual(typeof(ManualKeyPrimaryTable), primaryKeyValues[0].TableType);
-            Assert.AreEqual("ABCD", primaryKeyValues[0].Value);
+            Assert.AreEqual(keyValue1, primaryKeyValues[0].Value);
             Assert.AreEqual("Key1", primaryKeyValues[0].ColumnName);
 
             Assert.AreEqual(typeof(ManualKeyPrimaryTable), primaryKeyValues[1].TableType);
-            Assert.AreEqual(5, primaryKeyValues[1].Value);
+            Assert.AreEqual(keyValue2, primaryKeyValues[1].Value);
             Assert.AreEqual("Key2", primaryKeyValues[1].ColumnName);
         }
 
@@ -201,9 +211,11 @@ namespace Tests.Tests
                 new InsertRecordService(
                     new RecordReference<KeyNoneTable>(new KeyNoneTable()));
 
+            const string tableName = "ABCD";
+
             // Act
 
-            this.insertRecordService.WritePrimitives(this.writerMock.Object, columns, primaryKeyValues);
+            this.insertRecordService.WritePrimitives(this.writerMock.Object, tableName, columns, primaryKeyValues);
 
             // Assert
 
@@ -232,8 +244,8 @@ namespace Tests.Tests
 
             // Assert
 
-            Assert.AreEqual("ABCD", target.ForeignKey1);
-            Assert.AreEqual(3, target.ForeignKey2);
+            Assert.AreEqual(columns[0].Value, target.ForeignKey1);
+            Assert.AreEqual(columns[2].Value, target.ForeignKey2);
         }
 
         [TestMethod]

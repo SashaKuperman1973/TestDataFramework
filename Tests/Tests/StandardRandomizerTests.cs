@@ -47,16 +47,17 @@ namespace Tests.Tests
             // Arrange
 
             this.randomMock.Setup(m => m.Next(It.IsAny<int>())).Returns(StandardRandomizerTests.Integer);
+            const int maximum = 7;
 
             // Act
 
-            int result = this.randomizer.RandomizeInteger(7);
+            int result = this.randomizer.RandomizeInteger(maximum);
 
             // Assert
 
             Assert.AreEqual(StandardRandomizerTests.Integer, result);
             this.randomMock.Verify(m => m.Next(), Times.Never());
-            this.randomMock.Verify(m => m.Next(It.Is<int>(max => max == 7)), Times.Once());
+            this.randomMock.Verify(m => m.Next(It.Is<int>(max => max == maximum)), Times.Once());
         }
 
         [TestMethod]
@@ -156,11 +157,12 @@ namespace Tests.Tests
         {
             // Arrange
 
-            this.randomMock.Setup(m => m.Next(It.Is<int>(i => i == 7))).Returns(StandardRandomizerTests.Integer).Verifiable();
+            const int max = 7;
+            this.randomMock.Setup(m => m.Next(It.Is<int>(i => i == max))).Returns(StandardRandomizerTests.Integer).Verifiable();
 
             // Act
 
-            short result = this.randomizer.RandomizeShortInteger(7);
+            short result = this.randomizer.RandomizeShortInteger(max);
 
             // Assert
 
@@ -190,7 +192,8 @@ namespace Tests.Tests
         {
             // Arrange
 
-            this.stringGeneratorMock.Setup(m => m.GetRandomString(It.Is<int?>(i => i == 5))).Returns("ABCDE");
+            const string returnValue = "ABCD";
+            this.stringGeneratorMock.Setup(m => m.GetRandomString(It.Is<int?>(i => i == 5))).Returns(returnValue);
 
             // Act
 
@@ -198,18 +201,20 @@ namespace Tests.Tests
 
             // Assert
 
-            Assert.AreEqual("ABCDE", result);
+            Assert.AreEqual(returnValue, result);
         }
 
         [TestMethod]
         public void RandomizeCharacter_Test()
         {
+            // 26 letters in the alphabet
             for (int code = 0; code < 26; code++)
             {
                 this.randomMock.Setup(m => m.Next(It.Is<int>(i => i == 26))).Returns(code);
 
                 char result = this.randomizer.RandomizeCharacter();
 
+                // 65 is ASCII code of "A".
                 Assert.AreEqual((char)(code + 65), result);
             }
         }
@@ -371,7 +376,8 @@ namespace Tests.Tests
         {
             // Arrange
 
-            this.randomMock.Setup(m => m.NextBytes(It.IsAny<byte[]>())).Callback<byte[]>(a => a[0] = 5);
+            const byte expected = 5;
+            this.randomMock.Setup(m => m.NextBytes(It.IsAny<byte[]>())).Callback<byte[]>(a => a[0] = expected);
 
             // Act
 
@@ -379,7 +385,7 @@ namespace Tests.Tests
 
             // Assert
 
-            Assert.AreEqual((byte)5, result);
+            Assert.AreEqual(expected, result);
         }
 
         [TestMethod]

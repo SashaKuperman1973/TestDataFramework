@@ -23,7 +23,7 @@ namespace TestDataFramework.Helpers.Concrete
             RandomSymbolStringGenerator.Logger.Debug("Exiting constructor");
         }
 
-        public virtual string GetRandomString(int? length = null)
+        public string GetRandomString(int? length = null)
         {
             RandomSymbolStringGenerator.Logger.Debug("Entering GetRandomString");
 

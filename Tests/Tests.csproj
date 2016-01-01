@@ -44,6 +44,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -62,8 +63,8 @@
   <ItemGroup>
     <Compile Include="Helpers.cs" />
     <Compile Include="Mocks\MockPersistence.cs" />
-    <Compile Include="TestModels\PersistenceSubjects.cs" />
-    <Compile Include="TestModels\SubjectClass.cs" />
+    <Compile Include="TestModels\PrimaryForeignReferenceSubjectClasses.cs" />
+    <Compile Include="TestModels\SubjectClasses.cs" />
     <Compile Include="Tests\CircularReferenceBreakerTests.cs" />
     <Compile Include="Tests\StandardPopulatorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -76,6 +77,8 @@
     <Compile Include="Tests\RecordReferenceTests.cs" />
     <Compile Include="Tests\InsertRecordTests.cs" />
     <Compile Include="Tests\InsertRecordServiceTest.cs" />
+    <Compile Include="Tests\DbProviderWritePrimitivesTests.cs" />
+    <Compile Include="Tests\InsertStatementValueFormatterTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Tests To Do.txt" />

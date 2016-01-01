@@ -209,5 +209,53 @@ namespace Tests.Tests
 
             Assert.IsFalse(primaryKeyValues.Any());
         }
+
+        [TestMethod]
+        public void CopyForeignKeyColumns_Test()
+        {
+            // Arrange
+
+            var target = new ManualKeyForeignTable();
+
+            this.insertRecordService = new InsertRecordService(new RecordReference<ManualKeyForeignTable>(target));
+
+            var columns = new[]
+            {
+                new Column { Name = "ForeignKey1", Value = "ABCD" },
+                new Column { Name = "Two", Value = new Variable(null) },
+                new Column { Name = "ForeignKey2", Value = 3 },
+            };
+
+            // Act
+
+            this.insertRecordService.CopyForeignKeyColumns(columns);
+
+            // Assert
+
+            Assert.AreEqual("ABCD", target.ForeignKey1);
+            Assert.AreEqual(3, target.ForeignKey2);
+        }
+
+        [TestMethod]
+        public void CopyForeignKeyColumns_UnknownColumnThrows_Test()
+        {
+            // Arrange
+
+            this.insertRecordService = new InsertRecordService(new RecordReference<ManualKeyForeignTable>(new ManualKeyForeignTable()));
+
+            var columns = new[]
+            {
+                new Column { Name = "ForeignKey1", Value = "ABCD" },
+                new Column { Name = "Two", Value = new object() },
+            };
+
+            // Act
+            // Assert
+
+            Helpers.ExceptionTest(
+                () => this.insertRecordService.CopyForeignKeyColumns(columns),
+                typeof(InvalidOperationException),
+                "Sequence contains no matching element");            
+        }
     }
 }

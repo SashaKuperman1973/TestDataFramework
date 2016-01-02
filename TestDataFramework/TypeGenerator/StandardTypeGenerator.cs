@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using log4net;
 using TestDataFramework.Exceptions;
+using TestDataFramework.Helpers;
 using TestDataFramework.ValueGenerator;
 
 namespace TestDataFramework.TypeGenerator
@@ -50,7 +51,7 @@ namespace TestDataFramework.TypeGenerator
         {
             StandardTypeGenerator.Logger.Debug("Entering FillObject");
 
-            PropertyInfo[] targetProperties = objectToFill.GetType().GetProperties();
+            PropertyInfo[] targetProperties = objectToFill.GetType().GetProperties(Helper.PropertyBindingFlags);
 
             foreach (PropertyInfo targetPropertyInfo in targetProperties)
             {

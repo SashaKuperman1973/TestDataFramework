@@ -138,7 +138,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             InsertRecordService.Logger.Debug("Entering GetRegularColumnData");
 
             IEnumerable<Column> result =
-                this.recordReference.RecordType.GetProperties()
+                this.recordReference.RecordType.GetProperties(Helper.PropertyBindingFlags)
                     .Where(
                         p =>
                             p.GetSingleAttribute<ForeignKeyAttribute>() == null &&
@@ -253,7 +253,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                 }
 
                 PropertyInfo targetProperty =
-                    this.recordReference.RecordType.GetProperties().First(p => Helper.GetColunName(p).Equals(c.Name));
+                    this.recordReference.RecordType.GetProperties(Helper.PropertyBindingFlags).First(p => Helper.GetColunName(p).Equals(c.Name));
 
                 targetProperty.SetValue(this.recordReference.RecordObject, c.Value);
             });

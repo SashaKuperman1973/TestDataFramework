@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using TestDataFramework.Helpers;
 using TestDataFramework.Persistence;
 using TestDataFramework.Populator;
 
@@ -18,7 +19,7 @@ namespace Tests.Mocks
 
                 this.Storage.Add(propertyDictionary);
 
-                PropertyInfo[] propertyInfoCollection = recordObject.GetType().GetProperties();
+                PropertyInfo[] propertyInfoCollection = recordObject.GetType().GetProperties(Helper.PropertyBindingFlags);
 
                 propertyInfoCollection.ToList()
                     .ForEach(

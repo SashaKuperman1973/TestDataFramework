@@ -37,7 +37,7 @@ namespace TestDataFramework.Helpers
 
             sb.AppendLine(objectValue.GetType().ToString());
 
-            IEnumerable<PropertyInfo> propertyInfos = objectValue.GetType().GetProperties();
+            IEnumerable<PropertyInfo> propertyInfos = objectValue.GetType().GetProperties(BindingFlags.Public | BindingFlags.GetProperty);
 
             foreach (PropertyInfo propertyInfo in propertyInfos)
             {
@@ -70,5 +70,8 @@ namespace TestDataFramework.Helpers
             bool result = Helper.SpecialTypes.Any(st => st.IsInstanceOfType(value));
             return result;
         }
+
+        public static BindingFlags PropertyBindingFlags
+            => BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty | BindingFlags.SetProperty;
     }
 }

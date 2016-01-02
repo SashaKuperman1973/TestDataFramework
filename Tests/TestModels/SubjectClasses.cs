@@ -10,6 +10,9 @@ namespace Tests.TestModels
         public const int Precision = 2;
         public const long Max = 7;
 
+        [PrimaryKey(KeyType = PrimaryKeyAttribute.KeyTypeEnum.Auto)]
+        public int Key { get; set; }
+
         public int Integer { get; set; }
 
         [Max(SubjectClass.Max)]

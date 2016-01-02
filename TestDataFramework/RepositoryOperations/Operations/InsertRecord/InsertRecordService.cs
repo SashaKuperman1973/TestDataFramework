@@ -18,14 +18,14 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
         private static readonly ILog Logger = LogManager.GetLogger(typeof(InsertRecordService));
         private readonly RecordReference recordReference;
 
-        private readonly PrimaryKeyAttribute.KeyTypeEnum keyType;
+        public PrimaryKeyAttribute.KeyTypeEnum KeyType { get; }
 
         #region Constructor
 
         public InsertRecordService(RecordReference recordReference)
         {
             this.recordReference = recordReference;
-            this.keyType = this.DetermineKeyType();
+            this.KeyType = this.DetermineKeyType();
         }
 
         private PrimaryKeyAttribute.KeyTypeEnum DetermineKeyType()
@@ -72,11 +72,11 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
         }
 
         public virtual void WritePrimaryKeyOperations(IWritePrimitives writer, IEnumerable<InsertRecord> primaryKeyOperations,
-            CircularReferenceBreaker breaker, CurrentOrder currentOrder, AbstractRepositoryOperation[] orderedOperations)
+            CircularReferenceBreaker breaker, Counter order, AbstractRepositoryOperation[] orderedOperations)
         {
             InsertRecordService.Logger.Debug("Entering WriteHigherPriorityOperations");
 
-            primaryKeyOperations.ToList().ForEach(o => o.Write(breaker, writer, currentOrder, orderedOperations));
+            primaryKeyOperations.ToList().ForEach(o => o.Write(breaker, writer, order, orderedOperations));
 
             InsertRecordService.Logger.Debug("Exiting WriteHigherPriorityOperations");
         }
@@ -143,7 +143,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                         p =>
                             p.GetSingleAttribute<ForeignKeyAttribute>() == null &&
                             (p.GetSingleAttribute<PrimaryKeyAttribute>() == null ||
-                             this.keyType == PrimaryKeyAttribute.KeyTypeEnum.Manual))
+                             this.KeyType == PrimaryKeyAttribute.KeyTypeEnum.Manual))
                     .Select(
                         p =>
                             new Column
@@ -175,7 +175,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
         {
             InsertRecordService.Logger.Debug("Entering HandlePrimaryKeyValues");
 
-            switch (this.keyType)
+            switch (this.KeyType)
             {
                 case PrimaryKeyAttribute.KeyTypeEnum.Auto:
 

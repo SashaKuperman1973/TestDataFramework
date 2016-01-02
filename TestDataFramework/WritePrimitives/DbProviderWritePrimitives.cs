@@ -42,19 +42,30 @@ namespace TestDataFramework.WritePrimitives
             DbProviderWritePrimitives.Logger.Debug("Exiting Insert");
         }
 
+        public object SelectIdentity()
+        {
+            string symbol = this.symbolGenerator.GetRandomString(10);
+
+            this.executionStatements.AppendLine($"declare @{symbol} bigint;");
+            this.executionStatements.AppendLine($"select @{symbol} = @@identity;");
+            this.executionStatements.AppendLine();
+
+            var result = new Variable(symbol);
+            return result;
+        }
+
         public object[] Execute()
         {
             DbProviderWritePrimitives.Logger.Debug("Entering Execute");
 
             var result = new List<object>();
 
-            DbCommandBuilder commandBuilder = this.dbProviderFactory.CreateCommandBuilder();
-            DbCommand command = commandBuilder.GetInsertCommand();
-
+            DbCommand command = this.dbProviderFactory.CreateCommand();
             command.CommandType = CommandType.Text;
-            command.CommandText = this.executionStatements.ToString();
             command.Connection = this.dbProviderFactory.CreateConnection();
             command.Connection.ConnectionString = this.connectionStringWithDefaultCatalogue;
+
+            command.CommandText = this.executionStatements.ToString();
 
             using (command.Connection)
             {
@@ -86,7 +97,7 @@ namespace TestDataFramework.WritePrimitives
 
         private static string BuildParameterListText(IEnumerable<Column> columns)
         {
-            string result = "(" + string.Join(", ", "[" + columns.Select(c => c.Name)) + "]" + ")";
+            string result = "(" + string.Join(", ", columns.Select(c => "[" + c.Name + "]")) + ")";
             return result;
         }
 
@@ -108,18 +119,6 @@ namespace TestDataFramework.WritePrimitives
             string result = this.formatter.Format(value);
 
             return result ?? "null";
-        }
-
-        public object SelectIdentity()
-        {
-            string symbol = this.symbolGenerator.GetRandomString(10);
-
-            this.executionStatements.AppendLine($"declare @{symbol} bigint;");
-            this.executionStatements.AppendLine($"select @{symbol} = @@identity;");
-            this.executionStatements.AppendLine();
-
-            var result = new Variable(symbol);
-            return result;
         }
     }
 }

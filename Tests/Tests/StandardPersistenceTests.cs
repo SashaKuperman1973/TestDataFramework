@@ -34,12 +34,14 @@ namespace Tests.Tests
 
             var primaryTable = new PrimaryTable { Integer = 5, Text = "Text"};
             var primaryRecordReference = new RecordReference<PrimaryTable>(primaryTable);
-            const string tableName = "ABCD";
+            string tableName = typeof(PrimaryTable).Name;
 
             List<Column> primaryTableColumns = null;
 
             this.writePrimitivesMock.Setup(m => m.Insert(tableName, It.IsAny<IEnumerable<Column>>()))
-                .Callback<IEnumerable<Column>>(c => primaryTableColumns = c.ToList());
+                .Callback<string, IEnumerable<Column>>((s, c) => primaryTableColumns = c.ToList());
+
+            this.writePrimitivesMock.Setup(m => m.Execute()).Returns(new object[] {0});
 
             // Act
 
@@ -72,12 +74,13 @@ namespace Tests.Tests
             foreignRecordReference.AddPrimaryRecordReference(primaryRecordReference);
 
             var columns = new List<List<Column>>();
-            const string tableName = "ABCD";
 
-            this.writePrimitivesMock.Setup(m => m.Insert(tableName, It.IsAny<IEnumerable<Column>>()))
-                .Callback<IEnumerable<Column>>(c => columns.Add(c.ToList()));
+            this.writePrimitivesMock.Setup(m => m.Insert(It.IsAny<string>(), It.IsAny<IEnumerable<Column>>()))
+                .Callback<string, IEnumerable<Column>>((s, c) => columns.Add(c.ToList()));
 
             this.writePrimitivesMock.Setup(m => m.SelectIdentity()).Returns(new Variable(null));
+
+            this.writePrimitivesMock.Setup(m => m.Execute()).Returns(new object[] {0, 0});
 
             // Act
 
@@ -110,7 +113,7 @@ namespace Tests.Tests
             var columns = new List<List<Column>>();
 
             this.writePrimitivesMock.Setup(m => m.Insert(tableName, It.IsAny<IEnumerable<Column>>()))
-                .Callback<IEnumerable<Column>>(c => columns.Add(c.ToList()));
+                .Callback<string, IEnumerable<Column>>((s,c) => columns.Add(c.ToList()));
 
             // Act
 
@@ -123,9 +126,34 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void ForeignKeyCopiedFromAutoPrimaryKey_Test()
+        public void ForeignKeyCopiedFromAutoPrimaryKey_InCorrectOrder_Test()
         {
-            throw new NotImplementedException();
+            // Arrange
+
+            var primaryTable = new PrimaryTable();
+            var primaryRecordReference = new RecordReference<PrimaryTable>(primaryTable);
+
+            var foreignTable = new ForeignTable();
+            var foreignRecordReference = new RecordReference<ForeignTable>(foreignTable);
+
+            foreignRecordReference.AddPrimaryRecordReference(primaryRecordReference);
+
+            var expected = new object[] {1, 2};
+
+            this.writePrimitivesMock.Setup(m => m.Execute()).Returns(expected);
+            
+            // Act
+
+            // Note the foreign key record is being passed in before the primary key record. 
+            // This is to test that the primary key record that wrote first gets the first return
+            // data element and the foreign key record gets the subsequent one.
+
+            this.persistence.Persist(new RecordReference[] { foreignRecordReference, primaryRecordReference });
+
+            // Assert
+
+            Assert.AreEqual(expected[0], primaryTable.Key);
+            Assert.AreEqual(expected[1], foreignTable.Key);
         }
     }
 }

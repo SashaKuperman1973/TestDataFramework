@@ -74,7 +74,7 @@ namespace Tests.Tests
             // Act
 
             var breaker = new CircularReferenceBreaker();
-            var currentOrder = new CurrentOrder();
+            var currentOrder = new Counter();
             var orderedOperations = new AbstractRepositoryOperation[0];
 
             this.insertRecordService.WritePrimaryKeyOperations(this.writerMock.Object, primaryKeyOperations.Select(m => m.Object), breaker, currentOrder, orderedOperations);
@@ -147,7 +147,7 @@ namespace Tests.Tests
             var primaryKeyValues = new List<ColumnSymbol>();
 
             const string identityVariableSymbol = "ABCD";
-            const string tableName = "XYZ";
+            string tableName = this.mainTable.GetType().Name;
 
             this.writerMock.Setup(m => m.SelectIdentity()).Returns(identityVariableSymbol);
 

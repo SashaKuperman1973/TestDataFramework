@@ -6,7 +6,6 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using log4net;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.Helpers;
 
 namespace TestDataFramework.RepositoryOperations

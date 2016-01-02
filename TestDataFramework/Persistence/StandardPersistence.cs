@@ -42,7 +42,7 @@ namespace TestDataFramework.Persistence
 
             var orderedOperations = new AbstractRepositoryOperation[operations.Count];
 
-            var currentOrder = new CurrentOrder();
+            var currentOrder = new Counter();
 
             foreach (AbstractRepositoryOperation operation in operations)
             {
@@ -50,9 +50,13 @@ namespace TestDataFramework.Persistence
                     orderedOperations);
             }
 
+            var readStreamPointer = new Counter();
+
+            object[] returnValues = this.writePrimitives.Execute();
+
             foreach (AbstractRepositoryOperation orderedOperation in orderedOperations)
             {
-                orderedOperation.Read();
+                orderedOperation.Read(readStreamPointer, returnValues);
             }
         }
     }

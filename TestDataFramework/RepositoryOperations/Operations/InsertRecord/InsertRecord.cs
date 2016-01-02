@@ -33,11 +33,11 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
         #region Public methods
 
-        public override void Write(CircularReferenceBreaker breaker, IWritePrimitives writer, CurrentOrder currentOrder, AbstractRepositoryOperation[] orderedOperations)
+        public override void Write(CircularReferenceBreaker breaker, IWritePrimitives writer, Counter order, AbstractRepositoryOperation[] orderedOperations)
         {
             InsertRecord.Logger.Debug("Entering Write:" + this.DumpObject());
 
-            if (breaker.IsVisited<IWritePrimitives, CurrentOrder, AbstractRepositoryOperation[]>(this.Write))
+            if (breaker.IsVisited<IWritePrimitives, Counter, AbstractRepositoryOperation[]>(this.Write))
             {
                 InsertRecord.Logger.Debug("Write already visited. Exiting");
                 return;
@@ -49,15 +49,15 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                 return;
             }
 
-            breaker.Push<IWritePrimitives, CurrentOrder, AbstractRepositoryOperation[]>(this.Write);
+            breaker.Push<IWritePrimitives, Counter, AbstractRepositoryOperation[]>(this.Write);
 
             IEnumerable<InsertRecord> primaryKeyOperations = this.service.GetPrimaryKeyOperations(this.Peers).ToList();
 
-            this.service.WritePrimaryKeyOperations(writer, primaryKeyOperations, breaker, currentOrder, orderedOperations);
+            this.service.WritePrimaryKeyOperations(writer, primaryKeyOperations, breaker, order, orderedOperations);
 
             Columns columnData = this.service.GetColumnData(primaryKeyOperations);
 
-            this.Order = currentOrder.Value++;
+            this.Order = order.Value++;
             orderedOperations[this.Order] = this;
 
             string tableName = Helper.GetTableName(this.RecordReference.RecordType);
@@ -73,9 +73,18 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             InsertRecord.Logger.Debug("Exiting Write");
         }
 
-        public override void Read()
+        public override void Read(Counter readStreamPointer, object[] data)
         {
             InsertRecord.Logger.Debug("Entering Read");
+
+            if (this.service.KeyType == PrimaryKeyAttribute.KeyTypeEnum.Auto)
+            {
+                PropertyAttribute<PrimaryKeyAttribute> primaryKeyPropertyAttribute =
+                    this.RecordReference.RecordType.GetPropertyAttributes<PrimaryKeyAttribute>().First();
+
+                primaryKeyPropertyAttribute.PropertyInfo.SetValue(this.RecordReference.RecordObject,
+                    data[readStreamPointer.Value++]);
+            }
 
             InsertRecord.Logger.Debug("Exiting Read");
         }

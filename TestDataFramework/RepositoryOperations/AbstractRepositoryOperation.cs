@@ -14,8 +14,8 @@ namespace TestDataFramework.RepositoryOperations
     {
         protected IEnumerable<AbstractRepositoryOperation> Peers;
 
-        public abstract void Write(CircularReferenceBreaker breaker, IWritePrimitives writer, CurrentOrder order, AbstractRepositoryOperation[] orderedOperations);
-        public abstract void Read();
+        public abstract void Write(CircularReferenceBreaker breaker, IWritePrimitives writer, Counter order, AbstractRepositoryOperation[] orderedOperations);
+        public abstract void Read(Counter readStreamPointer, object[] data);
 
         protected bool IsWriteDone { get; set; }
         protected long Order { get; set; }

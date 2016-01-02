@@ -22,5 +22,8 @@
 
         public const string NoReferentialIntegrity =
             "Referential integrity error in schema between primary type {0} and foreign type {1}. Can also happen if foreign->primary keys are different types.";
+
+        public const string NotInATransaction =
+            "Ambient tranactions being enforced and persitence code not running in one. Possibly committing to underlying data source unintentionally. You can specify that you want to skip transaction checking in the API.";
     }
 }

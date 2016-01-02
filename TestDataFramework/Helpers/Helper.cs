@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Transactions;
 using TestDataFramework.RepositoryOperations.Model;
 
 namespace TestDataFramework.Helpers
@@ -79,6 +80,16 @@ namespace TestDataFramework.Helpers
             results = results.Where(r => r.CanRead && r.CanWrite).ToArray();
 
             return results;
+        }
+
+        public static bool InAmbientTransaction
+        {
+            get
+            {
+                System.Transactions.Transaction transaction = System.Transactions.Transaction.Current;
+
+                return transaction?.TransactionInformation.Status == TransactionStatus.Active;
+            }
         }
     }
 }

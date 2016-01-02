@@ -30,7 +30,8 @@ namespace Tests.Tests
             this.symbolGeneratorMock = new Mock<IRandomSymbolStringGenerator>();
 
             this.primitives = new DbProviderWritePrimitives(DbProviderWritePrimitivesTests.ConnectionString,
-                this.dbProviderFactoryMock.Object, this.formatterMock.Object, this.symbolGeneratorMock.Object);
+                this.dbProviderFactoryMock.Object, this.formatterMock.Object, this.symbolGeneratorMock.Object,
+                mustBeInATransaction: false);
         }
 
         [TestMethod]

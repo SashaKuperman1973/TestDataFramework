@@ -53,4 +53,11 @@ namespace TestDataFramework.Exceptions
             return string.Format(Messages.NoReferentialIntegrity, Helper.PrintType(primaryKeyType), Helper.PrintType(foreignKeyType));
         }
     }
+
+    public class NotInATransactionException : ApplicationException
+    {
+        public NotInATransactionException() : base(Messages.NotInATransaction)
+        {
+        }
+    }
 }

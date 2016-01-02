@@ -4,10 +4,11 @@ using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using log4net;
+using TestDataFramework.Helpers;
 using TestDataFramework.Helpers.Interfaces;
 using TestDataFramework.RepositoryOperations.Model;
+using TestDataFramework.Exceptions;
 
 namespace TestDataFramework.WritePrimitives
 {
@@ -17,18 +18,20 @@ namespace TestDataFramework.WritePrimitives
         private readonly DbProviderFactory dbProviderFactory;
         private readonly IValueFormatter formatter;
         private readonly IRandomSymbolStringGenerator symbolGenerator;
+        private readonly bool mustBeInATransaction;
 
         private readonly StringBuilder executionStatements = new StringBuilder();
 
         private static readonly ILog Logger = LogManager.GetLogger(typeof(DbProviderWritePrimitives));
 
         public DbProviderWritePrimitives(string connectionStringWithDefaultCatalogue, DbProviderFactory dbProviderFactory,
-            IValueFormatter formatter, IRandomSymbolStringGenerator symbolGenerator)
+            IValueFormatter formatter, IRandomSymbolStringGenerator symbolGenerator, bool mustBeInATransaction)
         {
             this.connectionStringWithDefaultCatalogue = connectionStringWithDefaultCatalogue;
             this.dbProviderFactory = dbProviderFactory;
             this.formatter = formatter;
             this.symbolGenerator = symbolGenerator;
+            this.mustBeInATransaction = mustBeInATransaction;
         }
 
         public void Insert(string tableName, IEnumerable<Column> columns)
@@ -57,6 +60,11 @@ namespace TestDataFramework.WritePrimitives
         public object[] Execute()
         {
             DbProviderWritePrimitives.Logger.Debug("Entering Execute");
+
+            if (this.mustBeInATransaction && !Helper.InAmbientTransaction)
+            {
+                throw new NotInATransactionException();
+            }
 
             var result = new List<object>();
 

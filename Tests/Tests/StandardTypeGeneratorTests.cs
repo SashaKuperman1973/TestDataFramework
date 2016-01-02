@@ -43,7 +43,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void GetObject_RecursiveTypeException()
+        public void GetObject_RecursiveTypeSetToNull()
         {
             var typeGenerator = new StandardTypeGenerator(x => this.valueGeneratorMock.Object);
 
@@ -51,16 +51,9 @@ namespace Tests.Tests
             typeGenerator.GetObject(typeof(InfiniteRecursiveClass2));
             typeGenerator.GetObject(typeof(InfiniteRecursiveClass3));
 
-            Action action = () =>
-            {
-                typeGenerator.GetObject(typeof(InfiniteRecursiveClass1));
-            };
+            object result = typeGenerator.GetObject(typeof(InfiniteRecursiveClass1));
 
-            string expectedMessage = string.Format(Messages.TypeRecursion,
-                typeof (InfiniteRecursiveClass1) + " -> " + typeof (InfiniteRecursiveClass2) + " -> " +
-                typeof (InfiniteRecursiveClass3), typeof (InfiniteRecursiveClass1));
-
-            Helpers.ExceptionTest(action, typeof(TypeRecursionException), expectedMessage);
+            Assert.IsNull(result);
         }
 
         [TestMethod]

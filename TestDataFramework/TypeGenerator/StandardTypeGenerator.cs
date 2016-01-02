@@ -27,7 +27,7 @@ namespace TestDataFramework.TypeGenerator
 
             if (this.complexTypeProcessingRecursionGuard.Contains(forType))
             {
-                throw new TypeRecursionException(forType, this.complexTypeProcessingRecursionGuard);
+                return null;
             }
 
             this.complexTypeProcessingRecursionGuard.Add(forType);

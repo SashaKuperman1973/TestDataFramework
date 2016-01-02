@@ -2,8 +2,6 @@
 Consider returning null when type recursion detected instead of throwing a TypeRecursionException. Maybe not. Remember to log it.
 
 =Tests to write
-InsertRecord.Read
-InsertRecord.Insert Variable type handling
 
 =Scratchpad
 

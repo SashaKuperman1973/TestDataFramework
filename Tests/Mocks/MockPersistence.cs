@@ -19,7 +19,7 @@ namespace Tests.Mocks
 
                 this.Storage.Add(propertyDictionary);
 
-                PropertyInfo[] propertyInfoCollection = recordObject.GetType().GetProperties(Helper.PropertyBindingFlags);
+                PropertyInfo[] propertyInfoCollection = recordObject.GetType().GetPropertiesHelper();
 
                 propertyInfoCollection.ToList()
                     .ForEach(

@@ -32,7 +32,7 @@ namespace TestDataFramework.Helpers
 
         public static IEnumerable<T> GetUniqueAttributes<T>(this Type type) where T : Attribute
         {
-            IEnumerable<T> result = type.GetProperties()
+            IEnumerable<T> result = type.GetPropertiesHelper()
                 .Select(p => p.GetSingleAttribute<T>()).Where(a => a != null);
 
             return result;
@@ -53,7 +53,7 @@ namespace TestDataFramework.Helpers
             this Type type) where T : Attribute
         {
             IEnumerable<PropertyAttribute<T>> result =
-                type.GetProperties().Select(pi => pi.GetPropertyAttribute<T>()).Where(pa => pa.Attribute != null);
+                type.GetPropertiesHelper().Select(pi => pi.GetPropertyAttribute<T>()).Where(pa => pa.Attribute != null);
 
             return result;
         }

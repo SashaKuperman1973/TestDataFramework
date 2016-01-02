@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using TestDataFramework.RepositoryOperations.Model;
-using TestDataFramework.RepositoryOperations.Operations;
 
 namespace TestDataFramework.Helpers
 {
@@ -37,7 +36,7 @@ namespace TestDataFramework.Helpers
 
             sb.AppendLine(objectValue.GetType().ToString());
 
-            IEnumerable<PropertyInfo> propertyInfos = objectValue.GetType().GetProperties(BindingFlags.Public | BindingFlags.GetProperty);
+            IEnumerable<PropertyInfo> propertyInfos = objectValue.GetType().GetPropertiesHelper();
 
             foreach (PropertyInfo propertyInfo in propertyInfos)
             {
@@ -71,7 +70,15 @@ namespace TestDataFramework.Helpers
             return result;
         }
 
-        public static BindingFlags PropertyBindingFlags
-            => BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty | BindingFlags.SetProperty;
+        public static PropertyInfo[] GetPropertiesHelper(this Type type)
+        {
+            PropertyInfo[] results =
+                type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty |
+                                   BindingFlags.SetProperty);
+
+            results = results.Where(r => r.CanRead && r.CanWrite).ToArray();
+
+            return results;
+        }
     }
 }

@@ -10,6 +10,9 @@ namespace Tests.TestModels
         public const int Precision = 2;
         public const long Max = 7;
 
+        public int Getter { get { throw new NotImplementedException();} }
+        public int Setter { set { throw new NotImplementedException();} }
+
         [PrimaryKey(KeyType = PrimaryKeyAttribute.KeyTypeEnum.Auto)]
         public int Key { get; set; }
 

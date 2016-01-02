@@ -1,5 +1,4 @@
-﻿Ensure that only properties with both getter and setter are included in processing - both in generation and operation (insertion)
-The randomizers for rest of the special collection types that are implemented in the old system.
+﻿The randomizers for rest of the special collection types that are implemented in the old system.
 Consider returning null when type recursion detected instead of throwing a TypeRecursionException. Maybe not. Remember to log it.
 
 =Tests to write

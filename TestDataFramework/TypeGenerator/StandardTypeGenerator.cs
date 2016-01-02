@@ -51,7 +51,7 @@ namespace TestDataFramework.TypeGenerator
         {
             StandardTypeGenerator.Logger.Debug("Entering FillObject");
 
-            PropertyInfo[] targetProperties = objectToFill.GetType().GetProperties(Helper.PropertyBindingFlags);
+            PropertyInfo[] targetProperties = objectToFill.GetType().GetPropertiesHelper();
 
             foreach (PropertyInfo targetPropertyInfo in targetProperties)
             {

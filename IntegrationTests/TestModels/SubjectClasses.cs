@@ -7,9 +7,9 @@ namespace IntegrationTests.TestModels
     [Table(Name = "Subject")]
     public class SubjectClass
     {
-        public const int StringLength = 10;
+        public const int StringLength = 5;
         public const int Precision = 4;
-        public const long Max = 7;
+        public const long Max = 55;
 
         public int Getter { get { throw new NotImplementedException();} }
         public int Setter { set { throw new NotImplementedException();} }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.ArrayRandomizer;
@@ -37,6 +38,8 @@ namespace Tests.Tests
         [TestInitialize]
         public void Initialize()
         {
+            XmlConfigurator.Configure();
+
             this.randomizerMock = new Mock<IRandomizer>();
             this.typeGeneratorMock = new Mock<ITypeGenerator>();
             this.arrayRandomizerMock = new Mock<IArrayRandomizer>();

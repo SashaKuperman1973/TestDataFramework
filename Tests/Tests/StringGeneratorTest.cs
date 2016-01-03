@@ -1,4 +1,5 @@
 ﻿using System;
+using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.Exceptions;
 using TestDataFramework.UniqueValueGenerator;
@@ -8,6 +9,12 @@ namespace Tests.Tests
     [TestClass]
     public class StringGeneratorTest
     {
+        [TestInitialize]
+        public void Initialize()
+        {
+            XmlConfigurator.Configure();
+        }
+
         [TestMethod]
         public void StringGenerator_Test()
         {

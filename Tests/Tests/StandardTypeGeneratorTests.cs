@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.Exceptions;
@@ -17,6 +18,8 @@ namespace Tests.Tests
         [TestInitialize]
         public void Initialize()
         {
+            XmlConfigurator.Configure();
+
             this.valueGeneratorMock = new Mock<IValueGenerator>();
         }
 

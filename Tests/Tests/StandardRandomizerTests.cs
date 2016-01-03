@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Data.SqlTypes;
+using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.Helpers.Interfaces;
@@ -19,9 +21,12 @@ namespace Tests.Tests
         [TestInitialize]
         public void Initialize()
         {
+            XmlConfigurator.Configure();
+
             this.randomMock = new Mock<Random>();
             this.stringGeneratorMock = new Mock<IRandomSymbolStringGenerator>();
-            this.randomizer = new StandardRandomizer(this.randomMock.Object, this.stringGeneratorMock.Object, () => this.now);
+            this.randomizer = new StandardRandomizer(this.randomMock.Object, this.stringGeneratorMock.Object,
+                () => this.now, SqlDateTime.MinValue.Value.Ticks, SqlDateTime.MaxValue.Value.Ticks);
         }
 
         [TestMethod]

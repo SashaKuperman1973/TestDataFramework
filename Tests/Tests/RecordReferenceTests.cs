@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
@@ -10,6 +11,12 @@ namespace Tests.Tests
     [TestClass]
     public class RecordReferenceTests
     {
+        [TestInitialize]
+        public void Initialize()
+        {
+            XmlConfigurator.Configure();
+        }
+
         [TestMethod]
         public void ThrowsWhenTypeMismatch_Test()
         {

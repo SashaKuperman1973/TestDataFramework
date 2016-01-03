@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.ArrayRandomizer;
@@ -28,6 +29,8 @@ namespace Tests.Tests
             this.valueGeneratorMock.Setup(m => m.GetValue(It.IsAny<PropertyInfo>(), It.IsAny<Type>())).Returns(ArrayRandomizerTests.Integer);
             this.valueGeneratorMock.Setup(m => m.GetValue(It.IsAny<PropertyInfo>(), It.Is<Type>(t => t.IsArray))).Returns<PropertyInfo, Type>((p, t) => this.arrayRandomizer.GetArray(p, t));
             this.randomMock.Setup(m => m.Next(It.IsAny<int>())).Returns(ArrayRandomizerTests.ElementLength - 1);
+
+            XmlConfigurator.Configure();
         }
 
         [TestMethod]

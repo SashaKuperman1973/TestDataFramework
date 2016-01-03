@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.Populator;
@@ -13,6 +14,12 @@ namespace Tests.Tests
     [TestClass]
     public class StandardPopulatorTests
     {
+        [TestInitialize]
+        public void Initialize()
+        {
+            XmlConfigurator.Configure();
+        }
+
         [TestMethod]
         public void StandardPopulatorTest_Add()
         {

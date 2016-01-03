@@ -8,3 +8,7 @@
 
 =getting it to work.
 should be able to write to db with what I've got. going to wire up castle windsor with typed factory and see.
+
+UFQILNMVPD
+
+NBENU

@@ -2,6 +2,7 @@
 using System.Configuration;
 using System.Data.Common;
 using System.Data.SqlClient;
+using System.Data.SqlTypes;
 using Castle.Windsor;
 using Castle.MicroKernel.Registration;
 using TestDataFramework.ArrayRandomizer;
@@ -64,8 +65,6 @@ namespace TestDataFramework.Factories
                     Component.For<IValueGenerator>()
                         .ImplementedBy<StandardValueGenerator>(),
 
-                    Component.For<IRandomizer>().ImplementedBy<StandardRandomizer>(),
-
                     Component.For<DateTimeProvider>().Instance(() => Helper.Now),
 
                     Component.For<Func<IValueGenerator, IArrayRandomizer>>()
@@ -97,19 +96,26 @@ namespace TestDataFramework.Factories
                 Component.For<IPersistence>().ImplementedBy<StandardPersistence>(),
 
                 Component.For<IWritePrimitives>().ImplementedBy<DbProviderWritePrimitives>()
-                .DependsOn((k, d) =>
-                {
-                    d["connectionStringWithDefaultCatalogue"] = connectionStringWithDefaultCatalogue;
-                    d["mustBeInATransaction"] = mustBeInATransaction;
-                    d["configuration"] = ConfigurationManager.AppSettings;
-                }),
+                    .DependsOn((k, d) =>
+                    {
+                        d["connectionStringWithDefaultCatalogue"] = connectionStringWithDefaultCatalogue;
+                        d["mustBeInATransaction"] = mustBeInATransaction;
+                        d["configuration"] = ConfigurationManager.AppSettings;
+                    }),
 
                 Component.For<DbProviderFactory>().UsingFactoryMethod(() => SqlClientFactory.Instance, true),
 
                 Component.For<IValueFormatter>().ImplementedBy<InsertStatementValueFormatter>(),
 
-                Component.For<IRandomSymbolStringGenerator>().ImplementedBy<RandomSymbolStringGenerator>()
-                );
+                Component.For<IRandomSymbolStringGenerator>().ImplementedBy<RandomSymbolStringGenerator>(),
+
+                Component.For<IRandomizer>().ImplementedBy<StandardRandomizer>().DependsOn((k, d) =>
+                {
+                    d["dateTimeMinValue"] = SqlDateTime.MinValue.Value.Ticks;
+                    d["dateTimeMaxValue"] = SqlDateTime.MaxValue.Value.Ticks;
+                })
+
+            );
 
             return this.sqlServerPopulatorContainer.Container;
         }

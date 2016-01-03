@@ -37,6 +37,7 @@ namespace TestDataFramework.ValueFormatter
             {typeof (string), InsertStatementValueFormatter.StringFormatter},
             {typeof (char), InsertStatementValueFormatter.CharFormatter},
             {typeof (decimal), InsertStatementValueFormatter.DecimalFomatter},
+            {typeof (double), InsertStatementValueFormatter.DoubleFomatter},
             {typeof (bool), InsertStatementValueFormatter.BoolFormatter},
             {typeof (DateTime), InsertStatementValueFormatter.DateTimeFormatter},
             {typeof (byte), InsertStatementValueFormatter.ByteFormatter}
@@ -63,6 +64,12 @@ namespace TestDataFramework.ValueFormatter
         private static string DecimalFomatter(object value)
         {
             string result = ((decimal)value).ToString(NumberFormatInfo.InvariantInfo);
+            return result;
+        }
+
+        private static string DoubleFomatter(object value)
+        {
+            string result = ((double)value).ToString(NumberFormatInfo.InvariantInfo);
             return result;
         }
 

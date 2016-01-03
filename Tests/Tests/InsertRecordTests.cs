@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.Populator;
@@ -26,6 +27,8 @@ namespace Tests.Tests
         [TestInitialize]
         public void Initialize()
         {
+            XmlConfigurator.Configure();
+
             this.subject = new SubjectClass();
             this.recordReferenceMock = new Mock<RecordReference>(subject);
             this.peers = new List<AbstractRepositoryOperation>();

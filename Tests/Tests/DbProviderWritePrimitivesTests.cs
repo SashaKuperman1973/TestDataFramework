@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Text;
+using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.Helpers.Interfaces;
@@ -26,6 +27,8 @@ namespace Tests.Tests
         [TestInitialize]
         public void Initialize()
         {
+            XmlConfigurator.Configure();
+
             this.dbProviderFactoryMock = new Mock<DbProviderFactory>();
             this.formatterMock = new Mock<IValueFormatter>();
             this.symbolGeneratorMock = new Mock<IRandomSymbolStringGenerator>();

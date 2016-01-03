@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Data.SqlTypes;
 using log4net;
+using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
 using TestDataFramework.Helpers.Concrete;
 using TestDataFramework.Helpers.Interfaces;
@@ -13,14 +15,18 @@ namespace TestDataFramework.Randomizer
         private readonly Random random;
         private readonly IRandomSymbolStringGenerator stringRandomizer;
         private readonly DateTimeProvider dateProvider;
+        private readonly long dateTimeMinValue;
+        private readonly long dateTimeMaxValue;
 
-        public StandardRandomizer(Random random, IRandomSymbolStringGenerator stringRandomizer, DateTimeProvider dateProvider)
+        public StandardRandomizer(Random random, IRandomSymbolStringGenerator stringRandomizer, DateTimeProvider dateProvider, long dateTimeMinValue, long dateTimeMaxValue)
         {
             StandardRandomizer.Logger.Debug("Entering constructor");
 
             this.random = random;
             this.stringRandomizer = stringRandomizer;
             this.dateProvider = dateProvider;
+            this.dateTimeMinValue = dateTimeMinValue;
+            this.dateTimeMaxValue = dateTimeMaxValue;
 
             StandardRandomizer.Logger.Debug("Exiting constructor");
         }
@@ -140,11 +146,33 @@ namespace TestDataFramework.Randomizer
 
             StandardRandomizer.Logger.Debug("pastOrFuture = " + pastOrFuture);
 
-            int ticks = this.random.Next();
+            DateTime dateTime = this.dateProvider();
+            DateTime result;
+
+            long maxLong, randomLong;
+            switch (pastOrFuture.Value)
+            {
+                case PastOrFuture.Future:
+                    maxLong = this.dateTimeMaxValue - dateTime.Ticks;
+                    randomLong = this.RandomizeLongInteger(maxLong);
+                    result = dateTime.AddTicks(randomLong);
+                    break;
+
+                case PastOrFuture.Past:
+                    maxLong = dateTime.Ticks - this.dateTimeMinValue;
+                    randomLong = this.RandomizeLongInteger(maxLong);
+                    result = dateTime.AddTicks(-randomLong);
+                    break;
+
+                default:
+                    throw new ArgumentException(Messages.UnknownPastOrFutureEnumValue, nameof(pastOrFuture));
+            }
+
+            long ticks = this.RandomizeLongInteger(null);
 
             ticks = pastOrFuture == PastOrFuture.Future ? ticks : -ticks;
 
-            DateTime result = this.dateProvider().AddTicks(ticks);
+            //DateTime result = this.dateProvider().AddTicks(ticks);
 
             StandardRandomizer.Logger.Debug("Exiting RandomizeBoolean");
             return result;

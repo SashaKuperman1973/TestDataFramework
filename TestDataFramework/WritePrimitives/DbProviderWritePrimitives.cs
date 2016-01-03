@@ -55,6 +55,7 @@ namespace TestDataFramework.WritePrimitives
 
             this.executionStatements.AppendLine($"declare @{symbol} bigint;");
             this.executionStatements.AppendLine($"select @{symbol} = @@identity;");
+            this.executionStatements.AppendLine($"select @{symbol}");
             this.executionStatements.AppendLine();
 
             var result = new Variable(symbol);

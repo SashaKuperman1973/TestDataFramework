@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.Design;
+using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.ValueFormatter;
 
@@ -13,6 +14,8 @@ namespace Tests.Tests
         [TestInitialize]
         public void Initialize()
         {
+            XmlConfigurator.Configure();
+
             this.formatter = new InsertStatementValueFormatter();
         }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.Helpers.Concrete;
 
@@ -10,6 +11,8 @@ namespace Tests.Tests
         [TestMethod]
         public void RandomSymbolStringGenerator_Test()
         {
+            XmlConfigurator.Configure();
+
             // Arrange
 
             var randomSymbolStringGenerator = new RandomSymbolStringGenerator(new Random());

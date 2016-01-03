@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using log4net;
@@ -82,8 +83,10 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                 PropertyAttribute<PrimaryKeyAttribute> primaryKeyPropertyAttribute =
                     this.RecordReference.RecordType.GetPropertyAttributes<PrimaryKeyAttribute>().First();
 
-                primaryKeyPropertyAttribute.PropertyInfo.SetValue(this.RecordReference.RecordObject,
-                    data[readStreamPointer.Value++]);
+                object value = data[readStreamPointer.Value++];
+                object result = Convert.ChangeType(value, primaryKeyPropertyAttribute.PropertyInfo.PropertyType);
+
+                primaryKeyPropertyAttribute.PropertyInfo.SetValue(this.RecordReference.RecordObject, result);
             }
 
             InsertRecord.Logger.Debug("Exiting Read");

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.RepositoryOperations;
 
@@ -19,6 +20,8 @@ namespace Tests.Tests
         [TestMethod]
         public void CircularReferenceBreaker_Test()
         {
+            XmlConfigurator.Configure();
+
             var breaker = new CircularReferenceBreaker();
 
             Assert.IsFalse(breaker.IsVisited<object, object, object>(this.TestMethod));

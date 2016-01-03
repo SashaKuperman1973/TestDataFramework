@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.UniqueValueGenerator;
@@ -14,6 +15,12 @@ namespace Tests.Tests
     [TestClass]
     public class StandardUniqueValueGeneratorTest
     {
+        [TestInitialize]
+        public void Initialize()
+        {
+            XmlConfigurator.Configure();
+        }
+
         [TestMethod]
         public void String_Test()
         {

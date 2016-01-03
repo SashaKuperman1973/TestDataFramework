@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.Factories;
 using TestDataFramework.Populator;
@@ -9,6 +10,12 @@ namespace Tests.Tests
     [TestClass]
     public class PopulatorFactoryTests
     {
+        [TestInitialize]
+        public void Initialize()
+        {
+            XmlConfigurator.Configure();
+        }
+
         [TestMethod]
         public void GetSqlServerPopulator_Test()
         {

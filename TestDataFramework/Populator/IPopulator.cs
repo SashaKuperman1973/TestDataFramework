@@ -2,7 +2,7 @@
 
 namespace TestDataFramework.Populator
 {
-    internal interface IPopulator
+    public interface IPopulator
     {
         void Bind();
 

@@ -82,6 +82,7 @@
     <Compile Include="Tests\InsertRecordServiceTest.cs" />
     <Compile Include="Tests\DbProviderWritePrimitivesTests.cs" />
     <Compile Include="Tests\InsertStatementValueFormatterTests.cs" />
+    <Compile Include="Tests\PopulatorFactoryTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Tests To Do.txt" />

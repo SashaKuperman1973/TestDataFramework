@@ -16,9 +16,9 @@ namespace TestDataFramework.TypeGenerator
 
         private readonly List<Type> complexTypeProcessingRecursionGuard = new List<Type>();
 
-        public StandardTypeGenerator(Func<ITypeGenerator, IValueGenerator> valueGeneratorFactory)
+        public StandardTypeGenerator(Func<ITypeGenerator, IValueGenerator> getValueGenerator)
         {
-            this.valueGenerator = valueGeneratorFactory(this);
+            this.valueGenerator = getValueGenerator(this);
         }
 
         public virtual object GetObject(Type forType)

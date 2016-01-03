@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
@@ -31,7 +32,8 @@ namespace Tests.Tests
 
             this.primitives = new DbProviderWritePrimitives(DbProviderWritePrimitivesTests.ConnectionString,
                 this.dbProviderFactoryMock.Object, this.formatterMock.Object, this.symbolGeneratorMock.Object,
-                mustBeInATransaction: false);
+                mustBeInATransaction: false,
+                configuration: new NameValueCollection {{"TestDataFramework_DumpSqlInput", "true"}});
         }
 
         [TestMethod]

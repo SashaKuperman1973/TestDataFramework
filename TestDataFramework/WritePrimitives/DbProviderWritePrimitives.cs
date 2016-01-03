@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Configuration;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
@@ -19,19 +21,21 @@ namespace TestDataFramework.WritePrimitives
         private readonly IValueFormatter formatter;
         private readonly IRandomSymbolStringGenerator symbolGenerator;
         private readonly bool mustBeInATransaction;
+        private readonly NameValueCollection configuration;
 
         private readonly StringBuilder executionStatements = new StringBuilder();
 
         private static readonly ILog Logger = LogManager.GetLogger(typeof(DbProviderWritePrimitives));
 
         public DbProviderWritePrimitives(string connectionStringWithDefaultCatalogue, DbProviderFactory dbProviderFactory,
-            IValueFormatter formatter, IRandomSymbolStringGenerator symbolGenerator, bool mustBeInATransaction)
+            IValueFormatter formatter, IRandomSymbolStringGenerator symbolGenerator, bool mustBeInATransaction, NameValueCollection configuration)
         {
             this.connectionStringWithDefaultCatalogue = connectionStringWithDefaultCatalogue;
             this.dbProviderFactory = dbProviderFactory;
             this.formatter = formatter;
             this.symbolGenerator = symbolGenerator;
             this.mustBeInATransaction = mustBeInATransaction;
+            this.configuration = configuration;
         }
 
         public void Insert(string tableName, IEnumerable<Column> columns)
@@ -73,7 +77,17 @@ namespace TestDataFramework.WritePrimitives
             command.Connection = this.dbProviderFactory.CreateConnection();
             command.Connection.ConnectionString = this.connectionStringWithDefaultCatalogue;
 
-            command.CommandText = this.executionStatements.ToString();
+            string commands = this.executionStatements.ToString();
+
+            bool dumpSqlInput = false;
+            bool.TryParse(this.configuration["TestDataFramework_DumpSqlInput"], out dumpSqlInput);
+
+            if (dumpSqlInput)
+            {
+                DbProviderWritePrimitives.Logger.Debug("\r\n" + commands);
+            }
+
+            command.CommandText = commands;
 
             using (command.Connection)
             {

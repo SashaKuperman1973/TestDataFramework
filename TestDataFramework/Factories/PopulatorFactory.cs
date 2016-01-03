@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Data.Common;
 using System.Data.SqlClient;
 using Castle.Windsor;
@@ -100,6 +101,7 @@ namespace TestDataFramework.Factories
                 {
                     d["connectionStringWithDefaultCatalogue"] = connectionStringWithDefaultCatalogue;
                     d["mustBeInATransaction"] = mustBeInATransaction;
+                    d["configuration"] = ConfigurationManager.AppSettings;
                 }),
 
                 Component.For<DbProviderFactory>().UsingFactoryMethod(() => SqlClientFactory.Instance, true),

@@ -2,8 +2,9 @@
 using TestDataFramework;
 using TestDataFramework.Randomizer;
 
-namespace Tests.TestModels
+namespace IntegrationTests.TestModels
 {
+    [Table(Name = "Subject")]
     public class SubjectClass
     {
         public const int StringLength = 10;
@@ -65,25 +66,16 @@ namespace Tests.TestModels
 
         [Email]
         public string AnEmailAddress { get; set; }
-
-        [Email]
-        public int NotValidForEmail { get; set; }
-
-        public SecondClass SecondObject { get; set; }
-
-        public int[] SimpleArray { get; set; }
-
-        public int[,,] MultiDimensionalArray { get; set; }
-
-        public int[][][] JaggedArray { get; set; }
-
-        public int[,,][][,] MultiDimensionalJaggedArray { get; set; }
-
-        public int[][,,][] JaggedMultiDimensionalArray { get; set; }
     }
 
-    public class SecondClass
+    public class ForeignSubjectClass
     {
+        [PrimaryKey]
+        public int Key { get; set; }
+
+        [ForeignKey(typeof(SubjectClass), "Key")]
+        public int ForeignKey { get; set; }
+
         public int SecondInteger { get; set; }
     }
 
@@ -126,32 +118,5 @@ namespace Tests.TestModels
 
         [Max(int.MaxValue)]
         public short ShortMaxOutOfRange { get; set; }
-    }
-
-    public class ClassWithStringAutoPrimaryKey
-    {
-        public const int StringLength = 10;
-
-        [StringLength(ClassWithStringAutoPrimaryKey.StringLength)]
-        [PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Auto)]
-        public string Key { get; set; }
-    }
-
-    public class ClassWithIntAutoPrimaryKey
-    {
-        [PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Auto)]
-        public int Key { get; set; }
-    }
-
-    public class ClassWithShortAutoPrimaryKey
-    {
-        [PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Auto)]
-        public short Key { get; set; }
-    }
-
-    public class ClassWithLongAutoPrimaryKey
-    {
-        [PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Auto)]
-        public long Key { get; set; }
     }
 }

@@ -11,6 +11,7 @@ using TestDataFramework.Persistence;
 using TestDataFramework.Populator;
 using TestDataFramework.Randomizer;
 using TestDataFramework.TypeGenerator;
+using TestDataFramework.UniqueValueGenerator;
 using TestDataFramework.ValueFormatter;
 using TestDataFramework.ValueGenerator;
 using TestDataFramework.WritePrimitives;
@@ -57,7 +58,7 @@ namespace TestDataFramework.Factories
                     Component.For<Func<ITypeGenerator, IValueGenerator>>()
                         .Instance(typeGenerator => commonContainer.Resolve<IValueGenerator>(new {typeGenerator})),
 
-                    Component.For<Random>().ImplementedBy<Random>(),
+                    Component.For<Random>(),
 
                     Component.For<IValueGenerator>()
                         .ImplementedBy<StandardValueGenerator>(),
@@ -69,7 +70,11 @@ namespace TestDataFramework.Factories
                     Component.For<Func<IValueGenerator, IArrayRandomizer>>()
                         .Instance(valueGenerator => commonContainer.Resolve<IArrayRandomizer>(new {valueGenerator})),
 
-                    Component.For<IArrayRandomizer>().ImplementedBy<StandardArrayRandomizer>()
+                    Component.For<IArrayRandomizer>().ImplementedBy<StandardArrayRandomizer>(),
+
+                    Component.For<IUniqueValueGenerator>().ImplementedBy<StandardUniqueValueGenerator>(),
+
+                    Component.For<StringGenerator>()
 
                     );
 

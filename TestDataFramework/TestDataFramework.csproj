@@ -85,6 +85,9 @@
     <Compile Include="RepositoryOperations\AbstractRepositoryOperation.cs" />
     <Compile Include="TypeGenerator\ITypeGenerator.cs" />
     <Compile Include="TypeGenerator\StandardTypeGenerator.cs" />
+    <Compile Include="UniqueValueGenerator\IUniqueValueGenerator.cs" />
+    <Compile Include="UniqueValueGenerator\StandardUniqueValueGenerator.cs" />
+    <Compile Include="UniqueValueGenerator\StringGenerator.cs" />
     <Compile Include="ValueFormatter\IValueFormatter.cs" />
     <Compile Include="ValueGenerator\IValueGenerator.cs" />
     <Compile Include="ValueGenerator\StandardValueGenerator.cs" />

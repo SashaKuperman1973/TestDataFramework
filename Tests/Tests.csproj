@@ -71,7 +71,7 @@
     <Compile Include="Tests\CircularReferenceBreakerTests.cs" />
     <Compile Include="Tests\StandardPopulatorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tests\StandardValueGeneratorTests.cs" />
+    <Compile Include="Tests\StandardUniqueValueGeneratorTest.cs" />
     <Compile Include="Tests\StandardTypeGeneratorTests.cs" />
     <Compile Include="Tests\StandardRandomizerTests.cs" />
     <Compile Include="Tests\RandomSymbolStringGeneratorTest.cs" />
@@ -83,6 +83,8 @@
     <Compile Include="Tests\DbProviderWritePrimitivesTests.cs" />
     <Compile Include="Tests\InsertStatementValueFormatterTests.cs" />
     <Compile Include="Tests\PopulatorFactoryTests.cs" />
+    <Compile Include="Tests\StandardValueGeneratorTests.cs" />
+    <Compile Include="Tests\StringGeneratorTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Tests To Do.txt" />

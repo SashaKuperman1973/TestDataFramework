@@ -25,5 +25,7 @@
 
         public const string NotInATransaction =
             "Ambient tranactions being enforced and persitence code not running in one. Possibly committing to underlying data source unintentionally. You can specify that you want to skip transaction checking in the API.";
+
+        public const string StringGeneratorOverflow = "input {0} resulted in overflow for string length {1}";
     }
 }

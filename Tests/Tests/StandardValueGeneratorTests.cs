@@ -7,6 +7,7 @@ using TestDataFramework.ArrayRandomizer;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Randomizer;
 using TestDataFramework.TypeGenerator;
+using TestDataFramework.UniqueValueGenerator;
 using TestDataFramework.ValueGenerator;
 using Tests.TestModels;
 
@@ -19,6 +20,7 @@ namespace Tests.Tests
         private Mock<ITypeGenerator> typeGeneratorMock;
         private Mock<IArrayRandomizer> arrayRandomizerMock;
         private StandardValueGenerator valueGenerator;
+        private Mock<IUniqueValueGenerator> uniqueValueGeneratorMock = new Mock<IUniqueValueGenerator>();
 
         private const int IntegerResult = 5;
         private const long LongResult = 6;
@@ -38,6 +40,7 @@ namespace Tests.Tests
             this.randomizerMock = new Mock<IRandomizer>();
             this.typeGeneratorMock = new Mock<ITypeGenerator>();
             this.arrayRandomizerMock = new Mock<IArrayRandomizer>();
+            this.uniqueValueGeneratorMock = new Mock<IUniqueValueGenerator>();
 
             this.randomizerMock.Setup(m => m.RandomizeInteger(It.Is<int?>(max => max == null))).Returns(StandardValueGeneratorTests.IntegerResult);
             this.randomizerMock.Setup(m => m.RandomizeLongInteger(It.Is<long?>(max => max == null))).Returns(StandardValueGeneratorTests.LongResult);
@@ -51,7 +54,7 @@ namespace Tests.Tests
             this.randomizerMock.Setup(m => m.RandomizeDouble(It.Is<int?>(precision => precision == null))).Returns(StandardValueGeneratorTests.DoubleResult);
             this.randomizerMock.Setup(m => m.RandomizeEmailAddress()).Returns(StandardValueGeneratorTests.EmailAddress);
 
-            this.valueGenerator = new StandardValueGenerator(this.randomizerMock.Object, this.typeGeneratorMock.Object, x => this.arrayRandomizerMock.Object);
+            this.valueGenerator = new StandardValueGenerator(this.randomizerMock.Object, this.typeGeneratorMock.Object, x => this.arrayRandomizerMock.Object, uniqueValueGeneratorMock.Object);
         }
 
         [TestMethod]
@@ -263,6 +266,19 @@ namespace Tests.Tests
 
             // Assert
 
+            Assert.AreEqual(expected, result);
+        }
+
+        [TestMethod]
+        public void UniqueValueGenerator_Test()
+        {
+            PropertyInfo primaryKeyPropertyInfo = typeof(SubjectClass).GetProperty("Key");
+            const string expected = "ABCD";
+            this.uniqueValueGeneratorMock.Setup(m => m.GetValue(primaryKeyPropertyInfo)).Returns(expected).Verifiable();
+
+            object result = this.valueGenerator.GetValue(primaryKeyPropertyInfo);
+
+            this.uniqueValueGeneratorMock.Verify();
             Assert.AreEqual(expected, result);
         }
     }

@@ -8,6 +8,7 @@ using TestDataFramework.ArrayRandomizer;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Randomizer;
 using TestDataFramework.TypeGenerator;
+using TestDataFramework.UniqueValueGenerator;
 
 namespace TestDataFramework.ValueGenerator
 {
@@ -18,22 +19,25 @@ namespace TestDataFramework.ValueGenerator
         private readonly IRandomizer randomizer;
         private readonly ITypeGenerator typeGenerator;
         private readonly IArrayRandomizer arrayRandomizer;
+        private readonly IUniqueValueGenerator uniqueValueGenerator;
 
         private delegate object GetValueForTypeDelegate(PropertyInfo propertyInfo);
 
         private readonly Dictionary<Type, GetValueForTypeDelegate> typeValueGetterDictionary;
 
-        public StandardValueGenerator(IRandomizer randomizer, ITypeGenerator typeGenerator, Func<IValueGenerator, IArrayRandomizer> getArrayRandomizer)
+        public StandardValueGenerator(IRandomizer randomizer, ITypeGenerator typeGenerator, Func<IValueGenerator, IArrayRandomizer> getArrayRandomizer, IUniqueValueGenerator uniqueValueGenerator)
         {
             StandardValueGenerator.Logger.Debug("Entering constructor");
 
             this.randomizer = randomizer;
             this.typeGenerator = typeGenerator;
             this.arrayRandomizer = getArrayRandomizer(this);
+            this.uniqueValueGenerator = uniqueValueGenerator;
 
             this.typeValueGetterDictionary = new Dictionary<Type, GetValueForTypeDelegate>
             {
                 {typeof (EmailAttribute), x => this.randomizer.RandomizeEmailAddress()},
+                {typeof (PrimaryKeyAttribute), this.GetPrimaryKey },
                 {typeof (string), this.GetString},
                 {typeof (decimal), this.GetDecimal},
                 {typeof (int), this.GetInteger},
@@ -232,6 +236,12 @@ namespace TestDataFramework.ValueGenerator
             DateTime result = this.randomizer.RandomizeDateTime((PastOrFuture?)pastOrFuture);
 
             StandardValueGenerator.Logger.Debug("Exiting GetDateTime");
+            return result;
+        }
+
+        private object GetPrimaryKey(PropertyInfo propertyInfo)
+        {
+            object result = this.uniqueValueGenerator.GetValue(propertyInfo);
             return result;
         }
 

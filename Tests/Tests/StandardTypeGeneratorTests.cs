@@ -71,5 +71,28 @@ namespace Tests.Tests
 
             Helpers.ExceptionTest(action, typeof (NoDefaultConstructorException), expectedMessage);
         }
+
+        [TestMethod]
+        public void ResetRecursionGuard_Test()
+        {
+            // Arrange
+
+            const int expected = 5;
+            this.valueGeneratorMock.Setup(m => m.GetValue(It.Is<PropertyInfo>(p => p.PropertyType == typeof(int))))
+                .Returns(expected);
+
+            // Act
+
+            var typeGenerator = new StandardTypeGenerator(x => this.valueGeneratorMock.Object);
+            object result1 = typeGenerator.GetObject(typeof(SecondClass));
+
+            typeGenerator.ResetRecursionGuard();
+            object result2 = typeGenerator.GetObject(typeof(SecondClass));
+
+            // Assert
+
+            Assert.IsNotNull(result1);
+            Assert.IsNotNull(result2);
+        }
     }
 }

@@ -55,6 +55,7 @@ namespace TestDataFramework.Populator
 
             StandardPopulator.Logger.Debug("Adding type " + typeof (T));
 
+            this.typeGenerator.ResetRecursionGuard();
             object recordObject = this.typeGenerator.GetObject(typeof (T));
 
             var recordReference = new RecordReference<T>((T)recordObject);

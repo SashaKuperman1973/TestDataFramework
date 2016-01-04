@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -37,9 +38,12 @@ namespace IntegrationTests.Tests
                 @"Data Source=.\SqlExpress;Initial Catalog=TestDataFramework;Integrated Security=SSPI;",
                 mustBeInATransaction: false);
 
-            populator.Add<SubjectClass>();
+            IList<RecordReference<SubjectClass>> result = populator.Add<SubjectClass>(2);
 
             populator.Bind();
+
+            Console.WriteLine(result[0].RecordObject.Key);
+            Console.WriteLine(result[1].RecordObject.Key);
         }
     }
 }

@@ -47,6 +47,11 @@ namespace TestDataFramework.TypeGenerator
             return objectToFill;
         }
 
+        public virtual void ResetRecursionGuard()
+        {
+            this.complexTypeProcessingRecursionGuard.Clear();
+        }
+
         protected virtual void FillObject(object objectToFill)
         {
             StandardTypeGenerator.Logger.Debug("Entering FillObject");

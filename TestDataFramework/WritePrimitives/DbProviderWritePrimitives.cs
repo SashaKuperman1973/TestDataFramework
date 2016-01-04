@@ -95,11 +95,15 @@ namespace TestDataFramework.WritePrimitives
                 command.Connection.Open();
                 using (DbDataReader reader = command.ExecuteReader())
                 {
-                    while (reader.Read())
+                    while (reader.HasRows)
                     {
-                        var row = new object[reader.FieldCount];
-                        reader.GetValues(row);
-                        result.AddRange(row);
+                        while (reader.Read())
+                        {
+                            var row = new object[reader.FieldCount];
+                            reader.GetValues(row);
+                            result.AddRange(row);
+                        }
+                        reader.NextResult();
                     }
                 }
             }

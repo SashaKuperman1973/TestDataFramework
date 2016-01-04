@@ -45,7 +45,7 @@ namespace TestDataFramework.UniqueValueGenerator
                 throw new OverflowException(string.Format(Messages.StringGeneratorOverflow, number, stringLength));
             }
 
-            string result = sb.ToString().PadLeft(stringLength, 'A');
+            string result = sb.ToString();
 
             return result;
         }

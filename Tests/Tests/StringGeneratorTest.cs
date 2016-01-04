@@ -20,7 +20,7 @@ namespace Tests.Tests
         {
             const int stringLength = 10;
 
-            string expected = "ABCD".PadLeft(stringLength, 'A');
+            const string expected = "ABCD";
             int input = (int)Math.Pow(26, 3) + (int)Math.Pow(26, 2) + 2*26 + 3;
 
             var generator = new StringGenerator();

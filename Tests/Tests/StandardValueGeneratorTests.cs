@@ -273,12 +273,26 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void UniqueValueGenerator_Test()
+        public void AutoPrimaryKey_ReturnsDefaultNull_Test()
         {
-            PropertyInfo primaryKeyPropertyInfo = typeof(SubjectClass).GetProperty("Key");
-            const string expected = "ABCD";
-            this.uniqueValueGeneratorMock.Setup(m => m.GetValue(primaryKeyPropertyInfo)).Returns(expected).Verifiable();
+            PropertyInfo primaryKeyPropertyInfo = typeof(ManualKeyPrimaryTable).GetProperty("Key1");
+            const string expected = null;
+            this.uniqueValueGeneratorMock.Setup(m => m.GetValue(primaryKeyPropertyInfo)).Verifiable();
 
+            object result = this.valueGenerator.GetValue(primaryKeyPropertyInfo);
+
+            this.uniqueValueGeneratorMock.Verify();
+            Assert.AreEqual(expected, result);
+        }
+
+        [TestMethod]
+        public void AutoPrimaryKey_ReturnsDefaultIntegral_Test()
+        {
+            PropertyInfo primaryKeyPropertyInfo = typeof(TableTypeMismatchPrimaryTable).GetProperty("Key");
+            const int expected = 0;
+            this.uniqueValueGeneratorMock.Setup(m => m.GetValue(primaryKeyPropertyInfo)).Verifiable();
+
+            this.valueGenerator.GetValue(primaryKeyPropertyInfo);
             object result = this.valueGenerator.GetValue(primaryKeyPropertyInfo);
 
             this.uniqueValueGeneratorMock.Verify();

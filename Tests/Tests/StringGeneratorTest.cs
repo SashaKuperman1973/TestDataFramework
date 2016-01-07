@@ -21,7 +21,7 @@ namespace Tests.Tests
             const int stringLength = 10;
 
             const string expected = "ABCD";
-            int input = (int)Math.Pow(26, 3) + (int)Math.Pow(26, 2) + 2*26 + 3;
+            ulong input = (ulong)Math.Pow(26, 2) + 2*26 + 3;
 
             var generator = new StringGenerator();
 
@@ -34,7 +34,7 @@ namespace Tests.Tests
         public void OverflowException_Test()
         {
             const string expected = "ABCD";
-            int input = (int)Math.Pow(26, 3) + (int)Math.Pow(26, 2) + 2 * 26 + 3;
+            ulong input = (ulong)Math.Pow(26, 2) + 2 * 26 + 3;
 
             var generator = new StringGenerator();
 

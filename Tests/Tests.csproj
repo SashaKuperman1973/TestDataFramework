@@ -72,7 +72,8 @@
     <Compile Include="Tests\CircularReferenceBreakerTests.cs" />
     <Compile Include="Tests\StandardPopulatorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tests\StandardUniqueValueGeneratorTest.cs" />
+    <Compile Include="Tests\DbProviderDeferredValueGeneratorTest.cs" />
+    <Compile Include="Tests\StandardUniqueValueGeneratorTests.cs" />
     <Compile Include="Tests\StandardTypeGeneratorTests.cs" />
     <Compile Include="Tests\StandardRandomizerTests.cs" />
     <Compile Include="Tests\RandomSymbolStringGeneratorTest.cs" />
@@ -86,6 +87,9 @@
     <Compile Include="Tests\PopulatorFactoryTests.cs" />
     <Compile Include="Tests\StandardValueGeneratorTests.cs" />
     <Compile Include="Tests\StringGeneratorTest.cs" />
+    <Compile Include="Tests\DeferredValueGeneratorTests.cs" />
+    <Compile Include="Tests\SqlClientInt64DeferredValueGeneratorTests.cs" />
+    <Compile Include="Tests\HandlerDictionaryTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Tests To Do.txt" />

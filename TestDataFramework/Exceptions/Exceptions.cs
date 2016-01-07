@@ -60,4 +60,25 @@ namespace TestDataFramework.Exceptions
         {
         }
     }
+
+    public class ContractException : ApplicationException
+    {
+        public ContractException(string message) : base(message)
+        {            
+        }
+    }
+
+    public class DeferredValueGeneratorExecutedException : ApplicationException
+    {
+        public DeferredValueGeneratorExecutedException() : base(Messages.DeferredValueGeneratorExecuted)
+        {            
+        }
+    }
+
+    public class UnexpectedTypeException : ApplicationException
+    {
+        public UnexpectedTypeException(string message) : base(message)
+        {
+        }
+    }
 }

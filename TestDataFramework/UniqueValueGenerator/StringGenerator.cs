@@ -9,31 +9,26 @@ namespace TestDataFramework.UniqueValueGenerator
 {
     public class StringGenerator
     {
-        public virtual string GetValue(long number, int stringLength)
+        public virtual string GetValue(ulong number, int stringLength)
         {
             var sb = new StringBuilder();
 
             int digitCount = 0;
 
-            long whole = number;
+            ulong whole = number;
             while (digitCount++ < stringLength)
             {
-                long remainder;
+                ulong remainder = whole%26;
+                whole /= 26;
 
-                if (whole < 27)
+                if (remainder == 0 && whole == 0)
                 {
-                    if (whole == 0)
+                    if (digitCount == 1)
                     {
-                        break;
+                        sb.Insert(0, "A");
                     }
 
-                    remainder = whole - 1;
-                    whole = 0;
-                }
-                else
-                {
-                    remainder = whole%26;
-                    whole /= 26;
+                    break;
                 }
 
                 var ascii = (char)(remainder + 65);

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using log4net;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.ArrayRandomizer;
 using TestDataFramework.Exceptions;
+using TestDataFramework.Helpers;
 using TestDataFramework.Randomizer;
 using TestDataFramework.TypeGenerator;
 using TestDataFramework.UniqueValueGenerator;
@@ -57,7 +57,7 @@ namespace TestDataFramework.ValueGenerator
         {
             StandardValueGenerator.Logger.Debug("Entering GetValue(PropertyInfo propertyInfo)");
 
-            Assert.IsNotNull(propertyInfo, "propertyInfo argument");
+            propertyInfo.IsNotNull(nameof(propertyInfo));
 
             GetValueForTypeDelegate getter = null;
 
@@ -76,8 +76,8 @@ namespace TestDataFramework.ValueGenerator
         {
             StandardValueGenerator.Logger.Debug("Entering GetValue(PropertyInfo propertyInfo, Type type)");
 
-            Assert.IsNotNull(propertyInfo, "propertyInfo argument");
-            Assert.IsNotNull(type, "type argument");
+            propertyInfo.IsNotNull(nameof(propertyInfo));
+            propertyInfo.IsNotNull(nameof(type));
 
             if (type.IsArray)
             {

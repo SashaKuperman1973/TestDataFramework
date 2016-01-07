@@ -1,4 +1,6 @@
-﻿The randomizers for rest of the special collection types that are implemented in the old system.
+﻿Make DbProviderWritePrimitives abstract and put in Sql Client sql commands in an derived concrete class.
+The randomizers for rest of the special collection types that are implemented in the old system.
+Change all excpetion to take parameters instead of using stringFormat at calling site.
 
 =Tests to write
 

@@ -29,5 +29,18 @@
         public const string StringGeneratorOverflow = "input {0} resulted in overflow for string length {1}";
 
         public const string UnknownPastOrFutureEnumValue = "Unrecognized PastOrFuture enum value";
+
+        public const string NonNullExpected = "Non-null value expected for argument: {0}";
+
+        public const string DeferredValueGeneratorExecuted = "Deferred value generator Execute method called more than once";
+
+        public const string UnexpectedNumberHandlerType =
+            "Unexpected type fetching value from DB. Property: {0}, Actual type: {1}";
+
+        public const string PropertyNotFound = "Count key not found. Key property: {0}";
+
+        public const string UpdatePropertyNotFound = "Count key for update not found. Key property: {0}";
+
+        public const string PropertyKeyNotFound =  "Property type not handled: {0}";
     }
 }

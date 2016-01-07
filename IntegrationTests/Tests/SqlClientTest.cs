@@ -31,6 +31,7 @@ namespace IntegrationTests.Tests
             this.factory.Dispose();
         }
 
+        [Ignore]
         [TestMethod]
         public void Run_Test()
         {

@@ -13,7 +13,7 @@ using Tests.TestModels;
 namespace Tests.Tests
 {
     [TestClass]
-    public class StandardUniqueValueGeneratorTest
+    public class StandardUniqueValueGeneratorTests
     {
         [TestInitialize]
         public void Initialize()
@@ -27,7 +27,7 @@ namespace Tests.Tests
             // Arrange
 
             var stringGeneratorMock = new Mock<StringGenerator>();
-            var generator = new StandardUniqueValueGenerator(stringGeneratorMock.Object);
+            var generator = new StandardUniqueValueGenerator(stringGeneratorMock.Object, null);
 
             const string expected = "ABCD";
 
@@ -48,14 +48,14 @@ namespace Tests.Tests
         [TestMethod]
         public void Integer_Test()
         {
-            StandardUniqueValueGeneratorTest.IntegerTest(typeof(ClassWithIntAutoPrimaryKey));
-            StandardUniqueValueGeneratorTest.IntegerTest(typeof(ClassWithShortAutoPrimaryKey));
-            StandardUniqueValueGeneratorTest.IntegerTest(typeof(ClassWithLongAutoPrimaryKey));
+            StandardUniqueValueGeneratorTests.IntegerTest(typeof(ClassWithIntAutoPrimaryKey));
+            StandardUniqueValueGeneratorTests.IntegerTest(typeof(ClassWithShortAutoPrimaryKey));
+            StandardUniqueValueGeneratorTests.IntegerTest(typeof(ClassWithLongAutoPrimaryKey));
         }
 
         private static void IntegerTest(Type inputType)
         {
-            var generator = new StandardUniqueValueGenerator(null);
+            var generator = new StandardUniqueValueGenerator(null, null);
 
             PropertyInfo keyPropertyInfo = inputType.GetProperty("Key");
 
@@ -64,13 +64,13 @@ namespace Tests.Tests
             object value;
 
             value = generator.GetValue(keyPropertyInfo);
-            StandardUniqueValueGeneratorTest.AreEqual(0, value);
+            StandardUniqueValueGeneratorTests.AreEqual(0, value);
 
             value = generator.GetValue(keyPropertyInfo);
-            StandardUniqueValueGeneratorTest.AreEqual(1, value);
+            StandardUniqueValueGeneratorTests.AreEqual(1, value);
 
             value = generator.GetValue(keyPropertyInfo);
-            StandardUniqueValueGeneratorTest.AreEqual(2, value);
+            StandardUniqueValueGeneratorTests.AreEqual(2, value);
         }
 
         private static void AreEqual(object expected, object actual)

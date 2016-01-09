@@ -52,7 +52,12 @@ namespace Tests.Tests
             this.randomizerMock.Setup(m => m.RandomizeCharacter()).Returns(StandardValueGeneratorTests.CharacterResult);
             this.randomizerMock.Setup(m => m.RandomizeDecimal(It.Is<int?>(precision => precision == null))).Returns(StandardValueGeneratorTests.DecimalResult);
             this.randomizerMock.Setup(m => m.RandomizeBoolean()).Returns(StandardValueGeneratorTests.BooleanResult);
-            this.randomizerMock.Setup(m => m.RandomizeDateTime(It.Is<PastOrFuture?>(pastOrFuture => pastOrFuture == null))).Returns(StandardValueGeneratorTests.DateTimeResult);
+            this.randomizerMock.Setup(
+                m =>
+                    m.RandomizeDateTime(It.Is<PastOrFuture?>(pastOrFuture => pastOrFuture == null),
+                        It.Is<Func<long?, long>>(lir => lir == this.randomizerMock.Object.RandomizeLongInteger)))
+                .Returns(StandardValueGeneratorTests.DateTimeResult);
+
             this.randomizerMock.Setup(m => m.RandomizeByte()).Returns(StandardValueGeneratorTests.ByteResult);
             this.randomizerMock.Setup(m => m.RandomizeDouble(It.Is<int?>(precision => precision == null))).Returns(StandardValueGeneratorTests.DoubleResult);
             this.randomizerMock.Setup(m => m.RandomizeEmailAddress()).Returns(StandardValueGeneratorTests.EmailAddress);
@@ -165,7 +170,7 @@ namespace Tests.Tests
                     "DateTimeWithTense",
                     () =>
                         this.randomizerMock.Verify((
-                            m => m.RandomizeDateTime(It.Is<PastOrFuture?>(pastOrFuture => pastOrFuture == PastOrFuture.Future))),
+                            m => m.RandomizeDateTime(It.Is<PastOrFuture?>(pastOrFuture => pastOrFuture == PastOrFuture.Future), It.IsAny<Func<long?, long>>())),
                             Times.Once())
                     ),
             };
@@ -273,30 +278,32 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void AutoPrimaryKey_ReturnsDefaultNull_Test()
+        public void AutoPrimaryKey_ReturnsDefaultIntegral_Test()
         {
-            PropertyInfo primaryKeyPropertyInfo = typeof(ManualKeyPrimaryTable).GetProperty("Key1");
-            const string expected = null;
-            this.uniqueValueGeneratorMock.Setup(m => m.GetValue(primaryKeyPropertyInfo)).Verifiable();
+            PropertyInfo primaryKeyPropertyInfo = typeof(PrimaryTable).GetProperty("Key");
+            const int expected = 0;
 
-            object result = this.valueGenerator.GetValue(primaryKeyPropertyInfo);
+            this.uniqueValueGeneratorMock.Setup(m => m.DeferValue(primaryKeyPropertyInfo)).Verifiable();
+
+            object result1 = this.valueGenerator.GetValue(primaryKeyPropertyInfo);
+            object result2 = this.valueGenerator.GetValue(primaryKeyPropertyInfo);
 
             this.uniqueValueGeneratorMock.Verify();
-            Assert.AreEqual(expected, result);
+            Assert.AreEqual(expected, result1);
+            Assert.AreEqual(expected, result2);
         }
 
         [TestMethod]
-        public void AutoPrimaryKey_ReturnsDefaultIntegral_Test()
+        public void ManualPrimaryKey_Test()
         {
-            PropertyInfo primaryKeyPropertyInfo = typeof(TableTypeMismatchPrimaryTable).GetProperty("Key");
-            const int expected = 0;
-            this.uniqueValueGeneratorMock.Setup(m => m.GetValue(primaryKeyPropertyInfo)).Verifiable();
+            PropertyInfo primaryKeyPropertyInfo = typeof(ManualKeyPrimaryTable).GetProperty("Key2");
 
-            this.valueGenerator.GetValue(primaryKeyPropertyInfo);
+            this.uniqueValueGeneratorMock.Setup(m => m.GetValue(primaryKeyPropertyInfo)).Returns(1).Verifiable();
+
             object result = this.valueGenerator.GetValue(primaryKeyPropertyInfo);
 
             this.uniqueValueGeneratorMock.Verify();
-            Assert.AreEqual(expected, result);
+            Assert.AreEqual(1, result);
         }
     }
 }

@@ -10,5 +10,6 @@ namespace TestDataFramework.UniqueValueGenerator
     public interface IUniqueValueGenerator
     {
         object GetValue(PropertyInfo propertyInfo);
+        void DeferValue(PropertyInfo propertyInfo);
     }
 }

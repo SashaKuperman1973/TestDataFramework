@@ -15,6 +15,8 @@ namespace Tests.Tests
         private Mock<Random> randomMock;
         private Mock<IRandomSymbolStringGenerator> stringGeneratorMock;
         private readonly DateTime now = DateTime.Now;
+        private Func<long> randomizeLongInteger;
+
 
         private const int Integer = 5;
 
@@ -27,6 +29,9 @@ namespace Tests.Tests
             this.stringGeneratorMock = new Mock<IRandomSymbolStringGenerator>();
             this.randomizer = new StandardRandomizer(this.randomMock.Object, this.stringGeneratorMock.Object,
                 () => this.now, SqlDateTime.MinValue.Value.Ticks, SqlDateTime.MaxValue.Value.Ticks);
+
+            this.randomizeLongInteger =
+                () => this.randomizer.RandomizeLongInteger(SqlDateTime.MaxValue.Value.Ticks - this.now.Ticks);
         }
 
         [TestMethod]
@@ -339,16 +344,14 @@ namespace Tests.Tests
         {
             // Arrange
 
-            int ticks = new Random().Next();
-
-            this.randomMock.Setup(m => m.Next()).Returns(ticks);
+            long ticks = this.randomizeLongInteger();
 
             DateTime expected = this.now.AddTicks(-ticks);
 
             // Act
 
-            DateTime explicitPastResult = this.randomizer.RandomizeDateTime(PastOrFuture.Past);
-            DateTime implicitPastResult = this.randomizer.RandomizeDateTime(null);
+            DateTime explicitPastResult = this.randomizer.RandomizeDateTime(PastOrFuture.Past, x => ticks);
+            DateTime implicitPastResult = this.randomizer.RandomizeDateTime(null, x => ticks);
 
             // Assert
 
@@ -361,15 +364,13 @@ namespace Tests.Tests
         {
             // Arrange
 
-            int ticks = new Random().Next();
-
-            this.randomMock.Setup(m => m.Next()).Returns(ticks);
+            long ticks = this.randomizeLongInteger();
 
             DateTime expected = this.now.AddTicks(ticks);
 
             // Act
 
-            DateTime result = this.randomizer.RandomizeDateTime(PastOrFuture.Future);
+            DateTime result = this.randomizer.RandomizeDateTime(PastOrFuture.Future, x => ticks);
 
             // Assert
 

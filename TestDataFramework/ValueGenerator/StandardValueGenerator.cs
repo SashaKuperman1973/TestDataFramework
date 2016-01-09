@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Castle.Core.Internal;
 using log4net;
 using TestDataFramework.ArrayRandomizer;
 using TestDataFramework.Exceptions;
@@ -233,7 +234,7 @@ namespace TestDataFramework.ValueGenerator
             var pastOrFutureAttribute = propertyInfo.GetCustomAttribute<PastOrFutureAttribute>();
             PastOrFuture? pastOrFuture = pastOrFutureAttribute?.PastOrFuture;
 
-            DateTime result = this.randomizer.RandomizeDateTime((PastOrFuture?)pastOrFuture);
+            DateTime result = this.randomizer.RandomizeDateTime((PastOrFuture?)pastOrFuture, this.randomizer.RandomizeLongInteger);
 
             StandardValueGenerator.Logger.Debug("Exiting GetDateTime");
             return result;
@@ -241,6 +242,12 @@ namespace TestDataFramework.ValueGenerator
 
         private object GetPrimaryKey(PropertyInfo propertyInfo)
         {
+            if (propertyInfo.GetSingleAttribute<PrimaryKeyAttribute>().KeyType == PrimaryKeyAttribute.KeyTypeEnum.Auto)
+            {
+                this.uniqueValueGenerator.DeferValue(propertyInfo);
+                return propertyInfo.PropertyType.IsValueType ? Activator.CreateInstance(propertyInfo.PropertyType) : null;
+            }
+            
             object result = this.uniqueValueGenerator.GetValue(propertyInfo);
             return result;
         }

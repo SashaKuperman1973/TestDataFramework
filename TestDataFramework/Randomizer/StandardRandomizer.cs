@@ -138,7 +138,7 @@ namespace TestDataFramework.Randomizer
             return result;
         }
 
-        public virtual DateTime RandomizeDateTime(PastOrFuture? pastOrFuture)
+        public virtual DateTime RandomizeDateTime(PastOrFuture? pastOrFuture, Func<long?, long> longIntegerRandomizer)
         {
             StandardRandomizer.Logger.Debug("Entering RandomizeBoolean");
 
@@ -154,13 +154,13 @@ namespace TestDataFramework.Randomizer
             {
                 case PastOrFuture.Future:
                     maxLong = this.dateTimeMaxValue - dateTime.Ticks;
-                    randomLong = this.RandomizeLongInteger(maxLong);
+                    randomLong = longIntegerRandomizer(maxLong);
                     result = dateTime.AddTicks(randomLong);
                     break;
 
                 case PastOrFuture.Past:
                     maxLong = dateTime.Ticks - this.dateTimeMinValue;
-                    randomLong = this.RandomizeLongInteger(maxLong);
+                    randomLong = longIntegerRandomizer(maxLong);
                     result = dateTime.AddTicks(-randomLong);
                     break;
 

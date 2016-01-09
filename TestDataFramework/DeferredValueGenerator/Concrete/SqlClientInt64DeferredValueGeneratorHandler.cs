@@ -9,13 +9,13 @@ using TestDataFramework.Helpers;
 
 namespace TestDataFramework.DeferredValueGenerator.Concrete
 {
-    public class SqlClientInt64DeferredValueGenerator : IDeferredValueGeneratorHandler<ulong>
+    public class SqlClientInt64DeferredValueGeneratorHandler : IDeferredValueGeneratorHandler<ulong>
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(SqlClientInt64DeferredValueGenerator));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(SqlClientInt64DeferredValueGeneratorHandler));
 
         public ulong NumberHandler(PropertyInfo propertyInfo, DbCommand command)
         {
-            SqlClientInt64DeferredValueGenerator.Logger.Debug("Entering NumberHandler");
+            SqlClientInt64DeferredValueGeneratorHandler.Logger.Debug("Entering NumberHandler");
 
             string commandText = $"Select MAX([{Helper.GetColunName(propertyInfo)}]) From [{Helper.GetTableName(propertyInfo.DeclaringType)}]";
             ulong result = 1;
@@ -24,7 +24,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
             {
                 if (reader.Read())
                 {
-                    SqlClientInt64DeferredValueGenerator.Logger.Debug("Row found");
+                    SqlClientInt64DeferredValueGeneratorHandler.Logger.Debug("Row found");
 
                     object value = reader.GetValue(0);
 
@@ -37,13 +37,13 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
                 }
             }
 
-            SqlClientInt64DeferredValueGenerator.Logger.Debug("Exiting NumberHandler");
+            SqlClientInt64DeferredValueGeneratorHandler.Logger.Debug("Exiting NumberHandler");
             return result;
         }
 
         public ulong StringHandler(PropertyInfo propertyInfo, DbCommand command)
         {
-            SqlClientInt64DeferredValueGenerator.Logger.Debug("Entering StringHandler");
+            SqlClientInt64DeferredValueGeneratorHandler.Logger.Debug("Entering StringHandler");
 
             string commandText = $"Select MAX([{Helper.GetColunName(propertyInfo)}]) maxVarchar From [{Helper.GetTableName(propertyInfo.DeclaringType)}] Where maxVarchar like '[A-Z]%'";
             object value = null;
@@ -52,7 +52,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
             {
                 if (reader.Read())
                 {
-                    SqlClientInt64DeferredValueGenerator.Logger.Debug("Row found");
+                    SqlClientInt64DeferredValueGeneratorHandler.Logger.Debug("Row found");
 
                     value = reader.GetValue(0);
 
@@ -63,9 +63,9 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
                 }
             }
 
-            ulong result = value != null ? SqlClientInt64DeferredValueGenerator.GetLongIntFromLetters((string)value) : 0;
+            ulong result = value != null ? SqlClientInt64DeferredValueGeneratorHandler.GetLongIntFromLetters((string)value) : 0;
 
-            SqlClientInt64DeferredValueGenerator.Logger.Debug("Exiting StringHandler");
+            SqlClientInt64DeferredValueGeneratorHandler.Logger.Debug("Exiting StringHandler");
             return result;
         }
 

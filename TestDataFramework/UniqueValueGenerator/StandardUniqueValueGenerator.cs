@@ -26,6 +26,13 @@ namespace TestDataFramework.UniqueValueGenerator
 
         public object GetValue(PropertyInfo propertyInfo)
         {
+            this.countDictionary.AddOrUpdate(propertyInfo, pi => 0, (pi, value) => ++value);
+            object result = this.PrivateGetValue(propertyInfo);
+            return result;
+        }
+
+        public void DeferValue(PropertyInfo propertyInfo)
+        {
             StandardUniqueValueGenerator.Logger.Debug("Entering GetValue");
 
             this.deferredValueGenerator.AddDelegate(propertyInfo, initialCount =>
@@ -38,8 +45,6 @@ namespace TestDataFramework.UniqueValueGenerator
             });
 
             StandardUniqueValueGenerator.Logger.Debug("Exiting GetValue");
-
-            return propertyInfo.PropertyType.IsValueType ? Activator.CreateInstance(propertyInfo.PropertyType) : null;
         }
 
         private object PrivateGetValue(PropertyInfo propertyInfo)

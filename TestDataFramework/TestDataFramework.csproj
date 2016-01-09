@@ -63,7 +63,7 @@
     <Compile Include="DeferredValueGenerator\Interfaces\IDbProviderDeferredValueGenerator.cs" />
     <Compile Include="DeferredValueGenerator\Interfaces\IDeferredValueGenerator.cs" />
     <Compile Include="DeferredValueGenerator\Concrete\DeferredValueGenerator.cs" />
-    <Compile Include="DeferredValueGenerator\Concrete\SqlClientInt64DeferredValueGenerator.cs" />
+    <Compile Include="DeferredValueGenerator\Concrete\SqlClientInt64DeferredValueGeneratorHandler.cs" />
     <Compile Include="DeferredValueGenerator\Interfaces\IHandlerDictionary.cs" />
     <Compile Include="Exceptions\Exceptions.cs" />
     <Compile Include="Exceptions\Messages.cs" />

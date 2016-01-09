@@ -24,7 +24,7 @@ namespace TestDataFramework.Randomizer
 
         bool RandomizeBoolean();
 
-        DateTime RandomizeDateTime(PastOrFuture? pastOrFuture);
+        DateTime RandomizeDateTime(PastOrFuture? pastOrFuture, Func<long?, long> longIntegerRandomizer);
 
         byte RandomizeByte();
 

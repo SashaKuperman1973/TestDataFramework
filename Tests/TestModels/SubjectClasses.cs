@@ -154,4 +154,10 @@ namespace Tests.TestModels
         [PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Auto)]
         public long Key { get; set; }
     }
+
+    public class ClassWithByteAutoPrimaryKey
+    {
+        [PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Auto)]
+        public byte Key { get; set; }
+    }
 }

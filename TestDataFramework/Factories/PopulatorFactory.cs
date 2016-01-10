@@ -6,6 +6,8 @@ using System.Data.SqlTypes;
 using Castle.Windsor;
 using Castle.MicroKernel.Registration;
 using TestDataFramework.ArrayRandomizer;
+using TestDataFramework.DeferredValueGenerator.Concrete;
+using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Helpers;
 using TestDataFramework.Helpers.Concrete;
 using TestDataFramework.Helpers.Interfaces;
@@ -23,27 +25,87 @@ namespace TestDataFramework.Factories
 {
     public class PopulatorFactory : IDisposable
     {
-        private class DisposableContainer : IDisposable
+        private DisposableContainer SqlClientPopulatorContainer;
+        private DisposableContainer memoryPopulatorContainer;
+
+        public IPopulator CreateSqlClientPopulator(string connectionStringWithDefaultCatalogue,
+            bool mustBeInATransaction = true)
         {
-            public IWindsorContainer Container { get; }
+            IWindsorContainer iocContainer = this.GetSqlClientPopulatorContainer(connectionStringWithDefaultCatalogue,
+                mustBeInATransaction);
 
-            public bool IsDisposed { get; private set; }
+            var result = iocContainer.Resolve<IPopulator>();
 
-            public DisposableContainer(IWindsorContainer container)
-            {
-                this.Container = container;
-            }
-
-            public void Dispose()
-            {
-                this.Container.Dispose();
-                this.IsDisposed = true;
-            }
+            return result;
         }
 
-        public void Dispose()
+        public IPopulator CreateMemoryPopulator()
         {
-            this.sqlServerPopulatorContainer?.Dispose();
+            IWindsorContainer iocContainer = this.GetMemoryPopulatorContainer();
+
+            var result = iocContainer.Resolve<IPopulator>();
+
+            return result;
+        }
+
+        private IWindsorContainer GetSqlClientPopulatorContainer(string connectionStringWithDefaultCatalogue, bool mustBeInATransaction)
+        {
+            if (this.SqlClientPopulatorContainer != null && !this.SqlClientPopulatorContainer.IsDisposed)
+            {
+                return this.SqlClientPopulatorContainer.Container;
+            }
+
+            this.SqlClientPopulatorContainer = new DisposableContainer(PopulatorFactory.CommonContainer);
+
+            this.SqlClientPopulatorContainer.Container.Register(
+
+                Component.For<IWritePrimitives>().ImplementedBy<DbProviderWritePrimitives>()
+                    .DependsOn((k, d) =>
+                    {
+                        d["connectionStringWithDefaultCatalogue"] = connectionStringWithDefaultCatalogue;
+                        d["mustBeInATransaction"] = mustBeInATransaction;
+                        d["configuration"] = ConfigurationManager.AppSettings;
+                    }),
+
+                Component.For<DbProviderFactory>().UsingFactoryMethod(() => SqlClientFactory.Instance, true),
+
+                Component.For<IValueFormatter>().ImplementedBy<InsertStatementValueFormatter>(),
+
+                Component.For<IPropertyDataGenerator<ulong>>().ImplementedBy<DbProviderDeferredValueGenerator<ulong>>()
+                    .DependsOn((k, d) =>
+                    {
+                        d["connectionString"] = connectionStringWithDefaultCatalogue;
+                    }),
+
+                Component.For<IHandlerDictionary<ulong>>().ImplementedBy<HandlerDictionary<ulong>>(),
+
+                Component.For<IDeferredValueGeneratorHandler<ulong>>().ImplementedBy<SqlClientInitialCountGenerator>(),
+
+                Component.For<IPersistence>().ImplementedBy<SqlClientPersistence>()
+
+                );
+
+            return this.SqlClientPopulatorContainer.Container;
+        }
+
+        private IWindsorContainer GetMemoryPopulatorContainer()
+        {
+            if (this.memoryPopulatorContainer != null && !this.memoryPopulatorContainer.IsDisposed)
+            {
+                return this.memoryPopulatorContainer.Container;
+            }
+
+            this.memoryPopulatorContainer = new DisposableContainer(PopulatorFactory.CommonContainer);
+
+            this.memoryPopulatorContainer.Container.Register(
+
+                Component.For<IPropertyDataGenerator<ulong>>().ImplementedBy<DefaultInitialValueGenerator>(),
+
+                Component.For<IPersistence>().ImplementedBy<MemoryPersistence>()
+
+                );
+
+            return this.memoryPopulatorContainer.Container;
         }
 
         private static IWindsorContainer CommonContainer
@@ -75,7 +137,20 @@ namespace TestDataFramework.Factories
 
                     Component.For<IUniqueValueGenerator>().ImplementedBy<StandardUniqueValueGenerator>(),
 
-                    Component.For<StringGenerator>()
+                    Component.For<StringGenerator>(),
+
+                    Component.For<IPropertyValueAccumulator>().ImplementedBy<StandardPropertyValueAccumulator>(),
+
+                    Component.For<IDeferredValueGenerator<ulong>>()
+                        .ImplementedBy<StandardDeferredValueGenerator<ulong>>(),
+
+                    Component.For<IRandomizer>().ImplementedBy<StandardRandomizer>().DependsOn((k, d) =>
+                    {
+                        d["dateTimeMinValue"] = SqlDateTime.MinValue.Value.Ticks;
+                        d["dateTimeMaxValue"] = SqlDateTime.MaxValue.Value.Ticks;
+                    }),
+
+                    Component.For<IRandomSymbolStringGenerator>().ImplementedBy<RandomSymbolStringGenerator>()
 
                     );
 
@@ -83,53 +158,28 @@ namespace TestDataFramework.Factories
             }
         }
 
-        private DisposableContainer sqlServerPopulatorContainer;
-        private IWindsorContainer GetSqlServerPopulatorContainer(string connectionStringWithDefaultCatalogue, bool mustBeInATransaction)
+        private class DisposableContainer : IDisposable
         {
-            if (this.sqlServerPopulatorContainer != null && !this.sqlServerPopulatorContainer.IsDisposed)
+            public IWindsorContainer Container { get; }
+
+            public bool IsDisposed { get; private set; }
+
+            public DisposableContainer(IWindsorContainer container)
             {
-                return this.sqlServerPopulatorContainer.Container;
+                this.Container = container;
             }
 
-            this.sqlServerPopulatorContainer = new DisposableContainer(PopulatorFactory.CommonContainer);
-
-            this.sqlServerPopulatorContainer.Container.Register(
-                Component.For<IPersistence>().ImplementedBy<StandardPersistence>(),
-
-                Component.For<IWritePrimitives>().ImplementedBy<DbProviderWritePrimitives>()
-                    .DependsOn((k, d) =>
-                    {
-                        d["connectionStringWithDefaultCatalogue"] = connectionStringWithDefaultCatalogue;
-                        d["mustBeInATransaction"] = mustBeInATransaction;
-                        d["configuration"] = ConfigurationManager.AppSettings;
-                    }),
-
-                Component.For<DbProviderFactory>().UsingFactoryMethod(() => SqlClientFactory.Instance, true),
-
-                Component.For<IValueFormatter>().ImplementedBy<InsertStatementValueFormatter>(),
-
-                Component.For<IRandomSymbolStringGenerator>().ImplementedBy<RandomSymbolStringGenerator>(),
-
-                Component.For<IRandomizer>().ImplementedBy<StandardRandomizer>().DependsOn((k, d) =>
-                {
-                    d["dateTimeMinValue"] = SqlDateTime.MinValue.Value.Ticks;
-                    d["dateTimeMaxValue"] = SqlDateTime.MaxValue.Value.Ticks;
-                })
-
-            );
-
-            return this.sqlServerPopulatorContainer.Container;
+            public void Dispose()
+            {
+                this.Container.Dispose();
+                this.IsDisposed = true;
+            }
         }
 
-        public IPopulator CreateSqlClientPopulator(string connectionStringWithDefaultCatalogue,
-            bool mustBeInATransaction = true)
+        public void Dispose()
         {
-            IWindsorContainer iocContainer = this.GetSqlServerPopulatorContainer(connectionStringWithDefaultCatalogue,
-                mustBeInATransaction);
-
-            var result = iocContainer.Resolve<IPopulator>();
-
-            return result;
+            this.SqlClientPopulatorContainer?.Dispose();
+            this.memoryPopulatorContainer?.Dispose();
         }
     }
 }

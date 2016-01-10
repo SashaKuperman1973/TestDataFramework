@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Populator;
 using TestDataFramework.RepositoryOperations;
@@ -15,13 +16,15 @@ using TestDataFramework.WritePrimitives;
 
 namespace TestDataFramework.Persistence
 {
-    public class StandardPersistence : IPersistence
+    public class SqlClientPersistence : IPersistence
     {
         private readonly IWritePrimitives writePrimitives;
+        private readonly IDeferredValueGenerator<ulong> deferredValueGenerator;
 
-        public StandardPersistence(IWritePrimitives writePrimitives)
+        public SqlClientPersistence(IWritePrimitives writePrimitives, IDeferredValueGenerator<ulong> deferredValueGenerator)
         {
             this.writePrimitives = writePrimitives;
+            this.deferredValueGenerator = deferredValueGenerator;
         }
 
         public virtual void Persist(IEnumerable<RecordReference> recordReferences)
@@ -32,6 +35,8 @@ namespace TestDataFramework.Persistence
             {
                 return;
             }
+
+            this.deferredValueGenerator.Execute(recordReferences.Select(r => r.RecordObject));
 
             var operations = new List<AbstractRepositoryOperation>();
 

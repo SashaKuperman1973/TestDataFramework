@@ -4,6 +4,7 @@ using System.Linq;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Persistence;
 using TestDataFramework.Populator;
 using TestDataFramework.RepositoryOperations.Model;
@@ -13,16 +14,19 @@ using Tests.TestModels;
 namespace Tests.Tests
 {
     [TestClass]
-    public class StandardPersistenceTests
+    public class SqlClientPersistenceTests
     {
-        private StandardPersistence persistence;
+        private SqlClientPersistence persistence;
         private Mock<IWritePrimitives> writePrimitivesMock;
+        private Mock<IDeferredValueGenerator<ulong>> deferredValueGeneratorMock;
 
         [TestInitialize]
         public void Initialize()
         {
             this.writePrimitivesMock = new Mock<IWritePrimitives>();
-            this.persistence = new StandardPersistence(this.writePrimitivesMock.Object);
+            this.deferredValueGeneratorMock = new Mock<IDeferredValueGenerator<ulong>>();
+
+            this.persistence = new SqlClientPersistence(this.writePrimitivesMock.Object, this.deferredValueGeneratorMock.Object);
 
             XmlConfigurator.Configure();
         }
@@ -45,11 +49,18 @@ namespace Tests.Tests
 
             // Act
 
-            this.persistence.Persist(new RecordReference[] { primaryRecordReference });
+            var recordReferenceArray = new RecordReference[] {primaryRecordReference};
+
+            this.persistence.Persist(recordReferenceArray);
 
             // Assert
 
             this.writePrimitivesMock.Verify(m => m.Insert(tableName, It.IsAny<IEnumerable<Column>>()), Times.Once());
+
+            this.deferredValueGeneratorMock.Verify(
+                m => m.Execute(It.Is<IEnumerable<object>>(e => e.First() == recordReferenceArray[0].RecordObject)),
+                Times.Once);
+
             Assert.IsNotNull(primaryTableColumns);
             Assert.AreEqual(2, primaryTableColumns.Count);
 

@@ -8,6 +8,7 @@ using log4net;
 using TestDataFramework.DeferredValueGenerator;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Exceptions;
+using TestDataFramework.Helpers;
 using TestDataFramework.PropertyValueAccumulator;
 
 namespace TestDataFramework.UniqueValueGenerator
@@ -27,7 +28,7 @@ namespace TestDataFramework.UniqueValueGenerator
 
         public object GetValue(PropertyInfo propertyInfo)
         {
-            object result = this.accumulator.GetValue(propertyInfo, 0);
+            object result = this.accumulator.GetValue(propertyInfo, Helper.DefaultInitalCount);
             return result;
         }
 

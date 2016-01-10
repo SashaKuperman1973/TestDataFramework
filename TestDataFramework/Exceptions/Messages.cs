@@ -32,7 +32,7 @@
 
         public const string NonNullExpected = "Non-null value expected for argument: {0}";
 
-        public const string DeferredValueGeneratorExecuted = "Deferred value generator Execute method called more than once";
+        public const string DeferredValueGeneratorExecuted = "Cannot invoke Deferred value generator again after Execute method called";
 
         public const string UnexpectedHandlerType =
             "Unexpected type fetching value from DB. Property: {0}, Actual type: {1}";

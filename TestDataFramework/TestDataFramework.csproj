@@ -58,12 +58,13 @@
     <Compile Include="ArrayRandomizer\StandardArrayRandomizer.cs" />
     <Compile Include="Attributes.cs" />
     <Compile Include="DeferredValueGenerator\Concrete\DbProviderDeferredValueGenerator.cs" />
+    <Compile Include="DeferredValueGenerator\Concrete\DefaultInitialValueGenerator.cs" />
     <Compile Include="DeferredValueGenerator\Concrete\HandlerDictionary.cs" />
     <Compile Include="DeferredValueGenerator\Interfaces\IDeferredValueGeneratorHandler.cs" />
-    <Compile Include="DeferredValueGenerator\Interfaces\IDbProviderDeferredValueGenerator.cs" />
+    <Compile Include="DeferredValueGenerator\Interfaces\IPropertyDataGenerator.cs" />
     <Compile Include="DeferredValueGenerator\Interfaces\IDeferredValueGenerator.cs" />
-    <Compile Include="DeferredValueGenerator\Concrete\DeferredValueGenerator.cs" />
-    <Compile Include="DeferredValueGenerator\Concrete\SqlClientInt64DeferredValueGeneratorHandler.cs" />
+    <Compile Include="DeferredValueGenerator\Concrete\StandardDeferredValueGenerator.cs" />
+    <Compile Include="DeferredValueGenerator\Concrete\SqlClientInitialCountGenerator.cs" />
     <Compile Include="DeferredValueGenerator\Interfaces\IHandlerDictionary.cs" />
     <Compile Include="Exceptions\Exceptions.cs" />
     <Compile Include="Exceptions\Messages.cs" />
@@ -74,7 +75,8 @@
     <Compile Include="Helpers\Helper.cs" />
     <Compile Include="Helpers\Interfaces\IRandomSymbolStringGenerator.cs" />
     <Compile Include="Persistence\IPersistence.cs" />
-    <Compile Include="Persistence\StandardPersistence.cs" />
+    <Compile Include="Persistence\MemoryPersistence.cs" />
+    <Compile Include="Persistence\SqlClientPersistence.cs" />
     <Compile Include="Populator\IPopulator.cs" />
     <Compile Include="Populator\RecordReference.cs" />
     <Compile Include="Populator\GenericRecordReference.cs" />

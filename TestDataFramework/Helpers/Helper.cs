@@ -91,5 +91,7 @@ namespace TestDataFramework.Helpers
                 return transaction?.TransactionInformation.Status == TransactionStatus.Active;
             }
         }
+
+        public static ulong DefaultInitalCount => 0;
     }
 }

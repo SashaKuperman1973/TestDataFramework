@@ -9,24 +9,24 @@ using TestDataFramework.Helpers;
 
 namespace TestDataFramework.DeferredValueGenerator.Concrete
 {
-    public class SqlClientInt64DeferredValueGeneratorHandler : IDeferredValueGeneratorHandler<ulong>
+    public class SqlClientInitialCountGenerator : IDeferredValueGeneratorHandler<ulong>
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(SqlClientInt64DeferredValueGeneratorHandler));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(SqlClientInitialCountGenerator));
 
         public ulong NumberHandler(PropertyInfo propertyInfo, DbCommand command)
         {
-            SqlClientInt64DeferredValueGeneratorHandler.Logger.Debug("Entering NumberHandler");
+            SqlClientInitialCountGenerator.Logger.Debug("Entering NumberHandler");
 
             string commandText = $"Select MAX([{Helper.GetColunName(propertyInfo)}]) From [{Helper.GetTableName(propertyInfo.DeclaringType)}]";
             command.CommandText = commandText;
 
-            ulong result = 0;
+            ulong result = Helper.DefaultInitalCount;
 
             using (DbDataReader reader = command.ExecuteReader())
             {
                 if (reader.Read())
                 {
-                    SqlClientInt64DeferredValueGeneratorHandler.Logger.Debug("Row found");
+                    SqlClientInitialCountGenerator.Logger.Debug("Row found");
 
                     object value = reader.GetValue(0);
 
@@ -45,7 +45,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
 
         public ulong StringHandler(PropertyInfo propertyInfo, DbCommand command)
         {
-            SqlClientInt64DeferredValueGeneratorHandler.Logger.Debug("Entering StringHandler");
+            SqlClientInitialCountGenerator.Logger.Debug("Entering StringHandler");
 
             string commandText =
                 $"Select MAX([{Helper.GetColunName(propertyInfo)}]) From [{Helper.GetTableName(propertyInfo.DeclaringType)}] Where MAX([{Helper.GetColunName(propertyInfo)}]) like '[A-Z]%'";
@@ -57,7 +57,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
             {
                 if (reader.Read())
                 {
-                    SqlClientInt64DeferredValueGeneratorHandler.Logger.Debug("Row found");
+                    SqlClientInitialCountGenerator.Logger.Debug("Row found");
 
                     value = reader.GetValue(0);
 
@@ -68,15 +68,15 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
                 }
             }
 
-            ulong result = value != null ? SqlClientInt64DeferredValueGeneratorHandler.GetLongIntFromLetters((string)value) : 0;
+            ulong result = value != null ? SqlClientInitialCountGenerator.GetLongIntFromLetters((string)value) : 0;
 
-            SqlClientInt64DeferredValueGeneratorHandler.Logger.Debug("Exiting StringHandler");
+            SqlClientInitialCountGenerator.Logger.Debug("Exiting StringHandler");
             return result;
         }
 
         private static ulong GetLongIntFromLetters(string value)
         {
-            ulong result = 0;
+            ulong result = Helper.DefaultInitalCount;
 
             for (int i=0; i < value.Length; i++)
             {

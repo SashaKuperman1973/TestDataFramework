@@ -2,8 +2,11 @@
 The randomizers for rest of the special collection types that are implemented in the old system.
 Change all excpetion to take parameters instead of using stringFormat at calling site.
 Test that a long property type writes to a smallint database field.
+StandardPropertyValueAccumulator: return null if neither integer or string? Or throw an exception?
 
 =Tests to write
+
+DefaultInitialValueGenerator
 
 =Scratchpad
 

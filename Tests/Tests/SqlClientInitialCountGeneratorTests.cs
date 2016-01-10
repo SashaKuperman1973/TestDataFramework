@@ -12,9 +12,9 @@ using Tests.TestModels;
 namespace Tests.Tests
 {
     [TestClass]
-    public class SqlClientInt64DeferredValueGeneratorTests
+    public class SqlClientInitialCountGeneratorTests
     {
-        private SqlClientInt64DeferredValueGeneratorHandler handler;
+        private SqlClientInitialCountGenerator handler;
 
         private MockDbCommand mockDbCommand;
         private Mock<DbCommand> commandMock;
@@ -27,7 +27,7 @@ namespace Tests.Tests
             this.readerMock = new Mock<DbDataReader>();
             this.mockDbCommand = new MockDbCommand(this.commandMock.Object, this.readerMock.Object);
 
-            this.handler = new SqlClientInt64DeferredValueGeneratorHandler();
+            this.handler = new SqlClientInitialCountGenerator();
         }
 
         [TestMethod]

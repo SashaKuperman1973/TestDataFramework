@@ -7,13 +7,14 @@ using TestDataFramework.Exceptions;
 
 namespace TestDataFramework.DeferredValueGenerator.Concrete
 {
-    public class DeferredValueGenerator<T> : IDeferredValueGenerator<T>
+    public class StandardDeferredValueGenerator<T> : IDeferredValueGenerator<T>
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof (DeferredValueGenerator<T>));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof (StandardDeferredValueGenerator<T>));
 
-        private readonly IDbProviderDeferredValueGenerator<T> dataSource;
+        private readonly IPropertyDataGenerator<T> dataSource;
+        private readonly Dictionary<PropertyInfo, Data> propertyDataDictionary = new Dictionary<PropertyInfo, Data>();
 
-        public DeferredValueGenerator(IDbProviderDeferredValueGenerator<T> dataSource)
+        public StandardDeferredValueGenerator(IPropertyDataGenerator<T> dataSource)
         {
             this.dataSource = dataSource;
         }
@@ -30,20 +31,24 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
         }
 
         private bool hasExecuted = false;
-        private readonly Dictionary<PropertyInfo, Data> propertyDataDictionary = new Dictionary<PropertyInfo, Data>();
 
         public void AddDelegate(PropertyInfo propertyInfo, DeferredValueGetterDelegate<T> valueGetter)
         {
-            DeferredValueGenerator<T>.Logger.Debug("Entering AddDelegate. propertyInfo: " + propertyInfo);
+            StandardDeferredValueGenerator<T>.Logger.Debug("Entering AddDelegate. propertyInfo: " + propertyInfo);
+
+            if (this.hasExecuted)
+            {
+                throw new DeferredValueGeneratorExecutedException();
+            }
 
             this.propertyDataDictionary.Add(propertyInfo, new Data(valueGetter));
 
-            DeferredValueGenerator<T>.Logger.Debug("Exiting AddDelegate");
+            StandardDeferredValueGenerator<T>.Logger.Debug("Exiting AddDelegate");
         }
 
         public void Execute(IEnumerable<object> targets)
         {
-            DeferredValueGenerator<T>.Logger.Debug("Entering Execute");
+            StandardDeferredValueGenerator<T>.Logger.Debug("Entering Execute");
 
             if (this.hasExecuted)
             {
@@ -62,7 +67,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
                         return;
                     }
 
-                    object value = data.ValueGetter(this.propertyDataDictionary[propertyInfo].Item);
+                    object value = data.ValueGetter(data.Item);
 
                     propertyInfo.SetValue(target, value);
                 });
@@ -70,7 +75,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
 
             this.hasExecuted = true;
 
-            DeferredValueGenerator<T>.Logger.Debug("Exiting Execute");
+            StandardDeferredValueGenerator<T>.Logger.Debug("Exiting Execute");
         }
     }
 }

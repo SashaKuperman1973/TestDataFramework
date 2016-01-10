@@ -53,10 +53,10 @@ namespace Tests.Tests
             PropertyInfo integerPropertyInfo = typeof(SubjectClass).GetProperty("Integer");
             PropertyInfo longIntegerPropertyInfo = typeof(SubjectClass).GetProperty("LongInteger");
 
-            var dictionary = new Dictionary<PropertyInfo, DeferredValueGenerator<ulong>.Data>
+            var dictionary = new Dictionary<PropertyInfo, StandardDeferredValueGenerator<ulong>.Data>
             {
-                {integerPropertyInfo, new DeferredValueGenerator<ulong>.Data(null)},
-                {longIntegerPropertyInfo, new DeferredValueGenerator<ulong>.Data(null)},
+                {integerPropertyInfo, new StandardDeferredValueGenerator<ulong>.Data(null)},
+                {longIntegerPropertyInfo, new StandardDeferredValueGenerator<ulong>.Data(null)},
             };
 
             this.handlerDictionaryMock.Setup(m => m[typeof(int)]).Returns((pi, c) => 1);

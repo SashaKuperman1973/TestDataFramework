@@ -7,7 +7,7 @@ using TestDataFramework.DeferredValueGenerator.Interfaces;
 
 namespace TestDataFramework.DeferredValueGenerator.Concrete
 {
-    public class DbProviderDeferredValueGenerator<T> : IDbProviderDeferredValueGenerator<T>
+    public class DbProviderDeferredValueGenerator<T> : IPropertyDataGenerator<T>
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(DbProviderDeferredValueGenerator<T>));
 
@@ -22,7 +22,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
             this.connectionString = connectionString;
         }
 
-        public void FillData(Dictionary<PropertyInfo, DeferredValueGenerator<T>.Data> propertyDataDictionary)
+        public void FillData(IDictionary<PropertyInfo, StandardDeferredValueGenerator<T>.Data> propertyDataDictionary)
         {
             DbProviderDeferredValueGenerator<T>.Logger.Debug("Entering FillData");
 
@@ -31,7 +31,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
                 connection.ConnectionString = this.connectionString;
                 connection.Open();
 
-                foreach (KeyValuePair<PropertyInfo, DeferredValueGenerator<T>.Data> data in propertyDataDictionary)
+                foreach (KeyValuePair<PropertyInfo, StandardDeferredValueGenerator<T>.Data> data in propertyDataDictionary)
                 {
                     HandlerDelegate<T> handler = this.handlerDictionary[data.Key.PropertyType];
 

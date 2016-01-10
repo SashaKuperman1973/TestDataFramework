@@ -4,8 +4,8 @@ using TestDataFramework.DeferredValueGenerator.Concrete;
 
 namespace TestDataFramework.DeferredValueGenerator.Interfaces
 {
-    public interface IDbProviderDeferredValueGenerator<T>
+    public interface IPropertyDataGenerator<T>
     {
-        void FillData(Dictionary<PropertyInfo, DeferredValueGenerator<T>.Data> propertyDataDictionary);
+        void FillData(IDictionary<PropertyInfo, StandardDeferredValueGenerator<T>.Data> propertyDataDictionary);
     }
 }

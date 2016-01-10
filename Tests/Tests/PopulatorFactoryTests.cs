@@ -17,7 +17,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void GetSqlServerPopulator_Test()
+        public void GetSqlClientPopulator_Test()
         {
             using (var factory = new PopulatorFactory())
             {
@@ -27,7 +27,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void GetSqlServerPopulator_WithTransactionOption()
+        public void GetSqlClientPopulator_WithTransactionOption()
         {
             using (var factory = new PopulatorFactory())
             {
@@ -41,7 +41,8 @@ namespace Tests.Tests
         {
             using (var factory = new PopulatorFactory())
             {
-                throw new NotImplementedException();
+                IPopulator populator = factory.CreateMemoryPopulator();
+                Assert.AreEqual(typeof(StandardPopulator), populator.GetType());
             }
         }
     }

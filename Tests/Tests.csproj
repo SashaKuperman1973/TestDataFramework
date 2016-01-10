@@ -79,7 +79,7 @@
     <Compile Include="Tests\StandardRandomizerTests.cs" />
     <Compile Include="Tests\RandomSymbolStringGeneratorTest.cs" />
     <Compile Include="Tests\ArrayRandomizerTests.cs" />
-    <Compile Include="Tests\StandardPersistenceTests.cs" />
+    <Compile Include="Tests\SqlClientPersistenceTests.cs" />
     <Compile Include="Tests\RecordReferenceTests.cs" />
     <Compile Include="Tests\InsertRecordTests.cs" />
     <Compile Include="Tests\InsertRecordServiceTest.cs" />
@@ -88,9 +88,10 @@
     <Compile Include="Tests\PopulatorFactoryTests.cs" />
     <Compile Include="Tests\StandardValueGeneratorTests.cs" />
     <Compile Include="Tests\StringGeneratorTest.cs" />
-    <Compile Include="Tests\DeferredValueGeneratorTests.cs" />
-    <Compile Include="Tests\SqlClientInt64DeferredValueGeneratorTests.cs" />
+    <Compile Include="Tests\StandardDeferredValueGeneratorTests.cs" />
+    <Compile Include="Tests\SqlClientInitialCountGeneratorTests.cs" />
     <Compile Include="Tests\HandlerDictionaryTests.cs" />
+    <Compile Include="Tests\MemoryPersistenceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Tests To Do.txt" />

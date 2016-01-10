@@ -18,7 +18,9 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
             SqlClientInt64DeferredValueGeneratorHandler.Logger.Debug("Entering NumberHandler");
 
             string commandText = $"Select MAX([{Helper.GetColunName(propertyInfo)}]) From [{Helper.GetTableName(propertyInfo.DeclaringType)}]";
-            ulong result = 1;
+            command.CommandText = commandText;
+
+            ulong result = 0;
 
             using (DbDataReader reader = command.ExecuteReader())
             {
@@ -30,14 +32,14 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
 
                     if (!new[] {typeof(byte), typeof(int), typeof (short), typeof (long)}.Contains(value.GetType()))
                     {
-                        throw new UnexpectedTypeException(string.Format(Messages.UnexpectedNumberHandlerType, propertyInfo.PropertyType, value.GetType()));
+                        throw new UnexpectedTypeException(string.Format(Messages.UnexpectedHandlerType, propertyInfo, value.GetType()));
                     }
 
                     result = (ulong)Convert.ChangeType(value, typeof(ulong));
                 }
             }
 
-            SqlClientInt64DeferredValueGeneratorHandler.Logger.Debug("Exiting NumberHandler");
+            Logger.Debug("Exiting NumberHandler");
             return result;
         }
 
@@ -45,7 +47,10 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
         {
             SqlClientInt64DeferredValueGeneratorHandler.Logger.Debug("Entering StringHandler");
 
-            string commandText = $"Select MAX([{Helper.GetColunName(propertyInfo)}]) maxVarchar From [{Helper.GetTableName(propertyInfo.DeclaringType)}] Where maxVarchar like '[A-Z]%'";
+            string commandText =
+                $"Select MAX([{Helper.GetColunName(propertyInfo)}]) From [{Helper.GetTableName(propertyInfo.DeclaringType)}] Where MAX([{Helper.GetColunName(propertyInfo)}]) like '[A-Z]%'";
+            command.CommandText = commandText;
+
             object value = null;
 
             using (DbDataReader reader = command.ExecuteReader())
@@ -58,7 +63,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
 
                     if (value.GetType() != typeof(string))
                     {
-                        throw new UnexpectedTypeException(string.Format(Messages.UnexpectedNumberHandlerType, propertyInfo.PropertyType, value.GetType()));
+                        throw new UnexpectedTypeException(string.Format(Messages.UnexpectedHandlerType, propertyInfo, value.GetType()));
                     }
                 }
             }
@@ -75,8 +80,8 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
 
             for (int i=0; i < value.Length; i++)
             {
-                var ascii = (ulong) value[i];
-                result += ascii - 65;
+                var ascii = (ulong) value[value.Length - 1 - i];
+                result += (ascii - 65)*(ulong)Math.Pow(26, i);
             }
 
             return result;

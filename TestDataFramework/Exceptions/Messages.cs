@@ -34,7 +34,7 @@
 
         public const string DeferredValueGeneratorExecuted = "Deferred value generator Execute method called more than once";
 
-        public const string UnexpectedNumberHandlerType =
+        public const string UnexpectedHandlerType =
             "Unexpected type fetching value from DB. Property: {0}, Actual type: {1}";
 
         public const string PropertyNotFound = "Count key not found. Key property: {0}";

@@ -94,9 +94,11 @@
     <Compile Include="RepositoryOperations\AbstractRepositoryOperation.cs" />
     <Compile Include="TypeGenerator\ITypeGenerator.cs" />
     <Compile Include="TypeGenerator\StandardTypeGenerator.cs" />
+    <Compile Include="PropertyValueAccumulator\IPropertyValueAccumulator.cs" />
+    <Compile Include="PropertyValueAccumulator\StandardPropertyValueAccumulator.cs" />
+    <Compile Include="PropertyValueAccumulator\StringGenerator.cs" />
     <Compile Include="UniqueValueGenerator\IUniqueValueGenerator.cs" />
     <Compile Include="UniqueValueGenerator\StandardUniqueValueGenerator.cs" />
-    <Compile Include="UniqueValueGenerator\StringGenerator.cs" />
     <Compile Include="ValueFormatter\IValueFormatter.cs" />
     <Compile Include="ValueGenerator\IValueGenerator.cs" />
     <Compile Include="ValueGenerator\StandardValueGenerator.cs" />

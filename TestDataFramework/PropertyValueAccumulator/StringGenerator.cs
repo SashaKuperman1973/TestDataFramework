@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TestDataFramework.Exceptions;
 
-namespace TestDataFramework.UniqueValueGenerator
+namespace TestDataFramework.PropertyValueAccumulator
 {
     public class StringGenerator
     {

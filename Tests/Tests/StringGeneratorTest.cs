@@ -2,7 +2,7 @@
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.Exceptions;
-using TestDataFramework.UniqueValueGenerator;
+using TestDataFramework.PropertyValueAccumulator;
 
 namespace Tests.Tests
 {
@@ -20,7 +20,7 @@ namespace Tests.Tests
         {
             const int stringLength = 10;
 
-            const string expected = "ABCD";
+            const string expected = "BCD";
             ulong input = (ulong)Math.Pow(26, 2) + 2*26 + 3;
 
             var generator = new StringGenerator();

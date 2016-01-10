@@ -9,6 +9,7 @@ using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
+using TestDataFramework.PropertyValueAccumulator;
 using TestDataFramework.UniqueValueGenerator;
 using Tests.TestModels;
 
@@ -18,53 +19,30 @@ namespace Tests.Tests
     public class StandardUniqueValueGeneratorTests
     {
         private StandardUniqueValueGenerator generator;
+        private Mock<IPropertyValueAccumulator> propertyValueAccumulatorMock;
         private Mock<IDeferredValueGenerator<ulong>> deferredValueGeneratorMock;
-        private Mock<StringGenerator> stringGeneratorMock;
 
         [TestInitialize]
         public void Initialize()
         {
             XmlConfigurator.Configure();
 
+            this.propertyValueAccumulatorMock = new Mock<IPropertyValueAccumulator>();
             this.deferredValueGeneratorMock = new Mock<IDeferredValueGenerator<ulong>>();
-            this.stringGeneratorMock = new Mock<StringGenerator>();
 
-            this.generator = new StandardUniqueValueGenerator(this.stringGeneratorMock.Object,
+            this.generator = new StandardUniqueValueGenerator(this.propertyValueAccumulatorMock.Object,
                 this.deferredValueGeneratorMock.Object);
         }
 
         [TestMethod]
-        public void IntegerTest()
+        public void DeferValue_Test()
         {
-            this.IntegerTest(typeof(ClassWithIntAutoPrimaryKey));
-            this.IntegerTest(typeof(ClassWithShortAutoPrimaryKey));
-            this.IntegerTest(typeof(ClassWithLongAutoPrimaryKey));
-            this.IntegerTest(typeof(ClassWithByteAutoPrimaryKey));
-        }
+            // Arange
 
-        private void IntegerTest(Type inputClass)
-        {
-            DeferredValueGetterDelegate<ulong>[] result = this.Test(inputClass);
+            const int initialCount = 5;
 
-            StandardUniqueValueGeneratorTests.AreEqual(5, result[0](5));
-            StandardUniqueValueGeneratorTests.AreEqual(6, result[0](5));
-        }
-
-        [TestMethod]
-        public void StringTest()
-        {
-            this.stringGeneratorMock.Setup(m => m.GetValue(5, It.IsAny<int>())).Returns("A");
-            this.stringGeneratorMock.Setup(m => m.GetValue(6, It.IsAny<int>())).Returns("B");
-
-            DeferredValueGetterDelegate<ulong>[] result = this.Test(typeof(ClassWithStringAutoPrimaryKey));
-
-            StandardUniqueValueGeneratorTests.AreEqual("A", result[0](5));
-            StandardUniqueValueGeneratorTests.AreEqual("B", result[1](5));
-        }
-
-        private DeferredValueGetterDelegate<ulong>[] Test(Type inputClass)
-        {
-            PropertyInfo keyPropertyInfo = inputClass.GetProperty("Key");
+            PropertyInfo keyPropertyInfo = typeof(ClassWithStringAutoPrimaryKey).GetProperty("Key");
+            this.propertyValueAccumulatorMock.Setup(m => m.GetValue(It.Is<PropertyInfo>(pi => pi == keyPropertyInfo), initialCount)).Returns(1);
 
             int i = 0;
 
@@ -76,33 +54,32 @@ namespace Tests.Tests
 
             // Act
 
-            object value = this.generator.GetValue(keyPropertyInfo);
-            this.generator.GetValue(keyPropertyInfo);
+            this.generator.DeferValue(keyPropertyInfo);
+            this.generator.DeferValue(keyPropertyInfo);
 
             // Assert
 
-            StandardUniqueValueGeneratorTests.AreEqual(
-                keyPropertyInfo.PropertyType.IsValueType
-                    ? Activator.CreateInstance(keyPropertyInfo.PropertyType)
-                    : null,
-
-                value
-                );
-
-            return delegateArray;
+            Assert.AreEqual(1, delegateArray[0](initialCount));
+            Assert.AreEqual(1, delegateArray[1](initialCount));
         }
 
-        private static void AreEqual(object expected, object actual)
+        [TestMethod]
+        public void GetValue_Test()
         {
-            if (expected == null)
-            {
-                Assert.IsNull(actual);
-            }
-            else
-            {
-                Assert.AreEqual(Convert.ChangeType(expected, actual.GetType()), actual);
-            }
-            
+            // Arrange
+
+            const int expectedValue = 5;
+
+            PropertyInfo keyPropertyInfo = typeof(ClassWithStringAutoPrimaryKey).GetProperty("Key");
+            this.propertyValueAccumulatorMock.Setup(m => m.GetValue(It.Is<PropertyInfo>(pi => pi == keyPropertyInfo), 0)).Returns(expectedValue);
+
+            // Act
+
+            object result = this.generator.GetValue(keyPropertyInfo);
+
+            // Assert
+
+            Assert.AreEqual(expectedValue, result);
         }
     }
 }

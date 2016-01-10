@@ -40,9 +40,11 @@ namespace Tests.Tests
 
             new[] {typeof (int), typeof (short), typeof (long), typeof (byte)}.ToList().ForEach(t =>
             {
+                Console.WriteLine("Running for: " + t);
+
                 HandlerDelegate<int> handler = this.handlerDictionary[t];
 
-                Assert.AreEqual(this.handlerMock.Object.NumberHandler, handler);
+                Assert.AreEqual(new HandlerDelegate<int>(this.handlerMock.Object.NumberHandler).Method, handler.Method);
             });
         }
 
@@ -55,7 +57,7 @@ namespace Tests.Tests
 
             // Assert
 
-            Assert.AreEqual(this.handlerMock.Object.StringHandler, handler);
+            Assert.AreEqual(new HandlerDelegate<int>(this.handlerMock.Object.StringHandler).Method, handler.Method);
         }
     }
 }

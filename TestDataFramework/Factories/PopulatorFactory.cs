@@ -11,6 +11,7 @@ using TestDataFramework.Helpers.Concrete;
 using TestDataFramework.Helpers.Interfaces;
 using TestDataFramework.Persistence;
 using TestDataFramework.Populator;
+using TestDataFramework.PropertyValueAccumulator;
 using TestDataFramework.Randomizer;
 using TestDataFramework.TypeGenerator;
 using TestDataFramework.UniqueValueGenerator;

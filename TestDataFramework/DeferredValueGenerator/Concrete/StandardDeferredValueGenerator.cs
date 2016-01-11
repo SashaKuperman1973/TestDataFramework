@@ -41,6 +41,14 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
                 throw new DeferredValueGeneratorExecutedException();
             }
 
+            if (this.propertyDataDictionary.ContainsKey(propertyInfo))
+            {
+                StandardDeferredValueGenerator<T>.Logger.Debug(
+                    "AddDelegate. Duplicate property. Exiting. propertyInfo: " + propertyInfo);
+
+                return;
+            }
+
             this.propertyDataDictionary.Add(propertyInfo, new Data(valueGetter));
 
             StandardDeferredValueGenerator<T>.Logger.Debug("Exiting AddDelegate");

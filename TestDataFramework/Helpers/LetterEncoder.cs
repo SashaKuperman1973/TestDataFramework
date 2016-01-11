@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using TestDataFramework.Exceptions;
 
-namespace TestDataFramework.PropertyValueAccumulator
+namespace TestDataFramework.Helpers
 {
-    public class StringGenerator
+    public class LetterEncoder
     {
-        public virtual string GetValue(ulong number, int stringLength)
+        public virtual string Encode(ulong number, int stringLength)
         {
             var sb = new StringBuilder();
 
@@ -41,6 +38,19 @@ namespace TestDataFramework.PropertyValueAccumulator
             }
 
             string result = sb.ToString();
+
+            return result;
+        }
+
+        public virtual ulong Decode(string value)
+        {
+            ulong result = Helper.DefaultInitalCount;
+
+            for (int i = 0; i < value.Length; i++)
+            {
+                var ascii = (ulong)value[value.Length - 1 - i];
+                result += (ascii - 65) * (ulong)Math.Pow(26, i);
+            }
 
             return result;
         }

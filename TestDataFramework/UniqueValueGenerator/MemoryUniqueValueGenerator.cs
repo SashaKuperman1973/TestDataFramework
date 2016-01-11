@@ -13,28 +13,28 @@ using TestDataFramework.PropertyValueAccumulator;
 
 namespace TestDataFramework.UniqueValueGenerator
 {
-    public class StandardUniqueValueGenerator : IUniqueValueGenerator
+    public class MemoryUniqueValueGenerator : IUniqueValueGenerator
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(StandardUniqueValueGenerator));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(MemoryUniqueValueGenerator));
 
         private readonly IPropertyValueAccumulator accumulator;
         private readonly IDeferredValueGenerator<ulong> deferredValueGenerator;
 
-        public StandardUniqueValueGenerator(IPropertyValueAccumulator accumulator, IDeferredValueGenerator<ulong> deferredValueGenerator)
+        public MemoryUniqueValueGenerator(IPropertyValueAccumulator accumulator, IDeferredValueGenerator<ulong> deferredValueGenerator)
         {
             this.accumulator = accumulator;
             this.deferredValueGenerator = deferredValueGenerator;
         }
 
-        public object GetValue(PropertyInfo propertyInfo)
+        public virtual object GetValue(PropertyInfo propertyInfo)
         {
             object result = this.accumulator.GetValue(propertyInfo, Helper.DefaultInitalCount);
             return result;
         }
 
-        public void DeferValue(PropertyInfo propertyInfo)
+        public virtual void DeferValue(PropertyInfo propertyInfo)
         {
-            StandardUniqueValueGenerator.Logger.Debug("Entering GetValue");
+            MemoryUniqueValueGenerator.Logger.Debug("Entering GetValue");
 
             this.deferredValueGenerator.AddDelegate(propertyInfo, initialCount =>
             {
@@ -42,7 +42,7 @@ namespace TestDataFramework.UniqueValueGenerator
                 return result;
             });
 
-            StandardUniqueValueGenerator.Logger.Debug("Exiting GetValue");
+            MemoryUniqueValueGenerator.Logger.Debug("Exiting GetValue");
         }
 
     }

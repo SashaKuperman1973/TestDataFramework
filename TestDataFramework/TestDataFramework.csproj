@@ -74,6 +74,7 @@
     <Compile Include="Helpers\Concrete\RandomSymbolStringGenerator.cs" />
     <Compile Include="Helpers\Helper.cs" />
     <Compile Include="Helpers\Interfaces\IRandomSymbolStringGenerator.cs" />
+    <Compile Include="Helpers\LargeInteger.cs" />
     <Compile Include="Persistence\IPersistence.cs" />
     <Compile Include="Persistence\MemoryPersistence.cs" />
     <Compile Include="Persistence\SqlClientPersistence.cs" />
@@ -98,9 +99,10 @@
     <Compile Include="TypeGenerator\StandardTypeGenerator.cs" />
     <Compile Include="PropertyValueAccumulator\IPropertyValueAccumulator.cs" />
     <Compile Include="PropertyValueAccumulator\StandardPropertyValueAccumulator.cs" />
-    <Compile Include="PropertyValueAccumulator\StringGenerator.cs" />
+    <Compile Include="Helpers\LetterEncoder.cs" />
     <Compile Include="UniqueValueGenerator\IUniqueValueGenerator.cs" />
-    <Compile Include="UniqueValueGenerator\StandardUniqueValueGenerator.cs" />
+    <Compile Include="UniqueValueGenerator\MemoryUniqueValueGenerator.cs" />
+    <Compile Include="UniqueValueGenerator\SqlClientUniqueValueGenerator.cs" />
     <Compile Include="ValueFormatter\IValueFormatter.cs" />
     <Compile Include="ValueGenerator\IValueGenerator.cs" />
     <Compile Include="ValueGenerator\StandardValueGenerator.cs" />

@@ -4,6 +4,7 @@ using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
+using TestDataFramework.Helpers;
 using TestDataFramework.PropertyValueAccumulator;
 using Tests.TestModels;
 
@@ -13,14 +14,14 @@ namespace Tests.Tests
     public class StandardPropertyValueAccumulatorTests
     {
         private StandardPropertyValueAccumulator accumulator;
-        private Mock<StringGenerator> stringGeneratorMock;
+        private Mock<LetterEncoder> stringGeneratorMock;
 
         [TestInitialize]
         public void Initialize()
         {
             XmlConfigurator.Configure();
 
-            this.stringGeneratorMock = new Mock<StringGenerator>();
+            this.stringGeneratorMock = new Mock<LetterEncoder>();
             this.accumulator = new StandardPropertyValueAccumulator(this.stringGeneratorMock.Object);
         }
 
@@ -44,8 +45,8 @@ namespace Tests.Tests
         [TestMethod]
         public void StringTest()
         {
-            this.stringGeneratorMock.Setup(m => m.GetValue(5, It.IsAny<int>())).Returns("A");
-            this.stringGeneratorMock.Setup(m => m.GetValue(6, It.IsAny<int>())).Returns("B");
+            this.stringGeneratorMock.Setup(m => m.Encode(5, It.IsAny<int>())).Returns("A");
+            this.stringGeneratorMock.Setup(m => m.Encode(6, It.IsAny<int>())).Returns("B");
 
             object[] resultArray = this.Test(typeof(ClassWithStringAutoPrimaryKey));
 

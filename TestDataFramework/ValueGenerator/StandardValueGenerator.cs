@@ -26,7 +26,8 @@ namespace TestDataFramework.ValueGenerator
 
         private readonly Dictionary<Type, GetValueForTypeDelegate> typeValueGetterDictionary;
 
-        public StandardValueGenerator(IRandomizer randomizer, ITypeGenerator typeGenerator, Func<IValueGenerator, IArrayRandomizer> getArrayRandomizer, IUniqueValueGenerator uniqueValueGenerator)
+        public StandardValueGenerator(IRandomizer randomizer, ITypeGenerator typeGenerator,
+            Func<IValueGenerator, IArrayRandomizer> getArrayRandomizer, IUniqueValueGenerator uniqueValueGenerator)
         {
             StandardValueGenerator.Logger.Debug("Entering constructor");
 
@@ -38,7 +39,7 @@ namespace TestDataFramework.ValueGenerator
             this.typeValueGetterDictionary = new Dictionary<Type, GetValueForTypeDelegate>
             {
                 {typeof (EmailAttribute), x => this.randomizer.RandomizeEmailAddress()},
-                {typeof (PrimaryKeyAttribute), this.GetPrimaryKey },
+                {typeof (PrimaryKeyAttribute), this.GetPrimaryKey},
                 {typeof (string), this.GetString},
                 {typeof (decimal), this.GetDecimal},
                 {typeof (int), this.GetInteger},
@@ -242,7 +243,7 @@ namespace TestDataFramework.ValueGenerator
 
         private object GetPrimaryKey(PropertyInfo propertyInfo)
         {
-            if (propertyInfo.GetSingleAttribute<PrimaryKeyAttribute>().KeyType == PrimaryKeyAttribute.KeyTypeEnum.Auto)
+            if (propertyInfo.GetSingleAttribute<PrimaryKeyAttribute>().KeyType == PrimaryKeyAttribute.KeyTypeEnum.Manual)
             {
                 this.uniqueValueGenerator.DeferValue(propertyInfo);
                 return propertyInfo.PropertyType.IsValueType ? Activator.CreateInstance(propertyInfo.PropertyType) : null;

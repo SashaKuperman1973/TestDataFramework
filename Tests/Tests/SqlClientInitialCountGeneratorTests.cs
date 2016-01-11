@@ -6,6 +6,7 @@ using Moq;
 using TestDataFramework.DeferredValueGenerator.Concrete;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Exceptions;
+using TestDataFramework.Helpers;
 using Tests.Mocks;
 using Tests.TestModels;
 
@@ -27,7 +28,7 @@ namespace Tests.Tests
             this.readerMock = new Mock<DbDataReader>();
             this.mockDbCommand = new MockDbCommand(this.commandMock.Object, this.readerMock.Object);
 
-            this.handler = new SqlClientInitialCountGenerator();
+            this.handler = new SqlClientInitialCountGenerator(new LetterEncoder());
         }
 
         [TestMethod]
@@ -49,7 +50,7 @@ namespace Tests.Tests
         {
             Func<PropertyInfo, string> commandTextFunc =
                 propertyInfo =>
-                    $"Select MAX([{propertyInfo.Name}]) From [{propertyInfo.DeclaringType.Name}] Where MAX([{propertyInfo.Name}]) like '[A-Z]%'";
+                    $"Select MAX([{propertyInfo.Name}]) From [{propertyInfo.DeclaringType.Name}] Where [{propertyInfo.Name}] like '[A-Z]%'";
 
             this.Test("ABC", 28ul, this.handler.StringHandler, commandTextFunc);
         }
@@ -68,6 +69,25 @@ namespace Tests.Tests
             Helpers.ExceptionTest(() => this.Test(1, 0, this.handler.StringHandler, null),
                 typeof(UnexpectedTypeException),
                 string.Format(Messages.UnexpectedHandlerType, "System.String Key", "System.Int32"));
+        }
+
+        [TestMethod]
+        public void NumberHandler_DbNull_Test()
+        {
+            Func<PropertyInfo, string> commandTextFunc =
+                propertyInfo => $"Select MAX([{propertyInfo.Name}]) From [{propertyInfo.DeclaringType.Name}]";
+
+            this.Test(DBNull.Value, Helper.DefaultInitalCount, this.handler.NumberHandler, commandTextFunc);
+        }
+
+        [TestMethod]
+        public void StringHandler_DbNull_Test()
+        {
+            Func<PropertyInfo, string> commandTextFunc =
+                propertyInfo =>
+                    $"Select MAX([{propertyInfo.Name}]) From [{propertyInfo.DeclaringType.Name}] Where [{propertyInfo.Name}] like '[A-Z]%'";
+
+            this.Test(DBNull.Value, Helper.DefaultInitalCount, this.handler.StringHandler, commandTextFunc);
         }
 
         private void Test(object value, ulong expected, HandlerDelegate<ulong> handlerDelegate, Func<PropertyInfo, string> commandTextFunc)

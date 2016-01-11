@@ -8,6 +8,7 @@ using log4net;
 using TestDataFramework.DeferredValueGenerator;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Exceptions;
+using TestDataFramework.Helpers;
 using TestDataFramework.UniqueValueGenerator;
 
 namespace TestDataFramework.PropertyValueAccumulator
@@ -16,9 +17,9 @@ namespace TestDataFramework.PropertyValueAccumulator
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(StandardPropertyValueAccumulator));
 
-        private readonly StringGenerator stringGenerator;
+        private readonly LetterEncoder stringGenerator;
 
-        public StandardPropertyValueAccumulator(StringGenerator stringGenerator)
+        public StandardPropertyValueAccumulator(LetterEncoder stringGenerator)
         {
             this.stringGenerator = stringGenerator;
         }
@@ -81,7 +82,7 @@ namespace TestDataFramework.PropertyValueAccumulator
 
             int stringLength = stringLengthAttribute?.Length ?? defaultStringLength;
 
-            string result = this.stringGenerator.GetValue(count, stringLength);
+            string result = this.stringGenerator.Encode(count, stringLength);
 
             return result;
         }

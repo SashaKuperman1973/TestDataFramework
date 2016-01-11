@@ -26,10 +26,11 @@ namespace Tests.TestModels
 
         public int Integer { get; set; }
     }
-
+    
     public class ManualKeyPrimaryTable
     {
         [PrimaryKey]
+        [StringLength(20)]
         public string Key1 { get; set; }
 
         [PrimaryKey]

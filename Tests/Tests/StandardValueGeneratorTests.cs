@@ -278,9 +278,9 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void AutoPrimaryKey_ReturnsDefaultIntegral_Test()
+        public void ManualPrimaryKey_ReturnsDefaultIntegral_Test()
         {
-            PropertyInfo primaryKeyPropertyInfo = typeof(PrimaryTable).GetProperty("Key");
+            PropertyInfo primaryKeyPropertyInfo = typeof(ManualKeyPrimaryTable).GetProperty("Key2");
             const int expected = 0;
 
             this.uniqueValueGeneratorMock.Setup(m => m.DeferValue(primaryKeyPropertyInfo)).Verifiable();
@@ -294,9 +294,9 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void ManualPrimaryKey_Test()
+        public void AutoPrimaryKey_Test()
         {
-            PropertyInfo primaryKeyPropertyInfo = typeof(ManualKeyPrimaryTable).GetProperty("Key2");
+            PropertyInfo primaryKeyPropertyInfo = typeof(PrimaryTable).GetProperty("Key");
 
             this.uniqueValueGeneratorMock.Setup(m => m.GetValue(primaryKeyPropertyInfo)).Returns(1).Verifiable();
 

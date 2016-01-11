@@ -2,12 +2,13 @@
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.Exceptions;
+using TestDataFramework.Helpers;
 using TestDataFramework.PropertyValueAccumulator;
 
 namespace Tests.Tests
 {
     [TestClass]
-    public class StringGeneratorTest
+    public class LetterEncoderTest
     {
         [TestInitialize]
         public void Initialize()
@@ -16,16 +17,28 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void StringGenerator_Test()
+        public void Encode_Test()
         {
             const int stringLength = 10;
 
             const string expected = "BCD";
-            ulong input = (ulong)Math.Pow(26, 2) + 2*26 + 3;
+            ulong input = (ulong) 26*26 + 2*26 + 3;
 
-            var generator = new StringGenerator();
+            var generator = new LetterEncoder();
 
-            string result = generator.GetValue(input, stringLength);
+            string result = generator.Encode(input, stringLength);
+
+            Assert.AreEqual(expected, result);
+        }
+
+        [TestMethod]
+        public void Decode_Test()
+        {
+            const ulong expected = 5204;
+
+            var generator = new LetterEncoder();
+
+            ulong result = generator.Decode("HSE");
 
             Assert.AreEqual(expected, result);
         }
@@ -36,9 +49,9 @@ namespace Tests.Tests
             const string expected = "ABCD";
             ulong input = (ulong)Math.Pow(26, 2) + 2 * 26 + 3;
 
-            var generator = new StringGenerator();
+            var generator = new LetterEncoder();
 
-            Helpers.ExceptionTest(() => generator.GetValue(input, expected.Length - 1), typeof (OverflowException),
+            Helpers.ExceptionTest(() => generator.Encode(input, expected.Length - 1), typeof (OverflowException),
                 string.Format(Messages.StringGeneratorOverflow, input, expected.Length - 1));
         }
     }

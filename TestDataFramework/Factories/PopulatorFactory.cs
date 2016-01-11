@@ -81,7 +81,9 @@ namespace TestDataFramework.Factories
 
                 Component.For<IDeferredValueGeneratorHandler<ulong>>().ImplementedBy<SqlClientInitialCountGenerator>(),
 
-                Component.For<IPersistence>().ImplementedBy<SqlClientPersistence>()
+                Component.For<IPersistence>().ImplementedBy<SqlClientPersistence>(),
+
+                Component.For<IUniqueValueGenerator>().ImplementedBy<SqlClientUniqueValueGenerator>()
 
                 );
 
@@ -101,7 +103,9 @@ namespace TestDataFramework.Factories
 
                 Component.For<IPropertyDataGenerator<ulong>>().ImplementedBy<DefaultInitialValueGenerator>(),
 
-                Component.For<IPersistence>().ImplementedBy<MemoryPersistence>()
+                Component.For<IPersistence>().ImplementedBy<MemoryPersistence>(),
+
+                Component.For<IUniqueValueGenerator>().ImplementedBy<MemoryUniqueValueGenerator>()
 
                 );
 
@@ -135,9 +139,7 @@ namespace TestDataFramework.Factories
 
                     Component.For<IArrayRandomizer>().ImplementedBy<StandardArrayRandomizer>(),
 
-                    Component.For<IUniqueValueGenerator>().ImplementedBy<StandardUniqueValueGenerator>(),
-
-                    Component.For<StringGenerator>(),
+                    Component.For<LetterEncoder>(),
 
                     Component.For<IPropertyValueAccumulator>().ImplementedBy<StandardPropertyValueAccumulator>(),
 

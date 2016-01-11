@@ -13,6 +13,13 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(SqlClientInitialCountGenerator));
 
+        private LetterEncoder encoder;
+
+        public SqlClientInitialCountGenerator(LetterEncoder encoder)
+        {
+            this.encoder = encoder;
+        }
+
         public ulong NumberHandler(PropertyInfo propertyInfo, DbCommand command)
         {
             SqlClientInitialCountGenerator.Logger.Debug("Entering NumberHandler");
@@ -26,20 +33,29 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
             {
                 if (reader.Read())
                 {
-                    SqlClientInitialCountGenerator.Logger.Debug("Row found");
-
                     object value = reader.GetValue(0);
 
-                    if (!new[] {typeof(byte), typeof(int), typeof (short), typeof (long)}.Contains(value.GetType()))
+                    if (value == DBNull.Value)
                     {
-                        throw new UnexpectedTypeException(string.Format(Messages.UnexpectedHandlerType, propertyInfo, value.GetType()));
+                        SqlClientInitialCountGenerator.Logger.Debug("Row not found. DBNull returned.");
                     }
+                    else
+                    {
+                        SqlClientInitialCountGenerator.Logger.Debug("Row found");
 
-                    result = (ulong)Convert.ChangeType(value, typeof(ulong));
+                        if (
+                            !new[] {typeof (byte), typeof (int), typeof (short), typeof (long)}.Contains(value.GetType()))
+                        {
+                            throw new UnexpectedTypeException(string.Format(Messages.UnexpectedHandlerType, propertyInfo,
+                                value.GetType()));
+                        }
+
+                        result = (ulong) Convert.ChangeType(value, typeof (ulong)) + 1;
+                    }
                 }
             }
 
-            Logger.Debug("Exiting NumberHandler");
+            SqlClientInitialCountGenerator.Logger.Debug("Exiting NumberHandler");
             return result;
         }
 
@@ -47,43 +63,42 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
         {
             SqlClientInitialCountGenerator.Logger.Debug("Entering StringHandler");
 
+            string tableName = "[" + Helper.GetTableName(propertyInfo.DeclaringType) + "]";
+            string columnName = "[" + Helper.GetColunName(propertyInfo) + "]";
+
             string commandText =
-                $"Select MAX([{Helper.GetColunName(propertyInfo)}]) From [{Helper.GetTableName(propertyInfo.DeclaringType)}] Where MAX([{Helper.GetColunName(propertyInfo)}]) like '[A-Z]%'";
+                $"Select Max({columnName}) from {tableName} where {columnName} not like '%[^A-Z]%' And LEN({columnName}) = (Select Max(Len({columnName})) From {tableName} where {columnName} not like '%[^A-Z]%' )";
+
             command.CommandText = commandText;
 
-            object value = null;
+            ulong result = Helper.DefaultInitalCount;
 
             using (DbDataReader reader = command.ExecuteReader())
             {
                 if (reader.Read())
                 {
-                    SqlClientInitialCountGenerator.Logger.Debug("Row found");
+                    object value = reader.GetValue(0);
 
-                    value = reader.GetValue(0);
-
-                    if (value.GetType() != typeof(string))
+                    if (value == DBNull.Value)
                     {
-                        throw new UnexpectedTypeException(string.Format(Messages.UnexpectedHandlerType, propertyInfo, value.GetType()));
+                        SqlClientInitialCountGenerator.Logger.Debug("Row not found. DBNull returned.");
+                    }
+                    else
+                    {
+                        SqlClientInitialCountGenerator.Logger.Debug("Row found");
+
+                        if (value.GetType() != typeof (string))
+                        {
+                            throw new UnexpectedTypeException(string.Format(Messages.UnexpectedHandlerType, propertyInfo,
+                                value.GetType()));
+                        }
+
+                        result = this.encoder.Decode((string) value) + 1;
                     }
                 }
             }
 
-            ulong result = value != null ? SqlClientInitialCountGenerator.GetLongIntFromLetters((string)value) : 0;
-
             SqlClientInitialCountGenerator.Logger.Debug("Exiting StringHandler");
-            return result;
-        }
-
-        private static ulong GetLongIntFromLetters(string value)
-        {
-            ulong result = Helper.DefaultInitalCount;
-
-            for (int i=0; i < value.Length; i++)
-            {
-                var ascii = (ulong) value[value.Length - 1 - i];
-                result += (ascii - 65)*(ulong)Math.Pow(26, i);
-            }
-
             return result;
         }
     }

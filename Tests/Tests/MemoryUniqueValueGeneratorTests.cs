@@ -16,9 +16,9 @@ using Tests.TestModels;
 namespace Tests.Tests
 {
     [TestClass]
-    public class StandardUniqueValueGeneratorTests
+    public class MemoryUniqueValueGeneratorTests
     {
-        private StandardUniqueValueGenerator generator;
+        private MemoryUniqueValueGenerator generator;
         private Mock<IPropertyValueAccumulator> propertyValueAccumulatorMock;
         private Mock<IDeferredValueGenerator<ulong>> deferredValueGeneratorMock;
 
@@ -30,7 +30,7 @@ namespace Tests.Tests
             this.propertyValueAccumulatorMock = new Mock<IPropertyValueAccumulator>();
             this.deferredValueGeneratorMock = new Mock<IDeferredValueGenerator<ulong>>();
 
-            this.generator = new StandardUniqueValueGenerator(this.propertyValueAccumulatorMock.Object,
+            this.generator = new MemoryUniqueValueGenerator(this.propertyValueAccumulatorMock.Object,
                 this.deferredValueGeneratorMock.Object);
         }
 

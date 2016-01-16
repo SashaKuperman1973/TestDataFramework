@@ -1,105 +1,54 @@
 ﻿using System;
-using System.Data.Common;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using log4net;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
+using TestDataFramework.WritePrimitives;
 
 namespace TestDataFramework.DeferredValueGenerator.Concrete
 {
-    public class SqlClientInitialCountGenerator : IDeferredValueGeneratorHandler<ulong>
+    public class SqlClientInitialCountGenerator : IPropertyDataGenerator<ulong>
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(SqlClientInitialCountGenerator));
 
-        private LetterEncoder encoder;
+        private readonly IWriterDictinary writerDictinary;
 
-        public SqlClientInitialCountGenerator(LetterEncoder encoder)
+        public SqlClientInitialCountGenerator(IWriterDictinary writerDictinary)
         {
-            this.encoder = encoder;
+            this.writerDictinary = writerDictinary;
         }
 
-        public ulong NumberHandler(PropertyInfo propertyInfo, DbCommand command)
+        public void FillData(IDictionary<PropertyInfo, Data<ulong>> propertyDataDictionary)
         {
-            SqlClientInitialCountGenerator.Logger.Debug("Entering NumberHandler");
+            SqlClientInitialCountGenerator.Logger.Debug("Entering FillData");
 
-            string commandText = $"Select MAX([{Helper.GetColunName(propertyInfo)}]) From [{Helper.GetTableName(propertyInfo.DeclaringType)}]";
-            command.CommandText = commandText;
+            List<DecoderDelegate> decoders = new List<DecoderDelegate>();
 
-            ulong result = Helper.DefaultInitalCount;
+            List<KeyValuePair<PropertyInfo, Data<ulong>>> propertyDataList =
+                propertyDataDictionary.ToList();
 
-            using (DbDataReader reader = command.ExecuteReader())
+            propertyDataList.ForEach(data =>
             {
-                if (reader.Read())
-                {
-                    object value = reader.GetValue(0);
+                WriterDelegate writer = this.writerDictinary[data.Key.PropertyType];
+                decoders.Add(writer(data.Key));
+            });
 
-                    if (value == DBNull.Value)
-                    {
-                        SqlClientInitialCountGenerator.Logger.Debug("Row not found. DBNull returned.");
-                    }
-                    else
-                    {
-                        SqlClientInitialCountGenerator.Logger.Debug("Row found");
+            object[] results = this.writerDictinary.Execute();
 
-                        if (
-                            !new[] {typeof (byte), typeof (int), typeof (short), typeof (long)}.Contains(value.GetType()))
-                        {
-                            throw new UnexpectedTypeException(string.Format(Messages.UnexpectedHandlerType, propertyInfo,
-                                value.GetType()));
-                        }
-
-                        result = (ulong) Convert.ChangeType(value, typeof (ulong)) + 1;
-                    }
-                }
+            if (results.Length != decoders.Count)
+            {
+                throw new DataLengthMismatchException(Messages.DataCountsDoNotMatch);
             }
 
-            SqlClientInitialCountGenerator.Logger.Debug("Exiting NumberHandler");
-            return result;
-        }
-
-        public ulong StringHandler(PropertyInfo propertyInfo, DbCommand command)
-        {
-            SqlClientInitialCountGenerator.Logger.Debug("Entering StringHandler");
-
-            string tableName = "[" + Helper.GetTableName(propertyInfo.DeclaringType) + "]";
-            string columnName = "[" + Helper.GetColunName(propertyInfo) + "]";
-
-            string commandText =
-                $"Select Max({columnName}) from {tableName} where {columnName} not like '%[^A-Z]%' And LEN({columnName}) = (Select Max(Len({columnName})) From {tableName} where {columnName} not like '%[^A-Z]%' )";
-
-            command.CommandText = commandText;
-
-            ulong result = Helper.DefaultInitalCount;
-
-            using (DbDataReader reader = command.ExecuteReader())
+            for (int i = 0; i < results.Length; i++)
             {
-                if (reader.Read())
-                {
-                    object value = reader.GetValue(0);
-
-                    if (value == DBNull.Value)
-                    {
-                        SqlClientInitialCountGenerator.Logger.Debug("Row not found. DBNull returned.");
-                    }
-                    else
-                    {
-                        SqlClientInitialCountGenerator.Logger.Debug("Row found");
-
-                        if (value.GetType() != typeof (string))
-                        {
-                            throw new UnexpectedTypeException(string.Format(Messages.UnexpectedHandlerType, propertyInfo,
-                                value.GetType()));
-                        }
-
-                        result = this.encoder.Decode((string) value) + 1;
-                    }
-                }
+                propertyDataList[i].Value.Item = decoders[i](propertyDataList[i].Key, results[i]);
             }
 
-            SqlClientInitialCountGenerator.Logger.Debug("Exiting StringHandler");
-            return result;
+            SqlClientInitialCountGenerator.Logger.Debug("Exiting FillData");
         }
     }
 }

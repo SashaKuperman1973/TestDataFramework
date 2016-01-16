@@ -11,6 +11,7 @@ using Moq;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.PropertyValueAccumulator;
 using TestDataFramework.UniqueValueGenerator;
+using TestDataFramework.UniqueValueGenerator.Concrete;
 using Tests.TestModels;
 
 namespace Tests.Tests
@@ -37,6 +38,8 @@ namespace Tests.Tests
         [TestMethod]
         public void DeferValue_Test()
         {
+            throw new NotImplementedException();
+
             // Arange
 
             const int initialCount = 5;
@@ -53,10 +56,10 @@ namespace Tests.Tests
                 .Callback<PropertyInfo, DeferredValueGetterDelegate<ulong>>((pi, d) => delegateArray[i++] = d);
 
             // Act
-
+            /*
             this.generator.DeferValue(keyPropertyInfo);
             this.generator.DeferValue(keyPropertyInfo);
-
+            */
             // Assert
 
             Assert.AreEqual(1, delegateArray[0](initialCount));

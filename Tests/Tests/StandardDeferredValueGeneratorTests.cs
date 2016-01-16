@@ -13,24 +13,6 @@ namespace Tests.Tests
     public class StandardDeferredValueGeneratorTests
     {
         [TestMethod]
-        public void DeferredValueGeneratorExecutedException_Test()
-        {
-            // Arrange
-
-            var generator = new StandardDeferredValueGenerator<ulong>(new Mock<IPropertyDataGenerator<ulong>>().Object);
-
-            // Act. Assert.
-
-            generator.Execute(Enumerable.Empty<object>());
-
-            Helpers.ExceptionTest(() => generator.Execute(Enumerable.Empty<object>()),
-                typeof(DeferredValueGeneratorExecutedException), Messages.DeferredValueGeneratorExecuted);
-
-            Helpers.ExceptionTest(() => generator.Execute(Enumerable.Empty<object>()),
-                typeof(DeferredValueGeneratorExecutedException), Messages.DeferredValueGeneratorExecuted);
-        }
-
-        [TestMethod]
         public void DeferredValueGenerator_Test()
         {
             // Arrange
@@ -38,8 +20,8 @@ namespace Tests.Tests
             var object1 = new PrimaryTable();
             var object2 = new ForeignTable();
 
-            var dbProvider = new Mock<IPropertyDataGenerator<ulong>>();
-            var generator = new StandardDeferredValueGenerator<ulong>(dbProvider.Object);
+            var dataSource = new Mock<IPropertyDataGenerator<ulong>>();
+            var generator = new StandardDeferredValueGenerator<ulong>(dataSource.Object);
 
             // Act
 

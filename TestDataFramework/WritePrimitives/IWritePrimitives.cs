@@ -12,5 +12,7 @@ namespace TestDataFramework.WritePrimitives
         void Insert(string tableName, IEnumerable<Column> columns);
         object SelectIdentity();
         object[] Execute();
+        void AddSqlCommand(string command);
+        void Reset();
     }
 }

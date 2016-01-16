@@ -42,5 +42,10 @@
         public const string UpdatePropertyNotFound = "Count key for update not found. Key property: {0}";
 
         public const string PropertyKeyNotFound =  "Property type not handled: {0}";
+
+        public const string Underflow = "Underflow";
+
+        public const string DataCountsDoNotMatch =
+            "Db result counts doesn't match input collection count in FillData method";
     }
 }

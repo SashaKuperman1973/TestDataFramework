@@ -11,7 +11,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
 {
     public class DefaultInitialValueGenerator : IPropertyDataGenerator<ulong>
     {
-        public void FillData(IDictionary<PropertyInfo, StandardDeferredValueGenerator<ulong>.Data> propertyDataDictionary)
+        public void FillData(IDictionary<PropertyInfo, Data<ulong>> propertyDataDictionary)
         {
             propertyDataDictionary.ToList().ForEach(kvp => kvp.Value.Item = Helper.DefaultInitalCount);
         }

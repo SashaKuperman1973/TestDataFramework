@@ -10,6 +10,7 @@ using TestDataFramework.Helpers;
 using TestDataFramework.Randomizer;
 using TestDataFramework.TypeGenerator;
 using TestDataFramework.UniqueValueGenerator;
+using TestDataFramework.UniqueValueGenerator.Interface;
 
 namespace TestDataFramework.ValueGenerator
 {
@@ -243,12 +244,6 @@ namespace TestDataFramework.ValueGenerator
 
         private object GetPrimaryKey(PropertyInfo propertyInfo)
         {
-            if (propertyInfo.GetSingleAttribute<PrimaryKeyAttribute>().KeyType == PrimaryKeyAttribute.KeyTypeEnum.Manual)
-            {
-                this.uniqueValueGenerator.DeferValue(propertyInfo);
-                return propertyInfo.PropertyType.IsValueType ? Activator.CreateInstance(propertyInfo.PropertyType) : null;
-            }
-            
             object result = this.uniqueValueGenerator.GetValue(propertyInfo);
             return result;
         }

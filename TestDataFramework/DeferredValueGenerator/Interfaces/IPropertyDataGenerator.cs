@@ -6,6 +6,6 @@ namespace TestDataFramework.DeferredValueGenerator.Interfaces
 {
     public interface IPropertyDataGenerator<T>
     {
-        void FillData(IDictionary<PropertyInfo, StandardDeferredValueGenerator<T>.Data> propertyDataDictionary);
+        void FillData(IDictionary<PropertyInfo, Data<T>> propertyDataDictionary);
     }
 }

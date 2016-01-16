@@ -10,17 +10,18 @@ using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
 using TestDataFramework.PropertyValueAccumulator;
+using TestDataFramework.UniqueValueGenerator.Interface;
 
 namespace TestDataFramework.UniqueValueGenerator
 {
-    public class MemoryUniqueValueGenerator : IUniqueValueGenerator
+    public abstract class BaseUniqueValueGenerator : IUniqueValueGenerator
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(MemoryUniqueValueGenerator));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(BaseUniqueValueGenerator));
 
         private readonly IPropertyValueAccumulator accumulator;
         private readonly IDeferredValueGenerator<ulong> deferredValueGenerator;
 
-        public MemoryUniqueValueGenerator(IPropertyValueAccumulator accumulator, IDeferredValueGenerator<ulong> deferredValueGenerator)
+        protected BaseUniqueValueGenerator(IPropertyValueAccumulator accumulator, IDeferredValueGenerator<ulong> deferredValueGenerator)
         {
             this.accumulator = accumulator;
             this.deferredValueGenerator = deferredValueGenerator;
@@ -32,18 +33,20 @@ namespace TestDataFramework.UniqueValueGenerator
             return result;
         }
 
-        public virtual void DeferValue(PropertyInfo propertyInfo)
+        protected virtual void DeferValue(PropertyInfo propertyInfo)
         {
-            MemoryUniqueValueGenerator.Logger.Debug("Entering GetValue");
+            BaseUniqueValueGenerator.Logger.Debug("Entering GetValue");
 
-            this.deferredValueGenerator.AddDelegate(propertyInfo, initialCount =>
-            {
-                object result = this.accumulator.GetValue(propertyInfo, initialCount);
-                return result;
-            });
+            this.deferredValueGenerator.AddDelegate(propertyInfo,
 
-            MemoryUniqueValueGenerator.Logger.Debug("Exiting GetValue");
+                initialCount =>
+
+                {
+                    object result = this.accumulator.GetValue(propertyInfo, initialCount);
+                    return result;
+                });
+
+            BaseUniqueValueGenerator.Logger.Debug("Exiting GetValue");
         }
-
     }
 }

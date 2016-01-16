@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Configuration;
@@ -23,7 +24,7 @@ namespace TestDataFramework.WritePrimitives
         private readonly bool mustBeInATransaction;
         private readonly NameValueCollection configuration;
 
-        private readonly StringBuilder executionStatements = new StringBuilder();
+        private StringBuilder executionStatements = new StringBuilder();
 
         private static readonly ILog Logger = LogManager.GetLogger(typeof(DbProviderWritePrimitives));
 
@@ -35,7 +36,12 @@ namespace TestDataFramework.WritePrimitives
             this.formatter = formatter;
             this.symbolGenerator = symbolGenerator;
             this.mustBeInATransaction = mustBeInATransaction;
-            this.configuration = configuration;
+            this.configuration = configuration ?? new NameValueCollection();
+        }
+
+        public void Reset()
+        {
+            this.executionStatements = new StringBuilder();
         }
 
         public void Insert(string tableName, IEnumerable<Column> columns)
@@ -60,6 +66,18 @@ namespace TestDataFramework.WritePrimitives
 
             var result = new Variable(symbol);
             return result;
+        }
+
+        public void AddSqlCommand(string command)
+        {
+            throw new NotImplementedException("Write unite test");
+
+            DbProviderWritePrimitives.Logger.Debug("Entering AddACommand");
+
+            this.executionStatements.AppendLine(command);
+            this.executionStatements.AppendLine();
+
+            DbProviderWritePrimitives.Logger.Debug("Exiting AddACommand");
         }
 
         public object[] Execute()

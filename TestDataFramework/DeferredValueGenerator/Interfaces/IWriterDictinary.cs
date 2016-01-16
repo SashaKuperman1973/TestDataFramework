@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TestDataFramework.DeferredValueGenerator.Concrete;
 
 namespace TestDataFramework.DeferredValueGenerator.Interfaces
 {
-    public interface IHandlerDictionary<out T>
+    public interface IWriterDictinary
     {
-        HandlerDelegate<T> this[Type type] { get; }
+        WriterDelegate this[Type type] { get; }
+        object[] Execute();
     }
 }

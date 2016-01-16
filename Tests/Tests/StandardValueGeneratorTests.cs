@@ -9,6 +9,7 @@ using TestDataFramework.Exceptions;
 using TestDataFramework.Randomizer;
 using TestDataFramework.TypeGenerator;
 using TestDataFramework.UniqueValueGenerator;
+using TestDataFramework.UniqueValueGenerator.Interface;
 using TestDataFramework.ValueGenerator;
 using Tests.TestModels;
 
@@ -283,7 +284,7 @@ namespace Tests.Tests
             PropertyInfo primaryKeyPropertyInfo = typeof(ManualKeyPrimaryTable).GetProperty("Key2");
             const int expected = 0;
 
-            this.uniqueValueGeneratorMock.Setup(m => m.DeferValue(primaryKeyPropertyInfo)).Verifiable();
+            this.uniqueValueGeneratorMock.Setup(m => m.GetValue(primaryKeyPropertyInfo)).Verifiable();
 
             object result1 = this.valueGenerator.GetValue(primaryKeyPropertyInfo);
             object result2 = this.valueGenerator.GetValue(primaryKeyPropertyInfo);

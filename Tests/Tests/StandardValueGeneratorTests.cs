@@ -282,9 +282,9 @@ namespace Tests.Tests
         public void ManualPrimaryKey_ReturnsDefaultIntegral_Test()
         {
             PropertyInfo primaryKeyPropertyInfo = typeof(ManualKeyPrimaryTable).GetProperty("Key2");
-            const int expected = 0;
+            const int expected = default(int);
 
-            this.uniqueValueGeneratorMock.Setup(m => m.GetValue(primaryKeyPropertyInfo)).Verifiable();
+            this.uniqueValueGeneratorMock.Setup(m => m.GetValue(primaryKeyPropertyInfo)).Returns(default(int));
 
             object result1 = this.valueGenerator.GetValue(primaryKeyPropertyInfo);
             object result2 = this.valueGenerator.GetValue(primaryKeyPropertyInfo);

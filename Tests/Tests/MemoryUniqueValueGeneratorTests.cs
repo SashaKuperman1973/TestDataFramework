@@ -36,7 +36,54 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void DeferValue_Test()
+        public void GetValue_AutoKey_Test()
+        {
+            // Arrange
+
+            PropertyInfo keyPropertyInfo = typeof(ClassWithIntAutoPrimaryKey).GetProperty("Key");
+
+            // Act
+
+            this.generator.GetValue(keyPropertyInfo);
+
+            // Assert
+
+            this.deferredValueGeneratorMock.Verify(m => m.AddDelegate(keyPropertyInfo, It.IsAny<DeferredValueGetterDelegate<ulong>>()), Times.Once);
+        }
+
+        [TestMethod]
+        public void GetValue_ManualKey_Test()
+        {
+            // Arrange
+
+            PropertyInfo keyPropertyInfo = typeof(ClassWithIntManualPrimaryKey).GetProperty("Key");
+
+            // Act
+
+            this.generator.GetValue(keyPropertyInfo);
+
+            // Assert
+
+            this.deferredValueGeneratorMock.Verify(m => m.AddDelegate(keyPropertyInfo, It.IsAny<DeferredValueGetterDelegate<ulong>>()), Times.Once);
+        }
+
+        [TestMethod]
+        public void GetValue_NoSupportedKeyType_Test()
+        {
+            // Arrange
+
+            PropertyInfo keyPropertyInfo = typeof(ClassWithIntUnsupportedPrimaryKey).GetProperty("Key");
+
+            // Act
+
+            this.generator.GetValue(keyPropertyInfo);
+
+            // Assert
+
+            this.deferredValueGeneratorMock.Verify(m => m.AddDelegate(It.IsAny<PropertyInfo>(), It.IsAny<DeferredValueGetterDelegate<ulong>>()), Times.Never);
+        }
+
+        public void DeferValue_Test_X()
         {
             throw new NotImplementedException();
 
@@ -64,25 +111,6 @@ namespace Tests.Tests
 
             Assert.AreEqual(1, delegateArray[0](initialCount));
             Assert.AreEqual(1, delegateArray[1](initialCount));
-        }
-
-        [TestMethod]
-        public void GetValue_Test()
-        {
-            // Arrange
-
-            const int expectedValue = 5;
-
-            PropertyInfo keyPropertyInfo = typeof(ClassWithStringAutoPrimaryKey).GetProperty("Key");
-            this.propertyValueAccumulatorMock.Setup(m => m.GetValue(It.Is<PropertyInfo>(pi => pi == keyPropertyInfo), 0)).Returns(expectedValue);
-
-            // Act
-
-            object result = this.generator.GetValue(keyPropertyInfo);
-
-            // Assert
-
-            Assert.AreEqual(expectedValue, result);
         }
     }
 }

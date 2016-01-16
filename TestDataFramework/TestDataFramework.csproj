@@ -58,6 +58,7 @@
     <Compile Include="ArrayRandomizer\StandardArrayRandomizer.cs" />
     <Compile Include="Attributes.cs" />
     <Compile Include="DeferredValueGenerator\Concrete\DefaultInitialValueGenerator.cs" />
+    <Compile Include="DeferredValueGenerator\Concrete\SqlWriterCommandTextGenerator.cs" />
     <Compile Include="DeferredValueGenerator\Concrete\SqlWriterDictionary.cs" />
     <Compile Include="DeferredValueGenerator\Interfaces\IPropertyDataGenerator.cs" />
     <Compile Include="DeferredValueGenerator\Interfaces\IDeferredValueGenerator.cs" />

@@ -13,7 +13,7 @@ using Tests.TestModels;
 
 namespace IntegrationTests.Tests
 {
-    //[Ignore]
+    [Ignore]
     [TestClass]
     public class SqlClientTest
     {
@@ -33,7 +33,6 @@ namespace IntegrationTests.Tests
             this.factory.Dispose();
         }
 
-        //[Ignore]
         [TestMethod]
         public void SubjectClass_Test()
         {
@@ -49,7 +48,6 @@ namespace IntegrationTests.Tests
             Console.WriteLine(result[1].RecordObject.Key);
         }
 
-        //[Ignore]
         [TestMethod]
         public void ManualKeyPrimaryTable_Test()
         {

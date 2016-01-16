@@ -55,7 +55,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
 
                     object value = data.ValueGetter(data.Item);
 
-                    propertyInfo.SetValue(propertyInfo, value);
+                    propertyInfo.SetValue(targetObject, value);
                 });
             });
 

@@ -137,6 +137,18 @@ namespace Tests.TestModels
         public string Key { get; set; }
     }
 
+    public class ClassWithIntUnsupportedPrimaryKey
+    {
+        [PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.None)]
+        public int Key { get; set; }
+    }
+
+    public class ClassWithIntManualPrimaryKey
+    {
+        [PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Manual)]
+        public int Key { get; set; }
+    }
+
     public class ClassWithIntAutoPrimaryKey
     {
         [PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Auto)]

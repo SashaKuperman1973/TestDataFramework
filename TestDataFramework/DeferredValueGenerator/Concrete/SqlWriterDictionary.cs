@@ -23,31 +23,30 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
 
         private readonly LetterEncoder encoder;
         private readonly IWritePrimitives writePrimitives;
+        private readonly SqlWriterCommandTextGenerator commandTextGenerator;
 
-        public SqlWriterDictionary(LetterEncoder encoder, IWritePrimitives writePrimitives)
+        public SqlWriterDictionary(LetterEncoder encoder, IWritePrimitives writePrimitives, SqlWriterCommandTextGenerator commandTextGenerator)
         {
             this.encoder = encoder;
             this.writePrimitives = writePrimitives;
+            this.commandTextGenerator = commandTextGenerator;
 
-            this.EnsureStatics();
+            this.PopulateWriterDictionary();
         }
 
-        private void EnsureStatics()
+        private void PopulateWriterDictionary()
         {
-            if (SqlWriterDictionary.writerDictionary == null)
+            this.writerDictionary = new Dictionary<Type, WriterDelegate>()
             {
-                SqlWriterDictionary.writerDictionary = new Dictionary<Type, WriterDelegate>()
-                {
-                    {typeof (int), this.WriteNumberCommand},
-                    {typeof (short), this.WriteNumberCommand},
-                    {typeof (long), this.WriteNumberCommand},
-                    {typeof (byte), this.WriteNumberCommand},
-                    {typeof (string), this.WriteStringCommand},
-                };
-            }
+                {typeof (int), this.WriteNumberCommand},
+                {typeof (short), this.WriteNumberCommand},
+                {typeof (long), this.WriteNumberCommand},
+                {typeof (byte), this.WriteNumberCommand},
+                {typeof (string), this.WriteStringCommand},
+            };
         }
 
-        private static Dictionary<Type, WriterDelegate> writerDictionary;
+        private Dictionary<Type, WriterDelegate> writerDictionary;
 
         public WriterDelegate this[Type type]
         {
@@ -56,7 +55,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
                 SqlWriterDictionary.Logger.Debug("Entering Type indexer");
 
                 WriterDelegate writer;
-                if (!SqlWriterDictionary.writerDictionary.TryGetValue(type, out writer))
+                if (!this.writerDictionary.TryGetValue(type, out writer))
                 {
                     throw new KeyNotFoundException(string.Format(Messages.PropertyKeyNotFound, type));
                 }
@@ -79,8 +78,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
         {
             SqlWriterDictionary.Logger.Debug("Entering WriteNumberCommand");
 
-            string commandText =
-                $"Select MAX([{Helper.GetColunName(propertyInfo)}]) From [{Helper.GetTableName(propertyInfo.DeclaringType)}]";
+            string commandText = this.commandTextGenerator.WriteNumber(propertyInfo);                
 
             this.writePrimitives.AddSqlCommand(commandText);
 
@@ -95,17 +93,16 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
 
             if (input is DBNull)
             {
-                return Helper.DefaultInitalCount;
+                return 0;
             }
 
             if (
                 !new[] { typeof(byte), typeof(int), typeof(short), typeof(long) }.Contains(input.GetType()))
             {
-                throw new UnexpectedTypeException(string.Format(Messages.UnexpectedHandlerType, propertyInfo,
-                    input.GetType()));
+                throw new UnexpectedTypeException(string.Format(Messages.UnexpectedHandlerType, propertyInfo, input));
             }
 
-            ulong result = (ulong)Convert.ChangeType(input, typeof(ulong)) + 1;
+            ulong result = (ulong)Convert.ChangeType(input, typeof(ulong));
 
             SqlWriterDictionary.Logger.Debug("Exiting DecodeNumber");
 
@@ -116,11 +113,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
         {
             SqlWriterDictionary.Logger.Debug("Entering WriteStringCommand");
 
-            string tableName = "[" + Helper.GetTableName(propertyInfo.DeclaringType) + "]";
-            string columnName = "[" + Helper.GetColunName(propertyInfo) + "]";
-
-            string commandText =
-                $"Select Max({columnName}) from {tableName} where {columnName} not like '%[^A-Z]%' And LEN({columnName}) = (Select Max(Len({columnName})) From {tableName} where {columnName} not like '%[^A-Z]%' )";
+            string commandText = this.commandTextGenerator.WriteString(propertyInfo);                
 
             this.writePrimitives.AddSqlCommand(commandText);
 
@@ -135,16 +128,15 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
 
             if (input is DBNull)
             {
-                return Helper.DefaultInitalCount;
+                return 0;
             }
 
             if (input.GetType() != typeof(string))
             {
-                throw new UnexpectedTypeException(string.Format(Messages.UnexpectedHandlerType, propertyInfo,
-                    input.GetType()));
+                throw new UnexpectedTypeException(string.Format(Messages.UnexpectedHandlerType, propertyInfo, input));
             }
 
-            ulong result = this.encoder.Decode((string)input) + 1;
+            ulong result = this.encoder.Decode((string)input);
 
             SqlWriterDictionary.Logger.Debug("Exiting DecodeString");
 

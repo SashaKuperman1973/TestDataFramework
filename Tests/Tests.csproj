@@ -91,7 +91,7 @@
     <Compile Include="Tests\SqlClientInitialCountGeneratorTests.cs" />
     <Compile Include="Tests\MemoryPersistenceTests.cs" />
     <Compile Include="Tests\LargeIntegerTests.cs" />
-    <Compile Include="Tests\SqlWriterDictionary.cs" />
+    <Compile Include="Tests\SqlWriterDictionaryTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Tests To Do.txt" />

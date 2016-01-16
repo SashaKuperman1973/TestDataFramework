@@ -45,7 +45,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
 
             for (int i = 0; i < results.Length; i++)
             {
-                propertyDataList[i].Value.Item = decoders[i](propertyDataList[i].Key, results[i]);
+                propertyDataList[i].Value.Item = decoders[i](propertyDataList[i].Key, results[i]) + 1;
             }
 
             SqlClientInitialCountGenerator.Logger.Debug("Exiting FillData");

@@ -90,14 +90,14 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
         #region GetColumnData
 
-        public virtual Columns GetColumnData(IEnumerable<InsertRecord> primaryKeyOperations)
+        public virtual Columns GetColumnData(IEnumerable<InsertRecord> primaryKeyOperations, IWritePrimitives writer)
         {
             InsertRecordService.Logger.Debug("Entering GetColumnData");
 
             // ReSharper disable once UseObjectOrCollectionInitializer
             var result = new Columns();
 
-            result.RegularColumns = this.GetRegularColumns();
+            result.RegularColumns = this.GetRegularColumns(writer);
             result.ForeignKeyColumns = this.GetForeignKeyColumns(primaryKeyOperations);
 
             InsertRecordService.Logger.Debug("Exiting GetColumnData");
@@ -140,7 +140,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             return result;
         }
 
-        private IEnumerable<Column> GetRegularColumns()
+        private IEnumerable<Column> GetRegularColumns(IWritePrimitives writer)
         {
             InsertRecordService.Logger.Debug("Entering GetRegularColumns");
 
@@ -151,15 +151,26 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                             p.GetSingleAttribute<ForeignKeyAttribute>() == null &&
 
                             (p.GetSingleAttribute<PrimaryKeyAttribute>() == null
-                             || this.KeyType == PrimaryKeyAttribute.KeyTypeEnum.Manual)
+                             || 
+                             this.KeyType == PrimaryKeyAttribute.KeyTypeEnum.Manual
+                             && !p.PropertyType.IsGuid())
                     )
                     .Select(
                         p =>
-                            new Column
+                        {
+                            string columnName = Helper.GetColunName(p);
+
+                            var column = new Column
                             {
-                                Name = Helper.GetColunName(p),
-                                Value = p.GetValue(this.recordReference.RecordObject)
-                            });
+                                Name = columnName,
+                                Value = this.recordReference.RecordType.IsGuid() 
+                                ? writer.WriteGuid(columnName) 
+                                : p.GetValue(this.recordReference.RecordObject)
+                            };
+
+                            return column;
+                        }
+                    );
 
             InsertRecordService.Logger.Debug("Exiting GetRegularColumns");
 

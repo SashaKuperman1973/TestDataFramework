@@ -56,7 +56,7 @@ namespace Tests.Tests
             string tableName = typeof (SubjectClass).Name;
 
             this.serviceMock.Setup(m => m.GetPrimaryKeyOperations(this.peers)).Returns(primaryKeyOperations);
-            this.serviceMock.Setup(m => m.GetColumnData(primaryKeyOperations)).Returns(columns);
+            this.serviceMock.Setup(m => m.GetColumnData(primaryKeyOperations, this.writePrimitivesMock.Object)).Returns(columns);
 
             // Act
 
@@ -71,7 +71,7 @@ namespace Tests.Tests
                     m.WritePrimaryKeyOperations(this.writePrimitivesMock.Object, primaryKeyOperations,
                         this.breakerMock.Object, currentOrder, orderedOperations), Times.Once);
 
-            this.serviceMock.Verify(m => m.GetColumnData(primaryKeyOperations), Times.Once);
+            this.serviceMock.Verify(m => m.GetColumnData(primaryKeyOperations, this.writePrimitivesMock.Object), Times.Once);
 
             Assert.AreEqual(this.insertRecord, orderedOperations[0]);
 
@@ -114,7 +114,7 @@ namespace Tests.Tests
             var columns = new Columns { ForeignKeyColumns = new List<Column>(), RegularColumns = new List<Column>() };
 
             this.serviceMock.Setup(m => m.GetPrimaryKeyOperations(this.peers)).Returns(primaryKeyOperations);
-            this.serviceMock.Setup(m => m.GetColumnData(primaryKeyOperations)).Returns(columns);
+            this.serviceMock.Setup(m => m.GetColumnData(primaryKeyOperations, this.writePrimitivesMock.Object)).Returns(columns);
 
             this.serviceMock.Setup(
                 m =>
@@ -152,7 +152,7 @@ namespace Tests.Tests
             // Arrange
 
             var orderedOpertations = new AbstractRepositoryOperation[1];
-            this.serviceMock.Setup(m => m.GetColumnData(It.IsAny<IEnumerable<InsertRecord>>()))
+            this.serviceMock.Setup(m => m.GetColumnData(It.IsAny<IEnumerable<InsertRecord>>(), It.IsAny<IWritePrimitives>()))
                 .Returns(new Columns {ForeignKeyColumns = new List<Column>(), RegularColumns = new List<Column>()});
 
 

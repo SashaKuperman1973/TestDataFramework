@@ -54,7 +54,8 @@ namespace Tests.Tests
 
             this.recordReference.AddPrimaryRecordReference(peerRecordreferences[1], peerRecordreferences[3]);
 
-            InsertRecord[] primaryKeyOperations = this.insertRecordService.GetPrimaryKeyOperations(peerOperations).ToArray();
+            InsertRecord[] primaryKeyOperations =
+                this.insertRecordService.GetPrimaryKeyOperations(peerOperations).ToArray();
 
             // Assert
 
@@ -80,11 +81,16 @@ namespace Tests.Tests
             var currentOrder = new Counter();
             var orderedOperations = new AbstractRepositoryOperation[0];
 
-            this.insertRecordService.WritePrimaryKeyOperations(this.writerMock.Object, primaryKeyOperations.Select(m => m.Object), breaker, currentOrder, orderedOperations);
+            this.insertRecordService.WritePrimaryKeyOperations(this.writerMock.Object,
+                primaryKeyOperations.Select(m => m.Object), breaker, currentOrder, orderedOperations);
 
             // Assert
 
-            primaryKeyOperations.ToList().ForEach(o => o.Verify(m => m.Write(breaker, this.writerMock.Object, currentOrder, orderedOperations), Times.Once));
+            primaryKeyOperations.ToList()
+                .ForEach(
+                    o =>
+                        o.Verify(m => m.Write(breaker, this.writerMock.Object, currentOrder, orderedOperations),
+                            Times.Once));
         }
 
         [TestMethod]
@@ -101,7 +107,8 @@ namespace Tests.Tests
             const int primaryKeyValue = 10;
 
             primaryKeyOperations[0].Setup(m => m.GetPrimaryKeySymbols())
-                .Returns(new[] {new ColumnSymbol {ColumnName = "Key", TableType = typeof (PrimaryTable), Value = primaryKeyValue}});
+                .Returns(new[]
+                {new ColumnSymbol {ColumnName = "Key", TableType = typeof (PrimaryTable), Value = primaryKeyValue}});
 
             primaryKeyOperations[1].Setup(m => m.GetPrimaryKeySymbols()).Returns(new[] {new ColumnSymbol()});
 
@@ -110,7 +117,8 @@ namespace Tests.Tests
 
             // Act
 
-            Columns columns = this.insertRecordService.GetColumnData(primaryKeyOperations.Select(o => o.Object));
+            Columns columns = this.insertRecordService.GetColumnData(primaryKeyOperations.Select(o => o.Object),
+                this.writerMock.Object);
 
             // Assert
 
@@ -165,7 +173,7 @@ namespace Tests.Tests
             Assert.AreEqual(1, primaryKeyValues.Count);
 
             Assert.AreEqual("Key", primaryKeyValues[0].ColumnName);
-            Assert.AreEqual(typeof(ForeignTable), primaryKeyValues[0].TableType);
+            Assert.AreEqual(typeof (ForeignTable), primaryKeyValues[0].TableType);
             Assert.AreEqual(identityVariableSymbol, primaryKeyValues[0].Value);
         }
 
@@ -183,7 +191,11 @@ namespace Tests.Tests
 
             this.insertRecordService =
                 new InsertRecordService(
-                    new RecordReference<ManualKeyPrimaryTable>(new ManualKeyPrimaryTable {Key1 = keyValue1, Key2 = keyValue2 }));
+                    new RecordReference<ManualKeyPrimaryTable>(new ManualKeyPrimaryTable
+                    {
+                        Key1 = keyValue1,
+                        Key2 = keyValue2
+                    }));
 
             // Act
 
@@ -193,11 +205,11 @@ namespace Tests.Tests
 
             Assert.AreEqual(2, primaryKeyValues.Count);
 
-            Assert.AreEqual(typeof(ManualKeyPrimaryTable), primaryKeyValues[0].TableType);
+            Assert.AreEqual(typeof (ManualKeyPrimaryTable), primaryKeyValues[0].TableType);
             Assert.AreEqual(keyValue1, primaryKeyValues[0].Value);
             Assert.AreEqual("Key1", primaryKeyValues[0].ColumnName);
 
-            Assert.AreEqual(typeof(ManualKeyPrimaryTable), primaryKeyValues[1].TableType);
+            Assert.AreEqual(typeof (ManualKeyPrimaryTable), primaryKeyValues[1].TableType);
             Assert.AreEqual(keyValue2, primaryKeyValues[1].Value);
             Assert.AreEqual("Key2", primaryKeyValues[1].ColumnName);
         }
@@ -229,13 +241,19 @@ namespace Tests.Tests
 
             Assert.AreEqual(3, primaryKeyValues.Count);
 
-            Assert.AreEqual(typeof(ClassWithGuidKeys), primaryKeyValues[0].TableType);
+            Assert.AreEqual(typeof (ClassWithGuidKeys), primaryKeyValues[0].TableType);
             Assert.AreEqual(symbol1, primaryKeyValues[0].Value);
             Assert.AreEqual("Key1", primaryKeyValues[0].ColumnName);
 
-            Assert.AreEqual(typeof(ClassWithGuidKeys), primaryKeyValues[1].TableType);
+            Assert.AreEqual(typeof (ClassWithGuidKeys), primaryKeyValues[1].TableType);
             Assert.AreEqual(symbol2, primaryKeyValues[2].Value);
             Assert.AreEqual("Key3", primaryKeyValues[2].ColumnName);
+        }
+
+        [TestMethod]
+        public void WritePrimitives_NonKeyGuids_Test()
+        {
+            throw new NotImplementedException();
         }
 
         [TestMethod]

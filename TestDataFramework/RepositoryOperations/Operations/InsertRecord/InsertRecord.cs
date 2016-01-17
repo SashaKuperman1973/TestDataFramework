@@ -56,7 +56,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
             this.service.WritePrimaryKeyOperations(writer, primaryKeyOperations, breaker, order, orderedOperations);
 
-            Columns columnData = this.service.GetColumnData(primaryKeyOperations);
+            Columns columnData = this.service.GetColumnData(primaryKeyOperations, writer);
 
             this.Order = order.Value++;
             orderedOperations[this.Order] = this;
@@ -78,46 +78,37 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
         {
             InsertRecord.Logger.Debug("Entering Read");
 
-            switch (this.service.KeyType)
+            if (this.service.KeyType == PrimaryKeyAttribute.KeyTypeEnum.Auto)
             {
+                InsertRecord.Logger.Debug("Taking KeyTypeEnum.Auto branch");
 
-                case PrimaryKeyAttribute.KeyTypeEnum.Auto:
+                PropertyAttribute<PrimaryKeyAttribute> primaryKeyPropertyAttribute =
+                    this.RecordReference.RecordType.GetPropertyAttributes<PrimaryKeyAttribute>().First();
 
-                    InsertRecord.Logger.Debug("Taking KeyTypeEnum.Auto branch");
+                object value = data[readStreamPointer.Value++];
+                object result = Convert.ChangeType(value, primaryKeyPropertyAttribute.PropertyInfo.PropertyType);
 
-                    PropertyAttribute <PrimaryKeyAttribute> primaryKeyPropertyAttribute =
-                        this.RecordReference.RecordType.GetPropertyAttributes<PrimaryKeyAttribute>().First();
+                primaryKeyPropertyAttribute.PropertyInfo.SetValue(this.RecordReference.RecordObject, result);
+            }
 
-                    object value = data[readStreamPointer.Value++];
-                    object result = Convert.ChangeType(value, primaryKeyPropertyAttribute.PropertyInfo.PropertyType);
+            List<PropertyAttribute<PrimaryKeyAttribute>> primaryKeyPropertyAttributes =
 
-                    primaryKeyPropertyAttribute.PropertyInfo.SetValue(this.RecordReference.RecordObject, result);
-                    break;
+                this.RecordReference.RecordType.GetPropertyAttributes<PrimaryKeyAttribute>()
 
-                case PrimaryKeyAttribute.KeyTypeEnum.Manual:
+                    .Where(pa => pa.PropertyInfo.PropertyType.IsGuid()).ToList();
 
-                    InsertRecord.Logger.Debug("Taking KeyTypeEnum.Manual branch");
+            while (primaryKeyPropertyAttributes.Any())
+            {
+                var columnName = (string) data[readStreamPointer.Value++];
 
-                    List<PropertyAttribute<PrimaryKeyAttribute>> primaryKeyPropertyAttributes =
+                PropertyAttribute<PrimaryKeyAttribute> property = primaryKeyPropertyAttributes.First(
+                    pa => Helper.GetColunName(pa.PropertyInfo).Equals(columnName, StringComparison.Ordinal)
+                    );
 
-                        this.RecordReference.RecordType.GetPropertyAttributes<PrimaryKeyAttribute>()
+                property.PropertyInfo.SetValue(this.RecordReference.RecordObject,
+                    data[readStreamPointer.Value++]);
 
-                            .Where(pa => pa.PropertyInfo.PropertyType.IsGuid()).ToList();
-
-                    while (primaryKeyPropertyAttributes.Any())
-                    {
-                        var columnName = (string) data[readStreamPointer.Value++];
-
-                        PropertyAttribute<PrimaryKeyAttribute> property = primaryKeyPropertyAttributes.First(
-                            pa => Helper.GetColunName(pa.PropertyInfo).Equals(columnName, StringComparison.Ordinal)
-                            );
-
-                        property.PropertyInfo.SetValue(this.RecordReference.RecordObject,
-                            data[readStreamPointer.Value++]);
-
-                        primaryKeyPropertyAttributes.Remove(property);
-                    }
-                    break;
+                primaryKeyPropertyAttributes.Remove(property);
             }
 
             InsertRecord.Logger.Debug("Exiting Read");

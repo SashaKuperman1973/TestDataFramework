@@ -70,8 +70,6 @@ namespace TestDataFramework.WritePrimitives
 
         public void AddSqlCommand(string command)
         {
-            throw new NotImplementedException("Write unite test");
-
             DbProviderWritePrimitives.Logger.Debug("Entering AddACommand");
 
             this.executionStatements.AppendLine(command);

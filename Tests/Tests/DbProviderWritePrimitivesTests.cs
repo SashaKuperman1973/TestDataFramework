@@ -198,5 +198,11 @@ namespace Tests.Tests
 
             Helpers.ExceptionTest(() => this.primitives.Execute(), typeof(NotInATransactionException), Messages.NotInATransaction);
         }
+
+        [TestMethod]
+        public void AddSqlCommand_Test()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

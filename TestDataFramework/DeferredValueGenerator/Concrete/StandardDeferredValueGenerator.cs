@@ -5,6 +5,7 @@ using log4net;
 using log4net.Appender;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Exceptions;
+using TestDataFramework.Helpers;
 
 namespace TestDataFramework.DeferredValueGenerator.Concrete
 {
@@ -45,7 +46,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
 
             targets.ToList().ForEach(targetObject =>
             {
-                targetObject.GetType().GetProperties().ToList().ForEach(propertyInfo =>
+                targetObject.GetType().GetPropertiesHelper().ToList().ForEach(propertyInfo =>
                 {
                     Data<T> data;
                     if (!this.propertyDataDictionary.TryGetValue(propertyInfo, out data))

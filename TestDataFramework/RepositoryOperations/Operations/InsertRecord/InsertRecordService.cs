@@ -202,7 +202,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                     InsertRecordService.Logger.Debug("Taking KeyTypeEnum.Auto branch");
 
                     string primaryKeyColumnName = this.GetPrimaryKeyColumnName();
-                    object identityVariable = writer.SelectIdentity();
+                    object identityVariable = writer.SelectIdentity(primaryKeyColumnName);
 
                     primaryKeyValues.Add(new ColumnSymbol
                     {

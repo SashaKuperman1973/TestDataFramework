@@ -49,11 +49,25 @@ namespace TestDataFramework.Helpers
             return result;
         }
 
-        public static IEnumerable<PropertyAttribute<T>> GetPropertyAttributes<T>(
-            this Type type) where T : Attribute
+        public static IEnumerable<PropertyAttribute<T>> GetPropertyAttributes<T>(this Type type) where T : Attribute
         {
             IEnumerable<PropertyAttribute<T>> result =
                 type.GetPropertiesHelper().Select(pi => pi.GetPropertyAttribute<T>()).Where(pa => pa.Attribute != null);
+
+            return result;
+        }
+
+        public static IEnumerable<RepositoryOperations.Model.PropertyAttributes> GetPropertyAttributes(this Type type)
+        {
+            IEnumerable<RepositoryOperations.Model.PropertyAttributes> result =
+                type.GetPropertiesHelper()
+                    .Select(
+                        pi =>
+                            new RepositoryOperations.Model.PropertyAttributes
+                            {
+                                Attributes = pi.GetCustomAttributes().ToArray(),
+                                PropertyInfo = pi
+                            });
 
             return result;
         }

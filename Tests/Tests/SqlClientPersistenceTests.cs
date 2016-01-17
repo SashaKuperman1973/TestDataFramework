@@ -89,7 +89,7 @@ namespace Tests.Tests
             this.writePrimitivesMock.Setup(m => m.Insert(It.IsAny<string>(), It.IsAny<IEnumerable<Column>>()))
                 .Callback<string, IEnumerable<Column>>((s, c) => columns.Add(c.ToList()));
 
-            this.writePrimitivesMock.Setup(m => m.SelectIdentity()).Returns(new Variable(null));
+            this.writePrimitivesMock.Setup(m => m.SelectIdentity(It.IsAny<string>())).Returns(new Variable(null));
 
             this.writePrimitivesMock.Setup(m => m.Execute()).Returns(new object[] {0, 0});
 

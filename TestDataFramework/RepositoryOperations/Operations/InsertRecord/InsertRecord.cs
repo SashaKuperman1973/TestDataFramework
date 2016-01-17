@@ -78,40 +78,41 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
         {
             InsertRecord.Logger.Debug("Entering Read");
 
-            if (this.service.KeyType == PrimaryKeyAttribute.KeyTypeEnum.Auto)
-            {
-                InsertRecord.Logger.Debug("Taking KeyTypeEnum.Auto branch");
+            IEnumerable<Model.PropertyAttributes> propertyAttributes =
+                this.RecordReference.RecordType.GetPropertyAttributes();
 
-                PropertyAttribute<PrimaryKeyAttribute> primaryKeyPropertyAttribute =
-                    this.RecordReference.RecordType.GetPropertyAttributes<PrimaryKeyAttribute>().First();
+            List<PropertyInfo> propertiesForRead = InsertRecord.GetPropertiesForRead(propertyAttributes).ToList();
 
-                object value = data[readStreamPointer.Value++];
-                object result = Convert.ChangeType(value, primaryKeyPropertyAttribute.PropertyInfo.PropertyType);
-
-                primaryKeyPropertyAttribute.PropertyInfo.SetValue(this.RecordReference.RecordObject, result);
-            }
-
-            List<PropertyAttribute<PrimaryKeyAttribute>> primaryKeyPropertyAttributes =
-
-                this.RecordReference.RecordType.GetPropertyAttributes<PrimaryKeyAttribute>()
-
-                    .Where(pa => pa.PropertyInfo.PropertyType.IsGuid()).ToList();
-
-            while (primaryKeyPropertyAttributes.Any())
+            while (propertiesForRead.Any())
             {
                 var columnName = (string) data[readStreamPointer.Value++];
 
-                PropertyAttribute<PrimaryKeyAttribute> property = primaryKeyPropertyAttributes.First(
-                    pa => Helper.GetColunName(pa.PropertyInfo).Equals(columnName, StringComparison.Ordinal)
+                PropertyInfo property = propertiesForRead.First(
+                    p => Helper.GetColunName(p).Equals(columnName, StringComparison.Ordinal)
                     );
 
-                property.PropertyInfo.SetValue(this.RecordReference.RecordObject,
-                    data[readStreamPointer.Value++]);
+                property.SetValue(this.RecordReference.RecordObject, data[readStreamPointer.Value++]);
 
-                primaryKeyPropertyAttributes.Remove(property);
+                propertiesForRead.Remove(property);
             }
 
             InsertRecord.Logger.Debug("Exiting Read");
+        }
+
+        private static IEnumerable<PropertyInfo> GetPropertiesForRead(IEnumerable<Model.PropertyAttributes> propertyAttributes)
+        {
+            IEnumerable<Model.PropertyAttributes> result = propertyAttributes.Where(pa =>
+
+                pa.Attributes.Any(
+                    a =>
+                        a.GetType() == typeof (PrimaryKeyAttribute) &&
+                        ((PrimaryKeyAttribute) a).KeyType == PrimaryKeyAttribute.KeyTypeEnum.Auto)
+
+                || pa.PropertyInfo.PropertyType.IsGuid()
+
+                );
+
+            return result.Select(pa => pa.PropertyInfo);
         }
 
         public virtual IEnumerable<ColumnSymbol> GetPrimaryKeySymbols()

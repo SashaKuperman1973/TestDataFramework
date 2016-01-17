@@ -90,6 +90,7 @@
     <Compile Include="RepositoryOperations\Model\Counter.cs" />
     <Compile Include="RepositoryOperations\Model\PropertyAttribute.cs" />
     <Compile Include="RepositoryOperations\Model\Columns.cs" />
+    <Compile Include="RepositoryOperations\Model\PropertyAttributes.cs" />
     <Compile Include="RepositoryOperations\Operations\InsertRecord\InsertRecord.cs" />
     <Compile Include="RepositoryOperations\Model\Variable.cs" />
     <Compile Include="RepositoryOperations\Operations\InsertRecord\InsertRecordService.cs" />

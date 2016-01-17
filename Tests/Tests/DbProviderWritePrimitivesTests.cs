@@ -170,10 +170,11 @@ namespace Tests.Tests
 
             const string variableSymbol = "ABCD";
             this.symbolGeneratorMock.Setup(m => m.GetRandomString(It.IsAny<int?>())).Returns(variableSymbol);
+            const string columnName = "col1";
 
             // Act
 
-            this.primitives.SelectIdentity();
+            this.primitives.SelectIdentity(columnName);
             this.primitives.Execute();
 
             // Assert
@@ -181,6 +182,7 @@ namespace Tests.Tests
             string expectedText =
                 new StringBuilder($"declare @{variableSymbol} bigint;").AppendLine()
                     .AppendLine($"select @{variableSymbol} = @@identity;")
+                    .AppendLine($"select '{columnName}'")
                     .AppendLine($"select @{variableSymbol}")
                     .AppendLine()
                     .ToString();
@@ -201,6 +203,12 @@ namespace Tests.Tests
 
         [TestMethod]
         public void AddSqlCommand_Test()
+        {
+            throw new NotImplementedException();
+        }
+
+        [TestMethod]
+        public void WriteGuid_Test()
         {
             throw new NotImplementedException();
         }

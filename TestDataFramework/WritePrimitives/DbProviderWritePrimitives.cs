@@ -55,12 +55,13 @@ namespace TestDataFramework.WritePrimitives
             DbProviderWritePrimitives.Logger.Debug("Exiting Insert");
         }
 
-        public object SelectIdentity()
+        public object SelectIdentity(string columnName)
         {
             string symbol = this.symbolGenerator.GetRandomString(10);
 
             this.executionStatements.AppendLine($"declare @{symbol} bigint;");
             this.executionStatements.AppendLine($"select @{symbol} = @@identity;");
+            this.executionStatements.AppendLine($"select '{columnName}'");
             this.executionStatements.AppendLine($"select @{symbol}");
             this.executionStatements.AppendLine();
 
@@ -83,7 +84,7 @@ namespace TestDataFramework.WritePrimitives
             string symbol = this.symbolGenerator.GetRandomString(10);
             this.executionStatements.AppendLine($"declare @{symbol} uniqueidentifier;");
             this.executionStatements.AppendLine($"select @{symbol} = NEWID();");
-            this.executionStatements.AppendLine($"select @{columnName}");
+            this.executionStatements.AppendLine($"select '{columnName}'");
             this.executionStatements.AppendLine($"select @{symbol}");
             this.executionStatements.AppendLine();
 

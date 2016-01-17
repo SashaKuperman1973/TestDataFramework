@@ -160,7 +160,7 @@ namespace Tests.Tests
             const string identityVariableSymbol = "ABCD";
             string tableName = this.mainTable.GetType().Name;
 
-            this.writerMock.Setup(m => m.SelectIdentity()).Returns(identityVariableSymbol);
+            this.writerMock.Setup(m => m.SelectIdentity(It.IsAny<string>())).Returns(identityVariableSymbol);
 
             // Act
 
@@ -168,7 +168,7 @@ namespace Tests.Tests
 
             // Assert
 
-            this.writerMock.Verify(m => m.SelectIdentity(), Times.Once);
+            this.writerMock.Verify(m => m.SelectIdentity(It.IsAny<string>()), Times.Once);
 
             Assert.AreEqual(1, primaryKeyValues.Count);
 

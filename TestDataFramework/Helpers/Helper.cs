@@ -86,12 +86,20 @@ namespace TestDataFramework.Helpers
         {
             get
             {
-                System.Transactions.Transaction transaction = System.Transactions.Transaction.Current;
+                Transaction transaction = Transaction.Current;
 
                 return transaction?.TransactionInformation.Status == TransactionStatus.Active;
             }
         }
 
         public static ulong DefaultInitalCount => 0;
+
+        public static bool IsGuid(this Type type)
+        {
+            bool result = (Nullable.GetUnderlyingType(type) ?? type) ==
+                          typeof(Guid);
+
+            return result;
+        }
     }
 }

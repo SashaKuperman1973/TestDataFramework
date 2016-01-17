@@ -80,6 +80,19 @@ namespace TestDataFramework.WritePrimitives
             DbProviderWritePrimitives.Logger.Debug("Exiting AddACommand");
         }
 
+        public object WriteGuid(string columnName)
+        {
+            string symbol = this.symbolGenerator.GetRandomString(10);
+            this.executionStatements.AppendLine($"declare @{symbol} uniqueidentifier;");
+            this.executionStatements.AppendLine($"select @{symbol} = NEWID();");
+            this.executionStatements.AppendLine($"select @{columnName}");
+            this.executionStatements.AppendLine($"select @{symbol}");
+            this.executionStatements.AppendLine();
+
+            var result = new Variable(symbol);
+            return result;
+        }
+
         public object[] Execute()
         {
             DbProviderWritePrimitives.Logger.Debug("Entering Execute");

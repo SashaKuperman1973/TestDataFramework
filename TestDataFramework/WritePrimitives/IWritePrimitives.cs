@@ -14,5 +14,6 @@ namespace TestDataFramework.WritePrimitives
         object[] Execute();
         void AddSqlCommand(string command);
         void Reset();
+        object WriteGuid(string columnName);
     }
 }

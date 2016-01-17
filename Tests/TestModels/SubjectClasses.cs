@@ -172,4 +172,16 @@ namespace Tests.TestModels
         [PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Auto)]
         public byte Key { get; set; }
     }
+
+    public class ClassWithGuidKeys
+    {
+        [PrimaryKey]
+        public Guid Key1 { get; set; }
+
+        [PrimaryKey]
+        public int Key2 { get; set; }
+
+        [PrimaryKey]
+        public Guid? Key3 { get; set; }
+    }
 }

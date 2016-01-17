@@ -13,14 +13,10 @@ namespace TestDataFramework.Helpers
     {
         private List<byte> data;
 
-        public LargeInteger(ulong? initialValue)
+        public LargeInteger(ulong initialValue)
         {
-            this.data = LargeInteger.GetInitialData();
-
-            if (initialValue.HasValue)
-            {
-                LargeInteger.Encode(initialValue.Value, this);
-            }
+            this.data = new List<byte>();
+            LargeInteger.Encode(initialValue, this);
         }
 
         #region Ensure
@@ -63,7 +59,7 @@ namespace TestDataFramework.Helpers
         public static implicit operator LargeInteger(ulong value)
         {
             var result = new LargeInteger();
-            result.Ensure();
+            result.data = new List<byte>();
             LargeInteger.Encode(value, result);
             return result;
         }
@@ -95,9 +91,14 @@ namespace TestDataFramework.Helpers
         }
 
         // Returns Tuple<quotient, modulus>
-        public static Tuple<LargeInteger, LargeInteger> Divide(LargeInteger numerator, LargeInteger denominator)
+        private static Tuple<LargeInteger, LargeInteger> Divide(LargeInteger numerator, LargeInteger denominator)
         {
             numerator.Ensure(ref denominator);
+
+            if (denominator == 0)
+            {
+                throw new DivideByZeroException("LargeInteger: divide by zero");
+            }
 
             var quotient = new LargeInteger(0);
 
@@ -199,54 +200,62 @@ namespace TestDataFramework.Helpers
         public static LargeInteger operator ++(LargeInteger largeInteger)
         {
             largeInteger.Ensure();
+
+            var result = new LargeInteger();
+            result.data = largeInteger.data.GetRange(0, largeInteger.data.Count);
+
             int position = 0;
 
-            while (largeInteger.data[position] == byte.MaxValue)
+            while (result.data[position] == byte.MaxValue)
             {
-                largeInteger.data[position++] = 0;
+                result.data[position++] = 0;
 
-                if (largeInteger.data.Count == position)
+                if (result.data.Count == position)
                 {
-                    largeInteger.data.Add(0);
+                    result.data.Add(0);
                 }
             }
 
-            largeInteger.data[position]++;
+            result.data[position]++;
 
-            return largeInteger;
+            return result;
         }
 
         public static LargeInteger operator --(LargeInteger largeInteger)
         {
             largeInteger.Ensure();
+
+            var result = new LargeInteger();
+            result.data = largeInteger.data.GetRange(0, largeInteger.data.Count);
+
             int position = 0;
 
-            while (largeInteger.data[position] == 0)
+            while (result.data[position] == 0)
             {
-                largeInteger.data[position++] = 0xff;
+                result.data[position++] = 0xff;
 
-                if (largeInteger.data.Count == position)
+                if (result.data.Count == position)
                 {
                     throw new OverflowException(Messages.Underflow);
                 }
             }
 
-            largeInteger.data[position]--;
+            result.data[position]--;
 
-            if (largeInteger.data[position] == 0 && position > 0)
+            if (result.data[position] == 0 && position > 0)
             {
-                largeInteger.data.RemoveAt(position);
+                result.data.RemoveAt(position);
             }
 
-            return largeInteger;
+            return result;
         }
 
         private static void Encode(ulong value, LargeInteger largeInteger)
         {
             do
             {
-                ulong remainder = value%byte.MaxValue;
-                value /= byte.MaxValue;
+                ulong remainder = value%(byte.MaxValue + 1);
+                value /= byte.MaxValue + 1;
 
                 largeInteger.data.Add((byte) remainder);
 
@@ -259,7 +268,7 @@ namespace TestDataFramework.Helpers
 
             for (int i=0; i < largeInteger.data.Count; i++)
             {
-                result += (ulong) Math.Pow(byte.MaxValue, i)*largeInteger.data[i];
+                result += (ulong) Math.Pow(byte.MaxValue + 1, i)*largeInteger.data[i];
             }
 
             return result;

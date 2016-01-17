@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -28,15 +30,17 @@ namespace Tests.Tests
         public void Initialize()
         {
             XmlConfigurator.Configure();
-
             this.subject = new SubjectClass();
-            this.recordReferenceMock = new Mock<RecordReference>(subject);
+            this.recordReferenceMock = new Mock<RecordReference>(this.subject);
             this.peers = new List<AbstractRepositoryOperation>();
             this.serviceMock = new Mock<InsertRecordService>(this.recordReferenceMock.Object);
             this.insertRecord = new InsertRecord(this.serviceMock.Object, this.recordReferenceMock.Object, this.peers);
 
             this.breakerMock = new Mock<CircularReferenceBreaker>();
             this.writePrimitivesMock = new Mock<IWritePrimitives>();
+
+            this.recordReferenceMock.Setup(m => m.RecordObject).Returns(this.subject);
+            this.recordReferenceMock.Setup(m => m.RecordType).Returns(this.subject.GetType());
         }
 
         [TestMethod]
@@ -99,7 +103,10 @@ namespace Tests.Tests
             // Arrange
 
             var orderedOpertations = new AbstractRepositoryOperation[2];
-            var secondrecordReferenceMock = new Mock<RecordReference>(new SubjectClass());
+            var secondObject = new SubjectClass();
+            var secondrecordReferenceMock = new Mock<RecordReference>(secondObject);
+            secondrecordReferenceMock.Setup(m => m.RecordObject).Returns(secondObject);
+            secondrecordReferenceMock.Setup(m => m.RecordType).Returns(secondObject.GetType());
 
             var secondInsertRecord = new InsertRecord(this.serviceMock.Object, secondrecordReferenceMock.Object, this.peers);
             var primaryKeyOperations = new List<InsertRecord> { secondInsertRecord };
@@ -111,11 +118,11 @@ namespace Tests.Tests
 
             this.serviceMock.Setup(
                 m =>
-                    m.WritePrimaryKeyOperations(It.IsAny<IWritePrimitives>(), It.IsAny<IEnumerable<InsertRecord>>(),
+                    m.WritePrimaryKeyOperations(It.IsAny<IWritePrimitives>(), It.IsAny<IEnumerable<AbstractRepositoryOperation>>(),
                         It.IsAny<CircularReferenceBreaker>(), It.IsAny<Counter>(),
                         It.IsAny<AbstractRepositoryOperation[]>()))
                 .Callback
-                <IWritePrimitives, IEnumerable<InsertRecord>, CircularReferenceBreaker, Counter,
+                <IWritePrimitives, IEnumerable<AbstractRepositoryOperation>, CircularReferenceBreaker, Counter,
                     AbstractRepositoryOperation[]>(
                         (writer, secondPrimaryKeyOperations, breaker, secondCurrentOrder, secondOrderedOperations) =>
                         {
@@ -160,15 +167,20 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void Read_Test()
+        public void Read_AutoKey_Test()
         {
             // Arrange
+
+            var record = new PrimaryTable();
+
+            this.recordReferenceMock.Setup(m => m.RecordObject).Returns(record);
+            this.recordReferenceMock.Setup(m => m.RecordType).Returns(record.GetType());
 
             var streamReadPointer = new Counter();
 
             const int expected = 8;
 
-            var returnValue = new object[] {expected};
+            var returnValue = new object[] { expected };
 
             // Act
 
@@ -176,7 +188,33 @@ namespace Tests.Tests
 
             // Assert
 
-            Assert.AreEqual(expected, this.subject.Key);
+            Assert.AreEqual(expected, record.Key);
+            Assert.AreEqual(1, streamReadPointer.Value);
+        }
+
+        [TestMethod]
+        public void Read_ManualKey_Test()
+        {
+            // Arrange
+
+            var record = new ClassWithGuidKeys();
+
+            this.recordReferenceMock.Setup(m => m.RecordObject).Returns(record);
+            this.recordReferenceMock.Setup(m => m.RecordType).Returns(record.GetType());
+
+            var streamReadPointer = new Counter();
+
+            var returnValue = new object[] { "Key1", Guid.NewGuid(), "Key3", Guid.NewGuid() };
+
+            // Act
+
+            this.insertRecord.Read(streamReadPointer, returnValue);
+
+            // Assert
+
+            Assert.AreEqual(returnValue[1], record.Key1);
+            Assert.AreEqual(returnValue[3], record.Key3);
+            Assert.AreEqual(4, streamReadPointer.Value);
         }
     }
 }

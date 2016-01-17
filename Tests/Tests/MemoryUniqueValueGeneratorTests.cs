@@ -9,6 +9,7 @@ using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
+using TestDataFramework.Helpers;
 using TestDataFramework.PropertyValueAccumulator;
 using TestDataFramework.UniqueValueGenerator;
 using TestDataFramework.UniqueValueGenerator.Concrete;
@@ -81,6 +82,23 @@ namespace Tests.Tests
             // Assert
 
             this.deferredValueGeneratorMock.Verify(m => m.AddDelegate(It.IsAny<PropertyInfo>(), It.IsAny<DeferredValueGetterDelegate<ulong>>()), Times.Never);
+        }
+
+        [TestMethod]
+        public void NotAPrimaryKey_Test()
+        {
+            // Arrange
+
+            PropertyInfo keyPropertyInfo = typeof(SubjectClass).GetProperty("Integer");
+
+            // Act
+
+            this.generator.GetValue(keyPropertyInfo);
+            this.generator.GetValue(keyPropertyInfo);
+
+            // Assert
+
+            this.propertyValueAccumulatorMock.Verify(m => m.GetValue(keyPropertyInfo, Helper.DefaultInitalCount), Times.Exactly(2));
         }
 
         public void DeferValue_Test_X()

@@ -1,20 +1,13 @@
-﻿Make DbProviderWritePrimitives abstract and put in Sql Client sql commands in an derived concrete class.
-The randomizers for rest of the special collection types that are implemented in the old system.
+﻿The randomizers for rest of the special collection types that are implemented in the old system.
 Change all excpetion to take parameters instead of using stringFormat at calling site.
 Test that a long property type writes to a smallint database field.
-StandardPropertyValueAccumulator: return null if neither integer or string? Or throw an exception?
+Add an Sql type attributes validator
 
 =Tests to write
-
-DefaultInitialValueGenerator
 
 =Scratchpad
 
 * = curently working on
 
 =getting it to work.
-should be able to write to db with what I've got. going to wire up castle windsor with typed factory and see.
 
-UFQILNMVPD
-
-NBENU

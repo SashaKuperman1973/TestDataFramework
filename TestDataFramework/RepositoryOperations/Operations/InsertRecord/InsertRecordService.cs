@@ -18,14 +18,14 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
         private static readonly ILog Logger = LogManager.GetLogger(typeof(InsertRecordService));
         private readonly RecordReference recordReference;
 
-        public PrimaryKeyAttribute.KeyTypeEnum KeyType { get; }
-
-        #region Constructor
-
-        public InsertRecordService(RecordReference recordReference)
+        private PrimaryKeyAttribute.KeyTypeEnum? keyType;
+        public PrimaryKeyAttribute.KeyTypeEnum KeyType
         {
-            this.recordReference = recordReference;
-            this.KeyType = this.DetermineKeyType();
+            get
+            {
+                PrimaryKeyAttribute.KeyTypeEnum result = (this.keyType ?? (this.keyType = this.DetermineKeyType())).Value;
+                return result;
+            }
         }
 
         private PrimaryKeyAttribute.KeyTypeEnum DetermineKeyType()
@@ -45,6 +45,13 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
             PrimaryKeyAttribute.KeyTypeEnum result = pkAttributes.First().KeyType;
             return result;
+        }
+
+        #region Constructor
+
+        public InsertRecordService(RecordReference recordReference)
+        {
+            this.recordReference = recordReference;
         }
 
         #endregion Constructor
@@ -71,14 +78,14 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             return result;
         }
 
-        public virtual void WritePrimaryKeyOperations(IWritePrimitives writer, IEnumerable<InsertRecord> primaryKeyOperations,
+        public virtual void WritePrimaryKeyOperations(IWritePrimitives writer, IEnumerable<AbstractRepositoryOperation> primaryKeyOperations,
             CircularReferenceBreaker breaker, Counter order, AbstractRepositoryOperation[] orderedOperations)
         {
-            InsertRecordService.Logger.Debug("Entering WriteHigherPriorityOperations");
+            InsertRecordService.Logger.Debug("Entering WritePrimaryKeyOperations");
 
             primaryKeyOperations.ToList().ForEach(o => o.Write(breaker, writer, order, orderedOperations));
 
-            InsertRecordService.Logger.Debug("Exiting WriteHigherPriorityOperations");
+            InsertRecordService.Logger.Debug("Exiting WritePrimaryKeyOperations");
         }
 
         #region GetColumnData
@@ -135,15 +142,17 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
         private IEnumerable<Column> GetRegularColumns()
         {
-            InsertRecordService.Logger.Debug("Entering GetRegularColumnData");
+            InsertRecordService.Logger.Debug("Entering GetRegularColumns");
 
             IEnumerable<Column> result =
                 this.recordReference.RecordType.GetPropertiesHelper()
                     .Where(
                         p =>
                             p.GetSingleAttribute<ForeignKeyAttribute>() == null &&
-                            (p.GetSingleAttribute<PrimaryKeyAttribute>() == null ||
-                             this.KeyType == PrimaryKeyAttribute.KeyTypeEnum.Manual))
+
+                            (p.GetSingleAttribute<PrimaryKeyAttribute>() == null
+                             || this.KeyType == PrimaryKeyAttribute.KeyTypeEnum.Manual)
+                    )
                     .Select(
                         p =>
                             new Column
@@ -152,7 +161,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                                 Value = p.GetValue(this.recordReference.RecordObject)
                             });
 
-            InsertRecordService.Logger.Debug("Exiting GetRegularColumnData");
+            InsertRecordService.Logger.Debug("Exiting GetRegularColumns");
 
             return result.ToList();
         }
@@ -197,7 +206,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
                     InsertRecordService.Logger.Debug("Taking KeyTypeEnum.Auto Manual branch");
 
-                    primaryKeyValues.AddRange(this.GetPrimaryKeyValues());
+                    primaryKeyValues.AddRange(this.GetPrimaryKeyValues(writer));
 
                     break;
 
@@ -210,18 +219,28 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             InsertRecordService.Logger.Debug("Exiting HandlePrimaryKeyValues");
         }
 
-        private IEnumerable<ColumnSymbol> GetPrimaryKeyValues()
+        private IEnumerable<ColumnSymbol> GetPrimaryKeyValues(IWritePrimitives writer)
         {
             InsertRecordService.Logger.Debug("Entering GetPrimaryKeyValues");
 
             IEnumerable<PropertyAttribute<PrimaryKeyAttribute>> pkPropertyAttributes =
                 this.recordReference.RecordType.GetPropertyAttributes<PrimaryKeyAttribute>();
 
-            IEnumerable<ColumnSymbol> result = pkPropertyAttributes.Select(pa => new ColumnSymbol
+            IEnumerable<ColumnSymbol> result = pkPropertyAttributes.Select(pa =>
             {
-                ColumnName = Helper.GetColunName(pa.PropertyInfo),
-                TableType = this.recordReference.RecordType,
-                Value = pa.PropertyInfo.GetValue(this.recordReference.RecordObject)
+                string columnName = Helper.GetColunName(pa.PropertyInfo);
+
+                var symbol = new ColumnSymbol
+                {
+                    ColumnName = columnName,
+                    TableType = this.recordReference.RecordType,
+
+                    Value = pa.PropertyInfo.PropertyType.IsGuid()
+                        ? writer.WriteGuid(columnName)
+                        : pa.PropertyInfo.GetValue(this.recordReference.RecordObject)
+                };
+
+                return symbol;
             });
 
             InsertRecordService.Logger.Debug("Exiting GetPrimaryKeyValues");

@@ -203,6 +203,42 @@ namespace Tests.Tests
         }
 
         [TestMethod]
+        public void WritePrimitives_AddPrimaryKeyValue_ManualGuids_Test()
+        {
+            // Arrange
+
+            var columns = new Column[0];
+            var primaryKeyValues = new List<ColumnSymbol>();
+
+            const string tableName = "XYZ";
+            const string symbol1 = "Symbol1";
+            const string symbol2 = "Symbol2";
+
+            this.insertRecordService =
+                new InsertRecordService(
+                    new RecordReference<ClassWithGuidKeys>(new ClassWithGuidKeys()));
+
+            this.writerMock.Setup(m => m.WriteGuid("Key1")).Returns(symbol1);
+            this.writerMock.Setup(m => m.WriteGuid("Key3")).Returns(symbol2);
+
+            // Act
+
+            this.insertRecordService.WritePrimitives(this.writerMock.Object, tableName, columns, primaryKeyValues);
+
+            // Assert
+
+            Assert.AreEqual(3, primaryKeyValues.Count);
+
+            Assert.AreEqual(typeof(ClassWithGuidKeys), primaryKeyValues[0].TableType);
+            Assert.AreEqual(symbol1, primaryKeyValues[0].Value);
+            Assert.AreEqual("Key1", primaryKeyValues[0].ColumnName);
+
+            Assert.AreEqual(typeof(ClassWithGuidKeys), primaryKeyValues[1].TableType);
+            Assert.AreEqual(symbol2, primaryKeyValues[2].Value);
+            Assert.AreEqual("Key3", primaryKeyValues[2].ColumnName);
+        }
+
+        [TestMethod]
         public void WritePrimitives_AddPrimaryKeyValue_KeysNone_Test()
         {
             // Arrange

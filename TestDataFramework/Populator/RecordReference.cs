@@ -21,13 +21,13 @@ namespace TestDataFramework.Populator
             this.RecordObject = recordObject;
         }
 
-        public object RecordObject { get; }
+        public virtual object RecordObject { get; }
 
-        public Type RecordType => this.RecordObject.GetType();
+        public virtual Type RecordType => this.RecordObject.GetType();
 
         public readonly IEnumerable<RecordReference> PrimaryKeyReferences = new List<RecordReference>();
 
-        public void AddPrimaryRecordReference(params RecordReference[] primaryRecordReferences)
+        public virtual void AddPrimaryRecordReference(params RecordReference[] primaryRecordReferences)
         {
             RecordReference.Logger.Debug("Entering AddPrimaryRecordReference(RecordReference[])");
 
@@ -36,7 +36,7 @@ namespace TestDataFramework.Populator
             RecordReference.Logger.Debug("Entering AddPrimaryRecordReference(RecordReference[])");
         }
 
-        public void AddPrimaryRecordReference(RecordReference primaryRecordReference)
+        public virtual void AddPrimaryRecordReference(RecordReference primaryRecordReference)
         {
             RecordReference.Logger.Debug("Entering AddPrimaryRecordReference(RecordReference)");
 

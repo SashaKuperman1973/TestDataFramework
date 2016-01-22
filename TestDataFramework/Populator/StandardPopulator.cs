@@ -77,6 +77,7 @@ namespace TestDataFramework.Populator
             StandardPopulator.Logger.Debug("Entering Populate");
 
             this.persistence.Persist(this.recordReferences);
+            this.recordReferences.Clear();
 
             StandardPopulator.Logger.Debug("Exiting Populate");
         }

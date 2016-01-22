@@ -27,7 +27,7 @@ namespace TestDataFramework.Factories
 {
     public class PopulatorFactory : IDisposable
     {
-        private DisposableContainer SqlClientPopulatorContainer;
+        private DisposableContainer sqlClientPopulatorContainer;
         private DisposableContainer memoryPopulatorContainer;
 
         public IPopulator CreateSqlClientPopulator(string connectionStringWithDefaultCatalogue,
@@ -52,16 +52,16 @@ namespace TestDataFramework.Factories
 
         private IWindsorContainer GetSqlClientPopulatorContainer(string connectionStringWithDefaultCatalogue, bool mustBeInATransaction)
         {
-            if (this.SqlClientPopulatorContainer != null && !this.SqlClientPopulatorContainer.IsDisposed)
+            if (this.sqlClientPopulatorContainer != null && !this.sqlClientPopulatorContainer.IsDisposed)
             {
-                return this.SqlClientPopulatorContainer.Container;
+                return this.sqlClientPopulatorContainer.Container;
             }
 
-            this.SqlClientPopulatorContainer = new DisposableContainer(PopulatorFactory.CommonContainer);
+            this.sqlClientPopulatorContainer = new DisposableContainer(PopulatorFactory.CommonContainer);
 
-            this.SqlClientPopulatorContainer.Container.Register(
+            this.sqlClientPopulatorContainer.Container.Register(
 
-                Component.For<IWritePrimitives>().ImplementedBy<DbProviderWritePrimitives>()
+                Component.For<IWritePrimitives>().ImplementedBy<SqlClientWritePrimitives>()
                     .DependsOn((k, d) =>
                     {
                         d["connectionStringWithDefaultCatalogue"] = connectionStringWithDefaultCatalogue;
@@ -71,7 +71,7 @@ namespace TestDataFramework.Factories
 
                 Component.For<DbProviderFactory>().UsingFactoryMethod(() => SqlClientFactory.Instance, true),
 
-                Component.For<IValueFormatter>().ImplementedBy<DbValueFormatter>(),
+                Component.For<IValueFormatter>().ImplementedBy<SqlClientValueFormatter>(),
 
                 Component.For<IPropertyDataGenerator<ulong>>().ImplementedBy<SqlClientInitialCountGenerator>(),
 
@@ -85,7 +85,7 @@ namespace TestDataFramework.Factories
 
                 );
 
-            return this.SqlClientPopulatorContainer.Container;
+            return this.sqlClientPopulatorContainer.Container;
         }
 
         private IWindsorContainer GetMemoryPopulatorContainer()
@@ -178,7 +178,7 @@ namespace TestDataFramework.Factories
 
         public void Dispose()
         {
-            this.SqlClientPopulatorContainer?.Dispose();
+            this.sqlClientPopulatorContainer?.Dispose();
             this.memoryPopulatorContainer?.Dispose();
         }
     }

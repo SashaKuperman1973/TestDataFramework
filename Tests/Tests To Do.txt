@@ -2,6 +2,7 @@
 Change all excpetion to take parameters instead of using stringFormat at calling site.
 Test that a long property type writes to a smallint database field.
 Add an Sql type attributes validator
+Test SqlClientUniqueValueGenerator (or renamed version) for defer of string type.
 
 =Tests to write
 

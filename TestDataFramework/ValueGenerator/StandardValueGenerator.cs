@@ -51,6 +51,7 @@ namespace TestDataFramework.ValueGenerator
                 {typeof (DateTime), this.GetDateTime},
                 {typeof (byte), x => this.randomizer.RandomizeByte()},
                 {typeof (double), this.GetDouble},
+                {typeof(Guid), this.NoOp }
             };
 
             StandardValueGenerator.Logger.Debug("Exiting constructor");
@@ -124,6 +125,13 @@ namespace TestDataFramework.ValueGenerator
 
             StandardValueGenerator.Logger.Debug("Exiting TryGetGetter");
             return result;
+        }
+
+        private object NoOp(PropertyInfo propertyInfo)
+        {
+            return propertyInfo.PropertyType.IsValueType
+                ? Activator.CreateInstance(propertyInfo.PropertyType)
+                : null;
         }
 
         private object GetString(PropertyInfo propertyInfo)

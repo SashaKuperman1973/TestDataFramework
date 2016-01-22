@@ -13,7 +13,7 @@ using Tests.TestModels;
 
 namespace IntegrationTests.Tests
 {
-    [Ignore]
+    //[Ignore]
     [TestClass]
     public class SqlClientTest
     {
@@ -45,7 +45,10 @@ namespace IntegrationTests.Tests
             populator.Bind();
 
             Console.WriteLine(result[0].RecordObject.Key);
+            Console.WriteLine(result[0].RecordObject.GuidKey);
+
             Console.WriteLine(result[1].RecordObject.Key);
+            Console.WriteLine(result[1].RecordObject.GuidKey);
         }
 
         [TestMethod]

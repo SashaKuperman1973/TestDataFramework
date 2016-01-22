@@ -146,15 +146,15 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
             IEnumerable<Column> result =
                 this.recordReference.RecordType.GetPropertiesHelper()
-                    .Where(
-                        p =>
-                            p.GetSingleAttribute<ForeignKeyAttribute>() == null &&
+                    .Where(p =>
+                    {
+                        PrimaryKeyAttribute pka = p.GetSingleAttribute<PrimaryKeyAttribute>();
 
-                            (p.GetSingleAttribute<PrimaryKeyAttribute>() == null
-                             || 
-                             this.KeyType == PrimaryKeyAttribute.KeyTypeEnum.Manual
-                             && !p.PropertyType.IsGuid())
-                    )
+                        bool filter = p.GetSingleAttribute<ForeignKeyAttribute>() == null
+                                      && (pka == null || pka.KeyType != PrimaryKeyAttribute.KeyTypeEnum.Auto);
+
+                        return filter;
+                    })
                     .Select(
                         p =>
                         {
@@ -163,7 +163,8 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                             var column = new Column
                             {
                                 Name = columnName,
-                                Value = this.recordReference.RecordType.IsGuid() 
+
+                                Value = p.PropertyType.IsGuid() 
                                 ? writer.WriteGuid(columnName) 
                                 : p.GetValue(this.recordReference.RecordObject)
                             };
@@ -185,52 +186,15 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
         {
             InsertRecordService.Logger.Debug("Entering WritePrimitives");
 
+            columns = columns.ToList();
+
             writer.Insert(tableName, columns);
-            this.PopulatePrimaryKeyValues(writer, primaryKeyValues);
+            this.PopulatePrimaryKeyValues(primaryKeyValues, columns);
 
             InsertRecordService.Logger.Debug("Exiting WritePrimitives");
         }
 
-        private void PopulatePrimaryKeyValues(IWritePrimitives writer, List<ColumnSymbol> primaryKeyValues)
-        {
-            InsertRecordService.Logger.Debug("Entering HandlePrimaryKeyValues");
-
-            switch (this.KeyType)
-            {
-                case PrimaryKeyAttribute.KeyTypeEnum.Auto:
-
-                    InsertRecordService.Logger.Debug("Taking KeyTypeEnum.Auto branch");
-
-                    string primaryKeyColumnName = this.GetPrimaryKeyColumnName();
-                    object identityVariable = writer.SelectIdentity(primaryKeyColumnName);
-
-                    primaryKeyValues.Add(new ColumnSymbol
-                    {
-                        ColumnName = primaryKeyColumnName,
-                        Value = identityVariable,
-                        TableType = this.recordReference.RecordType
-                    });
-
-                    break;
-
-                case PrimaryKeyAttribute.KeyTypeEnum.Manual:
-
-                    InsertRecordService.Logger.Debug("Taking KeyTypeEnum.Auto Manual branch");
-
-                    primaryKeyValues.AddRange(this.GetPrimaryKeyValues(writer));
-
-                    break;
-
-                default:
-
-                    InsertRecordService.Logger.Debug("No special key type handling fo this branch");
-                    break;
-            }
-
-            InsertRecordService.Logger.Debug("Exiting HandlePrimaryKeyValues");
-        }
-
-        private IEnumerable<ColumnSymbol> GetPrimaryKeyValues(IWritePrimitives writer)
+        private void PopulatePrimaryKeyValues(List<ColumnSymbol> primaryKeyValues, IEnumerable<Column> columns)
         {
             InsertRecordService.Logger.Debug("Entering GetPrimaryKeyValues");
 
@@ -241,14 +205,15 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             {
                 string columnName = Helper.GetColunName(pa.PropertyInfo);
 
+                Column sourceColumn = columns.First(c => c.Name.Equals(columnName, StringComparison.Ordinal));
+
                 var symbol = new ColumnSymbol
                 {
                     ColumnName = columnName,
+
                     TableType = this.recordReference.RecordType,
 
-                    Value = pa.PropertyInfo.PropertyType.IsGuid()
-                        ? writer.WriteGuid(columnName)
-                        : pa.PropertyInfo.GetValue(this.recordReference.RecordObject)
+                    Value = sourceColumn.Value,
                 };
 
                 return symbol;
@@ -256,19 +221,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
             InsertRecordService.Logger.Debug("Exiting GetPrimaryKeyValues");
 
-            return result;
-        }
-
-        private string GetPrimaryKeyColumnName()
-        {
-            InsertRecordService.Logger.Debug("Entering GetPrimaryKeyColumnName");
-
-            PropertyAttribute<PrimaryKeyAttribute> pkPropertyAttribute =
-                this.recordReference.RecordType.GetPropertyAttributes<PrimaryKeyAttribute>().First();
-
-            InsertRecordService.Logger.Debug("Exiting GetPrimaryKeyColumnName");
-
-            return Helper.GetColunName(pkPropertyAttribute.PropertyInfo);
+            primaryKeyValues.AddRange(result);
         }
 
         #endregion WritePrimitives

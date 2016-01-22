@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Tests.Tests
 {
     [TestClass]
-    public class SqlClientUniqueValueGeneratorTests
+    public class KeyTypeUniqueValueGeneratorTests
     {
         [TestMethod]
         public void TestMethod1()

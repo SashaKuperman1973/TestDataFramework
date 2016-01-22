@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Helpers;
@@ -6,9 +7,9 @@ using TestDataFramework.PropertyValueAccumulator;
 
 namespace TestDataFramework.UniqueValueGenerator.Concrete
 {
-    public class SqlClientUniqueValueGenerator : BaseUniqueValueGenerator
+    public class KeyTypeUniqueValueGenerator : BaseUniqueValueGenerator
     {
-        public SqlClientUniqueValueGenerator(IPropertyValueAccumulator accumulator,
+        public KeyTypeUniqueValueGenerator(IPropertyValueAccumulator accumulator,
             IDeferredValueGenerator<ulong> deferredValueGenerator) : base(accumulator, deferredValueGenerator)
         {
         }
@@ -23,7 +24,8 @@ namespace TestDataFramework.UniqueValueGenerator.Concrete
                 return result;
             }
 
-            if (primaryKeyAttribute.KeyType == PrimaryKeyAttribute.KeyTypeEnum.Manual)
+            if (primaryKeyAttribute.KeyType == PrimaryKeyAttribute.KeyTypeEnum.Manual &&
+                new[] {typeof (byte), typeof (int), typeof (short), typeof (long), typeof(string)}.Contains(propertyInfo.PropertyType))
             {
                 this.DeferValue(propertyInfo);
             }

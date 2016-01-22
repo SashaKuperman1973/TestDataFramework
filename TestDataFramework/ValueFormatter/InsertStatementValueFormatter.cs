@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using TestDataFramework.RepositoryOperations.Model;
 using TestDataFramework.WritePrimitives;
 
 namespace TestDataFramework.ValueFormatter

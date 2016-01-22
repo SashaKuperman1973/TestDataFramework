@@ -17,6 +17,7 @@ using TestDataFramework.PropertyValueAccumulator;
 using TestDataFramework.Randomizer;
 using TestDataFramework.TypeGenerator;
 using TestDataFramework.UniqueValueGenerator;
+using TestDataFramework.UniqueValueGenerator.Concrete;
 using TestDataFramework.UniqueValueGenerator.Interface;
 using TestDataFramework.ValueFormatter;
 using TestDataFramework.ValueGenerator;
@@ -72,15 +73,15 @@ namespace TestDataFramework.Factories
 
                 Component.For<IValueFormatter>().ImplementedBy<InsertStatementValueFormatter>(),
 
-                Component.For<IPropertyDataGenerator<ulong>>().ImplementedBy<SqlClientInitialCountGenerator>()
-                    .DependsOn((k, d) =>
-                    {
-                        d["connectionString"] = connectionStringWithDefaultCatalogue;
-                    }),
+                Component.For<IPropertyDataGenerator<ulong>>().ImplementedBy<SqlClientInitialCountGenerator>(),
 
                 Component.For<IPersistence>().ImplementedBy<SqlClientPersistence>(),
 
-                Component.For<IUniqueValueGenerator>().ImplementedBy<BaseUniqueValueGenerator>()
+                Component.For<IUniqueValueGenerator>().ImplementedBy<SqlClientUniqueValueGenerator>(),
+
+                Component.For<IWriterDictinary>().ImplementedBy<SqlWriterDictionary>(),
+
+                Component.For<SqlWriterCommandTextGenerator>()
 
                 );
 
@@ -102,7 +103,7 @@ namespace TestDataFramework.Factories
 
                 Component.For<IPersistence>().ImplementedBy<MemoryPersistence>(),
 
-                Component.For<IUniqueValueGenerator>().ImplementedBy<BaseUniqueValueGenerator>()
+                Component.For<IUniqueValueGenerator>().ImplementedBy<MemoryUniqueValueGenerator>()
 
                 );
 

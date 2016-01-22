@@ -25,6 +25,12 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
         {
             SqlClientInitialCountGenerator.Logger.Debug("Entering FillData");
 
+            if (!propertyDataDictionary.Any())
+            {
+                SqlClientInitialCountGenerator.Logger.Debug("FillData: empty input. Exiting");
+                return;
+            }
+
             List<DecoderDelegate> decoders = new List<DecoderDelegate>();
 
             List<KeyValuePair<PropertyInfo, Data<ulong>>> propertyDataList =

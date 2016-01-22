@@ -19,11 +19,31 @@ namespace Tests.Tests
     public class DbProviderWritePrimitivesTests
     {
         private Mock<DbProviderFactory> dbProviderFactoryMock;
-        private DbProviderWritePrimitives primitives;
+        private WritePrimitives primitives;
         private Mock<IValueFormatter> formatterMock;
-        private Mock<IRandomSymbolStringGenerator> symbolGeneratorMock;
 
         private const string ConnectionString = "cn";
+
+        private class WritePrimitives : DbProviderWritePrimitives
+        {
+            public WritePrimitives(string connectionStringWithDefaultCatalogue, DbProviderFactory dbProviderFactory,
+                IValueFormatter formatter, bool mustBeInATransaction, NameValueCollection configuration)
+                : base(
+                    connectionStringWithDefaultCatalogue, dbProviderFactory, formatter, mustBeInATransaction,
+                    configuration)
+            {
+            }
+
+            public override object SelectIdentity(string columnName)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override object WriteGuid(string columnName)
+            {
+                throw new NotImplementedException();
+            }
+        }
 
         [TestInitialize]
         public void Initialize()
@@ -32,10 +52,9 @@ namespace Tests.Tests
 
             this.dbProviderFactoryMock = new Mock<DbProviderFactory>();
             this.formatterMock = new Mock<IValueFormatter>();
-            this.symbolGeneratorMock = new Mock<IRandomSymbolStringGenerator>();
 
-            this.primitives = new DbProviderWritePrimitives(DbProviderWritePrimitivesTests.ConnectionString,
-                this.dbProviderFactoryMock.Object, this.formatterMock.Object, this.symbolGeneratorMock.Object,
+            this.primitives = new WritePrimitives(DbProviderWritePrimitivesTests.ConnectionString,
+                this.dbProviderFactoryMock.Object, this.formatterMock.Object,
                 mustBeInATransaction: false,
                 configuration: new NameValueCollection {{"TestDataFramework_DumpSqlInput", "true"}});
         }
@@ -156,45 +175,10 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void SelectIdentity_Test()
-        {
-            // Arrange
-
-            var connectionMock = new Mock<DbConnection>();
-            var insertCommandMock = new Mock<DbCommand>();
-            var readerMock = new Mock<DbDataReader>();
-            var mockInsertCommand = new MockDbCommand(insertCommandMock.Object, readerMock.Object);
-
-            this.dbProviderFactoryMock.Setup(m => m.CreateCommand()).Returns(mockInsertCommand);
-            this.dbProviderFactoryMock.Setup(m => m.CreateConnection()).Returns(connectionMock.Object);
-
-            const string variableSymbol = "ABCD";
-            this.symbolGeneratorMock.Setup(m => m.GetRandomString(It.IsAny<int?>())).Returns(variableSymbol);
-            const string columnName = "col1";
-
-            // Act
-
-            this.primitives.SelectIdentity(columnName);
-            this.primitives.Execute();
-
-            // Assert
-
-            string expectedText =
-                new StringBuilder($"declare @{variableSymbol} bigint;").AppendLine()
-                    .AppendLine($"select @{variableSymbol} = @@identity;")
-                    .AppendLine($"select '{columnName}'")
-                    .AppendLine($"select @{variableSymbol}")
-                    .AppendLine()
-                    .ToString();
-
-            insertCommandMock.VerifySet(m => m.CommandText = expectedText);
-        }
-
-        [TestMethod]
         public void NotInATransactionException_Test()
         {
-            this.primitives = new DbProviderWritePrimitives(null,
-                null, null, null,
+            this.primitives = new WritePrimitives(null,
+                null, null,
                 mustBeInATransaction: true,
                 configuration: null);
 
@@ -208,9 +192,9 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void WriteGuid_Test()
+        public void ResetTest()
         {
-            throw new NotImplementedException();
+            
         }
     }
 }

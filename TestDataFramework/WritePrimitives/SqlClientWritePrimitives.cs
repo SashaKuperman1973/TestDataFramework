@@ -12,14 +12,12 @@ namespace TestDataFramework.WritePrimitives
 {
     public class SqlClientWritePrimitives : DbProviderWritePrimitives
     {
-        private readonly IValueFormatter formatter;
         private readonly IRandomSymbolStringGenerator symbolGenerator;
 
         public SqlClientWritePrimitives(string connectionStringWithDefaultCatalogue, DbProviderFactory dbProviderFactory,
             IValueFormatter formatter, IRandomSymbolStringGenerator symbolGenerator, bool mustBeInATransaction,
-            NameValueCollection configuration) : base(connectionStringWithDefaultCatalogue, dbProviderFactory, mustBeInATransaction, configuration)
+            NameValueCollection configuration) : base(connectionStringWithDefaultCatalogue, dbProviderFactory, formatter, mustBeInATransaction, configuration)
         {
-            this.formatter = formatter;
             this.symbolGenerator = symbolGenerator;
         }
 
@@ -48,20 +46,6 @@ namespace TestDataFramework.WritePrimitives
 
             var result = new Variable(symbol);
             return result;
-        }
-
-        protected override string FormatValue(object value)
-        {
-            var variable = value as Variable;
-
-            if (variable != null)
-            {
-                return "@" + variable.Symbol;
-            }
-
-            string result = this.formatter.Format(value);
-
-            return result ?? "null";
         }
     }  
 }

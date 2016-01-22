@@ -71,7 +71,7 @@ namespace TestDataFramework.Factories
 
                 Component.For<DbProviderFactory>().UsingFactoryMethod(() => SqlClientFactory.Instance, true),
 
-                Component.For<IValueFormatter>().ImplementedBy<InsertStatementValueFormatter>(),
+                Component.For<IValueFormatter>().ImplementedBy<DbValueFormatter>(),
 
                 Component.For<IPropertyDataGenerator<ulong>>().ImplementedBy<SqlClientInitialCountGenerator>(),
 

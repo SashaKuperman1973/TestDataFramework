@@ -7,16 +7,24 @@ using TestDataFramework.ValueFormatter;
 namespace Tests.Tests
 {
     [TestClass]
-    public class InsertStatementValueFormatterTests
+    public class DbValueFormatterTests
     {
-        private InsertStatementValueFormatter formatter;
+        private ValueFormatter formatter;
+
+        private class ValueFormatter : DbValueFormatter
+        {
+            public override string Format(object value)
+            {
+                throw new NotImplementedException();
+            }
+        }
 
         [TestInitialize]
         public void Initialize()
         {
             XmlConfigurator.Configure();
 
-            this.formatter = new InsertStatementValueFormatter();
+            this.formatter = new ValueFormatter();
         }
 
         [TestMethod]

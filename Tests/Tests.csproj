@@ -70,6 +70,7 @@
     <Compile Include="TestModels\PrimaryForeignReferenceSubjectClasses.cs" />
     <Compile Include="TestModels\SubjectClasses.cs" />
     <Compile Include="Tests\CircularReferenceBreakerTests.cs" />
+    <Compile Include="Tests\DbProviderWritePrimitivesTests.cs" />
     <Compile Include="Tests\MemoryUniqueValueGeneratorTests.cs" />
     <Compile Include="Tests\StandardPopulatorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -82,8 +83,8 @@
     <Compile Include="Tests\RecordReferenceTests.cs" />
     <Compile Include="Tests\InsertRecordTests.cs" />
     <Compile Include="Tests\InsertRecordServiceTest.cs" />
-    <Compile Include="Tests\DbProviderWritePrimitivesTests.cs" />
-    <Compile Include="Tests\InsertStatementValueFormatterTests.cs" />
+    <Compile Include="Tests\SqlClientWritePrimitivesTests.cs" />
+    <Compile Include="Tests\DbValueFormatterTests.cs" />
     <Compile Include="Tests\PopulatorFactoryTests.cs" />
     <Compile Include="Tests\StandardValueGeneratorTests.cs" />
     <Compile Include="Tests\LetterEncoderTest.cs" />
@@ -94,6 +95,7 @@
     <Compile Include="Tests\SqlWriterDictionaryTests.cs" />
     <Compile Include="Tests\KeyTypeUniqueValueGeneratorTests.cs" />
     <Compile Include="Tests\BaseUniqueValueGeneratorTests.cs" />
+    <Compile Include="Tests\SqlClientValueFormatterTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Tests To Do.txt" />

@@ -1,15 +1,11 @@
-﻿using System;
-using System.CodeDom;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Configuration;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Text;
 using log4net;
 using TestDataFramework.Helpers;
-using TestDataFramework.Helpers.Interfaces;
 using TestDataFramework.RepositoryOperations.Model;
 using TestDataFramework.Exceptions;
 
@@ -21,16 +17,18 @@ namespace TestDataFramework.WritePrimitives
         private readonly DbProviderFactory dbProviderFactory;
         private readonly bool mustBeInATransaction;
         private readonly NameValueCollection configuration;
+        private readonly IValueFormatter formatter;
 
         protected StringBuilder ExecutionStatements = new StringBuilder();
 
         private static readonly ILog Logger = LogManager.GetLogger(typeof(DbProviderWritePrimitives));
 
         protected DbProviderWritePrimitives(string connectionStringWithDefaultCatalogue, DbProviderFactory dbProviderFactory,
-            bool mustBeInATransaction, NameValueCollection configuration)
+            IValueFormatter formatter, bool mustBeInATransaction, NameValueCollection configuration)
         {
             this.connectionStringWithDefaultCatalogue = connectionStringWithDefaultCatalogue;
             this.dbProviderFactory = dbProviderFactory;
+            this.formatter = formatter;
             this.mustBeInATransaction = mustBeInATransaction;
             this.configuration = configuration ?? new NameValueCollection();
         }
@@ -129,11 +127,9 @@ namespace TestDataFramework.WritePrimitives
 
         private string BuildValueListText(IEnumerable<Column> columns)
         {
-            string result = "(" + string.Join(", ", columns.Select(c => this.FormatValue(c.Value))) + ")";
+            string result = "(" + string.Join(", ", columns.Select(c => this.formatter.Format(c.Value))) + ")";
             return result;
         }
-
-        protected abstract string FormatValue(object value);
 
         public abstract object SelectIdentity(string columnName);
 

@@ -6,9 +6,9 @@ using TestDataFramework.WritePrimitives;
 
 namespace TestDataFramework.ValueFormatter
 {
-    public class InsertStatementValueFormatter : IValueFormatter
+    public abstract class DbValueFormatter : IValueFormatter
     {
-        public string Format(object value)
+        protected virtual string FormatValue(object value)
         {
             if (value == null)
             {
@@ -19,7 +19,7 @@ namespace TestDataFramework.ValueFormatter
             Type inputType = value.GetType();
             Type type = Nullable.GetUnderlyingType(inputType) ?? inputType;
 
-            if (!InsertStatementValueFormatter.FormatterDictionary.TryGetValue(type, out formatter))
+            if (!DbValueFormatter.FormatterDictionary.TryGetValue(type, out formatter))
             {
                 throw new NotSupportedException($"Insertion doesn't support type <{type}>, value <{value}>.");
             }
@@ -28,20 +28,22 @@ namespace TestDataFramework.ValueFormatter
             return result;
         }
 
+        public abstract string Format(object value);
+
         #region Formatters
 
         private static readonly Dictionary<Type, Func<object, string>> FormatterDictionary = new Dictionary<Type, Func<object, string>>
         {
-            {typeof (int), InsertStatementValueFormatter.IntFormatter},
-            {typeof (short), InsertStatementValueFormatter.IntFormatter},
-            {typeof (long), InsertStatementValueFormatter.IntFormatter},
-            {typeof (string), InsertStatementValueFormatter.StringFormatter},
-            {typeof (char), InsertStatementValueFormatter.CharFormatter},
-            {typeof (decimal), InsertStatementValueFormatter.DecimalFomatter},
-            {typeof (double), InsertStatementValueFormatter.DoubleFomatter},
-            {typeof (bool), InsertStatementValueFormatter.BoolFormatter},
-            {typeof (DateTime), InsertStatementValueFormatter.DateTimeFormatter},
-            {typeof (byte), InsertStatementValueFormatter.ByteFormatter}
+            {typeof (int), DbValueFormatter.IntFormatter},
+            {typeof (short), DbValueFormatter.IntFormatter},
+            {typeof (long), DbValueFormatter.IntFormatter},
+            {typeof (string), DbValueFormatter.StringFormatter},
+            {typeof (char), DbValueFormatter.CharFormatter},
+            {typeof (decimal), DbValueFormatter.DecimalFomatter},
+            {typeof (double), DbValueFormatter.DoubleFomatter},
+            {typeof (bool), DbValueFormatter.BoolFormatter},
+            {typeof (DateTime), DbValueFormatter.DateTimeFormatter},
+            {typeof (byte), DbValueFormatter.ByteFormatter}
         };
 
         private static string IntFormatter(object value)

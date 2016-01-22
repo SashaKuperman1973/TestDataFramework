@@ -77,7 +77,7 @@ namespace TestDataFramework.Factories
 
                 Component.For<IPersistence>().ImplementedBy<SqlClientPersistence>(),
 
-                Component.For<IUniqueValueGenerator>().ImplementedBy<SqlClientUniqueValueGenerator>(),
+                Component.For<IUniqueValueGenerator>().ImplementedBy<KeyTypeUniqueValueGenerator>(),
 
                 Component.For<IWriterDictinary>().ImplementedBy<SqlWriterDictionary>(),
 

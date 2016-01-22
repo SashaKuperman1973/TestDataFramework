@@ -15,33 +15,29 @@ using TestDataFramework.Exceptions;
 
 namespace TestDataFramework.WritePrimitives
 {
-    public class DbProviderWritePrimitives : IWritePrimitives
+    public abstract class DbProviderWritePrimitives : IWritePrimitives
     {
         private readonly string connectionStringWithDefaultCatalogue;
         private readonly DbProviderFactory dbProviderFactory;
-        private readonly IValueFormatter formatter;
-        private readonly IRandomSymbolStringGenerator symbolGenerator;
         private readonly bool mustBeInATransaction;
         private readonly NameValueCollection configuration;
 
-        private StringBuilder executionStatements = new StringBuilder();
+        protected StringBuilder ExecutionStatements = new StringBuilder();
 
         private static readonly ILog Logger = LogManager.GetLogger(typeof(DbProviderWritePrimitives));
 
-        public DbProviderWritePrimitives(string connectionStringWithDefaultCatalogue, DbProviderFactory dbProviderFactory,
-            IValueFormatter formatter, IRandomSymbolStringGenerator symbolGenerator, bool mustBeInATransaction, NameValueCollection configuration)
+        protected DbProviderWritePrimitives(string connectionStringWithDefaultCatalogue, DbProviderFactory dbProviderFactory,
+            bool mustBeInATransaction, NameValueCollection configuration)
         {
             this.connectionStringWithDefaultCatalogue = connectionStringWithDefaultCatalogue;
             this.dbProviderFactory = dbProviderFactory;
-            this.formatter = formatter;
-            this.symbolGenerator = symbolGenerator;
             this.mustBeInATransaction = mustBeInATransaction;
             this.configuration = configuration ?? new NameValueCollection();
         }
 
         public void Reset()
         {
-            this.executionStatements = new StringBuilder();
+            this.ExecutionStatements = new StringBuilder();
         }
 
         public void Insert(string tableName, IEnumerable<Column> columns)
@@ -49,47 +45,20 @@ namespace TestDataFramework.WritePrimitives
             DbProviderWritePrimitives.Logger.Debug("Entering Insert");
 
             string insertStatement = this.BuildInsertStatement(tableName, columns);
-            this.executionStatements.AppendLine(insertStatement);
-            this.executionStatements.AppendLine();
+            this.ExecutionStatements.AppendLine(insertStatement);
+            this.ExecutionStatements.AppendLine();
 
             DbProviderWritePrimitives.Logger.Debug("Exiting Insert");
-        }
-
-        public object SelectIdentity(string columnName)
-        {
-            string symbol = this.symbolGenerator.GetRandomString(10);
-
-            this.executionStatements.AppendLine($"declare @{symbol} bigint;");
-            this.executionStatements.AppendLine($"select @{symbol} = @@identity;");
-            this.executionStatements.AppendLine($"select '{columnName}'");
-            this.executionStatements.AppendLine($"select @{symbol}");
-            this.executionStatements.AppendLine();
-
-            var result = new Variable(symbol);
-            return result;
         }
 
         public void AddSqlCommand(string command)
         {
             DbProviderWritePrimitives.Logger.Debug("Entering AddACommand");
 
-            this.executionStatements.AppendLine(command);
-            this.executionStatements.AppendLine();
+            this.ExecutionStatements.AppendLine(command);
+            this.ExecutionStatements.AppendLine();
 
             DbProviderWritePrimitives.Logger.Debug("Exiting AddACommand");
-        }
-
-        public object WriteGuid(string columnName)
-        {
-            string symbol = this.symbolGenerator.GetRandomString(10);
-            this.executionStatements.AppendLine($"declare @{symbol} uniqueidentifier;");
-            this.executionStatements.AppendLine($"select @{symbol} = NEWID();");
-            this.executionStatements.AppendLine($"select '{columnName}'");
-            this.executionStatements.AppendLine($"select @{symbol}");
-            this.executionStatements.AppendLine();
-
-            var result = new Variable(symbol);
-            return result;
         }
 
         public object[] Execute()
@@ -108,7 +77,7 @@ namespace TestDataFramework.WritePrimitives
             command.Connection = this.dbProviderFactory.CreateConnection();
             command.Connection.ConnectionString = this.connectionStringWithDefaultCatalogue;
 
-            string commands = this.executionStatements.ToString();
+            string commands = this.ExecutionStatements.ToString();
 
             bool dumpSqlInput = false;
             bool.TryParse(this.configuration["TestDataFramework_DumpSqlInput"], out dumpSqlInput);
@@ -164,18 +133,10 @@ namespace TestDataFramework.WritePrimitives
             return result;
         }
 
-        private string FormatValue(object value)
-        {
-            var variable = value as Variable;
+        protected abstract string FormatValue(object value);
 
-            if (variable != null)
-            {
-                return "@" + variable.Symbol;
-            }
+        public abstract object SelectIdentity(string columnName);
 
-            string result = this.formatter.Format(value);
-
-            return result ?? "null";
-        }
+        public abstract object WriteGuid(string columnName);
     }
 }

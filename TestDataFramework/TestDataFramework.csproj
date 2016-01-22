@@ -103,13 +103,14 @@
     <Compile Include="UniqueValueGenerator\Interface\IUniqueValueGenerator.cs" />
     <Compile Include="UniqueValueGenerator\BaseUniqueValueGenerator.cs" />
     <Compile Include="UniqueValueGenerator\Concrete\MemoryUniqueValueGenerator.cs" />
-    <Compile Include="UniqueValueGenerator\Concrete\SqlClientUniqueValueGenerator.cs" />
+    <Compile Include="UniqueValueGenerator\Concrete\KeyTypeUniqueValueGenerator.cs" />
     <Compile Include="ValueFormatter\IValueFormatter.cs" />
     <Compile Include="ValueGenerator\IValueGenerator.cs" />
     <Compile Include="ValueGenerator\StandardValueGenerator.cs" />
     <Compile Include="ValueFormatter\InsertStatementValueFormatter.cs" />
     <Compile Include="WritePrimitives\IWritePrimitives.cs" />
     <Compile Include="WritePrimitives\DbProviderWritePrimitives.cs" />
+    <Compile Include="WritePrimitives\SqlClientWritePrimitives.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

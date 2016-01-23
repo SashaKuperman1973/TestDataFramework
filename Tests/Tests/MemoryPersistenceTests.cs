@@ -23,7 +23,7 @@ namespace Tests.Tests
             var persistence = new MemoryPersistence(deferredValueGeneratorMock.Object);
 
             var primaryTable = new PrimaryTable { Integer = 5, Text = "Text" };
-            var primaryRecordReference = new RecordReference<PrimaryTable>(primaryTable);
+            var primaryRecordReference = new RecordReference<PrimaryTable>(primaryTable, null);
 
             var recordReferenceArray = new RecordReference[] { primaryRecordReference };
 

@@ -81,7 +81,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             IEnumerable<Model.PropertyAttributes> propertyAttributes =
                 this.RecordReference.RecordType.GetPropertyAttributes();
 
-            List<PropertyInfo> propertiesForRead = InsertRecord.GetPropertiesForRead(propertyAttributes).ToList();
+            List<PropertyInfo> propertiesForRead = this.GetPropertiesForRead(propertyAttributes).ToList();
 
             while (propertiesForRead.Any())
             {
@@ -99,16 +99,19 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             InsertRecord.Logger.Debug("Exiting Read");
         }
 
-        private static IEnumerable<PropertyInfo> GetPropertiesForRead(IEnumerable<Model.PropertyAttributes> propertyAttributes)
+        private IEnumerable<PropertyInfo> GetPropertiesForRead(IEnumerable<Model.PropertyAttributes> propertyAttributes)
         {
             IEnumerable<Model.PropertyAttributes> result = propertyAttributes.Where(pa =>
 
                 pa.Attributes.Any(
                     a =>
-                        a.GetType() == typeof (PrimaryKeyAttribute) &&
-                        ((PrimaryKeyAttribute) a).KeyType == PrimaryKeyAttribute.KeyTypeEnum.Auto)
 
-                || pa.PropertyInfo.PropertyType.IsGuid()
+                        !this.RecordReference.IsExplicitlySet(pa.PropertyInfo) &&
+
+                        (a.GetType() == typeof (PrimaryKeyAttribute) &&
+                         ((PrimaryKeyAttribute) a).KeyType == PrimaryKeyAttribute.KeyTypeEnum.Auto)
+
+                        || pa.PropertyInfo.PropertyType.IsGuid())
 
                 );
 

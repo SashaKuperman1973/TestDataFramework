@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using log4net;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
 using TestDataFramework.RepositoryOperations.Model;
-using TestDataFramework.TypeGenerator;
 
 namespace TestDataFramework.Populator
 {
@@ -16,9 +14,12 @@ namespace TestDataFramework.Populator
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(RecordReference));
 
-        protected RecordReference(object recordObject)
+        private readonly ICollection<PropertyInfo> explicitlySetProperties;
+
+        protected RecordReference(object recordObject, ICollection<PropertyInfo> explicitlySetProperties)
         {
             this.RecordObject = recordObject;
+            this.explicitlySetProperties = explicitlySetProperties ?? Enumerable.Empty<PropertyInfo>().ToArray();
         }
 
         public virtual object RecordObject { get; }
@@ -76,6 +77,11 @@ namespace TestDataFramework.Populator
             RecordReference.Logger.Debug("Exiting ValidateRelationship");
 
             return result;
+        }
+
+        public virtual bool IsExplicitlySet(PropertyInfo propertyInfo)
+        {
+            return this.explicitlySetProperties.Contains(propertyInfo);
         }
     }
 }

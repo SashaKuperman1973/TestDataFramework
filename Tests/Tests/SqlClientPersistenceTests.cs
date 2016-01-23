@@ -37,7 +37,7 @@ namespace Tests.Tests
             // Arrange
 
             var primaryTable = new PrimaryTable { Integer = 5, Text = "Text"};
-            var primaryRecordReference = new RecordReference<PrimaryTable>(primaryTable);
+            var primaryRecordReference = new RecordReference<PrimaryTable>(primaryTable, null);
             string tableName = typeof(PrimaryTable).Name;
 
             List<Column> primaryTableColumns = null;
@@ -77,10 +77,10 @@ namespace Tests.Tests
             // Arrange
 
             var primaryTable = new PrimaryTable { Integer = 1};
-            var primaryRecordReference = new RecordReference<PrimaryTable>(primaryTable);
+            var primaryRecordReference = new RecordReference<PrimaryTable>(primaryTable, null);
 
             var foreignTable = new ForeignTable {Integer = 1};
-            var foreignRecordReference = new RecordReference<ForeignTable>(foreignTable);
+            var foreignRecordReference = new RecordReference<ForeignTable>(foreignTable, null);
 
             foreignRecordReference.AddPrimaryRecordReference(primaryRecordReference);
 
@@ -115,8 +115,8 @@ namespace Tests.Tests
             var primaryTable = new ManualKeyPrimaryTable {Key1 = "A", Key2 = 7};
             var foreignTable = new ManualKeyForeignTable();
 
-            var primaryRecordReference = new RecordReference<ManualKeyPrimaryTable>(primaryTable);
-            var foreignRecordReference = new RecordReference<ManualKeyForeignTable>(foreignTable);
+            var primaryRecordReference = new RecordReference<ManualKeyPrimaryTable>(primaryTable, null);
+            var foreignRecordReference = new RecordReference<ManualKeyForeignTable>(foreignTable, null);
 
             foreignRecordReference.AddPrimaryRecordReference(primaryRecordReference);
             const string tableName = "ABCD";
@@ -142,10 +142,10 @@ namespace Tests.Tests
             // Arrange
 
             var primaryTable = new PrimaryTable();
-            var primaryRecordReference = new RecordReference<PrimaryTable>(primaryTable);
+            var primaryRecordReference = new RecordReference<PrimaryTable>(primaryTable, null);
 
             var foreignTable = new ForeignTable();
-            var foreignRecordReference = new RecordReference<ForeignTable>(foreignTable);
+            var foreignRecordReference = new RecordReference<ForeignTable>(foreignTable, null);
 
             foreignRecordReference.AddPrimaryRecordReference(primaryRecordReference);
 

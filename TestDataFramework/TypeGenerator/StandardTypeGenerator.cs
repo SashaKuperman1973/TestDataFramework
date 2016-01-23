@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 using log4net;
@@ -21,9 +22,9 @@ namespace TestDataFramework.TypeGenerator
             this.valueGenerator = getValueGenerator(this);
         }
 
-        public virtual object GetObject(Type forType)
+        private object ConstructObject(Type forType)
         {
-            StandardTypeGenerator.Logger.Debug("Entering GetObject");
+            StandardTypeGenerator.Logger.Debug("Entering ConstructObject");
 
             if (this.complexTypeProcessingRecursionGuard.Contains(forType))
             {
@@ -43,6 +44,38 @@ namespace TestDataFramework.TypeGenerator
 
             this.FillObject(objectToFill);
 
+            StandardTypeGenerator.Logger.Debug("Exiting ConstructObject");
+            return objectToFill;
+        }
+
+        public virtual object GetObject<T>(ConcurrentDictionary<PropertyInfo, Action<T>> propertyExpressionDictionary)
+        {
+            object objectToFill = this.ConstructObject(typeof (T));
+
+            if (objectToFill == null)
+            {
+                return null;
+            }
+
+            this.FillObject((T)objectToFill, propertyExpressionDictionary);
+
+            StandardTypeGenerator.Logger.Debug("Exiting GetObject<T>");
+            return objectToFill;
+        }
+
+        public virtual object GetObject(Type forType)
+        {
+            StandardTypeGenerator.Logger.Debug("Entering GetObject");
+
+            object objectToFill = this.ConstructObject(forType);
+
+            if (objectToFill == null)
+            {
+                return null;
+            }
+
+            this.FillObject(objectToFill);
+
             StandardTypeGenerator.Logger.Debug("Exiting GetObject");
             return objectToFill;
         }
@@ -52,19 +85,53 @@ namespace TestDataFramework.TypeGenerator
             this.complexTypeProcessingRecursionGuard.Clear();
         }
 
+        private static PropertyInfo[] GetProperties(object objectToFill)
+        {
+            PropertyInfo[] targetProperties = objectToFill.GetType().GetPropertiesHelper();
+            return targetProperties;
+        }
+
+        private void SetProperty(object objectToFill, PropertyInfo targetPropertyInfo)
+        {
+            object targetPropertyValue = this.valueGenerator.GetValue(targetPropertyInfo);
+            targetPropertyInfo.SetValue(objectToFill, targetPropertyValue);
+        }
+
         protected virtual void FillObject(object objectToFill)
         {
             StandardTypeGenerator.Logger.Debug("Entering FillObject");
 
-            PropertyInfo[] targetProperties = objectToFill.GetType().GetPropertiesHelper();
+            PropertyInfo[] targetProperties = StandardTypeGenerator.GetProperties(objectToFill);
 
             foreach (PropertyInfo targetPropertyInfo in targetProperties)
             {
-                object targetPropertyValue = this.valueGenerator.GetValue(targetPropertyInfo);
-                targetPropertyInfo.SetValue(objectToFill, targetPropertyValue);
+                this.SetProperty(objectToFill, targetPropertyInfo);
             }
 
             StandardTypeGenerator.Logger.Debug("Exiting FillObject");
+        }
+
+        protected virtual void FillObject<T>(T objectToFill, ConcurrentDictionary<PropertyInfo, Action<T>> propertyExpressionDictionary)
+        {
+            StandardTypeGenerator.Logger.Debug("Entering FillObject<T>");
+
+            PropertyInfo[] targetProperties = StandardTypeGenerator.GetProperties(objectToFill);
+
+            foreach (PropertyInfo targetPropertyInfo in targetProperties)
+            {
+                Action<T> setter;
+
+                if (propertyExpressionDictionary.TryGetValue(targetPropertyInfo, out setter))
+                {
+                    setter(objectToFill);
+                }
+                else
+                {
+                    this.SetProperty(objectToFill, targetPropertyInfo);
+                }
+            }
+
+            StandardTypeGenerator.Logger.Debug("Exiting FillObject<T>");
         }
     }
 }

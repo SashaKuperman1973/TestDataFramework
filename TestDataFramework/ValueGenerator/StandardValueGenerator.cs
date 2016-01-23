@@ -51,12 +51,13 @@ namespace TestDataFramework.ValueGenerator
                 {typeof (DateTime), this.GetDateTime},
                 {typeof (byte), x => this.randomizer.RandomizeByte()},
                 {typeof (double), this.GetDouble},
-                {typeof(Guid), this.NoOp }
+                {typeof (Guid), this.NoOp }
             };
 
             StandardValueGenerator.Logger.Debug("Exiting constructor");
         }
 
+        // This is the general entry point.
         public virtual object GetValue(PropertyInfo propertyInfo)
         {
             StandardValueGenerator.Logger.Debug("Entering GetValue(PropertyInfo propertyInfo)");
@@ -76,6 +77,7 @@ namespace TestDataFramework.ValueGenerator
             return result;
         }
 
+        // This entry point is used only when a different type is requested for a particular PropertyInfo
         public virtual object GetValue(PropertyInfo propertyInfo, Type type)
         {
             StandardValueGenerator.Logger.Debug("Entering GetValue(PropertyInfo propertyInfo, Type type)");

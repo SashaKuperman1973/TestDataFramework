@@ -112,7 +112,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
             IEnumerable<PropertyAttribute<ForeignKeyAttribute>> foreignKeyPropertyAttributes = this.recordReference.RecordType.GetPropertyAttributes<ForeignKeyAttribute>();
 
-            var foreignKeys = foreignKeyPropertyAttributes.Select(fk =>
+            var foreignKeys = foreignKeyPropertyAttributes.Select(fkpa =>
             {
                 ColumnSymbol pkColumnMatch = null;
 
@@ -120,12 +120,21 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
                     pkTable.Any(pk =>
 
-                        fk.Attribute.PrimaryTableType == (pkColumnMatch = pk).TableType
-                        && fk.Attribute.PrimaryKeyName.Equals(pk.ColumnName, StringComparison.Ordinal)
+                        fkpa.Attribute.PrimaryTableType == (pkColumnMatch = pk).TableType
+                        && fkpa.Attribute.PrimaryKeyName.Equals(pk.ColumnName, StringComparison.Ordinal)
                         )
                     );
 
-                return new {PkColumnValue = isForeignKeyPrimaryKeyMatch ? pkColumnMatch.Value : null, FkPropertyAttribute = fk};
+                return
+                    new
+                    {
+                        PkColumnValue =
+                            this.recordReference.IsExplicitlySet(fkpa.PropertyInfo)
+                                ? fkpa.PropertyInfo.GetValue(this.recordReference.RecordObject)
+                                : isForeignKeyPrimaryKeyMatch ? pkColumnMatch.Value : null,
+
+                        FkPropertyAttribute = fkpa
+                    };
             });
 
             IEnumerable<Column> result =
@@ -164,7 +173,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                             {
                                 Name = columnName,
 
-                                Value = p.PropertyType.IsGuid() 
+                                Value = p.PropertyType.IsGuid() && !this.recordReference.IsExplicitlySet(p)
                                 ? writer.WriteGuid(columnName) 
                                 : p.GetValue(this.recordReference.RecordObject)
                             };

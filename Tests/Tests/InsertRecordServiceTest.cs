@@ -30,7 +30,7 @@ namespace Tests.Tests
 
             this.mainTable = new ForeignTable();
 
-            this.recordReference = new RecordReference<ForeignTable>(this.mainTable);
+            this.recordReference = new RecordReference<ForeignTable>(this.mainTable, null);
             this.insertRecordService = new InsertRecordService(this.recordReference);
             this.writerMock = new Mock<IWritePrimitives>();
         }
@@ -42,10 +42,10 @@ namespace Tests.Tests
 
             var peerRecordreferences = new RecordReference[]
             {
-                new RecordReference<SubjectClass>(new SubjectClass()),
-                new RecordReference<PrimaryTable>(new PrimaryTable()),
-                new RecordReference<SubjectClass>(new SubjectClass()),
-                new RecordReference<PrimaryTable>(new PrimaryTable()),
+                new RecordReference<SubjectClass>(new SubjectClass(), null),
+                new RecordReference<PrimaryTable>(new PrimaryTable(), null),
+                new RecordReference<SubjectClass>(new SubjectClass(), null),
+                new RecordReference<PrimaryTable>(new PrimaryTable(), null),
             };
 
             InsertRecord[] peerOperations = peerRecordreferences.Select(r => new InsertRecord(null, r, null)).ToArray();
@@ -195,7 +195,7 @@ namespace Tests.Tests
                     {
                         Key1 = keyValue1,
                         Key2 = keyValue2
-                    }));
+                    }, null));
 
             // Act
 
@@ -228,7 +228,7 @@ namespace Tests.Tests
 
             this.insertRecordService =
                 new InsertRecordService(
-                    new RecordReference<ClassWithGuidKeys>(new ClassWithGuidKeys()));
+                    new RecordReference<ClassWithGuidKeys>(new ClassWithGuidKeys(), null));
 
             this.writerMock.Setup(m => m.WriteGuid("Key1")).Returns(symbol1);
             this.writerMock.Setup(m => m.WriteGuid("Key3")).Returns(symbol2);
@@ -266,7 +266,7 @@ namespace Tests.Tests
 
             this.insertRecordService =
                 new InsertRecordService(
-                    new RecordReference<KeyNoneTable>(new KeyNoneTable()));
+                    new RecordReference<KeyNoneTable>(new KeyNoneTable(), null));
 
             const string tableName = "ABCD";
 
@@ -286,7 +286,7 @@ namespace Tests.Tests
 
             var target = new ManualKeyForeignTable();
 
-            this.insertRecordService = new InsertRecordService(new RecordReference<ManualKeyForeignTable>(target));
+            this.insertRecordService = new InsertRecordService(new RecordReference<ManualKeyForeignTable>(target, null));
 
             var columns = new[]
             {
@@ -310,7 +310,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            this.insertRecordService = new InsertRecordService(new RecordReference<ManualKeyForeignTable>(new ManualKeyForeignTable()));
+            this.insertRecordService = new InsertRecordService(new RecordReference<ManualKeyForeignTable>(new ManualKeyForeignTable(), null));
 
             var columns = new[]
             {

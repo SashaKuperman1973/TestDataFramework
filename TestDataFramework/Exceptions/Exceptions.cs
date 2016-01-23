@@ -92,4 +92,11 @@ namespace TestDataFramework.Exceptions
         {
         }
     }
+
+    public class SetExpressionException : ApplicationException
+    {
+        public SetExpressionException(string message) : base(message)
+        {            
+        }
+    }
 }

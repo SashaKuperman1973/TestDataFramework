@@ -194,7 +194,7 @@ namespace Tests.Tests
         [TestMethod]
         public void ResetTest()
         {
-            
+            throw new NotImplementedException();
         }
     }
 }

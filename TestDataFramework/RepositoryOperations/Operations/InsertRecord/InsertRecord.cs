@@ -99,6 +99,15 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             InsertRecord.Logger.Debug("Exiting Read");
         }
 
+        public virtual IEnumerable<ColumnSymbol> GetPrimaryKeySymbols()
+        {
+            return this.primaryKeyValues;
+        }
+
+        #endregion Public methods
+
+        #region Private methods
+
         private IEnumerable<PropertyInfo> GetPropertiesForRead(IEnumerable<Model.PropertyAttributes> propertyAttributes)
         {
             IEnumerable<Model.PropertyAttributes> result = propertyAttributes.Where(pa =>
@@ -108,8 +117,8 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
                         !this.RecordReference.IsExplicitlySet(pa.PropertyInfo) &&
 
-                        (a.GetType() == typeof (PrimaryKeyAttribute) &&
-                         ((PrimaryKeyAttribute) a).KeyType == PrimaryKeyAttribute.KeyTypeEnum.Auto)
+                        (a.GetType() == typeof(PrimaryKeyAttribute) &&
+                         ((PrimaryKeyAttribute)a).KeyType == PrimaryKeyAttribute.KeyTypeEnum.Auto)
 
                         || pa.PropertyInfo.PropertyType.IsGuid())
 
@@ -118,16 +127,11 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             return result.Select(pa => pa.PropertyInfo);
         }
 
-        public virtual IEnumerable<ColumnSymbol> GetPrimaryKeySymbols()
-        {
-            return this.primaryKeyValues;
-        }
-
-        #endregion Public methods
-
         private string DumpObject()
         {
             return Helper.DumpObject(this.RecordReference.RecordObject);
         }
+
+        #endregion Private methods
     }
 }

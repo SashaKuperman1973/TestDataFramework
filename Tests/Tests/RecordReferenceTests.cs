@@ -33,8 +33,8 @@ namespace Tests.Tests
             var primaryTable = new T1();
             var foreignTable = new T2();
 
-            var primaryRecordReference = new RecordReference<T1>(primaryTable, null);
-            var foreignRecordReference = new RecordReference<T2>(foreignTable, null);
+            var primaryRecordReference = new RecordReference<T1>(Helpers.GetTypeGeneratorMock(primaryTable).Object);
+            var foreignRecordReference = new RecordReference<T2>(Helpers.GetTypeGeneratorMock(foreignTable).Object);
 
             // Act
 
@@ -53,8 +53,8 @@ namespace Tests.Tests
             var primaryTable = new PrimaryTable();
             var foreignTable = new ForeignTable();
 
-            var primaryRecordReference = new RecordReference<PrimaryTable>(primaryTable, null);
-            var foreignRecordReference = new RecordReference<ForeignTable>(foreignTable, null);
+            var primaryRecordReference = new RecordReference<PrimaryTable>(Helpers.GetTypeGeneratorMock(primaryTable).Object);
+            var foreignRecordReference = new RecordReference<ForeignTable>(Helpers.GetTypeGeneratorMock(foreignTable).Object);
 
             // Act
 
@@ -69,7 +69,7 @@ namespace Tests.Tests
         public void Set_Test()
         {
             var record = new PrimaryTable();
-            var recordReference = new RecordReference<PrimaryTable>(record, null);
+            var recordReference = new RecordReference<PrimaryTable>(Helpers.GetTypeGeneratorMock(record).Object);
 
             throw new NotImplementedException();
         }
@@ -78,7 +78,7 @@ namespace Tests.Tests
         public void Set_ToMethodThrows_Test()
         {
             var record = new PrimaryTable();
-            var recordReference = new RecordReference<PrimaryTable>(record, null);
+            var recordReference = new RecordReference<PrimaryTable>(Helpers.GetTypeGeneratorMock(record).Object);
 
             throw new NotImplementedException();
         }
@@ -87,10 +87,15 @@ namespace Tests.Tests
         public void Set_ToFieldThrows_Test()
         {
             var record = new PrimaryTable();
-            var recordReference = new RecordReference<PrimaryTable>(record, null);
+            var recordReference = new RecordReference<PrimaryTable>(Helpers.GetTypeGeneratorMock(record).Object);
 
             throw new NotImplementedException();
         }
 
+        [TestMethod]
+        public void Populate_Test()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

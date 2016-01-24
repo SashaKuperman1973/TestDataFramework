@@ -7,6 +7,7 @@ using log4net;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
 using TestDataFramework.RepositoryOperations.Model;
+using TestDataFramework.TypeGenerator;
 
 namespace TestDataFramework.Populator
 {
@@ -14,19 +15,24 @@ namespace TestDataFramework.Populator
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(RecordReference));
 
-        private readonly ICollection<PropertyInfo> explicitlySetProperties;
+        protected readonly ITypeGenerator typeGenerator;
 
-        protected RecordReference(object recordObject, ICollection<PropertyInfo> explicitlySetProperties)
+        protected RecordReference(ITypeGenerator typeGenerator)
         {
-            this.RecordObject = recordObject;
-            this.explicitlySetProperties = explicitlySetProperties ?? Enumerable.Empty<PropertyInfo>().ToArray();
+            this.typeGenerator = typeGenerator;
         }
 
-        public virtual object RecordObject { get; }
+        #region Public fields/properties
 
-        public virtual Type RecordType => this.RecordObject.GetType();
+        public virtual object RecordObject { get; protected set; }
+
+        public virtual Type RecordType => this.RecordObject?.GetType();
 
         public readonly IEnumerable<RecordReference> PrimaryKeyReferences = new List<RecordReference>();
+
+        #endregion Public fields/properties
+
+        #region Public methods
 
         public virtual void AddPrimaryRecordReference(params RecordReference[] primaryRecordReferences)
         {
@@ -50,6 +56,10 @@ namespace TestDataFramework.Populator
 
             RecordReference.Logger.Debug("Exiting AddPrimaryRecordReference(RecordReference)");
         }
+
+        public abstract bool IsExplicitlySet(PropertyInfo propertyInfo);
+
+        #endregion Public methods
 
         protected virtual bool ValidateRelationship(RecordReference primaryRecordReference)
         {
@@ -79,9 +89,6 @@ namespace TestDataFramework.Populator
             return result;
         }
 
-        public virtual bool IsExplicitlySet(PropertyInfo propertyInfo)
-        {
-            return this.explicitlySetProperties.Contains(propertyInfo);
-        }
+        public abstract void Populate();
     }
 }

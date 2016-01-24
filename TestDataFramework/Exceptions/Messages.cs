@@ -54,9 +54,7 @@
         public const string SetExpressionNotAssignment =
             "Set expression must be an assignment expression (and not a +=, etc. type of expression)";
 
-        public const string LValueMustBeProperty = "Lvalue of Set expression must be a property";
-
-        public const string MustBePropertyAccess = "Set operation first argument must be a property access expression";
+        public const string MustBePropertyAccess = "Set operation expression must be a property access expression";
 
         public const string NoSetter = "The property given has no setter";
     }

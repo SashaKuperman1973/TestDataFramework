@@ -23,7 +23,9 @@ namespace Tests.Tests
             var persistence = new MemoryPersistence(deferredValueGeneratorMock.Object);
 
             var primaryTable = new PrimaryTable { Integer = 5, Text = "Text" };
-            var primaryRecordReference = new RecordReference<PrimaryTable>(primaryTable, null);
+            var primaryRecordReference = new RecordReference<PrimaryTable>(
+                Helpers.GetTypeGeneratorMock(primaryTable).Object
+                );
 
             var recordReferenceArray = new RecordReference[] { primaryRecordReference };
 

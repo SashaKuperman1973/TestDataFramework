@@ -8,15 +8,71 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using TestDataFramework.Exceptions;
+using TestDataFramework.TypeGenerator;
 
 namespace TestDataFramework.Populator
 {
     public class RecordReference<T> : RecordReference
     {
-        public RecordReference(T recordObject, ICollection<PropertyInfo> explicitlySetProperties) : base(recordObject, explicitlySetProperties)
+        private readonly ConcurrentDictionary<PropertyInfo, Action<T>> explicitProperySetters =
+            new ConcurrentDictionary<PropertyInfo, Action<T>>();
+
+        public RecordReference(ITypeGenerator typeGenerator) : base(typeGenerator)
         {
         }
 
         public new T RecordObject => (T) base.RecordObject;
+
+        public override bool IsExplicitlySet(PropertyInfo propertyInfo)
+        {
+            {
+                return this.explicitProperySetters.ContainsKey(propertyInfo);
+            }
+        }
+
+        public override void Populate()
+        {
+            base.RecordObject = this.typeGenerator.GetObject<T>(this.explicitProperySetters);
+        }
+
+        public virtual RecordReference<T> Set(Expression<Func<T, object>> fieldExpression, object value)
+        {
+            if (fieldExpression.Body.NodeType != ExpressionType.MemberAccess)
+            {
+                throw new SetExpressionException(Messages.MustBePropertyAccess);
+            }
+
+            var memberExpression = fieldExpression.Body as MemberExpression;
+
+            if (memberExpression == null)
+            {
+                var unaryExpression = fieldExpression.Body as UnaryExpression;
+
+                if (unaryExpression == null)
+                {
+                    throw new SetExpressionException(Messages.MustBePropertyAccess);
+                }
+
+                memberExpression = unaryExpression.Operand as MemberExpression;
+
+                if (memberExpression == null)
+                {
+                    throw new SetExpressionException(Messages.MustBePropertyAccess);
+                }
+            }
+
+            var propertyInfo = memberExpression.Member as PropertyInfo;
+
+            if (propertyInfo == null)
+            {
+                throw new SetExpressionException(Messages.MustBePropertyAccess);
+            }
+
+            Action<T> setter = @object => propertyInfo.SetValue(@object, value);
+
+            this.explicitProperySetters.AddOrUpdate(propertyInfo, setter, (pi, lambda) => setter);
+
+            return this;
+        }
     }
 }

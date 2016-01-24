@@ -13,14 +13,20 @@ namespace TestDataFramework.TypeGenerator
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(StandardTypeGenerator));
 
+        #region Fields
+
         private readonly IValueGenerator valueGenerator;
 
         private readonly List<Type> complexTypeProcessingRecursionGuard = new List<Type>();
+
+        #endregion Fields
 
         public StandardTypeGenerator(Func<ITypeGenerator, IValueGenerator> getValueGenerator)
         {
             this.valueGenerator = getValueGenerator(this);
         }
+
+        #region Private methods
 
         private object ConstructObject(Type forType)
         {
@@ -48,7 +54,23 @@ namespace TestDataFramework.TypeGenerator
             return objectToFill;
         }
 
-        public virtual object GetObject<T>(ConcurrentDictionary<PropertyInfo, Action<T>> propertyExpressionDictionary)
+        private static PropertyInfo[] GetProperties(object objectToFill)
+        {
+            PropertyInfo[] targetProperties = objectToFill.GetType().GetPropertiesHelper();
+            return targetProperties;
+        }
+
+        private void SetProperty(object objectToFill, PropertyInfo targetPropertyInfo)
+        {
+            object targetPropertyValue = this.valueGenerator.GetValue(targetPropertyInfo);
+            targetPropertyInfo.SetValue(objectToFill, targetPropertyValue);
+        }
+
+        #endregion Private methods
+
+        #region Public methods
+
+        public virtual object GetObject<T>(ConcurrentDictionary<PropertyInfo, Action<T>> explicitProperySetters)
         {
             object objectToFill = this.ConstructObject(typeof (T));
 
@@ -57,7 +79,7 @@ namespace TestDataFramework.TypeGenerator
                 return null;
             }
 
-            this.FillObject((T)objectToFill, propertyExpressionDictionary);
+            this.FillObject((T)objectToFill, explicitProperySetters);
 
             StandardTypeGenerator.Logger.Debug("Exiting GetObject<T>");
             return objectToFill;
@@ -85,17 +107,9 @@ namespace TestDataFramework.TypeGenerator
             this.complexTypeProcessingRecursionGuard.Clear();
         }
 
-        private static PropertyInfo[] GetProperties(object objectToFill)
-        {
-            PropertyInfo[] targetProperties = objectToFill.GetType().GetPropertiesHelper();
-            return targetProperties;
-        }
+        #endregion Public methods
 
-        private void SetProperty(object objectToFill, PropertyInfo targetPropertyInfo)
-        {
-            object targetPropertyValue = this.valueGenerator.GetValue(targetPropertyInfo);
-            targetPropertyInfo.SetValue(objectToFill, targetPropertyValue);
-        }
+        #region Protected methods
 
         protected virtual void FillObject(object objectToFill)
         {
@@ -111,7 +125,7 @@ namespace TestDataFramework.TypeGenerator
             StandardTypeGenerator.Logger.Debug("Exiting FillObject");
         }
 
-        protected virtual void FillObject<T>(T objectToFill, ConcurrentDictionary<PropertyInfo, Action<T>> propertyExpressionDictionary)
+        protected virtual void FillObject<T>(T objectToFill, ConcurrentDictionary<PropertyInfo, Action<T>> explicitProperySetters)
         {
             StandardTypeGenerator.Logger.Debug("Entering FillObject<T>");
 
@@ -121,7 +135,7 @@ namespace TestDataFramework.TypeGenerator
             {
                 Action<T> setter;
 
-                if (propertyExpressionDictionary.TryGetValue(targetPropertyInfo, out setter))
+                if (explicitProperySetters.TryGetValue(targetPropertyInfo, out setter))
                 {
                     setter(objectToFill);
                 }
@@ -133,5 +147,7 @@ namespace TestDataFramework.TypeGenerator
 
             StandardTypeGenerator.Logger.Debug("Exiting FillObject<T>");
         }
+
+        #endregion Protected methods
     }
 }

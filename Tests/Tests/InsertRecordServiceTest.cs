@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -9,6 +11,7 @@ using TestDataFramework.Populator;
 using TestDataFramework.RepositoryOperations;
 using TestDataFramework.RepositoryOperations.Model;
 using TestDataFramework.RepositoryOperations.Operations.InsertRecord;
+using TestDataFramework.TypeGenerator;
 using TestDataFramework.WritePrimitives;
 using Tests.TestModels;
 
@@ -30,7 +33,8 @@ namespace Tests.Tests
 
             this.mainTable = new ForeignTable();
 
-            this.recordReference = new RecordReference<ForeignTable>(this.mainTable, null);
+
+            this.recordReference = new RecordReference<ForeignTable>(Helpers.GetTypeGeneratorMock(this.mainTable).Object);
             this.insertRecordService = new InsertRecordService(this.recordReference);
             this.writerMock = new Mock<IWritePrimitives>();
         }
@@ -40,12 +44,15 @@ namespace Tests.Tests
         {
             // Arrange
 
+            Mock<ITypeGenerator> subjectTypeGeneratorMock = Helpers.GetTypeGeneratorMock(new SubjectClass());
+            Mock<ITypeGenerator> primaryTableTypeGeneratorMock = Helpers.GetTypeGeneratorMock(new PrimaryTable());
+
             var peerRecordreferences = new RecordReference[]
             {
-                new RecordReference<SubjectClass>(new SubjectClass(), null),
-                new RecordReference<PrimaryTable>(new PrimaryTable(), null),
-                new RecordReference<SubjectClass>(new SubjectClass(), null),
-                new RecordReference<PrimaryTable>(new PrimaryTable(), null),
+                new RecordReference<SubjectClass>(subjectTypeGeneratorMock.Object),
+                new RecordReference<PrimaryTable>(primaryTableTypeGeneratorMock.Object),
+                new RecordReference<SubjectClass>(subjectTypeGeneratorMock.Object),
+                new RecordReference<PrimaryTable>(primaryTableTypeGeneratorMock.Object),
             };
 
             InsertRecord[] peerOperations = peerRecordreferences.Select(r => new InsertRecord(null, r, null)).ToArray();
@@ -191,12 +198,13 @@ namespace Tests.Tests
 
             this.insertRecordService =
                 new InsertRecordService(
-                    new RecordReference<ManualKeyPrimaryTable>(new ManualKeyPrimaryTable
-                    {
-                        Key1 = keyValue1,
-                        Key2 = keyValue2
-                    }, null));
-
+                    new RecordReference<ManualKeyPrimaryTable>(
+                        Helpers.GetTypeGeneratorMock(
+                            new ManualKeyPrimaryTable
+                            {
+                                Key1 = keyValue1,
+                                Key2 = keyValue2
+                            }).Object));
             // Act
 
             this.insertRecordService.WritePrimitives(this.writerMock.Object, tableName, columns, primaryKeyValues);
@@ -228,7 +236,9 @@ namespace Tests.Tests
 
             this.insertRecordService =
                 new InsertRecordService(
-                    new RecordReference<ClassWithGuidKeys>(new ClassWithGuidKeys(), null));
+                    new RecordReference<ClassWithGuidKeys>(
+                        Helpers.GetTypeGeneratorMock(
+                            new ClassWithGuidKeys()).Object));
 
             this.writerMock.Setup(m => m.WriteGuid("Key1")).Returns(symbol1);
             this.writerMock.Setup(m => m.WriteGuid("Key3")).Returns(symbol2);
@@ -266,7 +276,9 @@ namespace Tests.Tests
 
             this.insertRecordService =
                 new InsertRecordService(
-                    new RecordReference<KeyNoneTable>(new KeyNoneTable(), null));
+                    new RecordReference<KeyNoneTable>(
+                        Helpers.GetTypeGeneratorMock(
+                            new KeyNoneTable()).Object));
 
             const string tableName = "ABCD";
 
@@ -286,7 +298,9 @@ namespace Tests.Tests
 
             var target = new ManualKeyForeignTable();
 
-            this.insertRecordService = new InsertRecordService(new RecordReference<ManualKeyForeignTable>(target, null));
+            this.insertRecordService = new InsertRecordService(new RecordReference<ManualKeyForeignTable>(
+                Helpers.GetTypeGeneratorMock(target).Object)
+                );
 
             var columns = new[]
             {
@@ -310,7 +324,9 @@ namespace Tests.Tests
         {
             // Arrange
 
-            this.insertRecordService = new InsertRecordService(new RecordReference<ManualKeyForeignTable>(new ManualKeyForeignTable(), null));
+            this.insertRecordService = new InsertRecordService(new RecordReference<ManualKeyForeignTable>(
+                Helpers.GetTypeGeneratorMock(new ManualKeyForeignTable()).Object
+                ));
 
             var columns = new[]
             {

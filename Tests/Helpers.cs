@@ -1,5 +1,10 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
+using TestDataFramework.TypeGenerator;
+using Tests.TestModels;
 
 namespace Tests
 {
@@ -25,6 +30,17 @@ namespace Tests
             Assert.IsNotNull(exception);
             Assert.AreEqual(exceptionType, exception.GetType());
             Assert.AreEqual(message, exception.Message);
+        }
+
+        public static Mock<ITypeGenerator> GetTypeGeneratorMock<T>(T returnObject)
+        {
+            var typeGeneratorMock = new Mock<ITypeGenerator>();
+
+            typeGeneratorMock.Setup(
+                m => m.GetObject<T>(It.IsAny<ConcurrentDictionary<PropertyInfo, Action<T>>>()))
+                .Returns(returnObject);
+
+            return typeGeneratorMock;
         }
     }
 }

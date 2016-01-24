@@ -14,23 +14,22 @@ namespace Tests.Tests
     [TestClass]
     public class StandardPopulatorTests
     {
+        private Mock<ITypeGenerator> typeGeneratorMock;
+
         [TestInitialize]
         public void Initialize()
         {
             XmlConfigurator.Configure();
+
+            this.typeGeneratorMock = new Mock<ITypeGenerator>();
         }
 
         [TestMethod]
-        public void StandardPopulatorTest_Add()
+        public void Add_Test(string testValue)
         {
             // Arrange
 
-            const string email = "name@domain.com";
-
-            var typeGeneratorMock = new Mock<ITypeGenerator>();
-            typeGeneratorMock.Setup(m => m.GetObject(It.Is<Type>(t => t == typeof(SubjectClass)))).Returns(new SubjectClass { AnEmailAddress = email});
-
-            var populator = new StandardPopulator(typeGeneratorMock.Object, null);
+            var populator = new StandardPopulator(this.typeGeneratorMock.Object, null);
 
             // Act
 
@@ -39,8 +38,8 @@ namespace Tests.Tests
             // Assert
 
             Assert.IsNotNull(reference);
-
-            Assert.AreEqual(email, reference.RecordObject.AnEmailAddress);
+            Assert.IsNull(reference.RecordType);
+            Assert.IsNull(reference.RecordObject);
         }
 
         [TestMethod]
@@ -52,11 +51,10 @@ namespace Tests.Tests
             const string text = "abcde";
 
             var persistence = new MockPersistence();
-            var typeGeneratorMock = new Mock<ITypeGenerator>();
 
-            typeGeneratorMock.Setup(m => m.GetObject(It.Is<Type>(t => t == typeof(SubjectClass)))).Returns(new SubjectClass { Integer = integer, Text = text,});
+            this.typeGeneratorMock.Setup(m => m.GetObject(It.Is<Type>(t => t == typeof(SubjectClass)))).Returns(new SubjectClass { Integer = integer, Text = text,});
 
-            var populator = new StandardPopulator(typeGeneratorMock.Object, persistence);
+            var populator = new StandardPopulator(this.typeGeneratorMock.Object, persistence);
 
             // Act
 
@@ -79,12 +77,11 @@ namespace Tests.Tests
             // Arrange
 
             var persistence = new MockPersistence();
-            var typeGeneratorMock = new Mock<ITypeGenerator>();
 
-            typeGeneratorMock.Setup(m => m.GetObject(It.Is<Type>(t => t == typeof(SubjectClass)))).Returns(new SubjectClass());
-            typeGeneratorMock.Setup(m => m.GetObject(It.Is<Type>(t => t == typeof(SecondClass)))).Returns(new SecondClass());
+            this.typeGeneratorMock.Setup(m => m.GetObject(It.Is<Type>(t => t == typeof(SubjectClass)))).Returns(new SubjectClass());
+            this.typeGeneratorMock.Setup(m => m.GetObject(It.Is<Type>(t => t == typeof(SecondClass)))).Returns(new SecondClass());
 
-            var populator = new StandardPopulator(typeGeneratorMock.Object, persistence);
+            var populator = new StandardPopulator(this.typeGeneratorMock.Object, persistence);
 
             // Act
 

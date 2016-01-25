@@ -34,9 +34,13 @@ namespace Tests.Tests
             new[]
             {
                 typeof(ByteKeyClass),
+                typeof(IntKeyClass),
                 typeof(ShortKeyClass),
                 typeof(LongKeyClass),
                 typeof(StringKeyClass),
+                typeof(UIntKeyClass),
+                typeof(UShortKeyClass),
+                typeof(ULongKeyClass),
             }
             .ToList().ForEach(this.PrimaryKeyTest);
         }

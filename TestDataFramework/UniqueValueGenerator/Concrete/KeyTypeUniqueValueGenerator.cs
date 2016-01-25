@@ -28,6 +28,7 @@ namespace TestDataFramework.UniqueValueGenerator.Concrete
                 new[]
                 {
                     typeof (byte), typeof (int), typeof (short), typeof (long), typeof(string),
+                    typeof (uint), typeof (ushort), typeof (ulong),
 
                 }.Contains(propertyInfo.PropertyType))
             {

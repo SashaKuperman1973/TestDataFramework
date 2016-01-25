@@ -26,6 +26,24 @@ namespace Tests.TestModels
         public long Key { get; set; }
     }
 
+    public class UIntKeyClass
+    {
+        [PrimaryKey]
+        public uint Key { get; set; }
+    }
+
+    public class UShortKeyClass
+    {
+        [PrimaryKey]
+        public ushort Key { get; set; }
+    }
+
+    public class ULongKeyClass
+    {
+        [PrimaryKey]
+        public ulong Key { get; set; }
+    }
+
     public class StringKeyClass
     {
         [PrimaryKey]

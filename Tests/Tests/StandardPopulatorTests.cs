@@ -14,32 +14,55 @@ namespace Tests.Tests
     [TestClass]
     public class StandardPopulatorTests
     {
-        private Mock<ITypeGenerator> typeGeneratorMock;
-
         [TestInitialize]
         public void Initialize()
         {
             XmlConfigurator.Configure();
-
-            this.typeGeneratorMock = new Mock<ITypeGenerator>();
         }
 
         [TestMethod]
-        public void Add_Test(string testValue)
+        public void Add_Test()
         {
             // Arrange
-
-            var populator = new StandardPopulator(this.typeGeneratorMock.Object, null);
+            var expected = new SubjectClass();
+            var populator = new StandardPopulator(Helpers.GetTypeGeneratorMock(expected).Object, new MockPersistence());
 
             // Act
 
             RecordReference<SubjectClass> reference = populator.Add<SubjectClass>();
+            populator.Bind();
 
             // Assert
 
             Assert.IsNotNull(reference);
-            Assert.IsNull(reference.RecordType);
-            Assert.IsNull(reference.RecordObject);
+            Assert.AreEqual(expected.GetType(), reference.RecordType);
+            Assert.AreEqual(expected, reference.RecordObject);
+        }
+
+        [TestMethod]
+        public void Records_Cleared_After_Bind_Test()
+        {
+            // Arrange
+
+            var expected = new SubjectClass { AnEmailAddress = "email"};
+            var mockPersistence = new MockPersistence();
+            var populator = new StandardPopulator(Helpers.GetTypeGeneratorMock(expected).Object, mockPersistence);
+
+            // Act
+
+            populator.Add<SubjectClass>();
+            populator.Bind();
+
+            populator.Add<SubjectClass>();
+            populator.Bind();
+
+            RecordReference<SubjectClass> reference = populator.Add<SubjectClass>();
+            populator.Bind();
+
+            // Assert
+
+            Assert.AreEqual(1, mockPersistence.Storage.Count);
+            Assert.AreEqual(reference.RecordObject.AnEmailAddress, mockPersistence.Storage[0]["AnEmailAddress"]);
         }
 
         [TestMethod]
@@ -52,9 +75,11 @@ namespace Tests.Tests
 
             var persistence = new MockPersistence();
 
-            this.typeGeneratorMock.Setup(m => m.GetObject(It.Is<Type>(t => t == typeof(SubjectClass)))).Returns(new SubjectClass { Integer = integer, Text = text,});
+            var inputRecord = new SubjectClass {Integer = integer, Text = text,};
 
-            var populator = new StandardPopulator(this.typeGeneratorMock.Object, persistence);
+            Mock<ITypeGenerator> typeGeneratorMock = Helpers.GetTypeGeneratorMock(inputRecord);
+
+            var populator = new StandardPopulator(typeGeneratorMock.Object, persistence);
 
             // Act
 
@@ -78,10 +103,10 @@ namespace Tests.Tests
 
             var persistence = new MockPersistence();
 
-            this.typeGeneratorMock.Setup(m => m.GetObject(It.Is<Type>(t => t == typeof(SubjectClass)))).Returns(new SubjectClass());
-            this.typeGeneratorMock.Setup(m => m.GetObject(It.Is<Type>(t => t == typeof(SecondClass)))).Returns(new SecondClass());
+            Mock<ITypeGenerator> typeGeneratorMock = Helpers.GetTypeGeneratorMock(new SubjectClass());
+            Helpers.SetupTypeGeneratorMock(typeGeneratorMock, new SecondClass());
 
-            var populator = new StandardPopulator(this.typeGeneratorMock.Object, persistence);
+            var populator = new StandardPopulator(typeGeneratorMock.Object, persistence);
 
             // Act
 

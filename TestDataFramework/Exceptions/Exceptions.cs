@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using TestDataFramework.Helpers;
 using TestDataFramework.Populator;
 
@@ -96,7 +97,15 @@ namespace TestDataFramework.Exceptions
     public class SetExpressionException : ApplicationException
     {
         public SetExpressionException(string message) : base(message)
-        {            
+        {
+        }
+    }
+
+    public class PopulatePrimaryKeyException : ApplicationException
+    {
+        public PopulatePrimaryKeyException(PropertyInfo propertyInfo)
+            : base(string.Format(Messages.ColumnNotInInputList, propertyInfo))
+        {
         }
     }
 }

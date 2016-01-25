@@ -19,6 +19,7 @@ namespace TestDataFramework.Populator
 
         public RecordReference(ITypeGenerator typeGenerator) : base(typeGenerator)
         {
+            this.RecordType = typeof (T);
         }
 
         public new T RecordObject => (T) base.RecordObject;
@@ -32,10 +33,10 @@ namespace TestDataFramework.Populator
 
         public override void Populate()
         {
-            base.RecordObject = this.typeGenerator.GetObject<T>(this.explicitProperySetters);
+            base.RecordObject = this.TypeGenerator.GetObject<T>(this.explicitProperySetters);
         }
 
-        public virtual RecordReference<T> Set(Expression<Func<T, object>> fieldExpression, object value)
+        public virtual RecordReference<T> Set<TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression, TPropertyType value)
         {
             if (fieldExpression.Body.NodeType != ExpressionType.MemberAccess)
             {

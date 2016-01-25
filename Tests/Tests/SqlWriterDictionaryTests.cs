@@ -114,7 +114,6 @@ namespace Tests.Tests
             // Assert
 
             this.primitivesMock.Verify(m => m.Execute(), Times.Once);
-            this.primitivesMock.Verify(m => m.Reset(), Times.Once);
         }
 
         [TestMethod]

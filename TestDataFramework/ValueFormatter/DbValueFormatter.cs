@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using TestDataFramework.Exceptions;
 using TestDataFramework.RepositoryOperations.Model;
 using TestDataFramework.WritePrimitives;
 
@@ -8,7 +9,7 @@ namespace TestDataFramework.ValueFormatter
 {
     public abstract class DbValueFormatter : IValueFormatter
     {
-        protected virtual string FormatValue(object value)
+        public virtual string Format(object value)
         {
             if (value == null)
             {
@@ -21,14 +22,12 @@ namespace TestDataFramework.ValueFormatter
 
             if (!DbValueFormatter.FormatterDictionary.TryGetValue(type, out formatter))
             {
-                throw new NotSupportedException($"Insertion doesn't support type <{type}>, value <{value}>.");
+                throw new NotSupportedException(string.Format(Messages.InsertionDoesNotSupportType, type, value));
             }
 
             string result = formatter(value);
             return result;
         }
-
-        public abstract string Format(object value);
 
         #region Formatters
 

@@ -69,7 +69,6 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
         public object[] Execute()
         {
             object[] result = this.writePrimitives.Execute();
-            this.writePrimitives.Reset();
 
             return result;
         }

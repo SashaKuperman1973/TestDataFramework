@@ -13,6 +13,8 @@ namespace Tests.Mocks
 
         public void Persist(IEnumerable<RecordReference> recordReferences)
         {
+            this.Storage.Clear();
+
             recordReferences.Select(r => r.RecordObject).ToList().ForEach(recordObject =>
             {
                 var propertyDictionary = new Dictionary<string, object>();

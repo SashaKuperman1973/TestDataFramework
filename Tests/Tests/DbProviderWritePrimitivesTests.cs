@@ -18,12 +18,6 @@ namespace Tests.Tests
     [TestClass]
     public class DbProviderWritePrimitivesTests
     {
-        private Mock<DbProviderFactory> dbProviderFactoryMock;
-        private WritePrimitives primitives;
-        private Mock<IValueFormatter> formatterMock;
-
-        private const string ConnectionString = "cn";
-
         private class WritePrimitives : DbProviderWritePrimitives
         {
             public WritePrimitives(string connectionStringWithDefaultCatalogue, DbProviderFactory dbProviderFactory,
@@ -45,6 +39,15 @@ namespace Tests.Tests
             }
         }
 
+        private Mock<DbProviderFactory> dbProviderFactoryMock;
+        private WritePrimitives primitives;
+        private Mock<IValueFormatter> formatterMock;
+        private Mock<DbCommand> insertCommandMock;
+        private Mock<DbDataReader> readerMock;
+        private Mock<DbConnection> connectionMock;
+
+        private const string ConnectionString = "cn";
+
         [TestInitialize]
         public void Initialize()
         {
@@ -57,6 +60,14 @@ namespace Tests.Tests
                 this.dbProviderFactoryMock.Object, this.formatterMock.Object,
                 mustBeInATransaction: false,
                 configuration: new NameValueCollection {{"TestDataFramework_DumpSqlInput", "true"}});
+
+            this.connectionMock = new Mock<DbConnection>();
+            this.insertCommandMock = new Mock<DbCommand>();
+            this.readerMock = new Mock<DbDataReader>();
+            var mockInsertCommand = new MockDbCommand(this.insertCommandMock.Object, this.readerMock.Object);
+
+            this.dbProviderFactoryMock.Setup(m => m.CreateCommand()).Returns(mockInsertCommand);
+            this.dbProviderFactoryMock.Setup(m => m.CreateConnection()).Returns(this.connectionMock.Object);
         }
 
         [TestMethod]
@@ -64,31 +75,23 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var connectionMock = new Mock<DbConnection>();
-            var insertCommandMock = new Mock<DbCommand>();
-            var readerMock = new Mock<DbDataReader>();
-            var mockInsertCommand = new MockDbCommand(insertCommandMock.Object, readerMock.Object);
-
-            this.dbProviderFactoryMock.Setup(m => m.CreateCommand()).Returns(mockInsertCommand);
-            this.dbProviderFactoryMock.Setup(m => m.CreateConnection()).Returns(connectionMock.Object);
-
             // Setup has rows flag to return 2 row for 1st record set and 1 row for second.
             var hasRows = new[] {true, true, false, true, false};
             int hasRowsPosition = 0;
 
-            readerMock.Setup(m => m.HasRows).Returns(() => hasRows[hasRowsPosition++]);
+            this.readerMock.Setup(m => m.HasRows).Returns(() => hasRows[hasRowsPosition++]);
 
             // Setup reader to signal 2 rows in first result set and 1 row in second set.
             var read = new[] {true, true, false, true, false};
             int readPosition = 0;
 
-            readerMock.Setup(m => m.Read()).Returns(() => read[readPosition++]);
+            this.readerMock.Setup(m => m.Read()).Returns(() => read[readPosition++]);
 
             // Three rows setup (note: in two result sets), 1st with 2 coluns back, 2nd with 3 columns and 3rd with 2 columns.
             var fieldCount = new[] {2, 3, 2};
             int fieldCountPosition = 0;
 
-            readerMock.Setup(m => m.FieldCount).Returns(() => fieldCount[fieldCountPosition++]);
+            this.readerMock.Setup(m => m.FieldCount).Returns(() => fieldCount[fieldCountPosition++]);
 
             var expected = new[]
             {
@@ -99,7 +102,7 @@ namespace Tests.Tests
 
             int rowNumber = 0;
 
-            readerMock.Setup(m => m.GetValues(It.IsAny<object[]>())).Callback<object[]>(a =>
+            this.readerMock.Setup(m => m.GetValues(It.IsAny<object[]>())).Callback<object[]>(a =>
             {
                 for (int i = 0; i < a.Length; i++)
                 {
@@ -115,9 +118,9 @@ namespace Tests.Tests
 
             // Assert
 
-            insertCommandMock.VerifySet(m => m.CommandType = CommandType.Text);
-            connectionMock.VerifySet(m => m.ConnectionString = DbProviderWritePrimitivesTests.ConnectionString);
-            connectionMock.Verify(m => m.Open());
+            this.insertCommandMock.VerifySet(m => m.CommandType = CommandType.Text);
+            this.connectionMock.VerifySet(m => m.ConnectionString = DbProviderWritePrimitivesTests.ConnectionString);
+            this.connectionMock.Verify(m => m.Open());
 
             Assert.AreEqual(7, results.Length);
 
@@ -135,21 +138,10 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var connectionMock = new Mock<DbConnection>();
-            var insertCommandMock = new Mock<DbCommand>();
-            var readerMock = new Mock<DbDataReader>();
-            var mockInsertCommand = new MockDbCommand(insertCommandMock.Object, readerMock.Object);
-
-            this.dbProviderFactoryMock.Setup(m => m.CreateCommand()).Returns(mockInsertCommand);
-            this.dbProviderFactoryMock.Setup(m => m.CreateConnection()).Returns(connectionMock.Object);
-
-            const string variableSymbol = "ABCD";
-
             var columns = new[]
             {
                 new Column { Name = "Row1", Value = 1},
                 new Column { Name = "Row2", Value = "B"},
-                new Column { Name = "RowWithVariable", Value = new Variable(variableSymbol)}
             };
 
             this.formatterMock.Setup(m => m.Format(columns[0].Value)).Returns("1st Value");
@@ -167,11 +159,11 @@ namespace Tests.Tests
             this.formatterMock.Verify();
 
             string expectedText =
-                new StringBuilder("insert into [xx] ([Row1], [Row2], [RowWithVariable]) values (1st Value, 2nd Value, @ABCD);").AppendLine()
+                new StringBuilder("insert into [xx] ([Row1], [Row2]) values (1st Value, 2nd Value);").AppendLine()
                     .AppendLine()
                     .ToString();
 
-            insertCommandMock.VerifySet(m => m.CommandText = expectedText);
+            this.insertCommandMock.VerifySet(m => m.CommandText = expectedText);
         }
 
         [TestMethod]
@@ -188,13 +180,23 @@ namespace Tests.Tests
         [TestMethod]
         public void AddSqlCommand_Test()
         {
-            throw new NotImplementedException();
+            this.primitives.AddSqlCommand("ABCD");
+            this.primitives.Execute();
+
+            this.insertCommandMock.VerifySet(m => m.CommandText = "ABCD\r\n\r\n");
         }
 
         [TestMethod]
-        public void ResetTest()
+        public void PrimitivesClearedAfterExecute_Test()
         {
-            throw new NotImplementedException();
+            this.primitives.AddSqlCommand("ABCD");
+            this.primitives.Execute();
+
+            this.primitives.AddSqlCommand("XYZR");
+            this.primitives.Execute();
+
+            this.insertCommandMock.VerifySet(m => m.CommandText = "ABCD\r\n\r\n");
+            this.insertCommandMock.VerifySet(m => m.CommandText = "XYZR\r\n\r\n");
         }
     }
 }

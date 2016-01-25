@@ -13,7 +13,6 @@ namespace TestDataFramework.WritePrimitives
         object SelectIdentity(string columnName);
         object[] Execute();
         void AddSqlCommand(string command);
-        void Reset();
         object WriteGuid(string columnName);
     }
 }

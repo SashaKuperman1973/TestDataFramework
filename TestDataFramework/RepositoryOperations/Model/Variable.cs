@@ -4,9 +4,9 @@
     {
         public string Symbol { get; }
 
-        public Variable(string v)
+        public Variable(string symbol)
         {
-            this.Symbol = v;
+            this.Symbol = symbol;
         }
     }
 }

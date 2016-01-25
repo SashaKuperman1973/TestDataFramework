@@ -13,10 +13,6 @@ namespace Tests.Tests
 
         private class ValueFormatter : DbValueFormatter
         {
-            public override string Format(object value)
-            {
-                throw new NotImplementedException();
-            }
         }
 
         [TestInitialize]

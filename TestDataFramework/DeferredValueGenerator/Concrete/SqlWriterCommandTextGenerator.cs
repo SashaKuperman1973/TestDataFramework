@@ -9,7 +9,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
         public virtual string WriteString(PropertyInfo propertyInfo)
         {
             string tableName = "[" + Helper.GetTableName(propertyInfo.DeclaringType) + "]";
-            string columnName = "[" + Helper.GetColunName(propertyInfo) + "]";
+            string columnName = "[" + Helper.GetColumnName(propertyInfo) + "]";
 
             string result =
                 $"Select Max({columnName}) from {tableName} where {columnName} not like '%[^A-Z]%' And LEN({columnName}) = (Select Max(Len({columnName})) From {tableName} where {columnName} not like '%[^A-Z]%' )";
@@ -19,7 +19,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
 
         public virtual string WriteNumber(PropertyInfo propertyInfo)
         {
-            string result = $"Select MAX([{Helper.GetColunName(propertyInfo)}]) From [{Helper.GetTableName(propertyInfo.DeclaringType)}]";
+            string result = $"Select MAX([{Helper.GetColumnName(propertyInfo)}]) From [{Helper.GetTableName(propertyInfo.DeclaringType)}]";
             return result;
         }
     }

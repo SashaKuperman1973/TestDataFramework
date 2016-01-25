@@ -89,50 +89,5 @@ namespace TestDataFramework.Populator
         }
 
         #endregion Public Methods
-
-        #region Helpers
-
-        private static void UpdateSetterDictionary<T>(
-            ConcurrentDictionary<PropertyInfo, Action<T>> propertyExpressionDictionary,
-            SetExpression<T> setExpression)
-        {
-            var memberExpression = setExpression.FieldExpression.Body as MemberExpression;
-
-            if (memberExpression == null)
-            {
-                var unaryExpression = setExpression.FieldExpression.Body as UnaryExpression;
-
-                if (unaryExpression == null)
-                {
-                    throw new SetExpressionException(Messages.MustBePropertyAccess);
-                }
-
-                memberExpression = unaryExpression.Operand as MemberExpression;
-
-                if (memberExpression == null)
-                {
-                    throw new SetExpressionException(Messages.MustBePropertyAccess);
-                }
-            }
-
-            var propertyInfo = memberExpression.Member as PropertyInfo;
-
-            if (propertyInfo == null)
-            {
-                throw new SetExpressionException(Messages.MustBePropertyAccess);
-            }
-
-            if (propertyInfo.GetSetMethod() == null)
-            {
-                throw new SetExpressionException(Messages.NoSetter);
-            }
-
-            Action<T> setter = @object => propertyInfo.SetValue(@object, setExpression.Value);
-
-            propertyExpressionDictionary.AddOrUpdate(propertyInfo, setter, (pi, lambda) => setter);
-        }
-
-        #endregion Helpers
-
     }
 }

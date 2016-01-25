@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using Castle.Core.Internal;
+﻿using System.Reflection;
 using log4net;
-using TestDataFramework.DeferredValueGenerator;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
-using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
 using TestDataFramework.PropertyValueAccumulator;
 using TestDataFramework.UniqueValueGenerator.Interface;
@@ -39,12 +32,9 @@ namespace TestDataFramework.UniqueValueGenerator
 
             this.deferredValueGenerator.AddDelegate(propertyInfo,
 
-                initialCount =>
+                initialCount => this.accumulator.GetValue(propertyInfo, initialCount)
 
-                {
-                    object result = this.accumulator.GetValue(propertyInfo, initialCount);
-                    return result;
-                });
+                );
 
             BaseUniqueValueGenerator.Logger.Debug("Exiting GetValue");
         }

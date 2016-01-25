@@ -25,7 +25,11 @@ namespace TestDataFramework.UniqueValueGenerator.Concrete
             }
 
             if (primaryKeyAttribute.KeyType == PrimaryKeyAttribute.KeyTypeEnum.Manual &&
-                new[] {typeof (byte), typeof (int), typeof (short), typeof (long), typeof(string)}.Contains(propertyInfo.PropertyType))
+                new[]
+                {
+                    typeof (byte), typeof (int), typeof (short), typeof (long), typeof(string),
+
+                }.Contains(propertyInfo.PropertyType))
             {
                 this.DeferValue(propertyInfo);
             }

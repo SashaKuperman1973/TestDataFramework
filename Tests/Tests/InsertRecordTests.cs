@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -31,7 +32,7 @@ namespace Tests.Tests
         {
             XmlConfigurator.Configure();
             this.subject = new SubjectClass();
-            this.recordReferenceMock = new Mock<RecordReference>(this.subject);
+            this.recordReferenceMock = new Mock<RecordReference>(null);
             this.peers = new List<AbstractRepositoryOperation>();
             this.serviceMock = new Mock<InsertRecordService>(this.recordReferenceMock.Object);
             this.insertRecord = new InsertRecord(this.serviceMock.Object, this.recordReferenceMock.Object, this.peers);
@@ -51,12 +52,14 @@ namespace Tests.Tests
             var orderedOperations = new AbstractRepositoryOperation[1];
             var primaryKeyOperations = new List<InsertRecord>();
             var currentOrder = new Counter();
-            var columns = new Columns { ForeignKeyColumns = new List<Column>(), RegularColumns = new List<Column>()};
-            var columnList = new List<Column>();
+            var regularColumns = new List<Column>();
+            var foreignKeyColumns = new List<Column>();
+            var columnList = regularColumns.Concat(foreignKeyColumns);
             string tableName = typeof (SubjectClass).Name;
 
             this.serviceMock.Setup(m => m.GetPrimaryKeyOperations(this.peers)).Returns(primaryKeyOperations);
-            this.serviceMock.Setup(m => m.GetColumnData(primaryKeyOperations, this.writePrimitivesMock.Object)).Returns(columns);
+            this.serviceMock.Setup(m => m.GetRegularColumns(this.writePrimitivesMock.Object)).Returns(regularColumns);
+            this.serviceMock.Setup(m => m.GetForeignKeyColumns(primaryKeyOperations)).Returns(foreignKeyColumns);
 
             // Act
 
@@ -71,13 +74,14 @@ namespace Tests.Tests
                     m.WritePrimaryKeyOperations(this.writePrimitivesMock.Object, primaryKeyOperations,
                         this.breakerMock.Object, currentOrder, orderedOperations), Times.Once);
 
-            this.serviceMock.Verify(m => m.GetColumnData(primaryKeyOperations, this.writePrimitivesMock.Object), Times.Once);
+            this.serviceMock.Verify(m => m.GetRegularColumns(this.writePrimitivesMock.Object), Times.Once);
+            this.serviceMock.Verify(m => m.GetForeignKeyColumns(primaryKeyOperations), Times.Once);
 
             Assert.AreEqual(this.insertRecord, orderedOperations[0]);
 
             this.serviceMock.Verify(m => m.WritePrimitives(this.writePrimitivesMock.Object, tableName, columnList, It.Is<List<ColumnSymbol>>(l => l.Count == 0)), Times.Once);
 
-            this.serviceMock.Verify(m => m.CopyForeignKeyColumns(columns.ForeignKeyColumns), Times.Once());
+            this.serviceMock.Verify(m => m.CopyForeignKeyColumns(foreignKeyColumns), Times.Once());
         }
 
         [TestMethod]
@@ -104,17 +108,19 @@ namespace Tests.Tests
 
             var orderedOpertations = new AbstractRepositoryOperation[2];
             var secondObject = new SubjectClass();
-            var secondrecordReferenceMock = new Mock<RecordReference>(secondObject);
+            var secondrecordReferenceMock = new Mock<RecordReference>(null);
             secondrecordReferenceMock.Setup(m => m.RecordObject).Returns(secondObject);
             secondrecordReferenceMock.Setup(m => m.RecordType).Returns(secondObject.GetType());
 
             var secondInsertRecord = new InsertRecord(this.serviceMock.Object, secondrecordReferenceMock.Object, this.peers);
             var primaryKeyOperations = new List<InsertRecord> { secondInsertRecord };
 
-            var columns = new Columns { ForeignKeyColumns = new List<Column>(), RegularColumns = new List<Column>() };
+            var regularColumns = new List<Column>();
+            var foreignKeyColumns = new List<Column>();
 
             this.serviceMock.Setup(m => m.GetPrimaryKeyOperations(this.peers)).Returns(primaryKeyOperations);
-            this.serviceMock.Setup(m => m.GetColumnData(primaryKeyOperations, this.writePrimitivesMock.Object)).Returns(columns);
+            this.serviceMock.Setup(m => m.GetRegularColumns(this.writePrimitivesMock.Object)).Returns(regularColumns);
+            this.serviceMock.Setup(m => m.GetForeignKeyColumns(primaryKeyOperations)).Returns(foreignKeyColumns);
 
             this.serviceMock.Setup(
                 m =>
@@ -147,14 +153,11 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void WriteIsDone_Test()
+        public void WriteIsDone_FilterPasses_Test()
         {
             // Arrange
 
             var orderedOpertations = new AbstractRepositoryOperation[1];
-            this.serviceMock.Setup(m => m.GetColumnData(It.IsAny<IEnumerable<InsertRecord>>(), It.IsAny<IWritePrimitives>()))
-                .Returns(new Columns {ForeignKeyColumns = new List<Column>(), RegularColumns = new List<Column>()});
-
 
             // Act
 
@@ -164,6 +167,23 @@ namespace Tests.Tests
 
             this.breakerMock.Verify(m => m.Push<IWritePrimitives, Counter, AbstractRepositoryOperation[]>(this.insertRecord.Write), Times.Once);
             Assert.AreEqual(this.insertRecord, orderedOpertations[0]);
+        }
+
+        [TestMethod]
+        public void WriteIsDone_FilterFails_Test()
+        {
+            // Arrange
+
+            var orderedOpertations = new AbstractRepositoryOperation[1];
+
+            // Act
+
+            this.insertRecord.Write(this.breakerMock.Object, this.writePrimitivesMock.Object, new Counter(), orderedOpertations);
+            this.insertRecord.Write(this.breakerMock.Object, this.writePrimitivesMock.Object, new Counter(), orderedOpertations);
+
+            // Assert
+
+            this.breakerMock.Verify(m => m.Push<IWritePrimitives, Counter, AbstractRepositoryOperation[]>(this.insertRecord.Write), Times.Once);
         }
 
         [TestMethod]
@@ -180,7 +200,7 @@ namespace Tests.Tests
 
             const int expected = 8;
 
-            var returnValue = new object[] { expected };
+            var returnValue = new object[] { "Key", expected };
 
             // Act
 
@@ -189,7 +209,7 @@ namespace Tests.Tests
             // Assert
 
             Assert.AreEqual(expected, record.Key);
-            Assert.AreEqual(1, streamReadPointer.Value);
+            Assert.AreEqual(2, streamReadPointer.Value);
         }
 
         [TestMethod]

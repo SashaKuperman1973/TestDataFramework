@@ -56,7 +56,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
             this.service.WritePrimaryKeyOperations(writer, primaryKeyOperations, breaker, order, orderedOperations);
 
-            Columns columnData = this.service.GetColumnData(primaryKeyOperations, writer);
+            Columns columnData = this.GetColumnData(primaryKeyOperations, writer);
 
             this.Order = order.Value++;
             orderedOperations[this.Order] = this;
@@ -88,7 +88,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                 var columnName = (string) data[readStreamPointer.Value++];
 
                 PropertyInfo property = propertiesForRead.First(
-                    p => Helper.GetColunName(p).Equals(columnName, StringComparison.Ordinal)
+                    p => Helper.GetColumnName(p).Equals(columnName, StringComparison.Ordinal)
                     );
 
                 property.SetValue(this.RecordReference.RecordObject, data[readStreamPointer.Value++]);
@@ -107,6 +107,20 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
         #endregion Public methods
 
         #region Private methods
+
+        private Columns GetColumnData(IEnumerable<InsertRecord> primaryKeyOperations, IWritePrimitives writer)
+        {
+            InsertRecord.Logger.Debug("Entering GetColumnData");
+
+            // ReSharper disable once UseObjectOrCollectionInitializer
+            var result = new Columns();
+
+            result.RegularColumns = this.service.GetRegularColumns(writer);
+            result.ForeignKeyColumns = this.service.GetForeignKeyColumns(primaryKeyOperations);
+
+            InsertRecord.Logger.Debug("Exiting GetColumnData");
+            return result;
+        }
 
         private IEnumerable<PropertyInfo> GetPropertiesForRead(IEnumerable<Model.PropertyAttributes> propertyAttributes)
         {

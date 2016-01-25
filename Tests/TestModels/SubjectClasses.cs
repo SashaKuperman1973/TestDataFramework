@@ -17,6 +17,8 @@ namespace Tests.TestModels
         public int Key { get; set; }
 
         public int Integer { get; set; }
+        public uint UnsignedInteger { get; set; }
+        public uint? UnsignedNullableInteger { get; set; }
 
         [Max(SubjectClass.Max)]
         public int IntegerWithMax { get; set; }
@@ -24,6 +26,8 @@ namespace Tests.TestModels
         public int? NullableInteger { get; set; }
 
         public long LongInteger { get; set; }
+        public ulong UnsignedLongInteger { get; set; }
+        public ulong? UnsignedNullableLong { get; set; }
 
         [Max(SubjectClass.Max)]
         public long LongIntegerWithMax { get; set; }
@@ -31,6 +35,8 @@ namespace Tests.TestModels
         public long? NullableLong { get; set; }
 
         public short ShortInteger { get; set; }
+        public ushort UnsignedShortInteger { get; set; }
+        public ushort? UnsignedNullableShort { get; set; }
 
         [Max(SubjectClass.Max)]
         public short ShortIntegerWithMax { get; set; }
@@ -183,5 +189,7 @@ namespace Tests.TestModels
 
         [PrimaryKey]
         public Guid? Key3 { get; set; }
+
+        public Guid? Key4 { get; set; }
     }
 }

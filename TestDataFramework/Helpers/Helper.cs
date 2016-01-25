@@ -26,7 +26,7 @@ namespace TestDataFramework.Helpers
             return attrs.First().Name;
         }
 
-        public static string GetColunName(PropertyInfo propertyInfo)
+        public static string GetColumnName(PropertyInfo propertyInfo)
         {
             return propertyInfo.Name;
         }

@@ -72,8 +72,11 @@ namespace Tests.Tests
             var list = new List<Tuple<string, object>>
             {
                 new Tuple<string, object>("Integer", StandardValueGeneratorTests.IntegerResult),
+                new Tuple<string, object>("UnsignedInteger", StandardValueGeneratorTests.IntegerResult),
                 new Tuple<string, object>("LongInteger", StandardValueGeneratorTests.LongResult),
+                new Tuple<string, object>("UnsignedLongInteger", StandardValueGeneratorTests.LongResult),
                 new Tuple<string, object>("ShortInteger", StandardValueGeneratorTests.ShortResult),
+                new Tuple<string, object>("UnsignedShortInteger", StandardValueGeneratorTests.ShortResult),
                 new Tuple<string, object>("Text", StandardValueGeneratorTests.StringResult),
                 new Tuple<string, object>("Character", StandardValueGeneratorTests.CharacterResult),
                 new Tuple<string, object>("Decimal", StandardValueGeneratorTests.DecimalResult),
@@ -82,8 +85,11 @@ namespace Tests.Tests
                 new Tuple<string, object>("Byte", StandardValueGeneratorTests.ByteResult),
                 new Tuple<string, object>("Double", StandardValueGeneratorTests.DoubleResult),
                 new Tuple<string, object>("NullableInteger", StandardValueGeneratorTests.IntegerResult),
+                new Tuple<string, object>("UnsignedNullableInteger", StandardValueGeneratorTests.IntegerResult),
                 new Tuple<string, object>("NullableLong", StandardValueGeneratorTests.LongResult),
+                new Tuple<string, object>("UnsignedNullableLong", StandardValueGeneratorTests.LongResult),
                 new Tuple<string, object>("NullableShort", StandardValueGeneratorTests.ShortResult),
+                new Tuple<string, object>("UnsignedNullableShort", StandardValueGeneratorTests.ShortResult),
                 new Tuple<string, object>("AnEmailAddress", StandardValueGeneratorTests.EmailAddress),
             };
 

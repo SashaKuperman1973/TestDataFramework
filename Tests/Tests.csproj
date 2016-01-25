@@ -67,6 +67,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Mocks\MockPersistence.cs" />
+    <Compile Include="TestModels\IntegralManualPrimarkKeyClasses.cs" />
     <Compile Include="TestModels\PrimaryForeignReferenceSubjectClasses.cs" />
     <Compile Include="TestModels\SubjectClasses.cs" />
     <Compile Include="Tests\CircularReferenceBreakerTests.cs" />

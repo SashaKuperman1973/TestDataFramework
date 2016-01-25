@@ -33,11 +33,6 @@ namespace TestDataFramework.WritePrimitives
             this.configuration = configuration ?? new NameValueCollection();
         }
 
-        public void Reset()
-        {
-            this.ExecutionStatements = new StringBuilder();
-        }
-
         public void Insert(string tableName, IEnumerable<Column> columns)
         {
             DbProviderWritePrimitives.Logger.Debug("Entering Insert");
@@ -104,6 +99,8 @@ namespace TestDataFramework.WritePrimitives
                     }
                 }
             }
+
+            this.ExecutionStatements = new StringBuilder();
 
             DbProviderWritePrimitives.Logger.Debug("Exiting Execute");
             return result.ToArray();

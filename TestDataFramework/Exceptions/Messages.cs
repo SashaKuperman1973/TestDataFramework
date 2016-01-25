@@ -57,5 +57,9 @@
         public const string MustBePropertyAccess = "Set operation expression must be a property access expression";
 
         public const string NoSetter = "The property given has no setter";
+
+        public const string ColumnNotInInputList = "Primary key property doesn't match any input element. {0}";
+
+        public const string InsertionDoesNotSupportType = "Insertion doesn't support type <{0}>, value <{1}>.";
     }
 }

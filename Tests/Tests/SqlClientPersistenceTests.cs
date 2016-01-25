@@ -37,7 +37,10 @@ namespace Tests.Tests
             // Arrange
 
             var primaryTable = new PrimaryTable { Integer = 5, Text = "Text"};
+
             var primaryRecordReference = new RecordReference<PrimaryTable>(Helpers.GetTypeGeneratorMock(primaryTable).Object);
+            primaryRecordReference.Populate();
+
             string tableName = typeof(PrimaryTable).Name;
 
             List<Column> primaryTableColumns = null;
@@ -45,7 +48,7 @@ namespace Tests.Tests
             this.writePrimitivesMock.Setup(m => m.Insert(tableName, It.IsAny<IEnumerable<Column>>()))
                 .Callback<string, IEnumerable<Column>>((s, c) => primaryTableColumns = c.ToList());
 
-            this.writePrimitivesMock.Setup(m => m.Execute()).Returns(new object[] {0});
+            this.writePrimitivesMock.Setup(m => m.Execute()).Returns(new object[] {"Key", 0});
 
             // Act
 
@@ -78,9 +81,11 @@ namespace Tests.Tests
 
             var primaryTable = new PrimaryTable { Integer = 1};
             var primaryRecordReference = new RecordReference<PrimaryTable>(Helpers.GetTypeGeneratorMock(primaryTable).Object);
+            primaryRecordReference.Populate();
 
             var foreignTable = new ForeignTable {Integer = 1};
             var foreignRecordReference = new RecordReference<ForeignTable>(Helpers.GetTypeGeneratorMock(foreignTable).Object);
+            foreignRecordReference.Populate();
 
             foreignRecordReference.AddPrimaryRecordReference(primaryRecordReference);
 
@@ -91,7 +96,7 @@ namespace Tests.Tests
 
             this.writePrimitivesMock.Setup(m => m.SelectIdentity(It.IsAny<string>())).Returns(new Variable(null));
 
-            this.writePrimitivesMock.Setup(m => m.Execute()).Returns(new object[] {0, 0});
+            this.writePrimitivesMock.Setup(m => m.Execute()).Returns(new object[] {"Key", 0, "Key", 0});
 
             // Act
 
@@ -116,7 +121,10 @@ namespace Tests.Tests
             var foreignTable = new ManualKeyForeignTable();
 
             var primaryRecordReference = new RecordReference<ManualKeyPrimaryTable>(Helpers.GetTypeGeneratorMock(primaryTable).Object);
+            primaryRecordReference.Populate();
+
             var foreignRecordReference = new RecordReference<ManualKeyForeignTable>(Helpers.GetTypeGeneratorMock(foreignTable).Object);
+            foreignRecordReference.Populate();
 
             foreignRecordReference.AddPrimaryRecordReference(primaryRecordReference);
             const string tableName = "ABCD";
@@ -143,13 +151,15 @@ namespace Tests.Tests
 
             var primaryTable = new PrimaryTable();
             var primaryRecordReference = new RecordReference<PrimaryTable>(Helpers.GetTypeGeneratorMock(primaryTable).Object);
+            primaryRecordReference.Populate();
 
             var foreignTable = new ForeignTable();
             var foreignRecordReference = new RecordReference<ForeignTable>(Helpers.GetTypeGeneratorMock(foreignTable).Object);
+            foreignRecordReference.Populate();
 
             foreignRecordReference.AddPrimaryRecordReference(primaryRecordReference);
 
-            var expected = new object[] {1, 2};
+            var expected = new object[] {"Key", 1, "Key", 2};
 
             this.writePrimitivesMock.Setup(m => m.Execute()).Returns(expected);
             
@@ -163,8 +173,8 @@ namespace Tests.Tests
 
             // Assert
 
-            Assert.AreEqual(expected[0], primaryTable.Key);
-            Assert.AreEqual(expected[1], foreignTable.Key);
+            Assert.AreEqual(expected[1], primaryTable.Key);
+            Assert.AreEqual(expected[3], foreignTable.Key);
         }
     }
 }

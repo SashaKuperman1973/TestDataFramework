@@ -15,18 +15,18 @@ namespace TestDataFramework.Populator
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(RecordReference));
 
-        protected readonly ITypeGenerator typeGenerator;
+        protected readonly ITypeGenerator TypeGenerator;
 
         protected RecordReference(ITypeGenerator typeGenerator)
         {
-            this.typeGenerator = typeGenerator;
+            this.TypeGenerator = typeGenerator;
         }
 
         #region Public fields/properties
 
         public virtual object RecordObject { get; protected set; }
 
-        public virtual Type RecordType => this.RecordObject?.GetType();
+        public virtual Type RecordType { get; protected set; }
 
         public readonly IEnumerable<RecordReference> PrimaryKeyReferences = new List<RecordReference>();
 
@@ -77,7 +77,7 @@ namespace TestDataFramework.Populator
                                 fkPa =>
                                     pkPa.PropertyInfo.DeclaringType == fkPa.Attribute.PrimaryTableType
                                     &&
-                                    Helper.GetColunName(pkPa.PropertyInfo)
+                                    Helper.GetColumnName(pkPa.PropertyInfo)
                                         .Equals(fkPa.Attribute.PrimaryKeyName, StringComparison.Ordinal)
                                     &&
                                     pkPa.PropertyInfo.PropertyType == fkPa.PropertyInfo.PropertyType

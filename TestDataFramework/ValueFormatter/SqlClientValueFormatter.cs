@@ -18,7 +18,7 @@ namespace TestDataFramework.ValueFormatter
                 return "@" + variable.Symbol;
             }
 
-            string result = this.Format(value);
+            string result = base.Format(value);
 
             return result ?? "null";
         }

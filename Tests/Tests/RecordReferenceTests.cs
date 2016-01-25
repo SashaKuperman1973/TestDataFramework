@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Linq;
+using System.Reflection;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
 using TestDataFramework.Populator;
+using TestDataFramework.TypeGenerator;
 using Tests.TestModels;
 
 namespace Tests.Tests
@@ -68,34 +72,52 @@ namespace Tests.Tests
         [TestMethod]
         public void Set_Test()
         {
-            var record = new PrimaryTable();
-            var recordReference = new RecordReference<PrimaryTable>(Helpers.GetTypeGeneratorMock(record).Object);
+            // Arrange
 
-            throw new NotImplementedException();
-        }
+            const int expectedInt = 5;
+            const string expectedString = "ABCD";
 
-        [TestMethod]
-        public void Set_ToMethodThrows_Test()
-        {
-            var record = new PrimaryTable();
-            var recordReference = new RecordReference<PrimaryTable>(Helpers.GetTypeGeneratorMock(record).Object);
+            var typeGeneratorMock = new Mock<ITypeGenerator>();
 
-            throw new NotImplementedException();
-        }
+            var recordReference = new RecordReference<PrimaryTable>(typeGeneratorMock.Object);
 
-        [TestMethod]
-        public void Set_ToFieldThrows_Test()
-        {
-            var record = new PrimaryTable();
-            var recordReference = new RecordReference<PrimaryTable>(Helpers.GetTypeGeneratorMock(record).Object);
+            var testRecord = new PrimaryTable();
 
-            throw new NotImplementedException();
+            typeGeneratorMock.Setup(
+                m => m.GetObject<PrimaryTable>(It.IsAny<ConcurrentDictionary<PropertyInfo, Action<PrimaryTable>>>()))
+                .Callback<ConcurrentDictionary<PropertyInfo, Action<PrimaryTable>>>(
+                    d =>
+                    {
+                        d[typeof (PrimaryTable).GetProperty("Integer")](testRecord);
+                        d[typeof (PrimaryTable).GetProperty("Text")](testRecord);
+                    });
+            // Act
+
+            recordReference.Set(r => r.Integer, expectedInt).Set(r => r.Text, expectedString);
+            recordReference.Populate();
+
+            // Assert
+
+            Assert.AreEqual(expectedInt, testRecord.Integer);
+            Assert.AreEqual(expectedString, testRecord.Text);
         }
 
         [TestMethod]
         public void Populate_Test()
         {
-            throw new NotImplementedException();
+            var record = new PrimaryTable();
+
+            Mock<ITypeGenerator> typeGeneratorMock = Helpers.GetTypeGeneratorMock(record);
+
+            var recordReference = new RecordReference<PrimaryTable>(typeGeneratorMock.Object);
+
+            // Act
+
+            recordReference.Populate();
+
+            // Assert
+
+            Assert.AreEqual(record, recordReference.RecordObject);
         }
     }
 }

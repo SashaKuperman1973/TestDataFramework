@@ -1,10 +1,15 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.NetworkInformation;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using TestDataFramework;
+using TestDataFramework.Helpers;
+using TestDataFramework.RepositoryOperations.Model;
 using TestDataFramework.TypeGenerator;
-using Tests.TestModels;
 
 namespace Tests
 {
@@ -36,11 +41,29 @@ namespace Tests
         {
             var typeGeneratorMock = new Mock<ITypeGenerator>();
 
+            Helpers.SetupTypeGeneratorMock<T>(typeGeneratorMock, returnObject);
+
+            return typeGeneratorMock;
+        }
+
+        public static void SetupTypeGeneratorMock<T>(Mock<ITypeGenerator> typeGeneratorMock, T returnObject)
+        {
             typeGeneratorMock.Setup(
                 m => m.GetObject<T>(It.IsAny<ConcurrentDictionary<PropertyInfo, Action<T>>>()))
                 .Returns(returnObject);
+        }
 
-            return typeGeneratorMock;
+        public static List<Column> GetColumns<T>(T record)
+        {
+            List<Column> result = record.GetType()
+                .GetProperties()
+                .Where(
+                    p =>
+                        p.GetSingleAttribute<PrimaryKeyAttribute>() == null ||
+                        p.GetSingleAttribute<PrimaryKeyAttribute>().KeyType != PrimaryKeyAttribute.KeyTypeEnum.Auto)
+                .Select(p => new Column {Name = Helper.GetColumnName(p), Value = p.GetValue(record)}).ToList();
+
+            return result;
         }
     }
 }

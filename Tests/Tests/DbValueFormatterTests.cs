@@ -48,6 +48,30 @@ namespace Tests.Tests
         }
 
         [TestMethod]
+        public void UInt_Test()
+        {
+            const uint input = 5;
+            string result = this.formatter.Format(input);
+            Assert.AreEqual("5", result);
+        }
+
+        [TestMethod]
+        public void UShort_Test()
+        {
+            const ushort input = 5;
+            string result = this.formatter.Format(input);
+            Assert.AreEqual("5", result);
+        }
+
+        [TestMethod]
+        public void ULong_Test()
+        {
+            const ulong input = 5;
+            string result = this.formatter.Format(input);
+            Assert.AreEqual("5", result);
+        }
+
+        [TestMethod]
         public void String_Test()
         {
             const string input = "Abcd";

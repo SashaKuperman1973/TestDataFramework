@@ -78,7 +78,6 @@ namespace TestDataFramework.Populator
 
             foreach (RecordReference recordReference in this.recordReferences)
             {
-                this.typeGenerator.ResetRecursionGuard();
                 recordReference.Populate();
             }
 

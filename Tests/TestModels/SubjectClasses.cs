@@ -1,6 +1,6 @@
 ﻿using System;
 using TestDataFramework;
-using TestDataFramework.Randomizer;
+using TestDataFramework.ValueProvider;
 
 namespace Tests.TestModels
 {

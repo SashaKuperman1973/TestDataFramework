@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using log4net;
 using TestDataFramework.Exceptions;
+using TestDataFramework.HandledTypeGenerator;
 using TestDataFramework.Helpers;
 using TestDataFramework.ValueGenerator;
 
@@ -16,14 +17,16 @@ namespace TestDataFramework.TypeGenerator
         #region Fields
 
         private readonly IValueGenerator valueGenerator;
+        private readonly IHandledTypeGenerator handledTypeGenerator;
 
-        private readonly List<Type> complexTypeProcessingRecursionGuard = new List<Type>();
+        private readonly Stack<Type> complexTypeProcessingRecursionGuard = new Stack<Type>();
 
         #endregion Fields
 
-        public StandardTypeGenerator(Func<ITypeGenerator, IValueGenerator> getValueGenerator)
+        public StandardTypeGenerator(Func<ITypeGenerator, IValueGenerator> getValueGenerator, IHandledTypeGenerator handledTypeGenerator)
         {
             this.valueGenerator = getValueGenerator(this);
+            this.handledTypeGenerator = handledTypeGenerator;
         }
 
         #region Private methods
@@ -34,21 +37,27 @@ namespace TestDataFramework.TypeGenerator
 
             if (this.complexTypeProcessingRecursionGuard.Contains(forType))
             {
+                StandardTypeGenerator.Logger.Debug("Circular reference encountered. Returning null. Type: " + forType);
                 return null;
             }
 
-            this.complexTypeProcessingRecursionGuard.Add(forType);
+            this.complexTypeProcessingRecursionGuard.Push(forType);
 
             ConstructorInfo defaultConstructor = forType.GetConstructor(Type.EmptyTypes);
 
             if (defaultConstructor == null)
             {
-                throw new NoDefaultConstructorException(forType);
+                this.complexTypeProcessingRecursionGuard.Pop();
+
+                StandardTypeGenerator.Logger.Debug("Type has no public default constructor. Returning null. Type: " + forType);
+
+                return null;
             }
 
             object objectToFill = defaultConstructor.Invoke(null);
 
             this.FillObject(objectToFill);
+            this.complexTypeProcessingRecursionGuard.Pop();
 
             StandardTypeGenerator.Logger.Debug("Exiting ConstructObject");
             return objectToFill;
@@ -100,11 +109,6 @@ namespace TestDataFramework.TypeGenerator
 
             StandardTypeGenerator.Logger.Debug("Exiting GetObject");
             return objectToFill;
-        }
-
-        public virtual void ResetRecursionGuard()
-        {
-            this.complexTypeProcessingRecursionGuard.Clear();
         }
 
         #endregion Public methods

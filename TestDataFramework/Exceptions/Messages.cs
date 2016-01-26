@@ -2,7 +2,6 @@
 {
     public static class Messages
     {
-        public const string NoDefaultConstructor = "Type has no public default constructor: ";
         public const string TypeRecursion = "Circular reference detected generating complex type graph: {0} -> {1}";
         public const string MaxAttributeOutOfRange = "Max attribute value is out of range for {0} property";
         public const string MaxAttributeLessThanZero = "Max attribute value is less than zero";

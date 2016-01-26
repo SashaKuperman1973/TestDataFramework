@@ -9,7 +9,5 @@ namespace TestDataFramework.TypeGenerator
         object GetObject<T>(ConcurrentDictionary<PropertyInfo, Action<T>> propertyExpressionDictionary);
 
         object GetObject(Type forType);
-
-        void ResetRecursionGuard();
     }
 }

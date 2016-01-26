@@ -14,13 +14,13 @@ using TestDataFramework.Helpers.Interfaces;
 using TestDataFramework.Persistence;
 using TestDataFramework.Populator;
 using TestDataFramework.PropertyValueAccumulator;
-using TestDataFramework.Randomizer;
 using TestDataFramework.TypeGenerator;
 using TestDataFramework.UniqueValueGenerator;
 using TestDataFramework.UniqueValueGenerator.Concrete;
 using TestDataFramework.UniqueValueGenerator.Interface;
 using TestDataFramework.ValueFormatter;
 using TestDataFramework.ValueGenerator;
+using TestDataFramework.ValueProvider;
 using TestDataFramework.WritePrimitives;
 
 namespace TestDataFramework.Factories
@@ -139,12 +139,12 @@ namespace TestDataFramework.Factories
 
                     Component.For<LetterEncoder>(),
 
-                    Component.For<IPropertyValueAccumulator>().ImplementedBy<StandardPropertyValueAccumulator>(),
+                    Component.For<IPropertyValueAccumulator>().ImplementedBy<StandardPropertyValueAccumulator>().LifestyleTransient(),
 
                     Component.For<IDeferredValueGenerator<ulong>>()
                         .ImplementedBy<StandardDeferredValueGenerator<ulong>>(),
 
-                    Component.For<IRandomizer>().ImplementedBy<StandardRandomizer>().DependsOn((k, d) =>
+                    Component.For<IValueProvider>().ImplementedBy<StandardRandomizer>().DependsOn((k, d) =>
                     {
                         d["dateTimeMinValue"] = SqlDateTime.MinValue.Value.Ticks;
                         d["dateTimeMaxValue"] = SqlDateTime.MaxValue.Value.Ticks;

@@ -51,7 +51,11 @@ namespace TestDataFramework.PropertyValueAccumulator
 
             // integer
 
-            else if (new[] { typeof(byte), typeof (int), typeof (short), typeof (long)}.Contains(type))
+            else if (new[]
+            {
+                typeof(byte), typeof (int), typeof (short), typeof (long),
+                typeof (uint), typeof (ushort), typeof (ulong),
+            }.Contains(type))
             {
                 StandardPropertyValueAccumulator.Logger.Debug("Property type integral numeric");
                 ulong value = this.GetCount(propertyInfo);

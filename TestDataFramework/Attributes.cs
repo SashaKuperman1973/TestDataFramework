@@ -1,5 +1,5 @@
 ﻿using System;
-using TestDataFramework.Randomizer;
+using TestDataFramework.ValueProvider;
 
 namespace TestDataFramework
 {

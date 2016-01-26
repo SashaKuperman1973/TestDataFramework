@@ -6,14 +6,6 @@ using TestDataFramework.Populator;
 
 namespace TestDataFramework.Exceptions
 {
-    public class NoDefaultConstructorException : ApplicationException
-    {
-        public NoDefaultConstructorException(Type forType)
-            : base(Messages.NoDefaultConstructor + Helper.PrintType(forType))
-        {
-        }
-    }
-
     public class TypeRecursionException : ApplicationException
     {
         public TypeRecursionException(Type currentType, IEnumerable<Type> stack)

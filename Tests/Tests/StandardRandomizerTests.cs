@@ -4,7 +4,7 @@ using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.Helpers.Interfaces;
-using TestDataFramework.Randomizer;
+using TestDataFramework.ValueProvider;
 
 namespace Tests.Tests
 {
@@ -31,7 +31,7 @@ namespace Tests.Tests
                 () => this.now, SqlDateTime.MinValue.Value.Ticks, SqlDateTime.MaxValue.Value.Ticks);
 
             this.randomizeLongInteger =
-                () => this.randomizer.RandomizeLongInteger(SqlDateTime.MaxValue.Value.Ticks - this.now.Ticks);
+                () => this.randomizer.GetLongInteger(SqlDateTime.MaxValue.Value.Ticks - this.now.Ticks);
         }
 
         [TestMethod]
@@ -43,7 +43,7 @@ namespace Tests.Tests
 
             // Act
 
-            int result = this.randomizer.RandomizeInteger(null);
+            int result = this.randomizer.GetInteger(null);
 
             // Assert
 
@@ -61,7 +61,7 @@ namespace Tests.Tests
 
             // Act
 
-            int result = this.randomizer.RandomizeInteger(maximum);
+            int result = this.randomizer.GetInteger(maximum);
 
             // Assert
 
@@ -79,7 +79,7 @@ namespace Tests.Tests
 
             // Act
 
-            long result = this.randomizer.RandomizeLongInteger(0x10000);
+            long result = this.randomizer.GetLongInteger(0x10000);
 
             // Assert
 
@@ -115,7 +115,7 @@ namespace Tests.Tests
 
             // Act
 
-            long result = this.randomizer.RandomizeLongInteger(maxValue);
+            long result = this.randomizer.GetLongInteger(maxValue);
 
             // Assert
 
@@ -132,7 +132,7 @@ namespace Tests.Tests
 
             // Act
 
-            long result = this.randomizer.RandomizeLongInteger(null);
+            long result = this.randomizer.GetLongInteger(null);
 
             // Assert
 
@@ -155,7 +155,7 @@ namespace Tests.Tests
 
             // Act
 
-            long result = this.randomizer.RandomizeLongInteger(null);
+            long result = this.randomizer.GetLongInteger(null);
 
             // Assert
 
@@ -172,7 +172,7 @@ namespace Tests.Tests
 
             // Act
 
-            short result = this.randomizer.RandomizeShortInteger(max);
+            short result = this.randomizer.GetShortInteger(max);
 
             // Assert
 
@@ -189,7 +189,7 @@ namespace Tests.Tests
 
             // Act
 
-            short result = this.randomizer.RandomizeShortInteger(null);
+            short result = this.randomizer.GetShortInteger(null);
 
             // Assert
 
@@ -207,7 +207,7 @@ namespace Tests.Tests
 
             // Act
 
-            string result = this.randomizer.RandomizeString(5);
+            string result = this.randomizer.GetString(5);
 
             // Assert
 
@@ -222,7 +222,7 @@ namespace Tests.Tests
             {
                 this.randomMock.Setup(m => m.Next(It.Is<int>(i => i == 26))).Returns(code);
 
-                char result = this.randomizer.RandomizeCharacter();
+                char result = this.randomizer.GetCharacter();
 
                 // 65 is ASCII code of "A".
                 Assert.AreEqual((char)(code + 65), result);
@@ -241,7 +241,7 @@ namespace Tests.Tests
 
             // Act
 
-            decimal result = this.randomizer.RandomizeDecimal(null);
+            decimal result = this.randomizer.GetDecimal(null);
 
             // Assert
 
@@ -260,7 +260,7 @@ namespace Tests.Tests
 
             // Act
 
-            decimal result = this.randomizer.RandomizeDecimal(4);
+            decimal result = this.randomizer.GetDecimal(4);
 
             // Assert
 
@@ -279,7 +279,7 @@ namespace Tests.Tests
 
             // Act
 
-            double result = this.randomizer.RandomizeDouble(null);
+            double result = this.randomizer.GetDouble(null);
 
             // Assert
 
@@ -298,7 +298,7 @@ namespace Tests.Tests
 
             // Act
 
-            double result = this.randomizer.RandomizeDouble(4);
+            double result = this.randomizer.GetDouble(4);
 
             // Assert
 
@@ -314,7 +314,7 @@ namespace Tests.Tests
 
             // Act
 
-            bool result = this.randomizer.RandomizeBoolean();
+            bool result = this.randomizer.GetBoolean();
 
             // Assert
 
@@ -331,7 +331,7 @@ namespace Tests.Tests
 
             // Act
 
-            bool result = this.randomizer.RandomizeBoolean();
+            bool result = this.randomizer.GetBoolean();
 
             // Assert
 
@@ -350,8 +350,8 @@ namespace Tests.Tests
 
             // Act
 
-            DateTime explicitPastResult = this.randomizer.RandomizeDateTime(PastOrFuture.Past, x => ticks);
-            DateTime implicitPastResult = this.randomizer.RandomizeDateTime(null, x => ticks);
+            DateTime explicitPastResult = this.randomizer.GetDateTime(PastOrFuture.Past, x => ticks);
+            DateTime implicitPastResult = this.randomizer.GetDateTime(null, x => ticks);
 
             // Assert
 
@@ -370,7 +370,7 @@ namespace Tests.Tests
 
             // Act
 
-            DateTime result = this.randomizer.RandomizeDateTime(PastOrFuture.Future, x => ticks);
+            DateTime result = this.randomizer.GetDateTime(PastOrFuture.Future, x => ticks);
 
             // Assert
 
@@ -387,7 +387,7 @@ namespace Tests.Tests
 
             // Act
 
-            byte result = this.randomizer.RandomizeByte();
+            byte result = this.randomizer.GetByte();
 
             // Assert
 
@@ -403,7 +403,7 @@ namespace Tests.Tests
 
             // Act
 
-            string result = this.randomizer.RandomizeEmailAddress();
+            string result = this.randomizer.GetEmailAddress();
 
             // Assert
 

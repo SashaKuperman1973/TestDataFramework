@@ -68,6 +68,8 @@
     <Compile Include="Exceptions\Exceptions.cs" />
     <Compile Include="Exceptions\Messages.cs" />
     <Compile Include="Factories\PopulatorFactory.cs" />
+    <Compile Include="HandledTypeGenerator\IHandledTypeGenerator.cs" />
+    <Compile Include="HandledTypeGenerator\StandardHandledTypeGenerator.cs" />
     <Compile Include="Helpers\AssertionExtension.cs" />
     <Compile Include="Helpers\AttributeExtensions.cs" />
     <Compile Include="Helpers\Concrete\RandomSymbolStringGenerator.cs" />
@@ -82,8 +84,8 @@
     <Compile Include="Populator\GenericRecordReference.cs" />
     <Compile Include="Populator\StandardPopulator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Randomizer\IRandomizer.cs" />
-    <Compile Include="Randomizer\StandardRandomizer.cs" />
+    <Compile Include="ValueProvider\IValueProvider.cs" />
+    <Compile Include="ValueProvider\StandardRandomizer.cs" />
     <Compile Include="RepositoryOperations\CircularReferenceBreaker.cs" />
     <Compile Include="RepositoryOperations\Model\Column.cs" />
     <Compile Include="RepositoryOperations\Model\ColumnSymbol.cs" />
@@ -109,6 +111,7 @@
     <Compile Include="ValueGenerator\IValueGenerator.cs" />
     <Compile Include="ValueGenerator\StandardValueGenerator.cs" />
     <Compile Include="ValueFormatter\DbValueFormatter.cs" />
+    <Compile Include="ValueProvider\ValueAccumulator.cs" />
     <Compile Include="WritePrimitives\IWritePrimitives.cs" />
     <Compile Include="WritePrimitives\DbProviderWritePrimitives.cs" />
     <Compile Include="WritePrimitives\SqlClientWritePrimitives.cs" />

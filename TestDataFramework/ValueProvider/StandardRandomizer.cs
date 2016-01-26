@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Data.SqlTypes;
 using log4net;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
 using TestDataFramework.Helpers.Concrete;
 using TestDataFramework.Helpers.Interfaces;
 
-namespace TestDataFramework.Randomizer
+namespace TestDataFramework.ValueProvider
 {
-    public class StandardRandomizer : IRandomizer
+    public class StandardRandomizer : IValueProvider
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(RandomSymbolStringGenerator));
 
@@ -31,7 +30,7 @@ namespace TestDataFramework.Randomizer
             StandardRandomizer.Logger.Debug("Exiting constructor");
         }
 
-        public virtual int RandomizeInteger(int? max)
+        public virtual int GetInteger(int? max)
         {
             StandardRandomizer.Logger.Debug("Entering RandomizeInteger");
 
@@ -45,7 +44,7 @@ namespace TestDataFramework.Randomizer
             return result;
         }
 
-        public virtual long RandomizeLongInteger(long? max)
+        public virtual long GetLongInteger(long? max)
         {
             StandardRandomizer.Logger.Debug("Entering RandomizeLongInteger");
 
@@ -76,7 +75,7 @@ namespace TestDataFramework.Randomizer
             return result;
         }
 
-        public virtual short RandomizeShortInteger(short? max)
+        public virtual short GetShortInteger(short? max)
         {
             StandardRandomizer.Logger.Debug("Entering RandomizeShortInteger");
 
@@ -90,7 +89,7 @@ namespace TestDataFramework.Randomizer
             return (short)result;
         }
 
-        public virtual string RandomizeString(int? length)
+        public virtual string GetString(int? length)
         {
             StandardRandomizer.Logger.Debug("Entering RandomizeString");
 
@@ -100,7 +99,7 @@ namespace TestDataFramework.Randomizer
             return result;
         }
 
-        public virtual char RandomizeCharacter()
+        public virtual char GetCharacter()
         {
             StandardRandomizer.Logger.Debug("Entering RandomizeCharacter");
 
@@ -112,7 +111,7 @@ namespace TestDataFramework.Randomizer
             return result;
         }
 
-        public virtual decimal RandomizeDecimal(int? precision)
+        public virtual decimal GetDecimal(int? precision)
         {
             StandardRandomizer.Logger.Debug("Entering RandomizeDecimal");
 
@@ -126,7 +125,7 @@ namespace TestDataFramework.Randomizer
             return result;
         }
 
-        public virtual bool RandomizeBoolean()
+        public virtual bool GetBoolean()
         {
             StandardRandomizer.Logger.Debug("Entering RandomizeBoolean");
 
@@ -138,7 +137,7 @@ namespace TestDataFramework.Randomizer
             return result;
         }
 
-        public virtual DateTime RandomizeDateTime(PastOrFuture? pastOrFuture, Func<long?, long> longIntegerRandomizer)
+        public virtual DateTime GetDateTime(PastOrFuture? pastOrFuture, Func<long?, long> longIntegerGetter)
         {
             StandardRandomizer.Logger.Debug("Entering RandomizeBoolean");
 
@@ -154,13 +153,13 @@ namespace TestDataFramework.Randomizer
             {
                 case PastOrFuture.Future:
                     maxLong = this.dateTimeMaxValue - dateTime.Ticks;
-                    randomLong = longIntegerRandomizer(maxLong);
+                    randomLong = longIntegerGetter(maxLong);
                     result = dateTime.AddTicks(randomLong);
                     break;
 
                 case PastOrFuture.Past:
                     maxLong = dateTime.Ticks - this.dateTimeMinValue;
-                    randomLong = longIntegerRandomizer(maxLong);
+                    randomLong = longIntegerGetter(maxLong);
                     result = dateTime.AddTicks(-randomLong);
                     break;
 
@@ -168,7 +167,7 @@ namespace TestDataFramework.Randomizer
                     throw new ArgumentException(Messages.UnknownPastOrFutureEnumValue, nameof(pastOrFuture));
             }
 
-            long ticks = this.RandomizeLongInteger(null);
+            long ticks = this.GetLongInteger(null);
 
             ticks = pastOrFuture == PastOrFuture.Future ? ticks : -ticks;
 
@@ -178,7 +177,7 @@ namespace TestDataFramework.Randomizer
             return result;
         }
 
-        public virtual byte RandomizeByte()
+        public virtual byte GetByte()
         {
             StandardRandomizer.Logger.Debug("Entering RandomizeByte");
 
@@ -192,7 +191,7 @@ namespace TestDataFramework.Randomizer
             return result;
         }
 
-        public virtual double RandomizeDouble(int? precision)
+        public virtual double GetDouble(int? precision)
         {
             StandardRandomizer.Logger.Debug("Entering RandomizeBoolean");
 
@@ -206,7 +205,7 @@ namespace TestDataFramework.Randomizer
             return result;
         }
 
-        public virtual string RandomizeEmailAddress()
+        public virtual string GetEmailAddress()
         {
             StandardRandomizer.Logger.Debug("Entering RandomizeEmailAddress");
 

@@ -27,3 +27,10 @@
             Assert.AreEqual(1, delegateArray[1](initialCount));
             */
 
+        private object GetKeyValuePair(PropertyInfo propertyInfo)
+        {
+            Type[] genericArgumentTypes =  propertyInfo.PropertyType.GetGenericArguments();
+
+            genericArgumentTypes.Select(t => this.GetValue(propertyInfo, t));
+        }
+

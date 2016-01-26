@@ -7,10 +7,10 @@ using log4net;
 using TestDataFramework.ArrayRandomizer;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
-using TestDataFramework.Randomizer;
 using TestDataFramework.TypeGenerator;
 using TestDataFramework.UniqueValueGenerator;
 using TestDataFramework.UniqueValueGenerator.Interface;
+using TestDataFramework.ValueProvider;
 
 namespace TestDataFramework.ValueGenerator
 {
@@ -18,7 +18,7 @@ namespace TestDataFramework.ValueGenerator
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(StandardValueGenerator));
 
-        private readonly IRandomizer randomizer;
+        private readonly IValueProvider randomizer;
         private readonly ITypeGenerator typeGenerator;
         private readonly IArrayRandomizer arrayRandomizer;
         private readonly IUniqueValueGenerator uniqueValueGenerator;
@@ -27,19 +27,25 @@ namespace TestDataFramework.ValueGenerator
 
         private readonly Dictionary<Type, GetValueForTypeDelegate> typeValueGetterDictionary;
 
-        public StandardValueGenerator(IRandomizer randomizer, ITypeGenerator typeGenerator,
+        public StandardValueGenerator(IValueProvider randomizer, ITypeGenerator typeGenerator,
+            Func<IValueGenerator, IArrayRandomizer> getArrayRandomizer, IUniqueValueGenerator uniqueValueGenerator)
+            : this(randomizer, x => typeGenerator, getArrayRandomizer, uniqueValueGenerator)
+        {
+        }
+
+        public StandardValueGenerator(IValueProvider randomizer, Func<IValueGenerator, ITypeGenerator> getTypeGenerator,
             Func<IValueGenerator, IArrayRandomizer> getArrayRandomizer, IUniqueValueGenerator uniqueValueGenerator)
         {
             StandardValueGenerator.Logger.Debug("Entering constructor");
 
             this.randomizer = randomizer;
-            this.typeGenerator = typeGenerator;
+            this.typeGenerator = getTypeGenerator(this);
             this.arrayRandomizer = getArrayRandomizer(this);
             this.uniqueValueGenerator = uniqueValueGenerator;
 
             this.typeValueGetterDictionary = new Dictionary<Type, GetValueForTypeDelegate>
             {
-                {typeof (EmailAttribute), x => this.randomizer.RandomizeEmailAddress()},
+                {typeof (EmailAttribute), x => this.randomizer.GetEmailAddress()},
                 {typeof (PrimaryKeyAttribute), this.GetPrimaryKey},
                 {typeof (string), this.GetString},
                 {typeof (decimal), this.GetDecimal},
@@ -49,12 +55,12 @@ namespace TestDataFramework.ValueGenerator
                 {typeof (ulong), this.GetLong},
                 {typeof (short), this.GetShort},
                 {typeof (ushort), this.GetShort},
-                {typeof (bool), x => this.randomizer.RandomizeBoolean()},
-                {typeof (char), x => this.randomizer.RandomizeCharacter()},
+                {typeof (bool), x => this.randomizer.GetBoolean()},
+                {typeof (char), x => this.randomizer.GetCharacter()},
                 {typeof (DateTime), this.GetDateTime},
-                {typeof (byte), x => this.randomizer.RandomizeByte()},
+                {typeof (byte), x => this.randomizer.GetByte()},
                 {typeof (double), this.GetDouble},
-                {typeof (Guid), this.NoOp }
+                {typeof (Guid), x => StandardValueGenerator.NoOp(typeof(Guid)) },
             };
 
             StandardValueGenerator.Logger.Debug("Exiting constructor");
@@ -85,11 +91,10 @@ namespace TestDataFramework.ValueGenerator
         {
             StandardValueGenerator.Logger.Debug("Entering GetValue(PropertyInfo propertyInfo, Type type)");
 
-            propertyInfo.IsNotNull(nameof(propertyInfo));
             propertyInfo.IsNotNull(nameof(type));
 
             if (type.IsArray)
-            {
+            {                
                 return this.arrayRandomizer.GetArray(propertyInfo, type);
             }
 
@@ -108,34 +113,10 @@ namespace TestDataFramework.ValueGenerator
 
         #region Private Methods
 
-        private bool TryGetGetter(PropertyInfo propertyInfo, out GetValueForTypeDelegate getValueForTypeDelegate)
+        private static object NoOp(Type fortype)
         {
-            StandardValueGenerator.Logger.Debug("Entering TryGetGetter");
-
-            GetValueForTypeDelegate tempGetter = null;
-
-            if (
-                propertyInfo.GetCustomAttributesData()
-                    .Any(
-                        attributeData =>
-                            this.typeValueGetterDictionary.TryGetValue(attributeData.AttributeType, out tempGetter)))
-            {
-                getValueForTypeDelegate = tempGetter;
-                return true;
-            }
-
-            Type forType = Nullable.GetUnderlyingType(propertyInfo.PropertyType) ?? propertyInfo.PropertyType;
-
-            bool result = this.typeValueGetterDictionary.TryGetValue(forType, out getValueForTypeDelegate);
-
-            StandardValueGenerator.Logger.Debug("Exiting TryGetGetter");
-            return result;
-        }
-
-        private object NoOp(PropertyInfo propertyInfo)
-        {
-            return propertyInfo.PropertyType.IsValueType
-                ? Activator.CreateInstance(propertyInfo.PropertyType)
+            return fortype.IsValueType
+                ? Activator.CreateInstance(fortype)
                 : null;
         }
 
@@ -143,10 +124,10 @@ namespace TestDataFramework.ValueGenerator
         {
             StandardValueGenerator.Logger.Debug("Entering GetString");
 
-            var lengthAttribute = propertyInfo.GetCustomAttribute<StringLengthAttribute>();
+            var lengthAttribute = propertyInfo?.GetCustomAttribute<StringLengthAttribute>();
             int? length = lengthAttribute?.Length;
 
-            string result = this.randomizer.RandomizeString(length);
+            string result = this.randomizer.GetString(length);
 
             StandardValueGenerator.Logger.Debug("Exiting GetString");
             return result;
@@ -156,10 +137,10 @@ namespace TestDataFramework.ValueGenerator
         {
             StandardValueGenerator.Logger.Debug("Entering GetDecimal");
 
-            var precisionAttribute = propertyInfo.GetCustomAttribute<PrecisionAttribute>();
+            var precisionAttribute = propertyInfo?.GetCustomAttribute<PrecisionAttribute>();
             int? precision = precisionAttribute?.Precision;
 
-            decimal result = this.randomizer.RandomizeDecimal(precision);
+            decimal result = this.randomizer.GetDecimal(precision);
 
             StandardValueGenerator.Logger.Debug("Exiting GetDecimal");
             return result;
@@ -169,10 +150,10 @@ namespace TestDataFramework.ValueGenerator
         {
             StandardValueGenerator.Logger.Debug("Entering GetDouble");
 
-            var precisionAttribute = propertyInfo.GetCustomAttribute<PrecisionAttribute>();
+            var precisionAttribute = propertyInfo?.GetCustomAttribute<PrecisionAttribute>();
             int? precision = precisionAttribute?.Precision;
 
-            double result = this.randomizer.RandomizeDouble(precision);
+            double result = this.randomizer.GetDouble(precision);
 
             StandardValueGenerator.Logger.Debug("Exiting GetDouble");
             return result;
@@ -182,7 +163,7 @@ namespace TestDataFramework.ValueGenerator
         {
             StandardValueGenerator.Logger.Debug("Entering GetInteger");
 
-            var maxAttribute = propertyInfo.GetCustomAttribute<MaxAttribute>();
+            var maxAttribute = propertyInfo?.GetCustomAttribute<MaxAttribute>();
             long? max = maxAttribute?.Max;
 
             if (max < 0)
@@ -195,7 +176,7 @@ namespace TestDataFramework.ValueGenerator
                 throw new ArgumentOutOfRangeException(string.Format(Messages.MaxAttributeOutOfRange, "int"), (Exception) null);
             }
 
-            int result = this.randomizer.RandomizeInteger((int?)max);
+            int result = this.randomizer.GetInteger((int?)max);
 
             StandardValueGenerator.Logger.Debug("Exiting GetInteger");
             return result;
@@ -205,7 +186,7 @@ namespace TestDataFramework.ValueGenerator
         {
             StandardValueGenerator.Logger.Debug("Entering GetLong");
 
-            var maxAttribute = propertyInfo.GetCustomAttribute<MaxAttribute>();
+            var maxAttribute = propertyInfo?.GetCustomAttribute<MaxAttribute>();
             long? max = maxAttribute?.Max;
 
             if (max < 0)
@@ -213,7 +194,7 @@ namespace TestDataFramework.ValueGenerator
                 throw new ArgumentOutOfRangeException(Messages.MaxAttributeLessThanZero, (Exception)null);
             }
 
-            long result = this.randomizer.RandomizeLongInteger(max);
+            long result = this.randomizer.GetLongInteger(max);
 
             StandardValueGenerator.Logger.Debug("Exiting GetLong");
             return result;
@@ -223,7 +204,7 @@ namespace TestDataFramework.ValueGenerator
         {
             StandardValueGenerator.Logger.Debug("Entering GetShort");
 
-            var maxAttribute = propertyInfo.GetCustomAttribute<MaxAttribute>();
+            var maxAttribute = propertyInfo?.GetCustomAttribute<MaxAttribute>();
             long? max = maxAttribute?.Max;
 
             if (max < 0)
@@ -236,7 +217,7 @@ namespace TestDataFramework.ValueGenerator
                 throw new ArgumentOutOfRangeException(string.Format(Messages.MaxAttributeOutOfRange, "short"), (Exception)null);
             }
 
-            short result = this.randomizer.RandomizeShortInteger((short?)max);
+            short result = this.randomizer.GetShortInteger((short?)max);
 
             StandardValueGenerator.Logger.Debug("Exiting GetShort");
             return result;
@@ -246,10 +227,10 @@ namespace TestDataFramework.ValueGenerator
         {
             StandardValueGenerator.Logger.Debug("Entering GetDateTime");
 
-            var pastOrFutureAttribute = propertyInfo.GetCustomAttribute<PastOrFutureAttribute>();
+            var pastOrFutureAttribute = propertyInfo?.GetCustomAttribute<PastOrFutureAttribute>();
             PastOrFuture? pastOrFuture = pastOrFutureAttribute?.PastOrFuture;
 
-            DateTime result = this.randomizer.RandomizeDateTime((PastOrFuture?)pastOrFuture, this.randomizer.RandomizeLongInteger);
+            DateTime result = this.randomizer.GetDateTime((PastOrFuture?)pastOrFuture, this.randomizer.GetLongInteger);
 
             StandardValueGenerator.Logger.Debug("Exiting GetDateTime");
             return result;

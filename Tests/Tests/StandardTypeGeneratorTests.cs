@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Reflection;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.Exceptions;
+using TestDataFramework.HandledTypeGenerator;
 using TestDataFramework.TypeGenerator;
 using TestDataFramework.ValueGenerator;
 using Tests.TestModels;
@@ -14,6 +17,8 @@ namespace Tests.Tests
     public class StandardTypeGeneratorTests
     {
         private Mock<IValueGenerator> valueGeneratorMock;
+        private Mock<IHandledTypeGenerator> handledTypeGeneratorMock;
+        private StandardTypeGenerator typeGenerator;
 
         [TestInitialize]
         public void Initialize()
@@ -21,6 +26,10 @@ namespace Tests.Tests
             XmlConfigurator.Configure();
 
             this.valueGeneratorMock = new Mock<IValueGenerator>();
+            this.handledTypeGeneratorMock = new Mock<IHandledTypeGenerator>();
+
+            this.typeGenerator = new StandardTypeGenerator(x => this.valueGeneratorMock.Object,
+                this.handledTypeGeneratorMock.Object);
         }
 
         [TestMethod]
@@ -34,8 +43,7 @@ namespace Tests.Tests
 
             // Act
 
-            var typeGenerator = new StandardTypeGenerator(x => this.valueGeneratorMock.Object);
-            object result = typeGenerator.GetObject(typeof (SecondClass));
+            object result = this.typeGenerator.GetObject(typeof (SecondClass));
 
             // Assert
 
@@ -48,51 +56,27 @@ namespace Tests.Tests
         [TestMethod]
         public void GetObject_RecursiveTypeSetToNull()
         {
-            var typeGenerator = new StandardTypeGenerator(x => this.valueGeneratorMock.Object);
+            this.typeGenerator.GetObject(typeof(InfiniteRecursiveClass1));
+            this.typeGenerator.GetObject(typeof(InfiniteRecursiveClass2));
+            this.typeGenerator.GetObject(typeof(InfiniteRecursiveClass3));
 
-            typeGenerator.GetObject(typeof(InfiniteRecursiveClass1));
-            typeGenerator.GetObject(typeof(InfiniteRecursiveClass2));
-            typeGenerator.GetObject(typeof(InfiniteRecursiveClass3));
-
-            object result = typeGenerator.GetObject(typeof(InfiniteRecursiveClass1));
+            object result = this.typeGenerator.GetObject(typeof(InfiniteRecursiveClass1));
 
             Assert.IsNull(result);
         }
 
         [TestMethod]
-        public void GetObject_NoDefaultConstructorException()
+        public void GetObject_NoDefaultConstructor_ReturnsNull_Test()
         {
-            var typeGenerator = new StandardTypeGenerator(x => this.valueGeneratorMock.Object);
+            throw new NotImplementedException();
 
-            Action action = () => typeGenerator.GetObject(typeof (ClassWithoutADefaultConstructor));
-
-            string expectedMessage = Messages.NoDefaultConstructor +
-                                     typeof (ClassWithoutADefaultConstructor);
-
-            Helpers.ExceptionTest(action, typeof (NoDefaultConstructorException), expectedMessage);
+            this.typeGenerator.GetObject(typeof (ClassWithoutADefaultConstructor));
         }
 
         [TestMethod]
-        public void ResetRecursionGuard_Test()
+        public void RecursionGuard_Test()
         {
-            // Arrange
-
-            const int expected = 5;
-            this.valueGeneratorMock.Setup(m => m.GetValue(It.Is<PropertyInfo>(p => p.PropertyType == typeof(int))))
-                .Returns(expected);
-
-            // Act
-
-            var typeGenerator = new StandardTypeGenerator(x => this.valueGeneratorMock.Object);
-            object result1 = typeGenerator.GetObject(typeof(SecondClass));
-
-            typeGenerator.ResetRecursionGuard();
-            object result2 = typeGenerator.GetObject(typeof(SecondClass));
-
-            // Assert
-
-            Assert.IsNotNull(result1);
-            Assert.IsNotNull(result2);
+            throw new NotImplementedException();
         }
     }
 }

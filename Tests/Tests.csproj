@@ -72,6 +72,7 @@
     <Compile Include="TestModels\SubjectClasses.cs" />
     <Compile Include="Tests\CircularReferenceBreakerTests.cs" />
     <Compile Include="Tests\DbProviderWritePrimitivesTests.cs" />
+    <Compile Include="Tests\StandardHandledTypeGeneratorTests.cs" />
     <Compile Include="Tests\MemoryUniqueValueGeneratorTests.cs" />
     <Compile Include="Tests\StandardPopulatorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -102,7 +102,7 @@
     <Compile Include="Tests\KeyTypeUniqueValueGeneratorTests.cs" />
     <Compile Include="Tests\BaseUniqueValueGeneratorTests.cs" />
     <Compile Include="Tests\SqlClientValueFormatterTests.cs" />
-    <Compile Include="Tests\ValueAccumulatorTests.cs" />
+    <Compile Include="Tests\AccumulatorValueProviderTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Tests To Do.txt" />

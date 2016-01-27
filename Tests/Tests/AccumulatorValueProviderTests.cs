@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Tests.Tests
 {
     [TestClass]
-    public class ValueAccumulatorTests
+    public class AccumulatorValueProviderTests
     {
         [TestMethod]
         public void Test()

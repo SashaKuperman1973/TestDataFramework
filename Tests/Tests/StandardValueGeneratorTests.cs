@@ -63,7 +63,7 @@ namespace Tests.Tests
             this.randomizerMock.Setup(m => m.GetDouble(It.Is<int?>(precision => precision == null))).Returns(StandardValueGeneratorTests.DoubleResult);
             this.randomizerMock.Setup(m => m.GetEmailAddress()).Returns(StandardValueGeneratorTests.EmailAddress);
 
-            this.valueGenerator = new StandardValueGenerator(this.randomizerMock.Object, this.typeGeneratorMock.Object, x => this.arrayRandomizerMock.Object, uniqueValueGeneratorMock.Object);
+            this.valueGenerator = new StandardValueGenerator(this.randomizerMock.Object, () => this.typeGeneratorMock.Object, () => this.arrayRandomizerMock.Object, this.uniqueValueGeneratorMock.Object);
         }
 
         [TestMethod]

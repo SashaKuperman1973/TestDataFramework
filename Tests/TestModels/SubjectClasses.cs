@@ -100,12 +100,7 @@ namespace Tests.TestModels
 
     public class InfiniteRecursiveClass2
     {
-        public InfiniteRecursiveClass3 InfiniteRecursiveClassB { get; set; }
-    }
-
-    public class InfiniteRecursiveClass3
-    {
-        public InfiniteRecursiveClass1 InfiniteRecursiveClassC { get; set; }
+        public InfiniteRecursiveClass1 InfiniteRecursiveClassB { get; set; }
     }
 
     public class ClassWithoutADefaultConstructor

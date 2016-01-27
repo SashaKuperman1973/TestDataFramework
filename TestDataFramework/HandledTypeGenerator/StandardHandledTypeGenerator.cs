@@ -9,8 +9,10 @@ using log4net;
 using TestDataFramework.ArrayRandomizer;
 using TestDataFramework.PropertyValueAccumulator;
 using TestDataFramework.TypeGenerator;
+using TestDataFramework.UniqueValueGenerator.Interface;
 using TestDataFramework.ValueGenerator;
 using TestDataFramework.ValueProvider;
+using TestDataFramework.Helpers;
 
 namespace TestDataFramework.HandledTypeGenerator
 {
@@ -22,17 +24,23 @@ namespace TestDataFramework.HandledTypeGenerator
 
         private static readonly ILog Logger = LogManager.GetLogger(typeof(StandardHandledTypeGenerator));
 
+        public delegate IValueGenerator CreateAccumulatorValueGeneratorDelegate();
+
         private readonly Dictionary<Type, HandledTypeValueGetter> handledTypeValueGetterDictionary;
         private readonly IValueGenerator valueGenerator;
+        private readonly CreateAccumulatorValueGeneratorDelegate getAccumulatorValueGenerator;
         private readonly Random random;
+        private readonly IUniqueValueGenerator uniqueValueGenerator;
         private readonly int maxCollectionElementCount;
 
         #endregion Fields
 
-        public StandardHandledTypeGenerator(IValueGenerator valueGenerator, Random random, int maxCollectionElementCount = 5)
+        public StandardHandledTypeGenerator(IValueGenerator valueGenerator, CreateAccumulatorValueGeneratorDelegate getAccumulatorValueGenerator, Random random, IUniqueValueGenerator uniqueValueGenerator, int maxCollectionElementCount = 5)
         {
             this.valueGenerator = valueGenerator;
             this.random = random;
+            this.uniqueValueGenerator = uniqueValueGenerator;
+            this.getAccumulatorValueGenerator = getAccumulatorValueGenerator;
             this.maxCollectionElementCount = maxCollectionElementCount;
 
             this.handledTypeValueGetterDictionary = new Dictionary<Type, HandledTypeValueGetter>
@@ -113,12 +121,9 @@ namespace TestDataFramework.HandledTypeGenerator
             {
                 object key;
 
-                if (typeArray[0].IsValueType)
+                if (typeArray[0].IsValueLikeType())
                 {
-                    var accumulatorValueGenerator = new StandardValueGenerator(new ValueAccumulator(),
-                        valueGenerator => new StandardTypeGenerator(typeGenerator => valueGenerator, this),
-                        valueGenerator => new StandardArrayRandomizer(new Random(), valueGenerator), null);
-
+                    IValueGenerator accumulatorValueGenerator = this.getAccumulatorValueGenerator();             
                     key = accumulatorValueGenerator.GetValue(null, typeArray[0]);
                 }
                 else

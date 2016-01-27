@@ -84,6 +84,7 @@
     <Compile Include="Populator\GenericRecordReference.cs" />
     <Compile Include="Populator\StandardPopulator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TypeGenerator\UniqueValueTypeGenerator.cs" />
     <Compile Include="ValueProvider\IValueProvider.cs" />
     <Compile Include="ValueProvider\StandardRandomizer.cs" />
     <Compile Include="RepositoryOperations\CircularReferenceBreaker.cs" />
@@ -111,7 +112,7 @@
     <Compile Include="ValueGenerator\IValueGenerator.cs" />
     <Compile Include="ValueGenerator\StandardValueGenerator.cs" />
     <Compile Include="ValueFormatter\DbValueFormatter.cs" />
-    <Compile Include="ValueProvider\ValueAccumulator.cs" />
+    <Compile Include="ValueProvider\AccumulatorValueProvider.cs" />
     <Compile Include="WritePrimitives\IWritePrimitives.cs" />
     <Compile Include="WritePrimitives\DbProviderWritePrimitives.cs" />
     <Compile Include="WritePrimitives\SqlClientWritePrimitives.cs" />

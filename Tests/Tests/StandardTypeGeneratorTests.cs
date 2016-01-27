@@ -28,7 +28,7 @@ namespace Tests.Tests
             this.valueGeneratorMock = new Mock<IValueGenerator>();
             this.handledTypeGeneratorMock = new Mock<IHandledTypeGenerator>();
 
-            this.typeGenerator = new StandardTypeGenerator(x => this.valueGeneratorMock.Object,
+            this.typeGenerator = new StandardTypeGenerator(this.valueGeneratorMock.Object,
                 this.handledTypeGeneratorMock.Object);
         }
 
@@ -51,18 +51,26 @@ namespace Tests.Tests
             Assert.IsNotNull(secondClassObject);
 
             Assert.AreEqual(expected, secondClassObject.SecondInteger);
+            this.valueGeneratorMock.Verify(m => m.GetValue(It.Is<PropertyInfo>(p => p.PropertyType == typeof (int))), Times.Once);
         }
 
         [TestMethod]
-        public void GetObject_RecursiveTypeSetToNull()
+        public void GetObject_RecursionGuard_Test()
         {
-            this.typeGenerator.GetObject(typeof(InfiniteRecursiveClass1));
-            this.typeGenerator.GetObject(typeof(InfiniteRecursiveClass2));
-            this.typeGenerator.GetObject(typeof(InfiniteRecursiveClass3));
+            Type[] types = new[]
+            {
+                typeof (InfiniteRecursiveClass2),
+                typeof (InfiniteRecursiveClass1),
+            };
 
-            object result = this.typeGenerator.GetObject(typeof(InfiniteRecursiveClass1));
+            int i = 0;
+            this.valueGeneratorMock.Setup(m => m.GetValue(It.IsAny<PropertyInfo>()))
+                .Returns<PropertyInfo>(pi =>
+                    this.typeGenerator.GetObject(types[i++]));
 
-            Assert.IsNull(result);
+            var result = this.typeGenerator.GetObject(typeof (InfiniteRecursiveClass1)) as InfiniteRecursiveClass1;
+
+            Assert.IsNull(result.InfinietRecursiveClassA.InfiniteRecursiveClassB);
         }
 
         [TestMethod]
@@ -74,7 +82,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void RecursionGuard_Test()
+        public void HandledType_Test()
         {
             throw new NotImplementedException();
         }

@@ -60,5 +60,9 @@
         public const string ColumnNotInInputList = "Primary key property doesn't match any input element. {0}";
 
         public const string InsertionDoesNotSupportType = "Insertion doesn't support type <{0}>, value <{1}>.";
+
+        public const string RequestForMoreThan2UniqueBooleanValues = "Request for more than two unique Boolean values";
+
+        public const string ByteUniqueValueOverflow = "Overflow generating unique byte value.";
     }
 }

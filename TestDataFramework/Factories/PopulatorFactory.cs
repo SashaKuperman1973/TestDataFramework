@@ -8,6 +8,7 @@ using Castle.MicroKernel.Registration;
 using TestDataFramework.ArrayRandomizer;
 using TestDataFramework.DeferredValueGenerator.Concrete;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
+using TestDataFramework.HandledTypeGenerator;
 using TestDataFramework.Helpers;
 using TestDataFramework.Helpers.Concrete;
 using TestDataFramework.Helpers.Interfaces;
@@ -62,12 +63,7 @@ namespace TestDataFramework.Factories
             this.sqlClientPopulatorContainer.Container.Register(
 
                 Component.For<IWritePrimitives>().ImplementedBy<SqlClientWritePrimitives>()
-                    .DependsOn((k, d) =>
-                    {
-                        d["connectionStringWithDefaultCatalogue"] = connectionStringWithDefaultCatalogue;
-                        d["mustBeInATransaction"] = mustBeInATransaction;
-                        d["configuration"] = ConfigurationManager.AppSettings;
-                    }),
+                    .DependsOn(new { connectionStringWithDefaultCatalogue, mustBeInATransaction, configuration = ConfigurationManager.AppSettings }),
 
                 Component.For<DbProviderFactory>().UsingFactoryMethod(() => SqlClientFactory.Instance, true),
 
@@ -114,43 +110,102 @@ namespace TestDataFramework.Factories
         {
             get
             {
+                const string standardValueGenerator = "StandardValueGenerator";
+                const string valueAccumulator = "ValueAccumulator";
+                const string accumulatorValueGenerator = "AccumulatorValueGenerator";
+                const string uniqueValueTypeGenerator = "UniqueValueTypeGenerator";
+                const string getUniqueValueTypeGenerator = "GetUniqueValueTypeGenerator";
+                const string standardTypeGenerator = "StandardTypeGenerator";
+                const string getStandardTypeGenerator = "GetStandardTypeGenerator";
+                const string standardValueProvider = "StandardValueProvider";
+
                 var commonContainer = new WindsorContainer();
 
                 commonContainer.Register(
-                    Component.For<IPopulator>().ImplementedBy<StandardPopulator>(),
+
+                    #region Common Region
+
+                    Component.For<IPopulator>().ImplementedBy<StandardPopulator>()
+                        .DependsOn(ServiceOverride.ForKey<ITypeGenerator>().Eq(standardTypeGenerator)),
 
                     Component.For<ITypeGenerator>()
-                        .ImplementedBy<StandardTypeGenerator>(),
-
-                    Component.For<Func<ITypeGenerator, IValueGenerator>>()
-                        .Instance(typeGenerator => commonContainer.Resolve<IValueGenerator>(new {typeGenerator})),
-
-                    Component.For<Random>(),
+                        .ImplementedBy<StandardTypeGenerator>()
+                        .DependsOn(ServiceOverride.ForKey<IValueGenerator>().Eq(standardValueGenerator))
+                        .Named(standardTypeGenerator),
 
                     Component.For<IValueGenerator>()
-                        .ImplementedBy<StandardValueGenerator>(),
+                        .ImplementedBy<StandardValueGenerator>()
+                        .DependsOn(ServiceOverride.ForKey<IValueProvider>().Eq(standardValueProvider))
+                        .DependsOn(
+                            ServiceOverride.ForKey<StandardValueGenerator.GetTypeGeneratorDelegate>()
+                                .Eq(getStandardTypeGenerator))
+                        .Named(standardValueGenerator),
+
+                    Component.For<StandardValueGenerator.GetTypeGeneratorDelegate>()
+                        .Instance(() => commonContainer.Resolve<ITypeGenerator>(standardTypeGenerator))
+                        .Named(getStandardTypeGenerator),
+
+                    Component.For<Random>().ImplementedBy<Random>(),
 
                     Component.For<DateTimeProvider>().Instance(() => Helper.Now),
 
-                    Component.For<Func<IValueGenerator, IArrayRandomizer>>()
-                        .Instance(valueGenerator => commonContainer.Resolve<IArrayRandomizer>(new {valueGenerator})),
+                    Component.For<Func<IArrayRandomizer>>()
+                        .Instance(() => commonContainer.Resolve<IArrayRandomizer>(standardValueGenerator)),
 
-                    Component.For<IArrayRandomizer>().ImplementedBy<StandardArrayRandomizer>(),
+                    Component.For<IArrayRandomizer>()
+                        .ImplementedBy<StandardArrayRandomizer>()
+                        .DependsOn(
+                            ServiceOverride.ForKey<IValueGenerator>().Eq(standardValueGenerator)),
 
                     Component.For<LetterEncoder>(),
 
-                    Component.For<IPropertyValueAccumulator>().ImplementedBy<StandardPropertyValueAccumulator>().LifestyleTransient(),
+                    Component.For<IPropertyValueAccumulator>()
+                        .ImplementedBy<StandardPropertyValueAccumulator>(),
 
                     Component.For<IDeferredValueGenerator<ulong>>()
                         .ImplementedBy<StandardDeferredValueGenerator<ulong>>(),
 
-                    Component.For<IValueProvider>().ImplementedBy<StandardRandomizer>().DependsOn((k, d) =>
-                    {
-                        d["dateTimeMinValue"] = SqlDateTime.MinValue.Value.Ticks;
-                        d["dateTimeMaxValue"] = SqlDateTime.MaxValue.Value.Ticks;
-                    }),
+                    Component.For<IValueProvider>().ImplementedBy<StandardRandomizer>()
+                    .DependsOn(new { dateTimeMinValue = SqlDateTime.MinValue.Value.Ticks, dateTimeMaxValue = SqlDateTime.MaxValue.Value.Ticks })
+                    .Named(standardValueProvider),
 
-                    Component.For<IRandomSymbolStringGenerator>().ImplementedBy<RandomSymbolStringGenerator>()
+                    Component.For<IRandomSymbolStringGenerator>().ImplementedBy<RandomSymbolStringGenerator>(),
+
+                    #endregion Common Region
+
+                    #region Handled Type Generator
+
+                    Component.For<IHandledTypeGenerator>()
+                        .ImplementedBy<StandardHandledTypeGenerator>()
+                        .DependsOn(
+                            ServiceOverride.ForKey<IValueGenerator>().Eq(standardValueGenerator)),
+
+                    Component.For<StandardHandledTypeGenerator.CreateAccumulatorValueGeneratorDelegate>()
+                        .Instance(() => commonContainer.Resolve<IValueGenerator>(accumulatorValueGenerator)),
+
+                    Component.For<IValueGenerator>()
+                        .ImplementedBy<StandardValueGenerator>()
+                        .DependsOn(ServiceOverride.ForKey<IValueProvider>().Eq(valueAccumulator))
+                        .DependsOn(
+                            ServiceOverride.ForKey<StandardValueGenerator.GetTypeGeneratorDelegate>()
+                                .Eq(getUniqueValueTypeGenerator))
+                        .Named(accumulatorValueGenerator)
+                        .LifestyleTransient(),
+
+                    Component.For<IValueProvider>().ImplementedBy<AccumulatorValueProvider>().Named(valueAccumulator)
+                        .LifestyleTransient(),
+
+                    Component.For<StandardValueGenerator.GetTypeGeneratorDelegate>()
+                        .Instance(() => commonContainer.Resolve<ITypeGenerator>(uniqueValueTypeGenerator))
+                        .Named(getUniqueValueTypeGenerator),
+
+                    Component.For<ITypeGenerator>()
+                        .ImplementedBy<UniqueValueTypeGenerator>().Named(uniqueValueTypeGenerator),
+
+                    Component.For<UniqueValueTypeGenerator.GetAccumulatorValueGenerator>()
+                        .Instance(typeGenerator => commonContainer.Resolve<IValueGenerator>(accumulatorValueGenerator))
+
+                    #endregion Handled Type Generator
 
                     );
 

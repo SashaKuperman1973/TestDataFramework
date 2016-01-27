@@ -6,14 +6,14 @@ namespace TestDataFramework.Helpers
 {
     public class LetterEncoder
     {
-        public virtual string Encode(ulong number, int stringLength)
+        public virtual string Encode(ulong number, int maxStringLength)
         {
             var sb = new StringBuilder();
 
             int digitCount = 0;
 
             ulong whole = number;
-            while (digitCount++ < stringLength)
+            while (digitCount++ < maxStringLength)
             {
                 ulong remainder = whole%26;
                 whole /= 26;
@@ -32,9 +32,9 @@ namespace TestDataFramework.Helpers
                 sb.Insert(0, ascii);
             }
 
-            if (digitCount > stringLength)
+            if (digitCount > maxStringLength)
             {
-                throw new OverflowException(string.Format(Messages.StringGeneratorOverflow, number, stringLength));
+                throw new OverflowException(string.Format(Messages.StringGeneratorOverflow, number, maxStringLength));
             }
 
             string result = sb.ToString();

@@ -23,21 +23,22 @@ namespace TestDataFramework.TypeGenerator
 
         #endregion Fields
 
-        public StandardTypeGenerator(Func<ITypeGenerator, IValueGenerator> getValueGenerator, IHandledTypeGenerator handledTypeGenerator)
+        public StandardTypeGenerator(IValueGenerator valueGenerator, IHandledTypeGenerator handledTypeGenerator)
         {
-            this.valueGenerator = getValueGenerator(this);
+            this.valueGenerator = valueGenerator;
             this.handledTypeGenerator = handledTypeGenerator;
         }
 
         #region Private methods
 
-        private object ConstructObject(Type forType)
+        private object ConstructObject(Type forType, Action<object> fillObject)
         {
             StandardTypeGenerator.Logger.Debug("Entering ConstructObject");
 
             if (this.complexTypeProcessingRecursionGuard.Contains(forType))
             {
-                StandardTypeGenerator.Logger.Debug("Circular reference encountered. Returning null. Type: " + forType);
+                StandardTypeGenerator.Logger.Debug("Circular reference encountered. Type: " + forType);
+
                 return null;
             }
 
@@ -49,14 +50,14 @@ namespace TestDataFramework.TypeGenerator
             {
                 this.complexTypeProcessingRecursionGuard.Pop();
 
-                StandardTypeGenerator.Logger.Debug("Type has no public default constructor. Returning null. Type: " + forType);
+                StandardTypeGenerator.Logger.Debug("Type has no public default constructor. Type: " + forType);
 
                 return null;
             }
 
             object objectToFill = defaultConstructor.Invoke(null);
 
-            this.FillObject(objectToFill);
+            fillObject(objectToFill);
             this.complexTypeProcessingRecursionGuard.Pop();
 
             StandardTypeGenerator.Logger.Debug("Exiting ConstructObject");
@@ -69,7 +70,7 @@ namespace TestDataFramework.TypeGenerator
             return targetProperties;
         }
 
-        private void SetProperty(object objectToFill, PropertyInfo targetPropertyInfo)
+        protected virtual void SetProperty(object objectToFill, PropertyInfo targetPropertyInfo)
         {
             object targetPropertyValue = this.valueGenerator.GetValue(targetPropertyInfo);
             targetPropertyInfo.SetValue(objectToFill, targetPropertyValue);
@@ -81,34 +82,34 @@ namespace TestDataFramework.TypeGenerator
 
         public virtual object GetObject<T>(ConcurrentDictionary<PropertyInfo, Action<T>> explicitProperySetters)
         {
-            object objectToFill = this.ConstructObject(typeof (T));
+            object result = this.ConstructObject(typeof (T), objectToFill => this.FillObject((T)objectToFill, explicitProperySetters));
 
-            if (objectToFill == null)
+            if (result == null)
             {
-                return null;
-            }
-
-            this.FillObject((T)objectToFill, explicitProperySetters);
+                return typeof(T).IsValueType
+                    ? Activator.CreateInstance(typeof(T))
+                    : null;
+            }            
 
             StandardTypeGenerator.Logger.Debug("Exiting GetObject<T>");
-            return objectToFill;
+            return result;
         }
 
         public virtual object GetObject(Type forType)
         {
             StandardTypeGenerator.Logger.Debug("Entering GetObject");
 
-            object objectToFill = this.ConstructObject(forType);
+            object result = this.ConstructObject(forType, this.FillObject);
 
-            if (objectToFill == null)
+            if (result == null)
             {
-                return null;
+                return forType.IsValueType
+                    ? Activator.CreateInstance(forType)
+                    : null;
             }
 
-            this.FillObject(objectToFill);
-
             StandardTypeGenerator.Logger.Debug("Exiting GetObject");
-            return objectToFill;
+            return result;
         }
 
         #endregion Public methods

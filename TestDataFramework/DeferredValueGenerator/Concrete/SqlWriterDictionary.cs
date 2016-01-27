@@ -42,6 +42,9 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
                 {typeof (short), this.WriteNumberCommand},
                 {typeof (long), this.WriteNumberCommand},
                 {typeof (byte), this.WriteNumberCommand},
+                {typeof (uint), this.WriteNumberCommand},
+                {typeof (ushort), this.WriteNumberCommand},
+                {typeof (ulong), this.WriteNumberCommand},
                 {typeof (string), this.WriteStringCommand},
             };
         }

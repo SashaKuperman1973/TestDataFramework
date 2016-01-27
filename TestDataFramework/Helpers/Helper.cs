@@ -101,5 +101,11 @@ namespace TestDataFramework.Helpers
 
             return result;
         }
+
+        public static bool IsValueLikeType(this Type type)
+        {
+            bool result = type.IsValueType || type == typeof(string);
+            return result;
+        }
     }
 }

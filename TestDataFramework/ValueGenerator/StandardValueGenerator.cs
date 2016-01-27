@@ -18,34 +18,30 @@ namespace TestDataFramework.ValueGenerator
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(StandardValueGenerator));
 
-        private readonly IValueProvider randomizer;
-        private readonly ITypeGenerator typeGenerator;
-        private readonly IArrayRandomizer arrayRandomizer;
+        private readonly IValueProvider valueProvider;
+        private readonly GetTypeGeneratorDelegate getTypeGenerator;
+        private readonly Func<IArrayRandomizer> getArrayRandomizer;
         private readonly IUniqueValueGenerator uniqueValueGenerator;
 
         private delegate object GetValueForTypeDelegate(PropertyInfo propertyInfo);
 
+        public delegate ITypeGenerator GetTypeGeneratorDelegate();
+
         private readonly Dictionary<Type, GetValueForTypeDelegate> typeValueGetterDictionary;
 
-        public StandardValueGenerator(IValueProvider randomizer, ITypeGenerator typeGenerator,
-            Func<IValueGenerator, IArrayRandomizer> getArrayRandomizer, IUniqueValueGenerator uniqueValueGenerator)
-            : this(randomizer, x => typeGenerator, getArrayRandomizer, uniqueValueGenerator)
-        {
-        }
-
-        public StandardValueGenerator(IValueProvider randomizer, Func<IValueGenerator, ITypeGenerator> getTypeGenerator,
-            Func<IValueGenerator, IArrayRandomizer> getArrayRandomizer, IUniqueValueGenerator uniqueValueGenerator)
+        public StandardValueGenerator(IValueProvider valueProvider, GetTypeGeneratorDelegate getTypeGenerator,
+            Func<IArrayRandomizer> getArrayRandomizer, IUniqueValueGenerator uniqueValueGenerator)
         {
             StandardValueGenerator.Logger.Debug("Entering constructor");
 
-            this.randomizer = randomizer;
-            this.typeGenerator = getTypeGenerator(this);
-            this.arrayRandomizer = getArrayRandomizer(this);
+            this.valueProvider = valueProvider;
+            this.getTypeGenerator = getTypeGenerator;
+            this.getArrayRandomizer = getArrayRandomizer;
             this.uniqueValueGenerator = uniqueValueGenerator;
 
             this.typeValueGetterDictionary = new Dictionary<Type, GetValueForTypeDelegate>
             {
-                {typeof (EmailAttribute), x => this.randomizer.GetEmailAddress()},
+                {typeof (EmailAttribute), x => this.valueProvider.GetEmailAddress()},
                 {typeof (PrimaryKeyAttribute), this.GetPrimaryKey},
                 {typeof (string), this.GetString},
                 {typeof (decimal), this.GetDecimal},
@@ -55,10 +51,10 @@ namespace TestDataFramework.ValueGenerator
                 {typeof (ulong), this.GetLong},
                 {typeof (short), this.GetShort},
                 {typeof (ushort), this.GetShort},
-                {typeof (bool), x => this.randomizer.GetBoolean()},
-                {typeof (char), x => this.randomizer.GetCharacter()},
+                {typeof (bool), x => this.valueProvider.GetBoolean()},
+                {typeof (char), x => this.valueProvider.GetCharacter()},
                 {typeof (DateTime), this.GetDateTime},
-                {typeof (byte), x => this.randomizer.GetByte()},
+                {typeof (byte), x => this.valueProvider.GetByte()},
                 {typeof (double), this.GetDouble},
                 {typeof (Guid), x => StandardValueGenerator.NoOp(typeof(Guid)) },
             };
@@ -91,11 +87,11 @@ namespace TestDataFramework.ValueGenerator
         {
             StandardValueGenerator.Logger.Debug("Entering GetValue(PropertyInfo propertyInfo, Type type)");
 
-            propertyInfo.IsNotNull(nameof(type));
+            type.IsNotNull(nameof(type));
 
             if (type.IsArray)
             {                
-                return this.arrayRandomizer.GetArray(propertyInfo, type);
+                return this.getArrayRandomizer().GetArray(propertyInfo, type);
             }
 
             Type forType = Nullable.GetUnderlyingType(type) ?? type;
@@ -105,7 +101,7 @@ namespace TestDataFramework.ValueGenerator
             object result = 
                 this.typeValueGetterDictionary.TryGetValue(forType, out getter)
                 ? getter(propertyInfo)
-                : this.typeGenerator.GetObject(forType);
+                : this.getTypeGenerator().GetObject(forType);
 
             StandardValueGenerator.Logger.Debug("Exiting GetValue(PropertyInfo propertyInfo, Type type)");
             return result;
@@ -113,10 +109,10 @@ namespace TestDataFramework.ValueGenerator
 
         #region Private Methods
 
-        private static object NoOp(Type fortype)
+        private static object NoOp(Type forType)
         {
-            return fortype.IsValueType
-                ? Activator.CreateInstance(fortype)
+            return forType.IsValueType
+                ? Activator.CreateInstance(forType)
                 : null;
         }
 
@@ -127,7 +123,7 @@ namespace TestDataFramework.ValueGenerator
             var lengthAttribute = propertyInfo?.GetCustomAttribute<StringLengthAttribute>();
             int? length = lengthAttribute?.Length;
 
-            string result = this.randomizer.GetString(length);
+            string result = this.valueProvider.GetString(length);
 
             StandardValueGenerator.Logger.Debug("Exiting GetString");
             return result;
@@ -140,7 +136,7 @@ namespace TestDataFramework.ValueGenerator
             var precisionAttribute = propertyInfo?.GetCustomAttribute<PrecisionAttribute>();
             int? precision = precisionAttribute?.Precision;
 
-            decimal result = this.randomizer.GetDecimal(precision);
+            decimal result = this.valueProvider.GetDecimal(precision);
 
             StandardValueGenerator.Logger.Debug("Exiting GetDecimal");
             return result;
@@ -153,7 +149,7 @@ namespace TestDataFramework.ValueGenerator
             var precisionAttribute = propertyInfo?.GetCustomAttribute<PrecisionAttribute>();
             int? precision = precisionAttribute?.Precision;
 
-            double result = this.randomizer.GetDouble(precision);
+            double result = this.valueProvider.GetDouble(precision);
 
             StandardValueGenerator.Logger.Debug("Exiting GetDouble");
             return result;
@@ -176,7 +172,7 @@ namespace TestDataFramework.ValueGenerator
                 throw new ArgumentOutOfRangeException(string.Format(Messages.MaxAttributeOutOfRange, "int"), (Exception) null);
             }
 
-            int result = this.randomizer.GetInteger((int?)max);
+            int result = this.valueProvider.GetInteger((int?)max);
 
             StandardValueGenerator.Logger.Debug("Exiting GetInteger");
             return result;
@@ -194,7 +190,7 @@ namespace TestDataFramework.ValueGenerator
                 throw new ArgumentOutOfRangeException(Messages.MaxAttributeLessThanZero, (Exception)null);
             }
 
-            long result = this.randomizer.GetLongInteger(max);
+            long result = this.valueProvider.GetLongInteger(max);
 
             StandardValueGenerator.Logger.Debug("Exiting GetLong");
             return result;
@@ -217,7 +213,7 @@ namespace TestDataFramework.ValueGenerator
                 throw new ArgumentOutOfRangeException(string.Format(Messages.MaxAttributeOutOfRange, "short"), (Exception)null);
             }
 
-            short result = this.randomizer.GetShortInteger((short?)max);
+            short result = this.valueProvider.GetShortInteger((short?)max);
 
             StandardValueGenerator.Logger.Debug("Exiting GetShort");
             return result;
@@ -230,7 +226,7 @@ namespace TestDataFramework.ValueGenerator
             var pastOrFutureAttribute = propertyInfo?.GetCustomAttribute<PastOrFutureAttribute>();
             PastOrFuture? pastOrFuture = pastOrFutureAttribute?.PastOrFuture;
 
-            DateTime result = this.randomizer.GetDateTime((PastOrFuture?)pastOrFuture, this.randomizer.GetLongInteger);
+            DateTime result = this.valueProvider.GetDateTime((PastOrFuture?)pastOrFuture, this.valueProvider.GetLongInteger);
 
             StandardValueGenerator.Logger.Debug("Exiting GetDateTime");
             return result;

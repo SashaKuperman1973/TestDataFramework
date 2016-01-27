@@ -30,24 +30,27 @@ namespace TestDataFramework.HandledTypeGenerator
         private readonly IValueGenerator valueGenerator;
         private readonly CreateAccumulatorValueGeneratorDelegate getAccumulatorValueGenerator;
         private readonly Random random;
-        private readonly IUniqueValueGenerator uniqueValueGenerator;
         private readonly int maxCollectionElementCount;
 
         #endregion Fields
 
-        public StandardHandledTypeGenerator(IValueGenerator valueGenerator, CreateAccumulatorValueGeneratorDelegate getAccumulatorValueGenerator, Random random, IUniqueValueGenerator uniqueValueGenerator, int maxCollectionElementCount = 5)
+        public StandardHandledTypeGenerator(IValueGenerator valueGenerator,
+            CreateAccumulatorValueGeneratorDelegate getAccumulatorValueGenerator, Random random,
+            int maxCollectionElementCount = 5)
         {
             this.valueGenerator = valueGenerator;
             this.random = random;
-            this.uniqueValueGenerator = uniqueValueGenerator;
             this.getAccumulatorValueGenerator = getAccumulatorValueGenerator;
             this.maxCollectionElementCount = maxCollectionElementCount;
 
             this.handledTypeValueGetterDictionary = new Dictionary<Type, HandledTypeValueGetter>
             {
-                {typeof(KeyValuePair<,>), this.GetKeyValuePair },
-                {typeof(IDictionary<,>), this.GetDictionary },
-                {typeof(Dictionary<,>), this.GetDictionary },
+                {typeof (KeyValuePair<,>), this.GetKeyValuePair},
+                {typeof (IDictionary<,>), this.GetDictionary},
+                {typeof (Dictionary<,>), this.GetDictionary},
+                {typeof (IEnumerable<>), this.GetList},
+                {typeof (List<>), this.GetList},
+                {typeof (IList<>), this.GetList},
             };
         }
 
@@ -123,7 +126,7 @@ namespace TestDataFramework.HandledTypeGenerator
 
                 if (typeArray[0].IsValueLikeType())
                 {
-                    IValueGenerator accumulatorValueGenerator = this.getAccumulatorValueGenerator();             
+                    IValueGenerator accumulatorValueGenerator = this.getAccumulatorValueGenerator();
                     key = accumulatorValueGenerator.GetValue(null, typeArray[0]);
                 }
                 else
@@ -137,6 +140,23 @@ namespace TestDataFramework.HandledTypeGenerator
             };
 
             object result = this.GetGenericCollection(forType, typeof(Dictionary<,>), genericCollectionValueGenerator);
+
+            StandardHandledTypeGenerator.Logger.Debug("Exiting GetDictionary");
+            return result;
+        }
+
+        private object GetList(Type forType)
+        {
+            StandardHandledTypeGenerator.Logger.Debug("Entering GetDictionary");
+
+            Func<Type[], object[]> genericCollectionValueGenerator = typeArray =>
+            {
+                object valueGeneratorResult = this.valueGenerator.GetValue(null, typeArray[0]);
+
+                return new[] {valueGeneratorResult};
+            };
+
+            object result = this.GetGenericCollection(forType, typeof (List<>), genericCollectionValueGenerator);
 
             StandardHandledTypeGenerator.Logger.Debug("Exiting GetDictionary");
             return result;

@@ -65,7 +65,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
             this.service.WritePrimitives(writer, tableName, columnData.AllColumns, this.primaryKeyValues);
 
-            this.service.CopyForeignKeyColumns(columnData.ForeignKeyColumns);
+            this.service.CopyPrimaryToForeignKeyColumns(columnData.ForeignKeyColumns);
 
             this.IsWriteDone = true;
 

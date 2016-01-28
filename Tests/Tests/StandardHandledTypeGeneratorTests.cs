@@ -11,6 +11,7 @@ using Moq;
 using TestDataFramework.HandledTypeGenerator;
 using TestDataFramework.UniqueValueGenerator.Interface;
 using TestDataFramework.ValueGenerator;
+using TestDataFramework.ValueGenerator.Interface;
 using Tests.TestModels;
 
 namespace Tests.Tests

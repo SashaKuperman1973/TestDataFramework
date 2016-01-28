@@ -7,6 +7,7 @@ using TestDataFramework.Exceptions;
 using TestDataFramework.HandledTypeGenerator;
 using TestDataFramework.Helpers;
 using TestDataFramework.ValueGenerator;
+using TestDataFramework.ValueGenerator.Interface;
 
 namespace TestDataFramework.TypeGenerator
 {
@@ -86,9 +87,7 @@ namespace TestDataFramework.TypeGenerator
 
             if (result == null)
             {
-                return typeof(T).IsValueType
-                    ? Activator.CreateInstance(typeof(T))
-                    : null;
+                return Helper.GetDefaultValue(typeof(T));
             }            
 
             StandardTypeGenerator.Logger.Debug("Exiting GetObject<T>");
@@ -103,9 +102,7 @@ namespace TestDataFramework.TypeGenerator
 
             if (result == null)
             {
-                return forType.IsValueType
-                    ? Activator.CreateInstance(forType)
-                    : null;
+                return Helper.GetDefaultValue(forType);
             }
 
             StandardTypeGenerator.Logger.Debug("Exiting GetObject");

@@ -9,6 +9,7 @@ using TestDataFramework.Exceptions;
 using TestDataFramework.HandledTypeGenerator;
 using TestDataFramework.TypeGenerator;
 using TestDataFramework.ValueGenerator;
+using TestDataFramework.ValueGenerator.Interface;
 using Tests.TestModels;
 
 namespace Tests.Tests

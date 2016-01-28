@@ -21,7 +21,7 @@ namespace Tests.Tests
         private Mock<IValueProvider> randomizerMock;
         private Mock<ITypeGenerator> typeGeneratorMock;
         private Mock<IArrayRandomizer> arrayRandomizerMock;
-        private StandardValueGenerator valueGenerator;
+        private BaseValueGenerator valueGenerator;
         private Mock<IUniqueValueGenerator> uniqueValueGeneratorMock = new Mock<IUniqueValueGenerator>();
 
         private const int IntegerResult = 5;
@@ -35,6 +35,20 @@ namespace Tests.Tests
         private const byte ByteResult = 8;
         private const double DoubleResult = 574.1575d;
         private const string EmailAddress = "address@domain.com";
+
+        private class ValueGenerator : BaseValueGenerator
+        {
+            public ValueGenerator(IValueProvider valueProvider, GetTypeGeneratorDelegate getTypeGenerator,
+                Func<IArrayRandomizer> getArrayRandomizer, IUniqueValueGenerator uniqueValueGenerator)
+                : base(valueProvider, getTypeGenerator, getArrayRandomizer, uniqueValueGenerator)
+            {
+            }
+
+            protected override object GetGuid(PropertyInfo propertyInfo)
+            {
+                return default(Guid);
+            }
+        }
 
         [TestInitialize]
         public void Initialize()
@@ -63,7 +77,7 @@ namespace Tests.Tests
             this.randomizerMock.Setup(m => m.GetDouble(It.Is<int?>(precision => precision == null))).Returns(StandardValueGeneratorTests.DoubleResult);
             this.randomizerMock.Setup(m => m.GetEmailAddress()).Returns(StandardValueGeneratorTests.EmailAddress);
 
-            this.valueGenerator = new StandardValueGenerator(this.randomizerMock.Object, () => this.typeGeneratorMock.Object, () => this.arrayRandomizerMock.Object, this.uniqueValueGeneratorMock.Object);
+            this.valueGenerator = new ValueGenerator(this.randomizerMock.Object, () => this.typeGeneratorMock.Object, () => this.arrayRandomizerMock.Object, this.uniqueValueGeneratorMock.Object);
         }
 
         [TestMethod]

@@ -81,7 +81,7 @@ namespace Tests.Tests
 
             this.serviceMock.Verify(m => m.WritePrimitives(this.writePrimitivesMock.Object, tableName, columnList, It.Is<List<ColumnSymbol>>(l => l.Count == 0)), Times.Once);
 
-            this.serviceMock.Verify(m => m.CopyForeignKeyColumns(foreignKeyColumns), Times.Once());
+            this.serviceMock.Verify(m => m.CopyPrimaryToForeignKeyColumns(foreignKeyColumns), Times.Once());
         }
 
         [TestMethod]

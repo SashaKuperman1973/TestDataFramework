@@ -10,13 +10,14 @@ using TestDataFramework.Helpers;
 using TestDataFramework.TypeGenerator;
 using TestDataFramework.UniqueValueGenerator;
 using TestDataFramework.UniqueValueGenerator.Interface;
+using TestDataFramework.ValueGenerator.Interface;
 using TestDataFramework.ValueProvider;
 
 namespace TestDataFramework.ValueGenerator
 {
-    public class StandardValueGenerator : IValueGenerator
+    public abstract class BaseValueGenerator : IValueGenerator
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(StandardValueGenerator));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(BaseValueGenerator));
 
         private readonly IValueProvider valueProvider;
         private readonly GetTypeGeneratorDelegate getTypeGenerator;
@@ -29,10 +30,10 @@ namespace TestDataFramework.ValueGenerator
 
         private readonly Dictionary<Type, GetValueForTypeDelegate> typeValueGetterDictionary;
 
-        public StandardValueGenerator(IValueProvider valueProvider, GetTypeGeneratorDelegate getTypeGenerator,
+        protected BaseValueGenerator(IValueProvider valueProvider, GetTypeGeneratorDelegate getTypeGenerator,
             Func<IArrayRandomizer> getArrayRandomizer, IUniqueValueGenerator uniqueValueGenerator)
         {
-            StandardValueGenerator.Logger.Debug("Entering constructor");
+            BaseValueGenerator.Logger.Debug("Entering constructor");
 
             this.valueProvider = valueProvider;
             this.getTypeGenerator = getTypeGenerator;
@@ -56,16 +57,16 @@ namespace TestDataFramework.ValueGenerator
                 {typeof (DateTime), this.GetDateTime},
                 {typeof (byte), x => this.valueProvider.GetByte()},
                 {typeof (double), this.GetDouble},
-                {typeof (Guid), x => StandardValueGenerator.NoOp(typeof(Guid)) },
+                {typeof (Guid), this.GetGuid },
             };
 
-            StandardValueGenerator.Logger.Debug("Exiting constructor");
+            BaseValueGenerator.Logger.Debug("Exiting constructor");
         }
 
         // This is the general entry point.
         public virtual object GetValue(PropertyInfo propertyInfo)
         {
-            StandardValueGenerator.Logger.Debug("Entering GetValue(PropertyInfo propertyInfo)");
+            BaseValueGenerator.Logger.Debug("Entering GetValue(PropertyInfo propertyInfo)");
 
             propertyInfo.IsNotNull(nameof(propertyInfo));
 
@@ -78,14 +79,15 @@ namespace TestDataFramework.ValueGenerator
 
             object result = getter != null ? getter(propertyInfo) : this.GetValue(propertyInfo, propertyInfo.PropertyType);
 
-            StandardValueGenerator.Logger.Debug("Exiting GetValue(PropertyInfo propertyInfo)");
+            BaseValueGenerator.Logger.Debug("Exiting GetValue(PropertyInfo propertyInfo)");
             return result;
         }
 
-        // This entry point is used only when a different type is requested for a particular PropertyInfo
+        // This entry point is used when a different type is requested for a particular 
+        // PropertyInfo or property info doesn't exist in the calling context.
         public virtual object GetValue(PropertyInfo propertyInfo, Type type)
         {
-            StandardValueGenerator.Logger.Debug("Entering GetValue(PropertyInfo propertyInfo, Type type)");
+            BaseValueGenerator.Logger.Debug("Entering GetValue(PropertyInfo propertyInfo, Type type)");
 
             type.IsNotNull(nameof(type));
 
@@ -103,61 +105,56 @@ namespace TestDataFramework.ValueGenerator
                 ? getter(propertyInfo)
                 : this.getTypeGenerator().GetObject(forType);
 
-            StandardValueGenerator.Logger.Debug("Exiting GetValue(PropertyInfo propertyInfo, Type type)");
+            BaseValueGenerator.Logger.Debug("Exiting GetValue(PropertyInfo propertyInfo, Type type)");
             return result;
         }
 
         #region Private Methods
 
-        private static object NoOp(Type forType)
-        {
-            return forType.IsValueType
-                ? Activator.CreateInstance(forType)
-                : null;
-        }
+        protected abstract object GetGuid(PropertyInfo propertyInfo);
 
         private object GetString(PropertyInfo propertyInfo)
         {
-            StandardValueGenerator.Logger.Debug("Entering GetString");
+            BaseValueGenerator.Logger.Debug("Entering GetString");
 
             var lengthAttribute = propertyInfo?.GetCustomAttribute<StringLengthAttribute>();
             int? length = lengthAttribute?.Length;
 
             string result = this.valueProvider.GetString(length);
 
-            StandardValueGenerator.Logger.Debug("Exiting GetString");
+            BaseValueGenerator.Logger.Debug("Exiting GetString");
             return result;
         }
 
         private object GetDecimal(PropertyInfo propertyInfo)
         {
-            StandardValueGenerator.Logger.Debug("Entering GetDecimal");
+            BaseValueGenerator.Logger.Debug("Entering GetDecimal");
 
             var precisionAttribute = propertyInfo?.GetCustomAttribute<PrecisionAttribute>();
             int? precision = precisionAttribute?.Precision;
 
             decimal result = this.valueProvider.GetDecimal(precision);
 
-            StandardValueGenerator.Logger.Debug("Exiting GetDecimal");
+            BaseValueGenerator.Logger.Debug("Exiting GetDecimal");
             return result;
         }
 
         private object GetDouble(PropertyInfo propertyInfo)
         {
-            StandardValueGenerator.Logger.Debug("Entering GetDouble");
+            BaseValueGenerator.Logger.Debug("Entering GetDouble");
 
             var precisionAttribute = propertyInfo?.GetCustomAttribute<PrecisionAttribute>();
             int? precision = precisionAttribute?.Precision;
 
             double result = this.valueProvider.GetDouble(precision);
 
-            StandardValueGenerator.Logger.Debug("Exiting GetDouble");
+            BaseValueGenerator.Logger.Debug("Exiting GetDouble");
             return result;
         }
 
         private object GetInteger(PropertyInfo propertyInfo)
         {
-            StandardValueGenerator.Logger.Debug("Entering GetInteger");
+            BaseValueGenerator.Logger.Debug("Entering GetInteger");
 
             var maxAttribute = propertyInfo?.GetCustomAttribute<MaxAttribute>();
             long? max = maxAttribute?.Max;
@@ -174,13 +171,13 @@ namespace TestDataFramework.ValueGenerator
 
             int result = this.valueProvider.GetInteger((int?)max);
 
-            StandardValueGenerator.Logger.Debug("Exiting GetInteger");
+            BaseValueGenerator.Logger.Debug("Exiting GetInteger");
             return result;
         }
 
         private object GetLong(PropertyInfo propertyInfo)
         {
-            StandardValueGenerator.Logger.Debug("Entering GetLong");
+            BaseValueGenerator.Logger.Debug("Entering GetLong");
 
             var maxAttribute = propertyInfo?.GetCustomAttribute<MaxAttribute>();
             long? max = maxAttribute?.Max;
@@ -192,13 +189,13 @@ namespace TestDataFramework.ValueGenerator
 
             long result = this.valueProvider.GetLongInteger(max);
 
-            StandardValueGenerator.Logger.Debug("Exiting GetLong");
+            BaseValueGenerator.Logger.Debug("Exiting GetLong");
             return result;
         }
 
         private object GetShort(PropertyInfo propertyInfo)
         {
-            StandardValueGenerator.Logger.Debug("Entering GetShort");
+            BaseValueGenerator.Logger.Debug("Entering GetShort");
 
             var maxAttribute = propertyInfo?.GetCustomAttribute<MaxAttribute>();
             long? max = maxAttribute?.Max;
@@ -215,20 +212,20 @@ namespace TestDataFramework.ValueGenerator
 
             short result = this.valueProvider.GetShortInteger((short?)max);
 
-            StandardValueGenerator.Logger.Debug("Exiting GetShort");
+            BaseValueGenerator.Logger.Debug("Exiting GetShort");
             return result;
         }
 
         private object GetDateTime(PropertyInfo propertyInfo)
         {
-            StandardValueGenerator.Logger.Debug("Entering GetDateTime");
+            BaseValueGenerator.Logger.Debug("Entering GetDateTime");
 
             var pastOrFutureAttribute = propertyInfo?.GetCustomAttribute<PastOrFutureAttribute>();
             PastOrFuture? pastOrFuture = pastOrFutureAttribute?.PastOrFuture;
 
             DateTime result = this.valueProvider.GetDateTime((PastOrFuture?)pastOrFuture, this.valueProvider.GetLongInteger);
 
-            StandardValueGenerator.Logger.Debug("Exiting GetDateTime");
+            BaseValueGenerator.Logger.Debug("Exiting GetDateTime");
             return result;
         }
 

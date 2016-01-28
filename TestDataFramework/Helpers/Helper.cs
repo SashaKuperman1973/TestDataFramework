@@ -107,5 +107,12 @@ namespace TestDataFramework.Helpers
             bool result = type.IsValueType || type == typeof(string);
             return result;
         }
+
+        public static object GetDefaultValue(Type forType)
+        {
+            return forType.IsValueType
+                ? Activator.CreateInstance(forType)
+                : null;
+        }
     }
 }

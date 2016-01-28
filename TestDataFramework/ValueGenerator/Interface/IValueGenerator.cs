@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace TestDataFramework.ValueGenerator
+namespace TestDataFramework.ValueGenerator.Interface
 {
     public interface IValueGenerator
     {

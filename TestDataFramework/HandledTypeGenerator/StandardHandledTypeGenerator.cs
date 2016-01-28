@@ -13,6 +13,7 @@ using TestDataFramework.UniqueValueGenerator.Interface;
 using TestDataFramework.ValueGenerator;
 using TestDataFramework.ValueProvider;
 using TestDataFramework.Helpers;
+using TestDataFramework.ValueGenerator.Interface;
 
 namespace TestDataFramework.HandledTypeGenerator
 {

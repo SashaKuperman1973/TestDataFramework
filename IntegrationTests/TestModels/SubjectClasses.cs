@@ -82,7 +82,10 @@ namespace IntegrationTests.TestModels
         public int Key { get; set; }
 
         [ForeignKey(typeof(SubjectClass), "Key")]
-        public int ForeignKey { get; set; }
+        public int ForeignIntKey { get; set; }
+
+        [ForeignKey(typeof(SubjectClass), "GuidKey")]
+        public Guid ForeignGuidKey { get; set; }
 
         public int SecondInteger { get; set; }
     }

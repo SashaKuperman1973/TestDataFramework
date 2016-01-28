@@ -233,7 +233,7 @@ namespace Tests.Tests
 
             // Act
 
-            this.insertRecordService.CopyForeignKeyColumns(columns);
+            this.insertRecordService.CopyPrimaryToForeignKeyColumns(columns);
 
             // Assert
 
@@ -263,7 +263,7 @@ namespace Tests.Tests
             // Assert
 
             Helpers.ExceptionTest(
-                () => this.insertRecordService.CopyForeignKeyColumns(columns),
+                () => this.insertRecordService.CopyPrimaryToForeignKeyColumns(columns),
                 typeof(InvalidOperationException),
                 "Sequence contains no matching element");            
         }

@@ -117,9 +117,14 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                     new
                     {
                         PkColumnValue =
+
                             this.recordReference.IsExplicitlySet(fkpa.PropertyInfo)
+
                                 ? fkpa.PropertyInfo.GetValue(this.recordReference.RecordObject)
-                                : isForeignKeyPrimaryKeyMatch ? pkColumnMatch.Value : null,
+
+                                : isForeignKeyPrimaryKeyMatch
+                                    ? pkColumnMatch.Value
+                                    : Helper.GetDefaultValue(fkpa.PropertyInfo.PropertyType),
 
                         FkPropertyAttribute = fkpa
                     };
@@ -191,6 +196,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             columns = columns.ToList();
 
             writer.Insert(tableName, columns);
+
             this.PopulatePrimaryKeyValues(writer, primaryKeyValues, columns);
 
             InsertRecordService.Logger.Debug("Exiting WritePrimitives");
@@ -201,7 +207,6 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             InsertRecordService.Logger.Debug("Entering PopulatePrimaryKeyValues");
 
             IEnumerable<PropertyAttribute<PrimaryKeyAttribute>> pkPropertyAttributes =
-
                 this.recordReference.RecordType.GetPropertyAttributes<PrimaryKeyAttribute>();
 
             IEnumerable<ColumnSymbol> result = pkPropertyAttributes.Select(pa =>
@@ -239,7 +244,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
         #endregion WritePrimitives
 
-        public virtual void CopyForeignKeyColumns(IEnumerable<Column> foreignKeyColumns)
+        public virtual void CopyPrimaryToForeignKeyColumns(IEnumerable<Column> foreignKeyColumns)
         {
             foreignKeyColumns.ToList().ForEach(c =>
             {
@@ -249,7 +254,11 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                 }
 
                 PropertyInfo targetProperty =
-                    this.recordReference.RecordType.GetPropertiesHelper().First(p => Helper.GetColumnName(p).Equals(c.Name));
+
+                    this.recordReference.RecordType.GetPropertiesHelper().First(p =>
+
+                        Helper.GetColumnName(p).Equals(c.Name)
+                        );
 
                 targetProperty.SetValue(this.recordReference.RecordObject, c.Value);
             });

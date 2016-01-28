@@ -31,7 +31,7 @@ namespace TestDataFramework.Persistence
         {
             recordReferences = recordReferences.ToList();
 
-            if (!recordReferences.ToList().Any())
+            if (!recordReferences.Any())
             {
                 return;
             }

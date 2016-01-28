@@ -21,6 +21,8 @@ using TestDataFramework.UniqueValueGenerator.Concrete;
 using TestDataFramework.UniqueValueGenerator.Interface;
 using TestDataFramework.ValueFormatter;
 using TestDataFramework.ValueGenerator;
+using TestDataFramework.ValueGenerator.Concrete;
+using TestDataFramework.ValueGenerator.Interface;
 using TestDataFramework.ValueProvider;
 using TestDataFramework.WritePrimitives;
 
@@ -30,6 +32,10 @@ namespace TestDataFramework.Factories
     {
         private DisposableContainer sqlClientPopulatorContainer;
         private DisposableContainer memoryPopulatorContainer;
+
+        private const string GetStandardTypeGenerator = "GetStandardTypeGenerator";
+        private const string StandardValueProvider = "StandardValueProvider";
+        private const string StandardValueGenerator = "StandardValueGenerator";
 
         public IPopulator CreateSqlClientPopulator(string connectionStringWithDefaultCatalogue,
             bool mustBeInATransaction = true)
@@ -77,8 +83,15 @@ namespace TestDataFramework.Factories
 
                 Component.For<IWriterDictinary>().ImplementedBy<SqlWriterDictionary>(),
 
-                Component.For<SqlWriterCommandTextGenerator>()
+                Component.For<SqlWriterCommandTextGenerator>(),
 
+                Component.For<IValueGenerator>()
+                    .ImplementedBy<SqlClientValueGenerator>()
+                    .DependsOn(ServiceOverride.ForKey<IValueProvider>().Eq(PopulatorFactory.StandardValueProvider))
+                    .DependsOn(
+                        ServiceOverride.ForKey<BaseValueGenerator.GetTypeGeneratorDelegate>()
+                            .Eq(PopulatorFactory.GetStandardTypeGenerator))
+                    .Named(PopulatorFactory.StandardValueGenerator)
                 );
 
             return this.sqlClientPopulatorContainer.Container;
@@ -99,7 +112,15 @@ namespace TestDataFramework.Factories
 
                 Component.For<IPersistence>().ImplementedBy<MemoryPersistence>(),
 
-                Component.For<IUniqueValueGenerator>().ImplementedBy<MemoryUniqueValueGenerator>()
+                Component.For<IUniqueValueGenerator>().ImplementedBy<MemoryUniqueValueGenerator>(),
+
+                Component.For<IValueGenerator>()
+                    .ImplementedBy<MemoryValueGenerator>()
+                    .DependsOn(ServiceOverride.ForKey<IValueProvider>().Eq(PopulatorFactory.StandardValueProvider))
+                    .DependsOn(
+                        ServiceOverride.ForKey<BaseValueGenerator.GetTypeGeneratorDelegate>()
+                            .Eq(PopulatorFactory.GetStandardTypeGenerator))
+                    .Named(PopulatorFactory.StandardValueGenerator)
 
                 );
 
@@ -110,14 +131,11 @@ namespace TestDataFramework.Factories
         {
             get
             {
-                const string standardValueGenerator = "StandardValueGenerator";
                 const string valueAccumulator = "ValueAccumulator";
                 const string accumulatorValueGenerator = "AccumulatorValueGenerator";
                 const string uniqueValueTypeGenerator = "UniqueValueTypeGenerator";
                 const string getUniqueValueTypeGenerator = "GetUniqueValueTypeGenerator";
                 const string standardTypeGenerator = "StandardTypeGenerator";
-                const string getStandardTypeGenerator = "GetStandardTypeGenerator";
-                const string standardValueProvider = "StandardValueProvider";
 
                 var commonContainer = new WindsorContainer();
 
@@ -130,32 +148,24 @@ namespace TestDataFramework.Factories
 
                     Component.For<ITypeGenerator>()
                         .ImplementedBy<StandardTypeGenerator>()
-                        .DependsOn(ServiceOverride.ForKey<IValueGenerator>().Eq(standardValueGenerator))
+                        .DependsOn(ServiceOverride.ForKey<IValueGenerator>().Eq(PopulatorFactory.StandardValueGenerator))
                         .Named(standardTypeGenerator),
 
-                    Component.For<IValueGenerator>()
-                        .ImplementedBy<StandardValueGenerator>()
-                        .DependsOn(ServiceOverride.ForKey<IValueProvider>().Eq(standardValueProvider))
-                        .DependsOn(
-                            ServiceOverride.ForKey<StandardValueGenerator.GetTypeGeneratorDelegate>()
-                                .Eq(getStandardTypeGenerator))
-                        .Named(standardValueGenerator),
-
-                    Component.For<StandardValueGenerator.GetTypeGeneratorDelegate>()
+                    Component.For<BaseValueGenerator.GetTypeGeneratorDelegate>()
                         .Instance(() => commonContainer.Resolve<ITypeGenerator>(standardTypeGenerator))
-                        .Named(getStandardTypeGenerator),
+                        .Named(PopulatorFactory.GetStandardTypeGenerator),
 
                     Component.For<Random>().ImplementedBy<Random>(),
 
                     Component.For<DateTimeProvider>().Instance(() => Helper.Now),
 
                     Component.For<Func<IArrayRandomizer>>()
-                        .Instance(() => commonContainer.Resolve<IArrayRandomizer>(standardValueGenerator)),
+                        .Instance(() => commonContainer.Resolve<IArrayRandomizer>(StandardValueGenerator)),
 
                     Component.For<IArrayRandomizer>()
                         .ImplementedBy<StandardArrayRandomizer>()
                         .DependsOn(
-                            ServiceOverride.ForKey<IValueGenerator>().Eq(standardValueGenerator)),
+                            ServiceOverride.ForKey<IValueGenerator>().Eq(StandardValueGenerator)),
 
                     Component.For<LetterEncoder>(),
 
@@ -167,7 +177,7 @@ namespace TestDataFramework.Factories
 
                     Component.For<IValueProvider>().ImplementedBy<StandardRandomizer>()
                     .DependsOn(new { dateTimeMinValue = SqlDateTime.MinValue.Value.Ticks, dateTimeMaxValue = SqlDateTime.MaxValue.Value.Ticks })
-                    .Named(standardValueProvider),
+                    .Named(PopulatorFactory.StandardValueProvider),
 
                     Component.For<IRandomSymbolStringGenerator>().ImplementedBy<RandomSymbolStringGenerator>(),
 
@@ -178,16 +188,16 @@ namespace TestDataFramework.Factories
                     Component.For<IHandledTypeGenerator>()
                         .ImplementedBy<StandardHandledTypeGenerator>()
                         .DependsOn(
-                            ServiceOverride.ForKey<IValueGenerator>().Eq(standardValueGenerator)),
+                            ServiceOverride.ForKey<IValueGenerator>().Eq(StandardValueGenerator)),
 
                     Component.For<StandardHandledTypeGenerator.CreateAccumulatorValueGeneratorDelegate>()
                         .Instance(() => commonContainer.Resolve<IValueGenerator>(accumulatorValueGenerator)),
 
                     Component.For<IValueGenerator>()
-                        .ImplementedBy<StandardValueGenerator>()
+                        .ImplementedBy<BaseValueGenerator>()
                         .DependsOn(ServiceOverride.ForKey<IValueProvider>().Eq(valueAccumulator))
                         .DependsOn(
-                            ServiceOverride.ForKey<StandardValueGenerator.GetTypeGeneratorDelegate>()
+                            ServiceOverride.ForKey<BaseValueGenerator.GetTypeGeneratorDelegate>()
                                 .Eq(getUniqueValueTypeGenerator))
                         .Named(accumulatorValueGenerator)
                         .LifestyleTransient(),
@@ -195,7 +205,7 @@ namespace TestDataFramework.Factories
                     Component.For<IValueProvider>().ImplementedBy<AccumulatorValueProvider>().Named(valueAccumulator)
                         .LifestyleTransient(),
 
-                    Component.For<StandardValueGenerator.GetTypeGeneratorDelegate>()
+                    Component.For<BaseValueGenerator.GetTypeGeneratorDelegate>()
                         .Instance(() => commonContainer.Resolve<ITypeGenerator>(uniqueValueTypeGenerator))
                         .Named(getUniqueValueTypeGenerator),
 

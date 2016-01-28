@@ -8,6 +8,7 @@ using log4net;
 using TestDataFramework.HandledTypeGenerator;
 using TestDataFramework.ValueGenerator;
 using TestDataFramework.Helpers;
+using TestDataFramework.ValueGenerator.Interface;
 
 namespace TestDataFramework.TypeGenerator
 {

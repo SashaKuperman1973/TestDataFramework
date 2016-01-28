@@ -428,21 +428,28 @@ namespace Tests.Tests
             };
 
             var primaryKeyInsertRecordMock = new Mock<InsertRecord>(null,
-                new RecordReference<ManualKeyPrimaryTable>(Helpers.GetTypeGeneratorMock(new ManualKeyPrimaryTable()).Object),
-                null);
+
+                new RecordReference<ManualKeyPrimaryTable>(
+                    Helpers.GetTypeGeneratorMock(new ManualKeyPrimaryTable()).Object),
+                
+                null
+                );
 
             primaryKeyInsertRecordMock.Setup(m => m.GetPrimaryKeySymbols()).Returns(primaryKeySymbols);
 
             // Act
 
             List<Column> fkColumns =
+                // Remember: Insert record service populated with the record reference as given in the test initialization above.
                 this.insertRecordService.GetForeignKeyColumns(new[] { primaryKeyInsertRecordMock.Object }).ToList();
 
             // Assert
 
             Assert.AreEqual(1, fkColumns.Count);
             Assert.AreEqual("ForeignKey", fkColumns[0].Name);
-            Assert.IsNull(fkColumns[0].Value);
+
+            Assert.AreEqual(Helper.GetDefaultValue(typeof (ForeignTable).GetProperty("ForeignKey").PropertyType),
+                fkColumns[0].Value);
         }
 
         [TestMethod]

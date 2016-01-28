@@ -4,6 +4,7 @@ using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
+using TestDataFramework.Helpers;
 using TestDataFramework.PropertyValueAccumulator;
 using TestDataFramework.UniqueValueGenerator.Concrete;
 using Tests.TestModels;
@@ -16,16 +17,16 @@ namespace Tests.Tests
         private KeyTypeUniqueValueGenerator generator;
 
         private Mock<IPropertyValueAccumulator> propertyValueAccumulatorMock;
-        private Mock<IDeferredValueGenerator<ulong>> deferredValueGeneratorMock;
+        private Mock<IDeferredValueGenerator<LargeInteger>> deferredValueGeneratorMock;
 
         [TestInitialize]
         public void Initialize()
         {
             this.propertyValueAccumulatorMock = new Mock<IPropertyValueAccumulator>();
-            this.deferredValueGeneratorMock = new Mock<IDeferredValueGenerator<ulong>>();
+            this.deferredValueGeneratorMock = new Mock<IDeferredValueGenerator<LargeInteger>>();
 
             this.generator = new KeyTypeUniqueValueGenerator(this.propertyValueAccumulatorMock.Object,
-                this.deferredValueGeneratorMock.Object);
+                this.deferredValueGeneratorMock.Object, throwIfUnhandledType: false);
         }
 
         [TestMethod]
@@ -60,7 +61,7 @@ namespace Tests.Tests
             // Assert
 
             this.deferredValueGeneratorMock.Verify(
-                m => m.AddDelegate(keyPropertyInfo, It.IsAny<DeferredValueGetterDelegate<ulong>>()),
+                m => m.AddDelegate(keyPropertyInfo, It.IsAny<DeferredValueGetterDelegate<LargeInteger>>()),
                 Times.Once);
 
             object expected = keyPropertyInfo.PropertyType.IsValueType
@@ -93,7 +94,7 @@ namespace Tests.Tests
             // Assert
 
             this.deferredValueGeneratorMock.Verify(
-                m => m.AddDelegate(It.IsAny<PropertyInfo>(), It.IsAny<DeferredValueGetterDelegate<ulong>>()),
+                m => m.AddDelegate(It.IsAny<PropertyInfo>(), It.IsAny<DeferredValueGetterDelegate<LargeInteger>>()),
                 Times.Never);
         }
 
@@ -104,7 +105,7 @@ namespace Tests.Tests
 
             PropertyInfo propertyInfo = typeof(SubjectClass).GetProperty("LongInteger");
 
-            this.propertyValueAccumulatorMock.Setup(m => m.GetValue(propertyInfo, It.IsAny<ulong>())).Returns(5);
+            this.propertyValueAccumulatorMock.Setup(m => m.GetValue(propertyInfo, It.IsAny<LargeInteger>())).Returns(5);
 
             // Act
 

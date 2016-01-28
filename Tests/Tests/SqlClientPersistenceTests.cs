@@ -5,6 +5,7 @@ using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
+using TestDataFramework.Helpers;
 using TestDataFramework.Persistence;
 using TestDataFramework.Populator;
 using TestDataFramework.RepositoryOperations.Model;
@@ -18,13 +19,13 @@ namespace Tests.Tests
     {
         private SqlClientPersistence persistence;
         private Mock<IWritePrimitives> writePrimitivesMock;
-        private Mock<IDeferredValueGenerator<ulong>> deferredValueGeneratorMock;
+        private Mock<IDeferredValueGenerator<LargeInteger>> deferredValueGeneratorMock;
 
         [TestInitialize]
         public void Initialize()
         {
             this.writePrimitivesMock = new Mock<IWritePrimitives>();
-            this.deferredValueGeneratorMock = new Mock<IDeferredValueGenerator<ulong>>();
+            this.deferredValueGeneratorMock = new Mock<IDeferredValueGenerator<LargeInteger>>();
 
             this.persistence = new SqlClientPersistence(this.writePrimitivesMock.Object, this.deferredValueGeneratorMock.Object);
 

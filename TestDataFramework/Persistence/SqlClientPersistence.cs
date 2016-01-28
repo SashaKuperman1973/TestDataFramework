@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Exceptions;
+using TestDataFramework.Helpers;
 using TestDataFramework.Populator;
 using TestDataFramework.RepositoryOperations;
 using TestDataFramework.RepositoryOperations.Model;
@@ -19,9 +20,9 @@ namespace TestDataFramework.Persistence
     public class SqlClientPersistence : IPersistence
     {
         private readonly IWritePrimitives writePrimitives;
-        private readonly IDeferredValueGenerator<ulong> deferredValueGenerator;
+        private readonly IDeferredValueGenerator<LargeInteger> deferredValueGenerator;
 
-        public SqlClientPersistence(IWritePrimitives writePrimitives, IDeferredValueGenerator<ulong> deferredValueGenerator)
+        public SqlClientPersistence(IWritePrimitives writePrimitives, IDeferredValueGenerator<LargeInteger> deferredValueGenerator)
         {
             this.writePrimitives = writePrimitives;
             this.deferredValueGenerator = deferredValueGenerator;

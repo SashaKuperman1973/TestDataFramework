@@ -35,15 +35,15 @@ namespace Tests.Tests
         {
             // Arrange
 
-            const ulong returnValue1 = 7;
-            const ulong returnValue2 = 14;
+            var returnValue1 = new LargeInteger(7);
+            var returnValue2 = new LargeInteger(14);
 
             PropertyInfo propertyInfo1 = typeof(ClassWithStringAutoPrimaryKey).GetProperty("Key");
             PropertyInfo propertyInfo2 = typeof(ClassWithIntAutoPrimaryKey).GetProperty("Key");
 
-            var data1 = new Data<ulong>(null);
-            var data2 = new Data<ulong>(null);
-            var dictionary = new Dictionary<PropertyInfo, Data<ulong>>
+            var data1 = new Data<LargeInteger>(null);
+            var data2 = new Data<LargeInteger>(null);
+            var dictionary = new Dictionary<PropertyInfo, Data<LargeInteger>>
             {
                 {propertyInfo1, data1},
                 {propertyInfo2, data2},

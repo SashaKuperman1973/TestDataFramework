@@ -6,16 +6,16 @@ namespace TestDataFramework.Helpers
 {
     public class LetterEncoder
     {
-        public virtual string Encode(ulong number, int maxStringLength)
+        public virtual string Encode(LargeInteger number, int maxStringLength)
         {
             var sb = new StringBuilder();
 
             int digitCount = 0;
 
-            ulong whole = number;
+            LargeInteger whole = number;
             while (digitCount++ < maxStringLength)
             {
-                ulong remainder = whole%26;
+                LargeInteger remainder = whole%26;
                 whole /= 26;
 
                 if (remainder == 0 && whole == 0)
@@ -42,14 +42,15 @@ namespace TestDataFramework.Helpers
             return result;
         }
 
-        public virtual ulong Decode(string value)
+        public virtual LargeInteger Decode(string value)
         {
-            ulong result = Helper.DefaultInitalCount;
+            LargeInteger result = 0;
 
             for (int i = 0; i < value.Length; i++)
             {
                 var ascii = (ulong)value[value.Length - 1 - i];
-                result += (ascii - 65) * (ulong)Math.Pow(26, i);
+
+                result += LargeInteger.Pow(26, (ulong)i)*(ascii - 65);
             }
 
             return result;

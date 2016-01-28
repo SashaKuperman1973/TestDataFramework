@@ -36,7 +36,7 @@ namespace IntegrationTests.Tests
             IPopulator populator = this.factory.CreateMemoryPopulator();
 
             IList<RecordReference<SubjectClass>> subjectReference = populator.Add<SubjectClass>(2);
-            RecordReference<ForeignSubjectClass> foreignReference = populator.Add<ForeignSubjectClass>(subjectReference[0]);
+            RecordReference<ForeignSubjectClass> foreignReference = populator.Add<ForeignSubjectClass>(subjectReference[1]);
             populator.Bind();
 
             this.Dump(subjectReference[0].RecordObject);

@@ -5,6 +5,7 @@ using Moq;
 using TestDataFramework.DeferredValueGenerator.Concrete;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Exceptions;
+using TestDataFramework.Helpers;
 using Tests.TestModels;
 
 namespace Tests.Tests
@@ -20,8 +21,8 @@ namespace Tests.Tests
             var object1 = new PrimaryTable();
             var object2 = new ForeignTable();
 
-            var dataSource = new Mock<IPropertyDataGenerator<ulong>>();
-            var generator = new StandardDeferredValueGenerator<ulong>(dataSource.Object);
+            var dataSource = new Mock<IPropertyDataGenerator<LargeInteger>>();
+            var generator = new StandardDeferredValueGenerator<LargeInteger>(dataSource.Object);
 
             // Act
 

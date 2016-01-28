@@ -100,4 +100,11 @@ namespace TestDataFramework.Exceptions
         {
         }
     }
+
+    public class UnHandledTypeException : ApplicationException
+    {
+        public UnHandledTypeException(string message, Type type) : base(string.Format(message, type))
+        {            
+        }
+    }
 }

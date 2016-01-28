@@ -9,9 +9,9 @@ namespace TestDataFramework.Persistence
 {
     public class MemoryPersistence : IPersistence
     {
-        private readonly IDeferredValueGenerator<ulong> deferredValueGenerator;
+        private readonly IDeferredValueGenerator<LargeInteger> deferredValueGenerator;
 
-        public MemoryPersistence(IDeferredValueGenerator<ulong> deferredValueGenerator)
+        public MemoryPersistence(IDeferredValueGenerator<LargeInteger> deferredValueGenerator)
         {
             this.deferredValueGenerator = deferredValueGenerator;
         }

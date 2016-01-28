@@ -9,9 +9,9 @@ using TestDataFramework.Helpers;
 
 namespace TestDataFramework.DeferredValueGenerator.Concrete
 {
-    public class DefaultInitialValueGenerator : IPropertyDataGenerator<ulong>
+    public class DefaultInitialCountGenerator : IPropertyDataGenerator<LargeInteger>
     {
-        public void FillData(IDictionary<PropertyInfo, Data<ulong>> propertyDataDictionary)
+        public void FillData(IDictionary<PropertyInfo, Data<LargeInteger>> propertyDataDictionary)
         {
             propertyDataDictionary.ToList().ForEach(kvp => kvp.Value.Item = Helper.DefaultInitalCount);
         }

@@ -28,28 +28,7 @@ namespace Tests.Tests
             this.writerDictionary = new SqlWriterDictionary(this.encoderMock.Object, this.primitivesMock.Object,
                 this.commandGenerator.Object);
         }
-        /*
-        private void Test(object value, ulong expected, Func<PropertyInfo, string> commandTextFunc)
-        {
-            // Arrange
 
-            PropertyInfo propertyInfo = typeof(ClassWithStringAutoPrimaryKey).GetProperty("Key");
-
-            int readCount = 0;
-
-            // Act
-
-            ulong result = this.generator.FillData(propertyInfo)
-
-                    // Assert
-
-            this.commandMock.VerifySet(m => m.CommandText = commandTextFunc(propertyInfo));
-            this.readerMock.Verify(m => m.Read());
-            this.readerMock.Verify(m => m.GetValue(0));
-
-            Assert.AreEqual(expected, result);
-        }
-        */
         [TestMethod]
         public void Number_Test()
         {
@@ -68,11 +47,11 @@ namespace Tests.Tests
 
                 WriterDelegate numberWriter = this.writerDictionary[value.GetType()];
                 DecoderDelegate numberDecoder = numberWriter(propertyInfo);
-                ulong result = numberDecoder(propertyInfo, value);
+                LargeInteger result = numberDecoder(propertyInfo, value);
 
                 // Assert
 
-                Assert.AreEqual((ulong)Convert.ChangeType(value, typeof(ulong)), result);
+                Assert.AreEqual(new LargeInteger((ulong)value), result);
                 this.primitivesMock.Verify(m => m.AddSqlCommand(command));
             }
         }
@@ -84,7 +63,7 @@ namespace Tests.Tests
 
             PropertyInfo propertyInfo = typeof(ClassWithStringAutoPrimaryKey).GetProperty("Key");
             const string value = "X";
-            const ulong expected = 7;
+            var expected = new LargeInteger(7);
 
             const string command = "XXXX";
             this.commandGenerator.Setup(m => m.WriteString(propertyInfo)).Returns(command);
@@ -95,7 +74,7 @@ namespace Tests.Tests
 
             WriterDelegate stringWriter = this.writerDictionary[value.GetType()];
             DecoderDelegate stringDecoder = stringWriter(propertyInfo);
-            ulong result = stringDecoder(propertyInfo, value);
+            LargeInteger result = stringDecoder(propertyInfo, value);
 
             // Assert
 
@@ -141,52 +120,5 @@ namespace Tests.Tests
             Helpers.ExceptionTest(() => decoder(propertyInfo, input), typeof (UnexpectedTypeException),
                 string.Format(Messages.UnexpectedHandlerType, propertyInfo, input));
         }
-
-        /*
-                        [TestMethod]
-                        public void StringHandler_Test()
-                        {
-                            Func<PropertyInfo, string> commandTextFunc =
-                                propertyInfo =>
-                                    $"Select MAX([{propertyInfo.Name}]) From [{propertyInfo.DeclaringType.Name}] Where [{propertyInfo.Name}] like '[A-Z]%'";
-
-                            this.Test("ABC", 28ul, this.handler.StringHandler, commandTextFunc);
-                        }
-
-                        [TestMethod]
-                        public void NumberHandler_UnexpectedTypeException_Test()
-                        {
-                            Helpers.ExceptionTest(() => this.Test("A", 0, this.handler.NumberHandler, null),
-                                typeof(UnexpectedTypeException),
-                                string.Format(Messages.UnexpectedHandlerType, "System.String Key", "System.String"));
-                        }
-
-                        [TestMethod]
-                        public void StringHandler_UnexpectedTypeException_Test()
-                        {
-                            Helpers.ExceptionTest(() => this.Test(1, 0, this.handler.StringHandler, null),
-                                typeof(UnexpectedTypeException),
-                                string.Format(Messages.UnexpectedHandlerType, "System.String Key", "System.Int32"));
-                        }
-
-                        [TestMethod]
-                        public void NumberHandler_DbNull_Test()
-                        {
-                            Func<PropertyInfo, string> commandTextFunc =
-                                propertyInfo => $"Select MAX([{propertyInfo.Name}]) From [{propertyInfo.DeclaringType.Name}]";
-
-                            this.Test(DBNull.Value, Helper.DefaultInitalCount, this.handler.NumberHandler, commandTextFunc);
-                        }
-
-                        [TestMethod]
-                        public void StringHandler_DbNull_Test()
-                        {
-                            Func<PropertyInfo, string> commandTextFunc =
-                                propertyInfo =>
-                                    $"Select MAX([{propertyInfo.Name}]) From [{propertyInfo.DeclaringType.Name}] Where [{propertyInfo.Name}] like '[A-Z]%'";
-
-                            this.Test(DBNull.Value, Helper.DefaultInitalCount, this.handler.StringHandler, commandTextFunc);
-                        }
-                */
     }
 }

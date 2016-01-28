@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Reflection;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Helpers;
@@ -8,7 +9,9 @@ namespace TestDataFramework.UniqueValueGenerator.Concrete
 {
     public class MemoryUniqueValueGenerator : BaseUniqueValueGenerator
     {
-        public MemoryUniqueValueGenerator(IPropertyValueAccumulator accumulator, IDeferredValueGenerator<ulong> deferredValueGenerator) : base(accumulator, deferredValueGenerator)
+        public MemoryUniqueValueGenerator(IPropertyValueAccumulator accumulator,
+            IDeferredValueGenerator<LargeInteger> deferredValueGenerator, bool throwIfUnhandledType)
+            : base(accumulator, deferredValueGenerator, throwIfUnhandledType)
         {
         }
 
@@ -16,10 +19,15 @@ namespace TestDataFramework.UniqueValueGenerator.Concrete
         {
             var primaryKeyAttribute = propertyInfo.GetSingleAttribute<PrimaryKeyAttribute>();
 
+            if (propertyInfo.PropertyType == typeof (Guid))
+            {
+                return Guid.NewGuid();
+            }
+
             if (primaryKeyAttribute == null)
             {
                 object result = base.GetValue(propertyInfo);
-                return result;
+                return result ?? Helper.GetDefaultValue(propertyInfo.PropertyType);
             }
 
             if (primaryKeyAttribute.KeyType == PrimaryKeyAttribute.KeyTypeEnum.Manual
@@ -28,9 +36,7 @@ namespace TestDataFramework.UniqueValueGenerator.Concrete
                 this.DeferValue(propertyInfo);
             }
 
-            return propertyInfo.PropertyType.IsValueType
-                ? Activator.CreateInstance(propertyInfo.PropertyType)
-                : null;
+            return Helper.GetDefaultValue(propertyInfo.PropertyType);
         }
     }
 }

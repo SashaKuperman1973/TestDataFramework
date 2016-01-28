@@ -22,7 +22,7 @@ namespace Tests.Tests
             const int stringLength = 10;
 
             const string expected = "BCD";
-            ulong input = (ulong) 26*26 + 2*26 + 3;
+            const ulong input = 26*26 + 2*26 + 3;
 
             var generator = new LetterEncoder();
 
@@ -34,11 +34,11 @@ namespace Tests.Tests
         [TestMethod]
         public void Decode_Test()
         {
-            const ulong expected = 5204;
+            var expected = new LargeInteger(5204);
 
             var generator = new LetterEncoder();
 
-            ulong result = generator.Decode("HSE");
+            LargeInteger result = generator.Decode("HSE");
 
             Assert.AreEqual(expected, result);
         }
@@ -46,13 +46,13 @@ namespace Tests.Tests
         [TestMethod]
         public void OverflowException_Test()
         {
-            const string expected = "ABCD";
             ulong input = (ulong)Math.Pow(26, 2) + 2 * 26 + 3;
+            const string stringValueOfInput = "ABCD";
 
             var generator = new LetterEncoder();
 
-            Helpers.ExceptionTest(() => generator.Encode(input, expected.Length - 1), typeof (OverflowException),
-                string.Format(Messages.StringGeneratorOverflow, input, expected.Length - 1));
+            Helpers.ExceptionTest(() => generator.Encode(input, maxStringLength: stringValueOfInput.Length - 1), typeof (OverflowException),
+                string.Format(Messages.StringGeneratorOverflow, input, stringValueOfInput.Length - 1));
         }
     }
 }

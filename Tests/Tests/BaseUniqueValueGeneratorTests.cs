@@ -3,6 +3,7 @@ using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
+using TestDataFramework.Helpers;
 using TestDataFramework.PropertyValueAccumulator;
 using TestDataFramework.UniqueValueGenerator;
 using Tests.TestModels;
@@ -15,7 +16,7 @@ namespace Tests.Tests
         private class UniqueValueGenerator : BaseUniqueValueGenerator
         {
             public UniqueValueGenerator(IPropertyValueAccumulator accumulator,
-                IDeferredValueGenerator<ulong> deferredValueGenerator) : base(accumulator, deferredValueGenerator)
+                IDeferredValueGenerator<LargeInteger> deferredValueGenerator) : base(accumulator, deferredValueGenerator, throwIfUnhandledType: false)
             {
             }
 
@@ -27,13 +28,13 @@ namespace Tests.Tests
 
         private UniqueValueGenerator uniqueValueGenerator;
         private Mock<IPropertyValueAccumulator> propertyValueAccumulatorMock;
-        private Mock<IDeferredValueGenerator<ulong>> deferredValueGeneratorMock;
+        private Mock<IDeferredValueGenerator<LargeInteger>> deferredValueGeneratorMock;
 
         [TestInitialize]
         public void Initialize()
         {
             this.propertyValueAccumulatorMock = new Mock<IPropertyValueAccumulator>();
-            this.deferredValueGeneratorMock = new Mock<IDeferredValueGenerator<ulong>>();
+            this.deferredValueGeneratorMock = new Mock<IDeferredValueGenerator<LargeInteger>>();
 
             this.uniqueValueGenerator = new UniqueValueGenerator(this.propertyValueAccumulatorMock.Object,
                 this.deferredValueGeneratorMock.Object);
@@ -46,11 +47,11 @@ namespace Tests.Tests
 
             PropertyInfo propertyInfo = typeof(PrimaryTable).GetProperty("Text");
 
-            DeferredValueGetterDelegate<ulong> inputDelegate = null;
+            DeferredValueGetterDelegate<LargeInteger> inputDelegate = null;
 
             this.deferredValueGeneratorMock.Setup(
-                m => m.AddDelegate(propertyInfo, It.IsAny<DeferredValueGetterDelegate<ulong>>()))
-                .Callback<PropertyInfo, DeferredValueGetterDelegate<ulong>>((pi, d) => inputDelegate = d).Verifiable();
+                m => m.AddDelegate(propertyInfo, It.IsAny<DeferredValueGetterDelegate<LargeInteger>>()))
+                .Callback<PropertyInfo, DeferredValueGetterDelegate<LargeInteger>>((pi, d) => inputDelegate = d).Verifiable();
 
             const long initialCount = 5;
 
@@ -83,6 +84,12 @@ namespace Tests.Tests
             this.propertyValueAccumulatorMock.Verify(
                 m => m.GetValue(propertyInfo, TestDataFramework.Helpers.Helper.DefaultInitalCount), 
                 Times.Once);
+        }
+
+        [TestMethod]
+        public void GetValue_ThrowWhenUnhandledPrimaryKeyType_Test()
+        {
+            throw new NotImplementedException();
         }
     }
 }

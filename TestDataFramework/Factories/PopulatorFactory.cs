@@ -38,26 +38,26 @@ namespace TestDataFramework.Factories
         private const string StandardValueGenerator = "StandardValueGenerator";
 
         public IPopulator CreateSqlClientPopulator(string connectionStringWithDefaultCatalogue,
-            bool mustBeInATransaction = true)
+            bool mustBeInATransaction = true, bool throwIfUnhandledPrimaryKeyType = true)
         {
             IWindsorContainer iocContainer = this.GetSqlClientPopulatorContainer(connectionStringWithDefaultCatalogue,
-                mustBeInATransaction);
+                mustBeInATransaction, throwIfUnhandledPrimaryKeyType);
 
             var result = iocContainer.Resolve<IPopulator>();
 
             return result;
         }
 
-        public IPopulator CreateMemoryPopulator()
+        public IPopulator CreateMemoryPopulator(bool throwIfUnhandledPrimaryKeyType = false)
         {
-            IWindsorContainer iocContainer = this.GetMemoryPopulatorContainer();
+            IWindsorContainer iocContainer = this.GetMemoryPopulatorContainer(throwIfUnhandledPrimaryKeyType);
 
             var result = iocContainer.Resolve<IPopulator>();
 
             return result;
         }
 
-        private IWindsorContainer GetSqlClientPopulatorContainer(string connectionStringWithDefaultCatalogue, bool mustBeInATransaction)
+        private IWindsorContainer GetSqlClientPopulatorContainer(string connectionStringWithDefaultCatalogue, bool mustBeInATransaction, bool throwIfUnhandledPrimaryKeyType)
         {
             if (this.sqlClientPopulatorContainer != null && !this.sqlClientPopulatorContainer.IsDisposed)
             {
@@ -75,11 +75,11 @@ namespace TestDataFramework.Factories
 
                 Component.For<IValueFormatter>().ImplementedBy<SqlClientValueFormatter>(),
 
-                Component.For<IPropertyDataGenerator<ulong>>().ImplementedBy<SqlClientInitialCountGenerator>(),
+                Component.For<IPropertyDataGenerator<LargeInteger>>().ImplementedBy<SqlClientInitialCountGenerator>(),
 
                 Component.For<IPersistence>().ImplementedBy<SqlClientPersistence>(),
 
-                Component.For<IUniqueValueGenerator>().ImplementedBy<KeyTypeUniqueValueGenerator>(),
+                Component.For<IUniqueValueGenerator>().ImplementedBy<KeyTypeUniqueValueGenerator>().DependsOn(new { throwIfUnhandledType = throwIfUnhandledPrimaryKeyType }),
 
                 Component.For<IWriterDictinary>().ImplementedBy<SqlWriterDictionary>(),
 
@@ -97,7 +97,7 @@ namespace TestDataFramework.Factories
             return this.sqlClientPopulatorContainer.Container;
         }
 
-        private IWindsorContainer GetMemoryPopulatorContainer()
+        private IWindsorContainer GetMemoryPopulatorContainer(bool throwIfUnhandledPrimaryKeyType)
         {
             if (this.memoryPopulatorContainer != null && !this.memoryPopulatorContainer.IsDisposed)
             {
@@ -108,11 +108,11 @@ namespace TestDataFramework.Factories
 
             this.memoryPopulatorContainer.Container.Register(
 
-                Component.For<IPropertyDataGenerator<ulong>>().ImplementedBy<DefaultInitialValueGenerator>(),
+                Component.For<IPropertyDataGenerator<LargeInteger>>().ImplementedBy<DefaultInitialCountGenerator>(),
 
                 Component.For<IPersistence>().ImplementedBy<MemoryPersistence>(),
 
-                Component.For<IUniqueValueGenerator>().ImplementedBy<MemoryUniqueValueGenerator>(),
+                Component.For<IUniqueValueGenerator>().ImplementedBy<MemoryUniqueValueGenerator>().DependsOn(new { throwIfUnhandledType = throwIfUnhandledPrimaryKeyType }),
 
                 Component.For<IValueGenerator>()
                     .ImplementedBy<MemoryValueGenerator>()
@@ -172,8 +172,8 @@ namespace TestDataFramework.Factories
                     Component.For<IPropertyValueAccumulator>()
                         .ImplementedBy<StandardPropertyValueAccumulator>(),
 
-                    Component.For<IDeferredValueGenerator<ulong>>()
-                        .ImplementedBy<StandardDeferredValueGenerator<ulong>>(),
+                    Component.For<IDeferredValueGenerator<LargeInteger>>()
+                        .ImplementedBy<StandardDeferredValueGenerator<LargeInteger>>(),
 
                     Component.For<IValueProvider>().ImplementedBy<StandardRandomizer>()
                     .DependsOn(new { dateTimeMinValue = SqlDateTime.MinValue.Value.Ticks, dateTimeMaxValue = SqlDateTime.MaxValue.Value.Ticks })

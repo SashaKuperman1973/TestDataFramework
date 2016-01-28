@@ -12,7 +12,7 @@ using TestDataFramework.WritePrimitives;
 
 namespace TestDataFramework.DeferredValueGenerator.Concrete
 {
-    public delegate ulong DecoderDelegate(PropertyInfo propertyInfo, object input);
+    public delegate LargeInteger DecoderDelegate(PropertyInfo propertyInfo, object input);
 
     public delegate DecoderDelegate WriterDelegate(PropertyInfo propertyInfo);
 
@@ -89,7 +89,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
             return SqlWriterDictionary.DecodeNumber;
         }
 
-        private static ulong DecodeNumber(PropertyInfo propertyInfo, object input)
+        private static LargeInteger DecodeNumber(PropertyInfo propertyInfo, object input)
         {
             SqlWriterDictionary.Logger.Debug("Entering DecodeNumber");
 
@@ -104,7 +104,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
                 throw new UnexpectedTypeException(string.Format(Messages.UnexpectedHandlerType, propertyInfo, input));
             }
 
-            ulong result = (ulong)Convert.ChangeType(input, typeof(ulong));
+            LargeInteger result = (ulong)Convert.ChangeType(input, typeof(ulong));
 
             SqlWriterDictionary.Logger.Debug("Exiting DecodeNumber");
 
@@ -124,7 +124,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
             return this.DecodeString;
         }
 
-        private ulong DecodeString(PropertyInfo propertyInfo, object input)
+        private LargeInteger DecodeString(PropertyInfo propertyInfo, object input)
         {
             SqlWriterDictionary.Logger.Debug("Entering DecodeString");
 
@@ -138,7 +138,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
                 throw new UnexpectedTypeException(string.Format(Messages.UnexpectedHandlerType, propertyInfo, input));
             }
 
-            ulong result = this.encoder.Decode((string)input);
+            LargeInteger result = this.encoder.Decode(((string)input).ToUpper());
 
             SqlWriterDictionary.Logger.Debug("Exiting DecodeString");
 

@@ -22,7 +22,7 @@ namespace Tests.Tests
     {
         private MemoryUniqueValueGenerator generator;
         private Mock<IPropertyValueAccumulator> propertyValueAccumulatorMock;
-        private Mock<IDeferredValueGenerator<ulong>> deferredValueGeneratorMock;
+        private Mock<IDeferredValueGenerator<LargeInteger>> deferredValueGeneratorMock;
 
         [TestInitialize]
         public void Initialize()
@@ -30,10 +30,10 @@ namespace Tests.Tests
             XmlConfigurator.Configure();
 
             this.propertyValueAccumulatorMock = new Mock<IPropertyValueAccumulator>();
-            this.deferredValueGeneratorMock = new Mock<IDeferredValueGenerator<ulong>>();
+            this.deferredValueGeneratorMock = new Mock<IDeferredValueGenerator<LargeInteger>>();
 
             this.generator = new MemoryUniqueValueGenerator(this.propertyValueAccumulatorMock.Object,
-                this.deferredValueGeneratorMock.Object);
+                this.deferredValueGeneratorMock.Object, throwIfUnhandledType: false);
         }
 
         [TestMethod]
@@ -49,7 +49,7 @@ namespace Tests.Tests
 
             // Assert
 
-            this.deferredValueGeneratorMock.Verify(m => m.AddDelegate(keyPropertyInfo, It.IsAny<DeferredValueGetterDelegate<ulong>>()), Times.Once);
+            this.deferredValueGeneratorMock.Verify(m => m.AddDelegate(keyPropertyInfo, It.IsAny<DeferredValueGetterDelegate<LargeInteger>>()), Times.Once);
         }
 
         [TestMethod]
@@ -65,7 +65,7 @@ namespace Tests.Tests
 
             // Assert
 
-            this.deferredValueGeneratorMock.Verify(m => m.AddDelegate(keyPropertyInfo, It.IsAny<DeferredValueGetterDelegate<ulong>>()), Times.Once);
+            this.deferredValueGeneratorMock.Verify(m => m.AddDelegate(keyPropertyInfo, It.IsAny<DeferredValueGetterDelegate<LargeInteger>>()), Times.Once);
         }
 
         [TestMethod]
@@ -81,7 +81,7 @@ namespace Tests.Tests
 
             // Assert
 
-            this.deferredValueGeneratorMock.Verify(m => m.AddDelegate(It.IsAny<PropertyInfo>(), It.IsAny<DeferredValueGetterDelegate<ulong>>()), Times.Never);
+            this.deferredValueGeneratorMock.Verify(m => m.AddDelegate(It.IsAny<PropertyInfo>(), It.IsAny<DeferredValueGetterDelegate<LargeInteger>>()), Times.Never);
         }
 
         [TestMethod]

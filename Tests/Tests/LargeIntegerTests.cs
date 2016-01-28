@@ -64,6 +64,18 @@ namespace Tests.Tests
         }
 
         [TestMethod]
+        public void Multiplication_Test()
+        {
+            throw new NotImplementedException();            
+        }
+
+        [TestMethod]
+        public void Exponent_Test()
+        {
+            throw new NotImplementedException();
+        }
+
+        [TestMethod]
         public void Division_Test()
         {
             var largeInteger = new LargeInteger(LargeIntegerTests.MaxValue);

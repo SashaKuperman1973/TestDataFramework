@@ -5,11 +5,8 @@ using System.Linq;
 using System.Reflection;
 using Castle.Core.Internal;
 using log4net;
-using TestDataFramework.DeferredValueGenerator;
-using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
-using TestDataFramework.UniqueValueGenerator;
 
 namespace TestDataFramework.PropertyValueAccumulator
 {
@@ -24,10 +21,22 @@ namespace TestDataFramework.PropertyValueAccumulator
             this.stringGenerator = stringGenerator;
         }
 
-        public object GetValue(PropertyInfo propertyInfo, ulong initialCount)
+        public object GetValue(PropertyInfo propertyInfo, LargeInteger initialCount)
         {
             this.countDictionary.AddOrUpdate(propertyInfo, pi => initialCount, (pi, value) => ++value);
             object result = this.PrivateGetValue(propertyInfo);
+            return result;
+        }
+
+        public bool IsTypeHandled(Type type)
+        {
+            bool result = new[]
+            {
+                typeof (string),
+                typeof (byte), typeof (int), typeof (short), typeof (long),
+                typeof (uint), typeof (ushort), typeof (ulong),
+            }.Contains(type);
+
             return result;
         }
 
@@ -58,7 +67,7 @@ namespace TestDataFramework.PropertyValueAccumulator
             }.Contains(type))
             {
                 StandardPropertyValueAccumulator.Logger.Debug("Property type integral numeric");
-                ulong value = this.GetCount(propertyInfo);
+                var value = (ulong)this.GetCount(propertyInfo);
                 result = Convert.ChangeType(value, type);
             }
 
@@ -66,11 +75,11 @@ namespace TestDataFramework.PropertyValueAccumulator
             return result;
         }
 
-        private readonly ConcurrentDictionary<PropertyInfo, ulong> countDictionary = new ConcurrentDictionary<PropertyInfo, ulong>();
+        private readonly ConcurrentDictionary<PropertyInfo, LargeInteger> countDictionary = new ConcurrentDictionary<PropertyInfo, LargeInteger>();
 
-        private ulong GetCount(PropertyInfo propertyInfo)
+        private LargeInteger GetCount(PropertyInfo propertyInfo)
         {
-            ulong result = this.countDictionary.GetOrAdd(propertyInfo,
+            LargeInteger result = this.countDictionary.GetOrAdd(propertyInfo,
                 pi => { throw new KeyNotFoundException(string.Format(Messages.PropertyNotFound, pi)); });
 
             return result;
@@ -80,7 +89,7 @@ namespace TestDataFramework.PropertyValueAccumulator
         {
             const int defaultStringLength = 10;
 
-            ulong count = this.GetCount(propertyInfo);
+            LargeInteger count = this.GetCount(propertyInfo);
 
             var stringLengthAttribute = propertyInfo.GetAttribute<StringLengthAttribute>();
 

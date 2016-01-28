@@ -64,5 +64,9 @@
         public const string RequestForMoreThan2UniqueBooleanValues = "Request for more than two unique Boolean values";
 
         public const string ByteUniqueValueOverflow = "Overflow generating unique byte value.";
+
+        public const string UnhandledUniqueKeyType = "Unhandled type when attempting to ensure uniqueness: {0}";
+
+        public const string LargeIntegerUnderFlow = "Underflow when subtracting LargeIntegers";
     }
 }

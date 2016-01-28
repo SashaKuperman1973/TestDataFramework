@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
+using TestDataFramework.Helpers;
 using TestDataFramework.Persistence;
 using TestDataFramework.Populator;
 using Tests.TestModels;
@@ -18,7 +19,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var deferredValueGeneratorMock = new Mock<IDeferredValueGenerator<ulong>>();
+            var deferredValueGeneratorMock = new Mock<IDeferredValueGenerator<LargeInteger>>();
 
             var persistence = new MemoryPersistence(deferredValueGeneratorMock.Object);
 
@@ -55,7 +56,7 @@ namespace Tests.Tests
 
             foreignReference.AddPrimaryRecordReference(primaryReference);
 
-            var deferredValueGeneratorMock = new Mock<IDeferredValueGenerator<ulong>>();
+            var deferredValueGeneratorMock = new Mock<IDeferredValueGenerator<LargeInteger>>();
             var persistence = new MemoryPersistence(deferredValueGeneratorMock.Object);
 
             // Act

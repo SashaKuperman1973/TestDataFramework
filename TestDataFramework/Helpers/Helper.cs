@@ -92,7 +92,7 @@ namespace TestDataFramework.Helpers
             }
         }
 
-        public static ulong DefaultInitalCount => 0;
+        public static ulong DefaultInitalCount => 1;
 
         public static bool IsGuid(this Type type)
         {

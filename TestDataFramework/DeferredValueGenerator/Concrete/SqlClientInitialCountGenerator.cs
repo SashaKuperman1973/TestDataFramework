@@ -10,7 +10,7 @@ using TestDataFramework.WritePrimitives;
 
 namespace TestDataFramework.DeferredValueGenerator.Concrete
 {
-    public class SqlClientInitialCountGenerator : IPropertyDataGenerator<ulong>
+    public class SqlClientInitialCountGenerator : IPropertyDataGenerator<LargeInteger>
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(SqlClientInitialCountGenerator));
 
@@ -21,7 +21,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
             this.writerDictinary = writerDictinary;
         }
 
-        public void FillData(IDictionary<PropertyInfo, Data<ulong>> propertyDataDictionary)
+        public void FillData(IDictionary<PropertyInfo, Data<LargeInteger>> propertyDataDictionary)
         {
             SqlClientInitialCountGenerator.Logger.Debug("Entering FillData");
 
@@ -33,7 +33,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
 
             List<DecoderDelegate> decoders = new List<DecoderDelegate>();
 
-            List<KeyValuePair<PropertyInfo, Data<ulong>>> propertyDataList =
+            List<KeyValuePair<PropertyInfo, Data<LargeInteger>>> propertyDataList =
                 propertyDataDictionary.ToList();
 
             propertyDataList.ForEach(data =>

@@ -51,7 +51,7 @@ namespace Tests.Tests
 
                 // Assert
 
-                Assert.AreEqual(new LargeInteger((ulong)value), result);
+                Assert.AreEqual(new LargeInteger((ulong)Convert.ChangeType(value, typeof(ulong))), result);
                 this.primitivesMock.Verify(m => m.AddSqlCommand(command));
             }
         }

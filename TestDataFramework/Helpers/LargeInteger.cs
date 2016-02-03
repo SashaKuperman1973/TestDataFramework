@@ -1,10 +1,15 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using System.Xml.XPath;
+using Castle.Components.DictionaryAdapter.Xml;
 using TestDataFramework.Exceptions;
 
 namespace TestDataFramework.Helpers
@@ -17,6 +22,12 @@ namespace TestDataFramework.Helpers
         {
             this.data = new List<uint>();
             LargeInteger.Encode(initialValue, this);
+        }
+
+        private LargeInteger Clone()
+        {
+            var result = new LargeInteger {data = this.data.GetRange(0, this.data.Count) };
+            return result;
         }
 
         #region Ensure
@@ -59,23 +70,12 @@ namespace TestDataFramework.Helpers
 
         public static implicit operator LargeInteger(ulong value)
         {
-            var result = new LargeInteger();
-            result.data = new List<uint>();
+            var result = new LargeInteger {data = new List<uint>() };
             LargeInteger.Encode(value, result);
             return result;
         }
 
         public static LargeInteger operator +(LargeInteger left, LargeInteger right)
-        {
-            return LargeInteger.Accumulate(left, right, (a, b) => a + b);
-        }
-
-        public static LargeInteger operator *(LargeInteger left, LargeInteger right)
-        {
-            return LargeInteger.Accumulate(left, right, (a, b) => a * b);
-        }
-
-        private static LargeInteger Accumulate(LargeInteger left, LargeInteger right, Func<ulong, ulong, ulong> operation)
         {
             left.Ensure(ref right);
 
@@ -83,12 +83,12 @@ namespace TestDataFramework.Helpers
 
             if (left < right)
             {
-                accumulator = left;
+                accumulator = left.Clone();
                 operand = right;
             }
             else
             {
-                accumulator = right;
+                accumulator = right.Clone();
                 operand = left;
             }
 
@@ -97,7 +97,7 @@ namespace TestDataFramework.Helpers
 
             do
             {
-                scratch = operation(accumulator.data[i], operand.data[i]) + scratch;
+                scratch = (ulong)accumulator.data[i] + operand.data[i] + scratch;
                 accumulator.data[i] = (uint) (scratch & 0xffffffff);
                 scratch >>= 32;
 
@@ -126,21 +126,23 @@ namespace TestDataFramework.Helpers
             return accumulator;
         }
 
-        public static LargeInteger operator -(LargeInteger accumulator, LargeInteger operand)
+        public static LargeInteger operator -(LargeInteger left, LargeInteger operand)
         {
-            accumulator.Ensure(ref operand);
+            left.Ensure(ref operand);
 
-            if (accumulator < operand)
+            if (left < operand)
             {
                 throw new OverflowException(Messages.LargeIntegerUnderFlow);
             }
+
+            LargeInteger accumulator = left.Clone();
 
             int i = 0;
             long borrow = 0;
 
             do
             {
-                long scratch = accumulator.data[i] - operand.data[i] - borrow;
+                long scratch = (long)accumulator.data[i] - operand.data[i] - borrow;
 
                 if (scratch < 0)
                 {
@@ -184,69 +186,272 @@ namespace TestDataFramework.Helpers
             return accumulator;
         }
 
-        // Returns Tuple<quotient, modulus>
-        private static Tuple<LargeInteger, LargeInteger> Divide(LargeInteger numerator, LargeInteger denominator)
+        public static LargeInteger operator *(LargeInteger left, LargeInteger right)
         {
-            numerator.Ensure(ref denominator);
+            left.Ensure(ref right);
 
-            if (denominator == 0)
+            LargeInteger accumulator = 0, scratch = 0, lowerOperand, upperOperand;
+
+            if (left < right)
             {
-                throw new DivideByZeroException("LargeInteger: divide by zero");
+                lowerOperand = left;
+                upperOperand = right;
+            }
+            else
+            {
+                lowerOperand = right;
+                upperOperand = left;
             }
 
-            var quotient = new LargeInteger(0);
-
-            if (numerator < denominator)
-            {
-                return new Tuple<LargeInteger, LargeInteger>(quotient, numerator);
-            }
-
-            if (numerator.data.Count <= 2 && denominator.data.Count <= 2)
-            {
-                ulong primitiveNumerator = LargeInteger.GetULong(numerator.data);
-                ulong primitiveDenominator = LargeInteger.GetULong(denominator.data);
-
-                ulong primitiveQuotient = primitiveNumerator / primitiveDenominator;
-                ulong primitiveRemainder = primitiveNumerator % primitiveDenominator;
-
-                quotient = new LargeInteger(primitiveQuotient);
-                var remainder = new LargeInteger(primitiveRemainder);
-
-                return new Tuple<LargeInteger, LargeInteger>(quotient, remainder);
-            }
+            int i = 0;
+            int j = 0;
 
             do
             {
-                quotient++;
-            } while ((numerator -= denominator) > denominator);
+                scratch += (ulong)lowerOperand.data[i]*upperOperand.data[j];
 
-            return new Tuple<LargeInteger, LargeInteger>(quotient, numerator);
-        }
+                for (int k = 0; k < i + j; k++)
+                {
+                    scratch.data.Insert(0, 0);
+                }
 
-        private static ulong GetULong(IList<uint> input)
-        {
-            ulong result = input[0] + input.Count == 2
-                ? (ulong) input[1] << 32
-                : 0;
+                accumulator += scratch;
+                scratch = 0;
 
-            return result;
+                j++;
+
+                if (j < upperOperand.data.Count)
+                {
+                    continue;
+                }
+
+                j = 0;
+                i++;
+
+                if (i < lowerOperand.data.Count)
+                {
+                    continue;
+                }
+
+                break;
+
+            } while (true);
+
+            return accumulator;
         }
 
         public static LargeInteger operator /(LargeInteger numerator, LargeInteger denominator)
         {
-            numerator.Ensure(ref denominator);
-            return LargeInteger.Divide(numerator, denominator).Item1;
+            return numerator.Divide(denominator).Item1;
         }
+
         public static LargeInteger operator %(LargeInteger numerator, LargeInteger denominator)
         {
-            numerator.Ensure(ref denominator);
-            return LargeInteger.Divide(numerator, denominator).Item2;
+            return numerator.Divide(denominator).Item2;
+        }
+
+        private class QuotienScratchAdjuster
+        {
+            private LargeInteger memberValue;
+
+            public static bool operator ==(QuotienScratchAdjuster left, ulong right)
+            {
+                return left.memberValue == right;
+            }
+
+            public static bool operator !=(QuotienScratchAdjuster left, ulong right)
+            {
+                return !(left == right);
+            }
+
+            public static QuotienScratchAdjuster operator ++(QuotienScratchAdjuster input)
+            {
+                return new QuotienScratchAdjuster { memberValue = input++ };
+            }
+
+            public static QuotienScratchAdjuster operator --(QuotienScratchAdjuster input)
+            {
+                return new QuotienScratchAdjuster { memberValue = input-- };
+            }
+
+            public static implicit operator QuotienScratchAdjuster(ulong value)
+            {
+                return new QuotienScratchAdjuster { memberValue = new LargeInteger(value) };
+            }
+
+            public static implicit operator QuotienScratchAdjuster(LargeInteger value)
+            {
+                return new QuotienScratchAdjuster { memberValue = value };
+            }
+
+            public static implicit operator LargeInteger(QuotienScratchAdjuster value)
+            {
+                return value.memberValue;
+            }
+
+            public void Half()
+            {
+                if (this.memberValue.data == null || this.memberValue.data.Count == 0 || this.memberValue.data.Count == 1 && this.memberValue.data[0] <= 1)
+                {
+                    return;
+                }
+
+                int count = this.memberValue.data.Count;
+
+                uint highBit = 0;
+                for (int i = count - 1; i >= 0; i--)
+                {
+                    uint nextHighBit = this.memberValue.data[i] << 31;
+                    this.memberValue.data[i] >>= 1;
+                    this.memberValue.data[i] |= highBit;
+                    highBit = nextHighBit;
+                }
+
+                if (this.memberValue.data[count - 1] == 0)
+                {
+                    this.memberValue.data.RemoveAt(count - 1);
+                }
+            }
+        }
+
+        public Tuple<LargeInteger, LargeInteger> Divide(LargeInteger denominator)
+        {
+            this.Ensure().Ensure(ref denominator);
+
+            if (this < denominator)
+            {
+                return new Tuple<LargeInteger, LargeInteger>(0, this);
+            }
+
+            // This is long division.
+
+            var quotient = new LargeInteger { data = new List<uint>() };
+
+            var testNumerator = new LargeInteger { data = new List<uint>() };
+            int numeratorPosition = this.data.Count - 1;
+
+            for (int i = 0; i < denominator.data.Count; i++)
+            {
+                testNumerator.data.Insert(0, this.data[numeratorPosition--]);
+            }
+            if (testNumerator < denominator)
+            {
+                testNumerator.data.Insert(0, this.data[numeratorPosition--]);
+            }
+
+            int numberOfPlacesAddedToLastTestNumerator = 0;
+
+            do
+            {
+                int adjusterLength = testNumerator.data.Count - denominator.data.Count + 1;
+                QuotienScratchAdjuster adjuster = new LargeInteger
+                {
+                    data = new List<uint>(adjusterLength)
+                };
+
+                for (int i = 0; i < adjusterLength; i++)
+                {
+                    ((LargeInteger)adjuster).data.Add(0);
+                }
+
+                ((LargeInteger)adjuster).data.Add(1);
+
+                LargeInteger quotientScratch = ((LargeInteger)adjuster).Clone();
+
+                LargeInteger compareNumerator;
+                do
+                {
+                    compareNumerator = quotientScratch * denominator;
+                    if (compareNumerator > testNumerator)
+                    {
+                        if (adjuster == 1)
+                        {
+                            quotientScratch--;
+                            compareNumerator -= denominator;
+                            if (compareNumerator < testNumerator)
+                            {
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            adjuster.Half();
+                            quotientScratch -= adjuster;
+                        }
+                    }
+                    else if (compareNumerator < testNumerator)
+                    {
+                        if (adjuster == 1)
+                        {
+                            LargeInteger tempCompareNumerator = compareNumerator;
+                            compareNumerator += denominator;
+                            if (compareNumerator > testNumerator)
+                            {
+                                compareNumerator = tempCompareNumerator;
+                                break;
+                            }
+                            quotientScratch++;
+                        }
+                        else
+                        {
+                            adjuster.Half();
+                            quotientScratch += adjuster;
+                        }
+                    }
+                    else
+                    {
+                        break;
+                    }
+
+                } while (true);
+
+                LargeInteger largeIntegerQuotientScratch = quotientScratch;
+                if (numberOfPlacesAddedToLastTestNumerator > largeIntegerQuotientScratch.data.Count)
+                {
+                    if (numberOfPlacesAddedToLastTestNumerator + 1 != largeIntegerQuotientScratch.data.Count)
+                    {
+                        throw new ApplicationException(
+                            $"Internal error: numberOfPlacesAddedToLastTestNumerator > largeIntegerQuotientScratch.data.Count && numberOfPlacesAddedToLastTestNumerator {numberOfPlacesAddedToLastTestNumerator} + 1 != largeIntegerQuotientScratch.data.Count {largeIntegerQuotientScratch.data.Count}");
+                    }
+
+                    quotient.data.Insert(0, 0);
+                }
+
+                for (int i = largeIntegerQuotientScratch.data.Count - 1; i >= 0; i--)
+                {
+                    quotient.data.Insert(0, largeIntegerQuotientScratch.data[i]);
+                }
+
+                testNumerator -= compareNumerator;
+
+                numberOfPlacesAddedToLastTestNumerator = 0;
+                for (int i = 0; i < denominator.data.Count; i++)
+                {
+                    if (numeratorPosition < 0)
+                    {
+                        break;
+                    }
+                    testNumerator.data.Insert(0, this.data[numeratorPosition--]);
+                    numberOfPlacesAddedToLastTestNumerator++;
+                }
+
+                if (testNumerator < denominator)
+                {
+                    if (numeratorPosition < 0)
+                    {
+                        return new Tuple<LargeInteger, LargeInteger>(quotient, testNumerator);
+                    }
+                    testNumerator.data.Insert(0, this.data[numeratorPosition--]);
+                    numberOfPlacesAddedToLastTestNumerator++;
+                }
+
+            } while (true);
         }
 
         private static int CompareSameLength(LargeInteger left, LargeInteger right)
         {
             int i;
-            for (i = 0; i < left.data.Count; i++)
+            for (i = left.data.Count - 1; i >= 0; i--)
             {
                 if (left.data[i] != right.data[i])
                 {
@@ -254,7 +459,7 @@ namespace TestDataFramework.Helpers
                 }
             }
 
-            if (i == left.data.Count)
+            if (i == -1)
             {
                 return 0;
             }
@@ -293,6 +498,16 @@ namespace TestDataFramework.Helpers
             return !(left == right);
         }
 
+        public static bool operator >=(LargeInteger left, LargeInteger right)
+        {
+            return left > right || left == right;
+        }
+
+        public static bool operator <=(LargeInteger left, LargeInteger right)
+        {
+            return left < right || left == right;
+        }
+
         public override bool Equals(object obj)
         {
             this.Ensure();
@@ -318,8 +533,7 @@ namespace TestDataFramework.Helpers
         {
             largeInteger.Ensure();
 
-            var result = new LargeInteger();
-            result.data = largeInteger.data.GetRange(0, largeInteger.data.Count);
+            LargeInteger result = largeInteger.Clone();
 
             int position = 0;
 
@@ -342,8 +556,7 @@ namespace TestDataFramework.Helpers
         {
             largeInteger.Ensure();
 
-            var result = new LargeInteger();
-            result.data = largeInteger.data.GetRange(0, largeInteger.data.Count);
+            LargeInteger result = largeInteger.Clone();            
 
             int position = 0;
 
@@ -367,9 +580,11 @@ namespace TestDataFramework.Helpers
             return result;
         }
 
-        public static LargeInteger Pow(LargeInteger @base, LargeInteger power)
+        public LargeInteger Pow(LargeInteger power)
         {
-            if (@base == 0 && power == 0)
+            this.Ensure(ref power);
+
+            if (this == 0 && power == 0)
             {
                 throw new DivideByZeroException("LargeInteger: divide by zero");
             }
@@ -378,15 +593,17 @@ namespace TestDataFramework.Helpers
 
             for (var i = new LargeInteger(0); i < power; i++)
             {
-                result *= @base;
+                result *= this;
             }
 
             return result;
         }
 
-        public static LargeInteger Pow(LargeInteger @base, ulong power)
+        public LargeInteger Pow(ulong power)
         {
-            if (@base == 0 && power == 0)
+            this.Ensure();
+
+            if (this == 0 && power == 0)
             {
                 throw new DivideByZeroException("LargeInteger: divide by zero");
             }
@@ -395,7 +612,7 @@ namespace TestDataFramework.Helpers
 
             for (var i = 0uL; i < power; i++)
             {
-                result *= @base;
+                result *= this;
             }
 
             return result;
@@ -421,7 +638,14 @@ namespace TestDataFramework.Helpers
                 throw new OverflowException();
             }
 
-            ulong result = largeInteger.data[0] + ((ulong)largeInteger.data[1] << 32);
+            ulong result = LargeInteger.GetULong(largeInteger.data);
+
+            return result;
+        }
+
+        private static ulong GetULong(IList<uint> input)
+        {
+            ulong result = input[0] + (input.Count == 2 ? (ulong)input[1] << 32 : 0);
 
             return result;
         }

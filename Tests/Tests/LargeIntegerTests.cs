@@ -66,23 +66,79 @@ namespace Tests.Tests
         [TestMethod]
         public void Multiplication_Test()
         {
-            throw new NotImplementedException();            
+            LargeInteger a = new LargeInteger(ulong.MaxValue);
+            LargeInteger b = a * new LargeInteger(ulong.MaxValue);
+
+            LargeInteger c = b / a;
+
+            Assert.AreEqual(ulong.MaxValue, (ulong)c);
         }
 
         [TestMethod]
         public void Exponent_Test()
         {
-            throw new NotImplementedException();
+            LargeInteger exponent = new LargeInteger(ulong.MaxValue).Pow(3);
+            LargeInteger actual = exponent / new LargeInteger(ulong.MaxValue);
+            LargeInteger a = new LargeInteger(ulong.MaxValue)*new LargeInteger(ulong.MaxValue);
+            actual /= new LargeInteger(ulong.MaxValue);
+
+            LargeInteger expected = new LargeInteger(ulong.MaxValue);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void Division_LargeDenominator_Test()
+        {
+            LargeInteger a = new LargeInteger(ulong.MaxValue).Pow(7);
+            LargeInteger b = new LargeInteger(ulong.MaxValue).Pow(5);
+
+            LargeInteger result = a/b;
+            Assert.AreEqual(new LargeInteger(ulong.MaxValue).Pow(2), result);
         }
 
         [TestMethod]
         public void Division_Test()
         {
-            var largeInteger = new LargeInteger(LargeIntegerTests.MaxValue);
+            LargeInteger numerator = new LargeInteger(ulong.MaxValue) * 35 * 14;
+            LargeInteger denominator = new LargeInteger(ulong.MaxValue) * 35;
 
-            LargeInteger result = largeInteger/23;
+            LargeInteger quotient = numerator / denominator;
 
-            Assert.AreEqual(LargeIntegerTests.MaxValue/23, (ulong)result);
+            Assert.AreEqual((ulong)14, (ulong)quotient);
+        }
+
+        [TestMethod]
+        public void Division_Test2()
+        {
+            LargeInteger a = new LargeInteger(ulong.MaxValue);
+            LargeInteger b = a * (new LargeInteger(ulong.MaxValue) * 9000);
+
+            LargeInteger c = b / (a * 9000);
+
+            Assert.AreEqual(ulong.MaxValue, (ulong)c);
+        }
+
+        [TestMethod]
+        public void Division_OneElementDenominator_Test()
+        {
+            const ulong expected = (ulong)(ulong.MaxValue * (3m / 4));
+
+            LargeInteger largeInteger = new LargeInteger(ulong.MaxValue) * 3;
+            LargeInteger result = largeInteger / 4;
+
+            Assert.AreEqual(expected, (ulong)result);
+        }
+
+        [TestMethod]
+        public void Division_OneElementNumerator_Test()
+        {
+            const ulong expected = (ulong)(48648);
+
+            LargeInteger largeInteger = new LargeInteger(48648 * 75);
+            LargeInteger result = largeInteger / 75;
+
+            Assert.AreEqual(expected, (ulong)result);
         }
 
         [TestMethod]

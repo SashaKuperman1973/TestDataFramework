@@ -50,7 +50,7 @@ namespace TestDataFramework.Helpers
             {
                 var ascii = (ulong)value[value.Length - 1 - i];
 
-                result += LargeInteger.Pow(26, (ulong)i)*(ascii - 65);
+                result += new LargeInteger(26).Pow((ulong)i) * (ascii - 65);
             }
 
             return result;

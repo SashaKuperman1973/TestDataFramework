@@ -32,9 +32,9 @@ namespace TestDataFramework.UniqueValueGenerator
             this.UnhandledTypeCheck(propertyInfo.PropertyType);
 
             object result = this.accumulator.GetValue(propertyInfo, Helper.DefaultInitalCount);
-            return result;
 
             BaseUniqueValueGenerator.Logger.Debug("Exiting GetValue");
+            return result;
         }
 
         protected virtual void DeferValue(PropertyInfo propertyInfo)

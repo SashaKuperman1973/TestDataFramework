@@ -52,6 +52,7 @@ namespace Tests.TestModels
         public Guid UserId { get; set; }
 
         [StringLength(20)]
+        [PrimaryKey]
         [ForeignKey(typeof(ManualKeyPrimaryTable), "Key1")]
         public string ForeignKey1 { get; set; }
 
@@ -71,7 +72,18 @@ namespace Tests.TestModels
         [ForeignKey(typeof(ManualKeyForeignTable), "UserId")]
         public Guid FkManualKeyForeignTable { get; set; }
 
+        [ForeignKey(typeof(ManualKeyForeignTable), "ForeignKey1")]
+        [StringLength(20)]
+        public string FkStringForeignKey { get; set; }
+
         public int AnInt { get; set; }
+    }
+
+    public class ForeignToAutoPrimaryTable
+    {
+        [PrimaryKey]
+        [ForeignKey(typeof(TertiaryManualKeyForeignTable), "Pk")]
+        public int ForignKey { get; set; }
     }
 
     public class KeyNoneTable

@@ -94,7 +94,19 @@ namespace IntegrationTests.Tests
             tertiaryForeignSet[2].AddPrimaryRecordReference(foreignSet2[0]);
             tertiaryForeignSet[3].AddPrimaryRecordReference(foreignSet2[1]);
 
+            IList<RecordReference<ForeignToAutoPrimaryTable>> foreignToAutoSet = populator.Add<ForeignToAutoPrimaryTable>(2);
+
+            foreignToAutoSet[0].AddPrimaryRecordReference(tertiaryForeignSet[0]);
+            foreignToAutoSet[1].AddPrimaryRecordReference(tertiaryForeignSet[1]);
+
             populator.Bind();
+
+            Console.WriteLine(foreignToAutoSet[0].RecordObject.ForignKey);
+            Console.WriteLine(foreignToAutoSet[1].RecordObject.ForignKey);
+            Console.WriteLine(foreignSet1[0].RecordObject.ForeignKey1);
+            Console.WriteLine(foreignSet1[1].RecordObject.ForeignKey1);
+            Console.WriteLine(foreignSet2[0].RecordObject.ForeignKey1);
+            Console.WriteLine(foreignSet2[1].RecordObject.ForeignKey1);
         }
     }
 }

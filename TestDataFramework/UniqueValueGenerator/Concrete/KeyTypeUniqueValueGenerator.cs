@@ -26,7 +26,8 @@ namespace TestDataFramework.UniqueValueGenerator.Concrete
                 return result ?? Helper.GetDefaultValue(propertyInfo.PropertyType);
             }
 
-            if (primaryKeyAttribute.KeyType == PrimaryKeyAttribute.KeyTypeEnum.Manual &&
+            if (propertyInfo.GetSingleAttribute<ForeignKeyAttribute>() == null
+                && primaryKeyAttribute.KeyType == PrimaryKeyAttribute.KeyTypeEnum.Manual &&
                 new[]
                 {
                     typeof (byte), typeof (int), typeof (short), typeof (long), typeof (string),

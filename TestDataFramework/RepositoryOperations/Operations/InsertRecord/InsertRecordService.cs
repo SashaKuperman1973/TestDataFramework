@@ -264,7 +264,6 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                 PropertyInfo targetProperty =
 
                     this.recordReference.RecordType.GetPropertiesHelper().First(p =>
-
                         Helper.GetColumnName(p).Equals(c.Name)
                         );
 

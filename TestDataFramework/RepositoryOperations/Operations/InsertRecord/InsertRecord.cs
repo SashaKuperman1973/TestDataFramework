@@ -98,9 +98,9 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                 propertiesForRead.Remove(property);
             }
 
-            IEnumerable<PropertyAttributes> foreignKeyGuidProperties = InsertRecord.GetForeignKeyGuidProperties(propertyAttributes);
+            IEnumerable<PropertyAttributes> foreignKeyProperties = InsertRecord.GetForeignKeyProperties(propertyAttributes);
 
-            foreignKeyGuidProperties.ToList().ForEach(pa =>
+            foreignKeyProperties.ToList().ForEach(pa =>
             {
                 var foreignKeyAttribute = pa.PropertyInfo.GetSingleAttribute<ForeignKeyAttribute>();
 
@@ -129,12 +129,11 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             return result;
         }
 
-        private static IEnumerable<Model.PropertyAttributes> GetForeignKeyGuidProperties(IEnumerable<Model.PropertyAttributes> propertyAttributes)
+        private static IEnumerable<Model.PropertyAttributes> GetForeignKeyProperties(IEnumerable<Model.PropertyAttributes> propertyAttributes)
         {
             IEnumerable<PropertyAttributes> result =
                 propertyAttributes.Where(
                     pa =>
-                        pa.PropertyInfo.PropertyType.IsGuid() &&
                         pa.Attributes.Any(a => a.GetType() == typeof (ForeignKeyAttribute)));
 
             return result;

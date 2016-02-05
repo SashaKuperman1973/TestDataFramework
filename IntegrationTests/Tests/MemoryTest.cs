@@ -11,6 +11,7 @@ using TestDataFramework.Populator;
 
 namespace IntegrationTests.Tests
 {
+    [Ignore]
     [TestClass]
     public class MemoryTest
     {

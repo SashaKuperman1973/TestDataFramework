@@ -90,6 +90,12 @@ namespace TestDataFramework.ValueProvider
             return result;
         }
 
+        public float GetFloat(int? precision)
+        {
+            float result = this.count++;
+            return result;
+        }
+
         public string GetEmailAddress()
         {
             throw new NotImplementedException();

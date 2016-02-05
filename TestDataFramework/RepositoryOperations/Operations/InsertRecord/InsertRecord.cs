@@ -7,6 +7,7 @@ using TestDataFramework.Helpers;
 using TestDataFramework.Populator;
 using TestDataFramework.RepositoryOperations.Model;
 using TestDataFramework.WritePrimitives;
+using PropertyAttributes = TestDataFramework.RepositoryOperations.Model.PropertyAttributes;
 
 namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 {
@@ -18,6 +19,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
         private readonly InsertRecordService service;
 
         private readonly List<ColumnSymbol> primaryKeyValues = new List<ColumnSymbol>();
+        private IEnumerable<InsertRecord> primaryKeyOperations;
 
         #endregion Private Fields
 
@@ -52,11 +54,11 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
             breaker.Push<IWritePrimitives, Counter, AbstractRepositoryOperation[]>(this.Write);
 
-            IEnumerable<InsertRecord> primaryKeyOperations = this.service.GetPrimaryKeyOperations(this.Peers).ToList();
+            this.primaryKeyOperations = this.service.GetPrimaryKeyOperations(this.Peers).ToList();
 
-            this.service.WritePrimaryKeyOperations(writer, primaryKeyOperations, breaker, order, orderedOperations);
+            this.service.WritePrimaryKeyOperations(writer, this.primaryKeyOperations, breaker, order, orderedOperations);
 
-            Columns columnData = this.GetColumnData(primaryKeyOperations, writer);
+            Columns columnData = this.GetColumnData(this.primaryKeyOperations, writer);
 
             this.Order = order.Value++;
             orderedOperations[this.Order] = this;
@@ -78,8 +80,8 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
         {
             InsertRecord.Logger.Debug("Entering Read");
 
-            IEnumerable<Model.PropertyAttributes> propertyAttributes =
-                this.RecordReference.RecordType.GetPropertyAttributes();
+            IEnumerable<PropertyAttributes> propertyAttributes =
+                this.RecordReference.RecordType.GetPropertyAttributes().ToList();
 
             List<PropertyInfo> propertiesForRead = this.GetPropertiesForRead(propertyAttributes).ToList();
 
@@ -91,12 +93,51 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                     p => Helper.GetColumnName(p).Equals(columnName, StringComparison.Ordinal)
                     );
 
-                property.SetValue(this.RecordReference.RecordObject, data[readStreamPointer.Value++]);
+                property.SetValue(this.RecordReference.RecordObject, Convert.ChangeType(data[readStreamPointer.Value++], property.PropertyType));
 
                 propertiesForRead.Remove(property);
             }
 
+            IEnumerable<PropertyAttributes> foreignKeyGuidProperties = InsertRecord.GetForeignKeyGuidProperties(propertyAttributes);
+
+            foreignKeyGuidProperties.ToList().ForEach(pa =>
+            {
+                var foreignKeyAttribute = pa.PropertyInfo.GetSingleAttribute<ForeignKeyAttribute>();
+
+                InsertRecord primaryKeyOperation = this.primaryKeyOperations.First(selectedPrimaryKeyOperation =>
+                    selectedPrimaryKeyOperation.RecordReference.RecordType == foreignKeyAttribute.PrimaryTableType);
+
+                PropertyInfo primaryKeyProperty =
+                    InsertRecord.GetPrimaryKeyProperty(primaryKeyOperation.RecordReference.RecordType, foreignKeyAttribute);
+
+                pa.PropertyInfo.SetValue(this.RecordReference.RecordObject,
+                    primaryKeyProperty.GetValue(primaryKeyOperation.RecordReference.RecordObject));
+            });
+
             InsertRecord.Logger.Debug("Exiting Read");
+        }
+
+        private static PropertyInfo GetPrimaryKeyProperty(Type recordType, ForeignKeyAttribute foreignKeyAttribute)
+        {
+            PropertyInfo result =
+                recordType.GetPropertiesHelper()
+                    .First(
+                        p =>
+                            Helper.GetColumnName(p)
+                                .Equals(foreignKeyAttribute.PrimaryKeyName, StringComparison.Ordinal));
+
+            return result;
+        }
+
+        private static IEnumerable<Model.PropertyAttributes> GetForeignKeyGuidProperties(IEnumerable<Model.PropertyAttributes> propertyAttributes)
+        {
+            IEnumerable<PropertyAttributes> result =
+                propertyAttributes.Where(
+                    pa =>
+                        pa.PropertyInfo.PropertyType.IsGuid() &&
+                        pa.Attributes.Any(a => a.GetType() == typeof (ForeignKeyAttribute)));
+
+            return result;
         }
 
         public virtual IEnumerable<ColumnSymbol> GetPrimaryKeySymbols()
@@ -129,12 +170,13 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                 pa.Attributes.Any(
                     a =>
 
-                        !this.RecordReference.IsExplicitlySet(pa.PropertyInfo) &&
+                        (a.GetType() == typeof (PrimaryKeyAttribute) &&
+                         ((PrimaryKeyAttribute) a).KeyType == PrimaryKeyAttribute.KeyTypeEnum.Auto)
+                    )
 
-                        (a.GetType() == typeof(PrimaryKeyAttribute) &&
-                         ((PrimaryKeyAttribute)a).KeyType == PrimaryKeyAttribute.KeyTypeEnum.Auto)
+                && !this.RecordReference.IsExplicitlySet(pa.PropertyInfo)
 
-                        || pa.PropertyInfo.PropertyType.IsGuid())
+                || pa.PropertyInfo.PropertyType.IsGuid() && pa.Attributes.All(a => a.GetType() != typeof (ForeignKeyAttribute))
 
                 );
 

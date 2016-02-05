@@ -92,7 +92,7 @@
     <Compile Include="Tests\SqlClientWritePrimitivesTests.cs" />
     <Compile Include="Tests\DbValueFormatterTests.cs" />
     <Compile Include="Tests\PopulatorFactoryTests.cs" />
-    <Compile Include="Tests\StandardValueGeneratorTests.cs" />
+    <Compile Include="Tests\BaseValueGeneratorTests.cs" />
     <Compile Include="Tests\LetterEncoderTest.cs" />
     <Compile Include="Tests\StandardDeferredValueGeneratorTests.cs" />
     <Compile Include="Tests\SqlClientInitialCountGeneratorTests.cs" />

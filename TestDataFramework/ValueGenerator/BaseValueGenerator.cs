@@ -57,6 +57,7 @@ namespace TestDataFramework.ValueGenerator
                 {typeof (DateTime), this.GetDateTime},
                 {typeof (byte), x => this.valueProvider.GetByte()},
                 {typeof (double), this.GetDouble},
+                {typeof (float), this.GetFloat},
                 {typeof (Guid), this.GetGuid },
             };
 
@@ -149,6 +150,19 @@ namespace TestDataFramework.ValueGenerator
             double result = this.valueProvider.GetDouble(precision);
 
             BaseValueGenerator.Logger.Debug("Exiting GetDouble");
+            return result;
+        }
+
+        private object GetFloat(PropertyInfo propertyInfo)
+        {
+            BaseValueGenerator.Logger.Debug("Entering GetFloat");
+
+            var precisionAttribute = propertyInfo?.GetCustomAttribute<PrecisionAttribute>();
+            int? precision = precisionAttribute?.Precision;
+
+            float result = this.valueProvider.GetFloat(precision);
+
+            BaseValueGenerator.Logger.Debug("Exiting GetFloat");
             return result;
         }
 

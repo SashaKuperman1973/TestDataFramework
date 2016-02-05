@@ -1,4 +1,6 @@
-﻿namespace TestDataFramework.Exceptions
+﻿using log4net.Util;
+
+namespace TestDataFramework.Exceptions
 {
     public static class Messages
     {
@@ -68,5 +70,12 @@
         public const string UnhandledUniqueKeyType = "Unhandled type when attempting to ensure uniqueness: {0}";
 
         public const string LargeIntegerUnderFlow = "Underflow when subtracting LargeIntegers";
+
+        public const string FloatPrecisionOutOfRange =
+            "Input value out of range. Max pricision for a C# float is 7 digits";
+
+        public const string PrecisionMustBeNonNegative = "Precision must be non-negative";
+
+        public const string AutoKeyMustBeInteger = "Only integral integer types can be used as Auto increment keys. {0}";
     }
 }

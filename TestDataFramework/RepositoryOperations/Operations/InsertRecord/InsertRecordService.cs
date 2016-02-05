@@ -219,7 +219,15 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                 {
                     if (pa.Attribute.KeyType != PrimaryKeyAttribute.KeyTypeEnum.Auto)
                     {
-                        throw new PopulatePrimaryKeyException(pa.PropertyInfo);
+                        throw new PopulatePrimaryKeyException(Messages.ColumnNotInInputList, pa.PropertyInfo);
+                    }
+
+                    if (
+                        !new[]
+                        {typeof (int), typeof (short), typeof (long), typeof (uint), typeof (ushort), typeof (ulong),}
+                            .Contains(pa.PropertyInfo.PropertyType.GetUnderLyingType()))
+                    {
+                        throw new PopulatePrimaryKeyException(Messages.AutoKeyMustBeInteger, pa.PropertyInfo);
                     }
 
                     sourceColumn = new Column {Name = columnName, Value = writer.SelectIdentity(columnName)};

@@ -13,7 +13,7 @@ using Tests.TestModels;
 
 namespace IntegrationTests.Tests
 {
-    [Ignore]
+    //[Ignore]
     [TestClass]
     public class SqlClientTest
     {
@@ -33,6 +33,7 @@ namespace IntegrationTests.Tests
             this.factory.Dispose();
         }
 
+        [Ignore]
         [TestMethod]
         public void SubjectClass_Test()
         {
@@ -51,6 +52,7 @@ namespace IntegrationTests.Tests
             Console.WriteLine(result[1].RecordObject.GuidKey);
         }
 
+        [Ignore]
         [TestMethod]
         public void ManualKeyPrimaryTable_Test()
         {
@@ -58,7 +60,7 @@ namespace IntegrationTests.Tests
                 @"Data Source=.\SqlExpress;Initial Catalog=TestDataFramework;Integrated Security=SSPI;",
                 mustBeInATransaction: false);
 
-            IList<RecordReference<ManualKeyPrimaryTable>> result = populator.Add<ManualKeyPrimaryTable>(60);
+            IList<RecordReference<ManualKeyPrimaryTable>> result = populator.Add<ManualKeyPrimaryTable>(5);
 
             populator.Bind();
 
@@ -67,6 +69,32 @@ namespace IntegrationTests.Tests
 
             Console.WriteLine(result[1].RecordObject.Key1);
             Console.WriteLine(result[1].RecordObject.Key2);
+        }
+
+        [TestMethod]
+        public void PrimaryKeyForeignKey_Test()
+        {
+            IPopulator populator = this.factory.CreateSqlClientPopulator(
+                @"Data Source=.\SqlExpress;Initial Catalog=TestDataFramework;Integrated Security=SSPI;",
+                mustBeInATransaction: false);
+
+            IList<RecordReference<ManualKeyPrimaryTable>> primaries = populator.Add<ManualKeyPrimaryTable>(2);
+
+            IList<RecordReference<ManualKeyForeignTable>> foreignSet1 = populator.Add<ManualKeyForeignTable>(2);
+            foreignSet1.ToList().ForEach(f => f.AddPrimaryRecordReference(primaries[0]));
+
+            IList<RecordReference<ManualKeyForeignTable>> foreignSet2 = populator.Add<ManualKeyForeignTable>(2);
+            foreignSet2.ToList().ForEach(f => f.AddPrimaryRecordReference(primaries[1]));
+
+            IList<RecordReference<TertiaryManualKeyForeignTable>> tertiaryForeignSet =
+                populator.Add<TertiaryManualKeyForeignTable>(4);
+
+            tertiaryForeignSet[0].AddPrimaryRecordReference(foreignSet1[0]);
+            tertiaryForeignSet[1].AddPrimaryRecordReference(foreignSet1[1]);
+            tertiaryForeignSet[2].AddPrimaryRecordReference(foreignSet2[0]);
+            tertiaryForeignSet[3].AddPrimaryRecordReference(foreignSet2[1]);
+
+            populator.Bind();
         }
     }
 }

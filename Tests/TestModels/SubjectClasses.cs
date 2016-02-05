@@ -69,6 +69,8 @@ namespace Tests.TestModels
         [Precision(SubjectClass.Precision)]
         public double DoubleWithPrecision { get; set; }
 
+        public float Float { get; set; }
+
         [Email]
         public string AnEmailAddress { get; set; }
 

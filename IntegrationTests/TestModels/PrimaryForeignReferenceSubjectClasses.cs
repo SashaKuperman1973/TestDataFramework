@@ -1,4 +1,5 @@
-﻿using System.CodeDom;
+﻿using System;
+using System.CodeDom;
 using System.Net.Mime;
 using TestDataFramework;
 
@@ -35,15 +36,42 @@ namespace Tests.TestModels
 
         [PrimaryKey]
         public int Key2 { get; set; }
+
+        public string AString { get; set; }
+
+        [Precision(2)]
+        public decimal ADecimal { get; set; }
+
+        [Precision(3)]
+        public float AFloat { get; set; }
     }
 
     public class ManualKeyForeignTable
     {
+        [PrimaryKey]
+        public Guid UserId { get; set; }
+
+        [StringLength(20)]
         [ForeignKey(typeof(ManualKeyPrimaryTable), "Key1")]
         public string ForeignKey1 { get; set; }
 
         [ForeignKey(typeof(ManualKeyPrimaryTable), "Key2")]
         public int ForeignKey2 { get; set; }
+
+        public short AShort { get; set; }
+
+        public long ALong { get; set; }
+    }
+
+    public class TertiaryManualKeyForeignTable
+    {
+        [PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Auto)]
+        public int Pk { get; set; }
+
+        [ForeignKey(typeof(ManualKeyForeignTable), "UserId")]
+        public Guid FkManualKeyForeignTable { get; set; }
+
+        public int AnInt { get; set; }
     }
 
     public class KeyNoneTable

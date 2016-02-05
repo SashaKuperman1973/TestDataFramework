@@ -51,6 +51,10 @@ namespace TestDataFramework.Helpers
             {
                 largeInteger.data = LargeInteger.GetInitialData();
             }
+            else if (!largeInteger.data.Any())
+            {
+                largeInteger.data.Add(0);
+            }
 
             return largeInteger;
         }
@@ -314,6 +318,11 @@ namespace TestDataFramework.Helpers
             }
         }
 
+        /// <summary>
+        /// Divides the current instance into the denominator.
+        /// </summary>
+        /// <param name="denominator">Denominator</param>
+        /// <returns>Tuple&lt;Quotient, Remainder&gt;</returns>
         public Tuple<LargeInteger, LargeInteger> Divide(LargeInteger denominator)
         {
             this.Ensure().Ensure(ref denominator);
@@ -411,7 +420,7 @@ namespace TestDataFramework.Helpers
                     if (numberOfPlacesAddedToLastTestNumerator + 1 != largeIntegerQuotientScratch.data.Count)
                     {
                         throw new ApplicationException(
-                            $"Internal error: numberOfPlacesAddedToLastTestNumerator > largeIntegerQuotientScratch.data.Count && numberOfPlacesAddedToLastTestNumerator {numberOfPlacesAddedToLastTestNumerator} + 1 != largeIntegerQuotientScratch.data.Count {largeIntegerQuotientScratch.data.Count}");
+                            $"Internal error: numberOfPlacesAddedToLastTestNumerator > largeIntegerQuotientScratch.data.Count && numberOfPlacesAddedToLastTestNumerator {numberOfPlacesAddedToLastTestNumerator} + 1 != largeIntegerQuotientScratch.data.Count {largeIntegerQuotientScratch.data.Count}. \r\nNumerator:\r\n{PrintLargeInteger(this)}\r\nDenominator:\r\n{PrintLargeInteger(denominator)}");
                     }
 
                     quotient.data.Insert(0, 0);
@@ -446,6 +455,18 @@ namespace TestDataFramework.Helpers
                 }
 
             } while (true);
+        }
+
+        private static string PrintLargeInteger(LargeInteger largeInteger)
+        {
+            var sb = new StringBuilder();
+
+            for (int i = 0; i < largeInteger.data.Count; i++)
+            {
+                sb.AppendLine($"[{i}] {largeInteger.data[i].ToString("x")}");
+            }
+
+            return sb.ToString();
         }
 
         private static int CompareSameLength(LargeInteger left, LargeInteger right)

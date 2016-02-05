@@ -32,7 +32,7 @@ namespace TestDataFramework.ValueProvider
 
         public virtual int GetInteger(int? max)
         {
-            StandardRandomizer.Logger.Debug("Entering RandomizeInteger");
+            StandardRandomizer.Logger.Debug("Entering GetInteger");
 
             max = max ?? int.MaxValue;
 
@@ -40,13 +40,13 @@ namespace TestDataFramework.ValueProvider
 
             int result = this.random.Next(max.Value);
 
-            StandardRandomizer.Logger.Debug("Exiting RandomizeInteger");
+            StandardRandomizer.Logger.Debug("Exiting GetInteger");
             return result;
         }
 
         public virtual long GetLongInteger(long? max)
         {
-            StandardRandomizer.Logger.Debug("Entering RandomizeLongInteger");
+            StandardRandomizer.Logger.Debug("Entering GetLongInteger");
 
             long workingMax = max ?? long.MaxValue;
 
@@ -71,13 +71,13 @@ namespace TestDataFramework.ValueProvider
                 result |= randomValue;
             }
 
-            StandardRandomizer.Logger.Debug("Exiting RandomizeLongInteger");
+            StandardRandomizer.Logger.Debug("Exiting GetLongInteger");
             return result;
         }
 
         public virtual short GetShortInteger(short? max)
         {
-            StandardRandomizer.Logger.Debug("Entering RandomizeShortInteger");
+            StandardRandomizer.Logger.Debug("Entering GetShortInteger");
 
             max = max ?? short.MaxValue;
 
@@ -85,35 +85,35 @@ namespace TestDataFramework.ValueProvider
 
             int result = this.random.Next(max.Value);
 
-            StandardRandomizer.Logger.Debug("Exiting RandomizeShortInteger");
+            StandardRandomizer.Logger.Debug("Exiting GetShortInteger");
             return (short)result;
         }
 
         public virtual string GetString(int? length)
         {
-            StandardRandomizer.Logger.Debug("Entering RandomizeString");
+            StandardRandomizer.Logger.Debug("Entering GetString");
 
             string result = this.stringRandomizer.GetRandomString(length);
 
-            StandardRandomizer.Logger.Debug("Exiting RandomizeString");
+            StandardRandomizer.Logger.Debug("Exiting GetString");
             return result;
         }
 
         public virtual char GetCharacter()
         {
-            StandardRandomizer.Logger.Debug("Entering RandomizeCharacter");
+            StandardRandomizer.Logger.Debug("Entering GetCharacter");
 
             int letterCode = this.random.Next(26);
 
             var result = (char)(letterCode + 65);
 
-            StandardRandomizer.Logger.Debug("Exiting RandomizeCharacter");
+            StandardRandomizer.Logger.Debug("Exiting GetCharacter");
             return result;
         }
 
         public virtual decimal GetDecimal(int? precision)
         {
-            StandardRandomizer.Logger.Debug("Entering RandomizeDecimal");
+            StandardRandomizer.Logger.Debug("Entering GetDecimal");
 
             precision = precision ?? 2;
 
@@ -121,25 +121,25 @@ namespace TestDataFramework.ValueProvider
 
             var result = (decimal) this.GetReal(precision.Value);
 
-            StandardRandomizer.Logger.Debug("Exiting RandomizeDecimal");
+            StandardRandomizer.Logger.Debug("Exiting GetDecimal");
             return result;
         }
 
         public virtual bool GetBoolean()
         {
-            StandardRandomizer.Logger.Debug("Entering RandomizeBoolean");
+            StandardRandomizer.Logger.Debug("Entering GetBoolean");
 
             int value = this.random.Next(2);
 
             bool result = value == 1;
 
-            StandardRandomizer.Logger.Debug("Exiting RandomizeBoolean");
+            StandardRandomizer.Logger.Debug("Exiting GetBoolean");
             return result;
         }
 
         public virtual DateTime GetDateTime(PastOrFuture? pastOrFuture, Func<long?, long> longIntegerGetter)
         {
-            StandardRandomizer.Logger.Debug("Entering RandomizeBoolean");
+            StandardRandomizer.Logger.Debug("Entering GetDateTime");
 
             pastOrFuture = pastOrFuture ?? PastOrFuture.Past;
 
@@ -173,13 +173,13 @@ namespace TestDataFramework.ValueProvider
 
             //DateTime result = this.dateProvider().AddTicks(ticks);
 
-            StandardRandomizer.Logger.Debug("Exiting RandomizeBoolean");
+            StandardRandomizer.Logger.Debug("Exiting GetDateTime");
             return result;
         }
 
         public virtual byte GetByte()
         {
-            StandardRandomizer.Logger.Debug("Entering RandomizeByte");
+            StandardRandomizer.Logger.Debug("Entering GetByte");
 
             var array = new byte[1];
 
@@ -187,13 +187,13 @@ namespace TestDataFramework.ValueProvider
 
             byte result = array[0];
 
-            StandardRandomizer.Logger.Debug("Exiting RandomizeByte");
+            StandardRandomizer.Logger.Debug("Exiting GetByte");
             return result;
         }
 
         public virtual double GetDouble(int? precision)
         {
-            StandardRandomizer.Logger.Debug("Entering RandomizeBoolean");
+            StandardRandomizer.Logger.Debug("Entering GetDouble");
 
             precision = precision ?? 2;
 
@@ -201,24 +201,48 @@ namespace TestDataFramework.ValueProvider
 
             double result = this.GetReal(precision.Value);
 
-            StandardRandomizer.Logger.Debug("Exiting RandomizeBoolean");
+            StandardRandomizer.Logger.Debug("Exiting GetDouble");
+            return result;
+        }
+
+        public virtual float GetFloat(int? precision)
+        {
+            StandardRandomizer.Logger.Debug("Entering GetFloat");
+
+            precision = precision ?? 2;
+
+            StandardRandomizer.Logger.Debug("precision = " + precision);
+
+            if (precision.Value > 7)
+            {
+                throw new ArgumentOutOfRangeException(nameof(precision), precision.Value, Messages.FloatPrecisionOutOfRange);
+            }
+
+            var result = (float)this.GetReal(precision.Value, (int) Math.Pow(10, 7 - precision.Value));
+
+            StandardRandomizer.Logger.Debug("Exiting GetFloat");
             return result;
         }
 
         public virtual string GetEmailAddress()
         {
-            StandardRandomizer.Logger.Debug("Entering RandomizeEmailAddress");
+            StandardRandomizer.Logger.Debug("Entering GetEmailAddress");
 
             string namePart = this.stringRandomizer.GetRandomString(10).ToLower();
             string result = namePart + "@domain.com";
 
-            StandardRandomizer.Logger.Debug("Exiting RandomizeEmailAddress");
+            StandardRandomizer.Logger.Debug("Exiting GetEmailAddress");
             return result;
         }
 
-        private double GetReal(int precision)
+        private double GetReal(int precision, int maxValue = int.MaxValue)
         {
-            int wholePart = this.random.Next();
+            if (precision < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(precision), precision, Messages.PrecisionMustBeNonNegative);
+            }
+
+            int wholePart = this.random.Next(maxValue);
             double decimalPart = this.random.NextDouble();
             double result = wholePart + decimalPart;
             result = Math.Round(result, precision);

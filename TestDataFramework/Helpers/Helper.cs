@@ -102,6 +102,11 @@ namespace TestDataFramework.Helpers
             return result;
         }
 
+        public static Type GetUnderLyingType(this Type type)
+        {
+            return Nullable.GetUnderlyingType(type) ?? type;
+        }
+
         public static bool IsValueLikeType(this Type type)
         {
             bool result = type.IsValueType || type == typeof(string);
@@ -113,6 +118,11 @@ namespace TestDataFramework.Helpers
             return forType.IsValueType
                 ? Activator.CreateInstance(forType)
                 : null;
+        }
+
+        public static string GetExtendedPropertyInfoString(this PropertyInfo propertyInfo)
+        {
+            return propertyInfo + " - " + propertyInfo.DeclaringType;
         }
     }
 }

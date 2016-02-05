@@ -30,6 +30,8 @@ namespace TestDataFramework.ValueProvider
 
         double GetDouble(int? precision);
 
+        float GetFloat(int? precision);
+
         string GetEmailAddress();
     }
 }

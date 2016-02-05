@@ -93,7 +93,10 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                     p => Helper.GetColumnName(p).Equals(columnName, StringComparison.Ordinal)
                     );
 
-                property.SetValue(this.RecordReference.RecordObject, Convert.ChangeType(data[readStreamPointer.Value++], property.PropertyType));
+                property.SetValue(this.RecordReference.RecordObject,
+                    data[readStreamPointer.Value] is IConvertible
+                        ? Convert.ChangeType(data[readStreamPointer.Value++], property.PropertyType)
+                        : data[readStreamPointer.Value++]);
 
                 propertiesForRead.Remove(property);
             }

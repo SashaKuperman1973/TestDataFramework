@@ -236,7 +236,7 @@ namespace Tests.Tests
 
             const decimal expected = 12345.12m;
 
-            this.randomMock.Setup(m => m.Next()).Returns(12345);
+            this.randomMock.Setup(m => m.Next(int.MaxValue)).Returns(12345);
             this.randomMock.Setup(m => m.NextDouble()).Returns(0.12345d);
 
             // Act
@@ -255,7 +255,7 @@ namespace Tests.Tests
 
             const decimal expected = 12345.1234m;
 
-            this.randomMock.Setup(m => m.Next()).Returns(12345);
+            this.randomMock.Setup(m => m.Next(int.MaxValue)).Returns(12345);
             this.randomMock.Setup(m => m.NextDouble()).Returns(0.12345d);
 
             // Act
@@ -274,7 +274,7 @@ namespace Tests.Tests
 
             const double expected = 12345.12d;
 
-            this.randomMock.Setup(m => m.Next()).Returns(12345);
+            this.randomMock.Setup(m => m.Next(int.MaxValue)).Returns(12345);
             this.randomMock.Setup(m => m.NextDouble()).Returns(0.12345d);
 
             // Act
@@ -293,7 +293,7 @@ namespace Tests.Tests
 
             const double expected = 12345.1234d;
 
-            this.randomMock.Setup(m => m.Next()).Returns(12345);
+            this.randomMock.Setup(m => m.Next(int.MaxValue)).Returns(12345);
             this.randomMock.Setup(m => m.NextDouble()).Returns(0.12345d);
 
             // Act

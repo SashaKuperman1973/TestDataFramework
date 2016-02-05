@@ -224,7 +224,7 @@ namespace Tests.Tests
 
             var streamReadPointer = new Counter();
 
-            var returnValue = new object[] { "Key1", Guid.NewGuid(), "Key3", Guid.NewGuid() };
+            var returnValue = new object[] { "Key1", Guid.NewGuid(), "Key3", Guid.NewGuid(), "Key4", Guid.NewGuid() };
 
             // Act
 
@@ -234,7 +234,7 @@ namespace Tests.Tests
 
             Assert.AreEqual(returnValue[1], record.Key1);
             Assert.AreEqual(returnValue[3], record.Key3);
-            Assert.AreEqual(4, streamReadPointer.Value);
+            Assert.AreEqual(6, streamReadPointer.Value);
         }
     }
 }

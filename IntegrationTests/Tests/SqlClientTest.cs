@@ -13,7 +13,7 @@ using Tests.TestModels;
 
 namespace IntegrationTests.Tests
 {
-    //[Ignore]
+    [Ignore]
     [TestClass]
     public class SqlClientTest
     {

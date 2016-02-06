@@ -12,6 +12,8 @@ namespace TestDataFramework.Helpers
 
     public static class Helper
     {
+        public static ulong DefaultInitalCount => 1;
+
         public static DateTime Now => DateTime.Now;
 
         public static string GetTableName(Type recordType)
@@ -91,8 +93,6 @@ namespace TestDataFramework.Helpers
                 return transaction?.TransactionInformation.Status == TransactionStatus.Active;
             }
         }
-
-        public static ulong DefaultInitalCount => 1;
 
         public static bool IsGuid(this Type type)
         {

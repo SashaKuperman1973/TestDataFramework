@@ -40,10 +40,12 @@ namespace TestDataFramework.ValueProvider
             return result;
         }
 
+        private int characterCount;
+
         public char GetCharacter()
         {
-            const int startCode = 0xc0;
-            var result = (char)(startCode + this.count++);
+            const int startCode = 33;
+            var result = (char)(startCode + this.characterCount++);
 
             return result;
         }

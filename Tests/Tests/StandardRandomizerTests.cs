@@ -36,7 +36,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void RandomizeInteger_Test()
+        public void GetInteger_Test()
         {
             // Arrange
 
@@ -53,7 +53,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void RandomizeInteger_WithMax_Test()
+        public void GetInteger_WithMax_Test()
         {
             // Arrange
 
@@ -72,7 +72,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void RandomizeLongInteger_Word0Max_Test()
+        public void GetLongInteger_Word0Max_Test()
         {
             // Arrange
 
@@ -90,7 +90,7 @@ namespace Tests.Tests
 
 
         [TestMethod]
-        public void RandomizeLongInteger_Test()
+        public void GetLongInteger_Test()
         {
             // Arrange
 
@@ -125,7 +125,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void RandomizeLongInteger_DefaultMax_Test()
+        public void GetLongInteger_DefaultMax_Test()
         {
             // Arrange
 
@@ -146,7 +146,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void RandomizeLongInteger_MaxReturnBoundaryCondition_Test()
+        public void GetLongInteger_MaxReturnBoundaryCondition_Test()
         {
             // Arrange
 
@@ -164,7 +164,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void RandomizeShortInteger_Test()
+        public void GetShortInteger_Test()
         {
             // Arrange
 
@@ -182,7 +182,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void RandomizeShortInteger_DefaultMax_Test()
+        public void GetShortInteger_DefaultMax_Test()
         {
             // Arrange
 
@@ -199,7 +199,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void RandomizeString_Test()
+        public void GetString_Test()
         {
             // Arrange
 
@@ -216,7 +216,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void RandomizeCharacter_Test()
+        public void GetCharacter_Test()
         {
             // 26 letters in the alphabet
             for (int code = 0; code < 26; code++)
@@ -231,7 +231,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void RandomizeDecimal_DefaultPrecision_Test()
+        public void GetDecimal_DefaultPrecision_Test()
         {
             // Arrange
 
@@ -250,7 +250,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void RandomizeDecimal_Test()
+        public void GetDecimal_Test()
         {
             // Arrange
 
@@ -269,7 +269,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void RandomizeDouble_DefaultPrecision_Test()
+        public void GetDouble_DefaultPrecision_Test()
         {
             // Arrange
 
@@ -288,7 +288,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void RandomizeDouble_Test()
+        public void GetDouble_Test()
         {
             // Arrange
 
@@ -307,7 +307,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void RandomizeBoolean_ReturnsTrue_Test()
+        public void GetBoolean_ReturnsTrue_Test()
         {
             // Arrange
 
@@ -324,7 +324,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void RandomizeBoolean_ReturnsFalse_Test()
+        public void GetBoolean_ReturnsFalse_Test()
         {
             // Arrange
 
@@ -341,7 +341,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void RandomizeDateTime_Past_Test()
+        public void GetDateTime_Past_Test()
         {
             // Arrange
 
@@ -361,7 +361,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void RandomizeDateTime_Future_Test()
+        public void GetDateTime_Future_Test()
         {
             // Arrange
 
@@ -379,7 +379,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void RandomizeByte_Test()
+        public void GetByte_Test()
         {
             // Arrange
 
@@ -396,7 +396,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void RandomizeEmailAddress_Test()
+        public void GetEmailAddress_Test()
         {
             // Arrange
 
@@ -412,7 +412,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void RandomizeFloat_DefaultPrecision_Test()
+        public void GetFloat_DefaultPrecision_Test()
         {
             // Arrange
 
@@ -432,7 +432,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void RandomizeFloat_Test()
+        public void GetFloat_Test()
         {
             // Arrange
 
@@ -452,7 +452,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void RandomizeFloat_MaximumPrecision_Test()
+        public void GetFloat_MaximumPrecision_Test()
         {
             // Arrange
 
@@ -472,7 +472,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void RandomizeFloat_MinimumPrecision_Test()
+        public void GetFloat_MinimumPrecision_Test()
         {
             // Arrange
 
@@ -492,7 +492,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void RandomizeFloat_PrecisionOverflow_Test()
+        public void GetFloat_PrecisionOverflow_Test()
         {
             // Act. Assert.
 

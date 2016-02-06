@@ -50,6 +50,20 @@ namespace Tests.Tests
         }
 
         [TestMethod]
+        public void GetShortInteger_Test()
+        {
+            // Act
+
+            short result1 = this.valueProvider.GetShortInteger(null);
+            short result2 = this.valueProvider.GetShortInteger(null);
+
+            // Assert
+
+            Assert.AreEqual((short)this.initialCount, result1);
+            Assert.AreEqual((short)this.initialCount + 1, result2);
+        }
+
+        [TestMethod]
         public void GetString_Test()
         {
             // Act
@@ -83,6 +97,92 @@ namespace Tests.Tests
 
             Assert.AreEqual('!', result1);
             Assert.AreEqual('"', result2);
+        }
+
+        [TestMethod]
+        public void GetDecimal_Test()
+        {
+            // Act
+
+            decimal result1 = this.valueProvider.GetDecimal(null);
+            decimal result2 = this.valueProvider.GetDecimal(null);
+
+            // Assert
+
+            Assert.AreEqual((decimal)this.initialCount, result1);
+            Assert.AreEqual((decimal)this.initialCount + 1, result2);
+        }
+
+        [TestMethod]
+        public void GetBoolean_Test()
+        {
+            // Act
+
+            bool result1 = this.valueProvider.GetBoolean();
+            bool result2 = this.valueProvider.GetBoolean();
+            bool result3 = this.valueProvider.GetBoolean();
+
+            // Assert
+
+            Assert.AreEqual(false, result1);
+            Assert.AreEqual(true, result2);
+            Assert.AreEqual(false, result3);
+        }
+
+        [TestMethod]
+        public void GetDateTime_Test()
+        {
+            // Act
+
+            DateTime result1 = this.valueProvider.GetDateTime(null, null);
+            DateTime result2 = this.valueProvider.GetDateTime(null, null);
+
+            // Assert
+
+            Assert.AreEqual(DateTime.Now.Date.AddDays(1), result1.Date);
+            Assert.AreEqual(DateTime.Now.Date.AddDays(2), result2.Date);
+        }
+
+        [TestMethod]
+        public void GetByte_Test()
+        {
+            // Act
+
+            byte result1 = this.valueProvider.GetByte();
+            byte result2 = this.valueProvider.GetByte();
+
+            // Assert
+
+            Assert.AreEqual((byte)this.initialCount + 1, result1);
+            Assert.AreEqual((byte)this.initialCount + 2, result2);
+        }
+
+        [TestMethod]
+        public void GetDouble_Test()
+        {
+            // Act
+
+            double result1 = this.valueProvider.GetDouble(null);
+            double result2 = this.valueProvider.GetDouble(null);
+
+            // Assert
+
+            Assert.AreEqual((double)this.initialCount, result1);
+            Assert.AreEqual((double)this.initialCount + 1, result2);
+        }
+
+        [TestMethod]
+        public void GetFloat_Test()
+        {
+            // Act
+
+            float result1 = this.valueProvider.GetFloat(null);
+            float result2 = this.valueProvider.GetFloat(null);
+
+            // Assert
+
+            Assert.AreEqual((float)this.initialCount, result1);
+            Assert.AreEqual((float)this.initialCount + 1, result2);
         }
     }
 }

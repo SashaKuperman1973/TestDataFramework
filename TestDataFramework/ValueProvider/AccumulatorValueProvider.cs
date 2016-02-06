@@ -56,16 +56,12 @@ namespace TestDataFramework.ValueProvider
             return result;
         }
 
-        private short booleanCount = 0;
+        private bool boolean = false;
 
         public bool GetBoolean()
         {
-            if (this.booleanCount > 1)
-            {
-                throw new OverflowException(Messages.RequestForMoreThan2UniqueBooleanValues);
-            }
-
-            bool result = this.booleanCount++ == 1;
+            bool result = this.boolean;
+            this.boolean = !this.boolean;
             return result;
         }
 

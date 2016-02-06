@@ -181,12 +181,12 @@ namespace TestDataFramework.Factories
                     Component.For<DateTimeProvider>().Instance(() => Helper.Now),
 
                     Component.For<Func<IArrayRandomizer>>()
-                        .Instance(() => commonContainer.Resolve<IArrayRandomizer>(StandardValueGenerator)),
+                        .Instance(() => commonContainer.Resolve<IArrayRandomizer>(PopulatorFactory.StandardValueGenerator)),
 
                     Component.For<IArrayRandomizer>()
                         .ImplementedBy<StandardArrayRandomizer>()
                         .DependsOn(
-                            ServiceOverride.ForKey<IValueGenerator>().Eq(StandardValueGenerator)),
+                            ServiceOverride.ForKey<IValueGenerator>().Eq(PopulatorFactory.StandardValueGenerator)),
 
                     Component.For<LetterEncoder>(),
 

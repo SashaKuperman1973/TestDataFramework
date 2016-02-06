@@ -66,6 +66,27 @@ namespace TestDataFramework.Helpers
 
         #endregion Ensure
 
+        public override string ToString()
+        {
+            if (this == 0)
+            {
+                return "0";
+            }
+
+            LargeInteger workingLargeInteger = this.Clone();
+            var sb = new StringBuilder();
+
+            do
+            {
+                Tuple<LargeInteger, LargeInteger> quotient = workingLargeInteger.Divide(10);
+                workingLargeInteger = quotient.Item1;
+                sb.Insert(0, (char)((ulong) quotient.Item2 + 48));
+
+            } while (workingLargeInteger > 0);
+
+            return sb.ToString();
+        }
+
         public static explicit operator ulong(LargeInteger largeInteger)
         {
             largeInteger.Ensure();

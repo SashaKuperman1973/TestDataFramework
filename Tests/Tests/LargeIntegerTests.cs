@@ -202,5 +202,27 @@ namespace Tests.Tests
 
             Assert.IsTrue(greaterThan > lessThan);
         }
+
+        [TestMethod]
+        public void ToString_Test()
+        {
+            LargeInteger largeInteger = new LargeInteger(uint.MaxValue) * uint.MaxValue * uint.MaxValue;
+
+            string result = largeInteger.ToString();
+            const string expected = "79228162458924105385300197375";
+
+            Assert.AreEqual(expected, result);
+        }
+
+        [TestMethod]
+        public void ToString_Zero_Test()
+        {
+            LargeInteger largeInteger = 0;
+
+            string result = largeInteger.ToString();
+
+            Assert.AreEqual("0", result);
+        }
+
     }
 }

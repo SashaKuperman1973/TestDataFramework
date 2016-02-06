@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using TestDataFramework;
 using TestDataFramework.ValueProvider;
 
@@ -129,5 +130,10 @@ namespace IntegrationTests.TestModels
 
         [Max(int.MaxValue)]
         public short ShortMaxOutOfRange { get; set; }
+    }
+
+    public class ClassWithHandledTypes
+    {
+        public IDictionary<KeyValuePair<int, string>, object> ADictionary { get; set; }
     }
 }

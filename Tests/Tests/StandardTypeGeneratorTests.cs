@@ -75,6 +75,12 @@ namespace Tests.Tests
         }
 
         [TestMethod]
+        public void GetObject_WithExplicitPropertySetters()
+        {
+            throw new NotImplementedException();
+        }
+
+        [TestMethod]
         public void GetObject_NoDefaultConstructor_ReturnsNull_Test()
         {
             throw new NotImplementedException();

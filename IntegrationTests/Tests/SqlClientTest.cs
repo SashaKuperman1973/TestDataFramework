@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 using IntegrationTests.TestModels;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -71,12 +73,12 @@ namespace IntegrationTests.Tests
             Console.WriteLine(result[1].RecordObject.Key2);
         }
 
+        [Ignore]
         [TestMethod]
         public void PrimaryKeyForeignKey_Test()
         {
             IPopulator populator = this.factory.CreateSqlClientPopulator(
-                @"Data Source=.\SqlExpress;Initial Catalog=TestDataFramework;Integrated Security=SSPI;",
-                mustBeInATransaction: false);
+                @"Data Source=.\SqlExpress;Initial Catalog=TestDataFramework;Integrated Security=SSPI;");
 
             IList<RecordReference<ManualKeyPrimaryTable>> primaries = populator.Add<ManualKeyPrimaryTable>(2);
 
@@ -99,7 +101,20 @@ namespace IntegrationTests.Tests
             foreignToAutoSet[0].AddPrimaryRecordReference(tertiaryForeignSet[0]);
             foreignToAutoSet[1].AddPrimaryRecordReference(tertiaryForeignSet[1]);
 
-            populator.Bind();
+            using (
+                new TransactionScope(TransactionScopeOption.Required,
+                    new TransactionOptions {IsolationLevel = IsolationLevel.ReadCommitted}))
+            {
+                populator.Bind();
+            }
+
+            Helpers.Dump(primaries);
+            Helpers.Dump(foreignSet1);
+            Helpers.Dump(foreignSet2);
+            Helpers.Dump(tertiaryForeignSet);
+            Helpers.Dump(foreignToAutoSet);
+
+            Console.WriteLine();
 
             Console.WriteLine(foreignToAutoSet[0].RecordObject.ForignKey);
             Console.WriteLine(foreignToAutoSet[1].RecordObject.ForignKey);

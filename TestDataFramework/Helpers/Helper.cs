@@ -77,7 +77,7 @@ namespace TestDataFramework.Helpers
                 type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty |
                                    BindingFlags.SetProperty);
 
-            results = results.Where(r => r.CanRead && r.CanWrite).ToArray();
+            results = results.Where(r => r.CanRead && r.CanWrite && !r.GetIndexParameters().Any()).ToArray();
 
             return results;
         }

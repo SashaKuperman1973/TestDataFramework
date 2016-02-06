@@ -36,11 +36,18 @@ namespace TestDataFramework.TypeGenerator
         {
             StandardTypeGenerator.Logger.Debug("Entering ConstructObject");
 
+            object handledTypeObject = this.handledTypeGenerator.GetObject(forType);
+
+            if (handledTypeObject != null)
+            {
+                return handledTypeObject;
+            }
+
             if (this.complexTypeProcessingRecursionGuard.Contains(forType))
             {
                 StandardTypeGenerator.Logger.Debug("Circular reference encountered. Type: " + forType);
 
-                return null;
+                return Helper.GetDefaultValue(forType);
             }
 
             this.complexTypeProcessingRecursionGuard.Push(forType);
@@ -53,7 +60,7 @@ namespace TestDataFramework.TypeGenerator
 
                 StandardTypeGenerator.Logger.Debug("Type has no public default constructor. Type: " + forType);
 
-                return null;
+                return Helper.GetDefaultValue(forType);
             }
 
             object objectToFill = defaultConstructor.Invoke(null);
@@ -85,11 +92,6 @@ namespace TestDataFramework.TypeGenerator
         {
             object result = this.ConstructObject(typeof (T), objectToFill => this.FillObject((T)objectToFill, explicitProperySetters));
 
-            if (result == null)
-            {
-                return Helper.GetDefaultValue(typeof(T));
-            }            
-
             StandardTypeGenerator.Logger.Debug("Exiting GetObject<T>");
             return result;
         }
@@ -99,11 +101,6 @@ namespace TestDataFramework.TypeGenerator
             StandardTypeGenerator.Logger.Debug("Entering GetObject");
 
             object result = this.ConstructObject(forType, this.FillObject);
-
-            if (result == null)
-            {
-                return Helper.GetDefaultValue(forType);
-            }
 
             StandardTypeGenerator.Logger.Debug("Exiting GetObject");
             return result;

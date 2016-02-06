@@ -40,36 +40,25 @@ namespace IntegrationTests.Tests
             RecordReference<ForeignSubjectClass> foreignReference = populator.Add<ForeignSubjectClass>(subjectReference[1]);
             populator.Bind();
 
-            this.Dump(subjectReference[0].RecordObject);
-            this.Dump(subjectReference[1].RecordObject);
-            this.Dump(foreignReference.RecordObject);
+            Helpers.Dump(subjectReference[0].RecordObject);
+            Helpers.Dump(subjectReference[1].RecordObject);
+            Helpers.Dump(foreignReference.RecordObject);
         }
 
-        private void Dump(object target)
+        [TestMethod]
+        public void Dictionary_UniqueValueTypeKeys_Test()
         {
-            Console.WriteLine();
-            Console.WriteLine(target.GetType().Name);
-            target.GetType().GetProperties().ToList().ForEach(p =>
-            {
-                try
-                {
-                    Console.WriteLine(p.Name + " = " + p.GetValue(target));
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(p.Name + ": " + MemoryTest.GetMessage(ex));
-                }
-            });
-        }
+            IPopulator populator = this.factory.CreateMemoryPopulator();
 
-        private static string GetMessage(Exception ex)
-        {
-            if (ex.InnerException != null)
+            RecordReference<ClassWithHandledTypes> recordReference = populator.Add<ClassWithHandledTypes>();
+            populator.Bind();
+
+            IDictionary<KeyValuePair<int, string>, object> dictionary = recordReference.RecordObject.ADictionary;
+
+            foreach (KeyValuePair<KeyValuePair<int, string>, object> item in dictionary)
             {
-                return MemoryTest.GetMessage(ex.InnerException);
+                Console.WriteLine(item.Key);
             }
-
-            return ex.Message;
         }
     }
 }

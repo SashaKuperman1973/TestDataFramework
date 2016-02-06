@@ -3,6 +3,7 @@ using System.Data.SqlTypes;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers.Interfaces;
 using TestDataFramework.ValueProvider;
 
@@ -408,6 +409,95 @@ namespace Tests.Tests
             // Assert
 
             Assert.AreEqual("abcde@domain.com", result);
+        }
+
+        [TestMethod]
+        public void RandomizeFloat_DefaultPrecision_Test()
+        {
+            // Arrange
+
+            const float expected = 12345.12f;
+
+            this.randomMock.Setup(m => m.Next(100000)).Returns(12345).Verifiable();
+            this.randomMock.Setup(m => m.NextDouble()).Returns(0.12345d);
+
+            // Act
+
+            float result = this.randomizer.GetFloat(null);
+
+            // Assert
+
+            this.randomMock.Verify();
+            Assert.AreEqual(expected, result);
+        }
+
+        [TestMethod]
+        public void RandomizeFloat_Test()
+        {
+            // Arrange
+
+            const float expected = 123.1234f;
+
+            this.randomMock.Setup(m => m.Next(1000)).Returns(123).Verifiable();
+            this.randomMock.Setup(m => m.NextDouble()).Returns(0.12345d);
+
+            // Act
+
+            float result = this.randomizer.GetFloat(4);
+
+            // Assert
+
+            this.randomMock.Verify();
+            Assert.AreEqual(expected, result);
+        }
+
+        [TestMethod]
+        public void RandomizeFloat_MaximumPrecision_Test()
+        {
+            // Arrange
+
+            const float expected = 0.1234567f;
+
+            this.randomMock.Setup(m => m.Next(1)).Returns(0).Verifiable();
+            this.randomMock.Setup(m => m.NextDouble()).Returns(0.1234567d);
+
+            // Act
+
+            float result = this.randomizer.GetFloat(7);
+
+            // Assert
+
+            this.randomMock.Verify();
+            Assert.AreEqual(expected, result);
+        }
+
+        [TestMethod]
+        public void RandomizeFloat_MinimumPrecision_Test()
+        {
+            // Arrange
+
+            const float expected = 1234567f;
+
+            this.randomMock.Setup(m => m.Next(10000000)).Returns(1234567);
+            this.randomMock.Setup(m => m.NextDouble()).Returns(0.12345d);
+
+            // Act
+
+            float result = this.randomizer.GetFloat(0);
+
+            // Assert
+
+            this.randomMock.Verify();
+            Assert.AreEqual(expected, result);
+        }
+
+        [TestMethod]
+        public void RandomizeFloat_PrecisionOverflow_Test()
+        {
+            // Act. Assert.
+
+            Helpers.ExceptionTest(() => this.randomizer.GetFloat(8), typeof (ArgumentOutOfRangeException),
+                new ArgumentOutOfRangeException("precision", 8, Messages.FloatPrecisionOutOfRange).Message);
         }
     }
 }

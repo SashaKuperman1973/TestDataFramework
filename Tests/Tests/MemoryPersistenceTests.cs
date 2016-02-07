@@ -38,7 +38,7 @@ namespace Tests.Tests
             // Assert
 
             deferredValueGeneratorMock.Verify(
-                m => m.Execute(It.Is<IEnumerable<object>>(e => e.First() == recordReferenceArray[0].RecordObject)),
+                m => m.Execute(It.Is<IEnumerable<RecordReference>>(e => e.First() == recordReferenceArray[0])),
                 Times.Once);
         }
 

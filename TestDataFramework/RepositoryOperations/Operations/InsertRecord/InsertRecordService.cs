@@ -156,10 +156,14 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                     {
                         PrimaryKeyAttribute pka;
 
-                        bool filter = p.GetSingleAttribute<ForeignKeyAttribute>() == null
-                                      &&
-                                      ((pka = p.GetSingleAttribute<PrimaryKeyAttribute>()) == null ||
-                                       pka.KeyType != PrimaryKeyAttribute.KeyTypeEnum.Auto);
+                        bool filter =
+
+                            p.GetSingleAttribute<ForeignKeyAttribute>() == null
+
+                            &&
+
+                            ((pka = p.GetSingleAttribute<PrimaryKeyAttribute>()) == null ||
+                             pka.KeyType != PrimaryKeyAttribute.KeyTypeEnum.Auto);
 
                         return filter;
                     })
@@ -177,6 +181,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                                     p.PropertyType.IsGuid() && !this.recordReference.IsExplicitlySet(p)
 
                                         ? writer.WriteGuid(columnName)
+
                                         : p.GetValue(this.recordReference.RecordObject)
                             };
 
@@ -186,7 +191,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
             InsertRecordService.Logger.Debug("Exiting GetRegularColumns");
 
-            return result.ToList();
+            return result;
         }
 
         #endregion GetColumnData

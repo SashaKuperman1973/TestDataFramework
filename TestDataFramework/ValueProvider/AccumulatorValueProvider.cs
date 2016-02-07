@@ -10,30 +10,46 @@ namespace TestDataFramework.ValueProvider
 {
     public class AccumulatorValueProvider : IValueProvider
     {
-        private short count = (short)Helper.DefaultInitalCount;
+        private short countField = (short)Helper.DefaultInitalCount;
+
+        private short Count
+        {
+            get
+            {
+                if (this.countField != short.MaxValue)
+                {
+                    return this.countField;
+                }
+
+                this.countField = (short)Helper.DefaultInitalCount;
+                return this.countField;
+            }
+
+            set { this.countField = value; }
+        }
 
         private static readonly LetterEncoder LetterEncoder = new LetterEncoder();
 
         public int GetInteger(int? max)
         {
-            return this.count++;
+            return this.Count++;
         }
 
         public long GetLongInteger(long? max)
         {
-            return this.count++;
+            return this.Count++;
         }
 
         public short GetShortInteger(short? max)
         {
-            return this.count++;
+            return this.Count++;
         }
 
         public string GetString(int? length)
         {
             int lengthToUse = length ?? 10;
 
-            string result = AccumulatorValueProvider.LetterEncoder.Encode((ulong) this.count++, lengthToUse);
+            string result = AccumulatorValueProvider.LetterEncoder.Encode((ulong) this.Count++, lengthToUse);
 
             result = result.PadRight(lengthToUse, '+');
 
@@ -52,7 +68,7 @@ namespace TestDataFramework.ValueProvider
 
         public decimal GetDecimal(int? precision)
         {
-            decimal result = this.count++;
+            decimal result = this.Count++;
             return result;
         }
 
@@ -67,30 +83,30 @@ namespace TestDataFramework.ValueProvider
 
         public DateTime GetDateTime(PastOrFuture? pastOrFuture, Func<long?, long> longIntegerGetter)
         {
-            DateTime result = DateTime.Now.AddDays(this.count++);
+            DateTime result = DateTime.Now.AddDays(this.Count++);
             return result;
         }
 
         public byte GetByte()
         {
-            if (++this.count > byte.MaxValue)
+            if (++this.Count > byte.MaxValue)
             {
                 throw new OverflowException(Messages.ByteUniqueValueOverflow);
             }
 
-            var result = (byte) this.count;
+            var result = (byte) this.Count;
             return result;
         }
 
         public double GetDouble(int? precision)
         {
-            double result = this.count++;
+            double result = this.Count++;
             return result;
         }
 
         public float GetFloat(int? precision)
         {
-            float result = this.count++;
+            float result = this.Count++;
             return result;
         }
 

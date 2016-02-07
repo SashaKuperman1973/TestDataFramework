@@ -17,7 +17,7 @@ namespace IntegrationTests.Tests
 {
     [Ignore]
     [TestClass]
-    public class SqlClientTest
+    public class SqlClientAndMemoryTests
     {
         private PopulatorFactory factory;
 
@@ -75,11 +75,24 @@ namespace IntegrationTests.Tests
 
         [Ignore]
         [TestMethod]
-        public void PrimaryKeyForeignKey_Test()
+        public void Memory_Test()
+        {
+            IPopulator populator = this.factory.CreateMemoryPopulator();
+            SqlClientAndMemoryTests.PrimaryKeyForeignKeyTest(populator);
+        }
+
+        [Ignore]
+        [TestMethod]
+        public void SqlCient_Test()
         {
             IPopulator populator = this.factory.CreateSqlClientPopulator(
                 @"Data Source=.\SqlExpress;Initial Catalog=TestDataFramework;Integrated Security=SSPI;");
 
+            SqlClientAndMemoryTests.PrimaryKeyForeignKeyTest(populator);
+        }
+
+        private static void PrimaryKeyForeignKeyTest(IPopulator populator)
+        {
             IList<RecordReference<ManualKeyPrimaryTable>> primaries = populator.Add<ManualKeyPrimaryTable>(2);
 
             IList<RecordReference<ManualKeyForeignTable>> foreignSet1 = populator.Add<ManualKeyForeignTable>(2);
@@ -101,11 +114,17 @@ namespace IntegrationTests.Tests
             foreignToAutoSet[0].AddPrimaryRecordReference(tertiaryForeignSet[0]);
             foreignToAutoSet[1].AddPrimaryRecordReference(tertiaryForeignSet[1]);
 
-            using (
+            primaries[0].Set(o => o.ADecimal, 112233.445566m).Set(o => o.AString, "AAXX").Set(o => o.Key1, "HummHummHumm");
+
+            foreignSet2[1].Set(o => o.ALong, 11111L).Set(o => o.AShort, (short) 1234);
+
+            using (var transactionScope =
                 new TransactionScope(TransactionScopeOption.Required,
                     new TransactionOptions {IsolationLevel = IsolationLevel.ReadCommitted}))
             {
                 populator.Bind();
+                
+                //transactionScope.Complete();
             }
 
             Helpers.Dump(primaries);

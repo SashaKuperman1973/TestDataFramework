@@ -55,11 +55,11 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
             breaker.Push<IWritePrimitives, Counter, AbstractRepositoryOperation[]>(this.Write);
 
-            this.primaryKeyOperations = this.service.GetPrimaryKeyOperations(this.Peers);
+            this.primaryKeyOperations = this.service.GetPrimaryKeyOperations(this.Peers).ToList();
 
             this.service.WritePrimaryKeyOperations(writer, this.primaryKeyOperations, breaker, order, orderedOperations);
 
-            Columns columnData = this.GetColumnData(this.primaryKeyOperations, writer);
+            Columns columnData = this.GetColumnData(writer);
 
             this.Order = order.Value++;
             orderedOperations[this.Order] = this;
@@ -152,7 +152,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
         #region Private methods
 
-        private Columns GetColumnData(IEnumerable<InsertRecord> primaryKeyOperations, IWritePrimitives writer)
+        private Columns GetColumnData(IWritePrimitives writer)
         {
             InsertRecord.Logger.Debug("Entering GetColumnData");
 
@@ -161,7 +161,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
             result.RegularColumns = this.service.GetRegularColumns(writer);
 
-            this.foreignKeyColumns = this.service.GetForeignKeyColumns(primaryKeyOperations);
+            this.foreignKeyColumns = this.service.GetForeignKeyColumns(this.primaryKeyOperations);
 
             result.ForeignKeyColumns =
                 this.foreignKeyColumns.Select(

@@ -20,7 +20,7 @@ namespace TestDataFramework.Persistence
         {
             recordReferences = recordReferences.ToList();
 
-            this.deferredValueGenerator.Execute(recordReferences.Select(r => r.RecordObject));
+            this.deferredValueGenerator.Execute(recordReferences);
 
             MemoryPersistence.CopyPrimaryToForeignKeys(recordReferences);
         }

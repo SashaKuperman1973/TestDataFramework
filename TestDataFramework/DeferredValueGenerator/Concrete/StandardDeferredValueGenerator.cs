@@ -6,6 +6,7 @@ using log4net.Appender;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
+using TestDataFramework.Populator;
 
 namespace TestDataFramework.DeferredValueGenerator.Concrete
 {
@@ -38,16 +39,25 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
             StandardDeferredValueGenerator<T>.Logger.Debug("Exiting AddDelegate");
         }
 
-        public void Execute(IEnumerable<object> targets)
+        public void Execute(IEnumerable<RecordReference> targets)
         {
             StandardDeferredValueGenerator<T>.Logger.Debug("Entering Execute");
 
             this.dataSource.FillData(this.propertyDataDictionary);
 
-            targets.ToList().ForEach(targetObject =>
+            targets.ToList().ForEach(targetRecordReference =>
             {
-                targetObject.GetType().GetPropertiesHelper().ToList().ForEach(propertyInfo =>
+                targetRecordReference.RecordType.GetPropertiesHelper().ToList().ForEach(propertyInfo =>
                 {
+                    if (targetRecordReference.IsExplicitlySet(propertyInfo))
+                    {
+                        StandardDeferredValueGenerator<T>.Logger.Debug(
+                            "Property explicitly set. Continuing to next iteration. " +
+                            propertyInfo.GetExtendedPropertyInfoString());
+
+                        return;
+                    }
+
                     Data<T> data;
                     if (!this.propertyDataDictionary.TryGetValue(propertyInfo, out data))
                     {
@@ -58,7 +68,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
 
                     value = value ?? Helper.GetDefaultValue(propertyInfo.PropertyType);
 
-                    propertyInfo.SetValue(targetObject, value);
+                    propertyInfo.SetValue(targetRecordReference.RecordObject, value);
                 });
             });
 

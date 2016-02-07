@@ -37,7 +37,7 @@ namespace TestDataFramework.Persistence
                 return;
             }
 
-            this.deferredValueGenerator.Execute(recordReferences.Select(r => r.RecordObject));
+            this.deferredValueGenerator.Execute(recordReferences);
 
             var operations = new List<AbstractRepositoryOperation>();
 

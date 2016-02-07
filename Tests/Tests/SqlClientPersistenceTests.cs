@@ -62,7 +62,7 @@ namespace Tests.Tests
             this.writePrimitivesMock.Verify(m => m.Insert(tableName, It.IsAny<IEnumerable<Column>>()), Times.Once());
 
             this.deferredValueGeneratorMock.Verify(
-                m => m.Execute(It.Is<IEnumerable<object>>(e => e.First() == recordReferenceArray[0].RecordObject)),
+                m => m.Execute(It.Is<IEnumerable<RecordReference>>(e => e.First() == recordReferenceArray[0])),
                 Times.Once);
 
             Assert.IsNotNull(primaryTableColumns);

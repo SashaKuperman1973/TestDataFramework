@@ -51,7 +51,7 @@
     <Compile Include="TestModels\PrimaryForeignReferenceSubjectClasses.cs" />
     <Compile Include="TestModels\SubjectClasses.cs" />
     <Compile Include="Tests\MemoryTest.cs" />
-    <Compile Include="Tests\SqlClientTest.cs" />
+    <Compile Include="Tests\SqlClientAndMemoryTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TestDataFramework\TestDataFramework.csproj">

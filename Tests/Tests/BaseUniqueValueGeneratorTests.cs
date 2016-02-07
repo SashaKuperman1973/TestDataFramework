@@ -82,14 +82,8 @@ namespace Tests.Tests
             // Assert
 
             this.propertyValueAccumulatorMock.Verify(
-                m => m.GetValue(propertyInfo, TestDataFramework.Helpers.Helper.DefaultInitalCount), 
+                m => m.GetValue(propertyInfo, Helper.DefaultInitalCount), 
                 Times.Once);
-        }
-
-        [TestMethod]
-        public void GetValue_ThrowWhenUnhandledPrimaryKeyType_Test()
-        {
-            throw new NotImplementedException();
         }
     }
 }

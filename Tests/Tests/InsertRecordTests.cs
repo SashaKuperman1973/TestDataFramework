@@ -53,8 +53,8 @@ namespace Tests.Tests
             var primaryKeyOperations = new List<InsertRecord>();
             var currentOrder = new Counter();
             var regularColumns = new List<Column>();
-            var foreignKeyColumns = new List<Column>();
-            var columnList = regularColumns.Concat(foreignKeyColumns);
+            var foreignKeyColumns = new List<ExtendedColumnSymbol>();
+            var columnList = regularColumns.Concat(Helpers.ColumnSymbolToColumn(foreignKeyColumns));
             string tableName = typeof (SubjectClass).Name;
 
             this.serviceMock.Setup(m => m.GetPrimaryKeyOperations(this.peers)).Returns(primaryKeyOperations);
@@ -81,8 +81,10 @@ namespace Tests.Tests
 
             this.serviceMock.Verify(m => m.WritePrimitives(this.writePrimitivesMock.Object, tableName, columnList, It.Is<List<ColumnSymbol>>(l => l.Count == 0)), Times.Once);
 
-            this.serviceMock.Verify(m => m.CopyPrimaryToForeignKeyColumns(foreignKeyColumns), Times.Once());
+            this.serviceMock.Verify(m => m.CopyPrimaryToForeignKeyColumns(Helpers.ColumnSymbolToColumn(foreignKeyColumns)), Times.Once());
         }
+
+        
 
         [TestMethod]
         public void WriteIsVisited_Test()
@@ -116,7 +118,7 @@ namespace Tests.Tests
             var primaryKeyOperations = new List<InsertRecord> { secondInsertRecord };
 
             var regularColumns = new List<Column>();
-            var foreignKeyColumns = new List<Column>();
+            var foreignKeyColumns = new List<ExtendedColumnSymbol>();
 
             this.serviceMock.Setup(m => m.GetPrimaryKeyOperations(this.peers)).Returns(primaryKeyOperations);
             this.serviceMock.Setup(m => m.GetRegularColumns(this.writePrimitivesMock.Object)).Returns(regularColumns);

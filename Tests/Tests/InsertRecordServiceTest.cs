@@ -406,13 +406,13 @@ namespace Tests.Tests
 
             // Act
 
-            List<Column> fkColumns =
+            List<ExtendedColumnSymbol> fkColumns =
                 this.insertRecordService.GetForeignKeyColumns(new[] {primaryKeyInsertRecordMock.Object}).ToList();
 
             // Assert
 
             Assert.AreEqual(1, fkColumns.Count);
-            Assert.AreEqual("ForeignKey", fkColumns[0].Name);
+            Assert.AreEqual("ForeignKey", fkColumns[0].ColumnName);
             Assert.AreEqual(primaryKeyValue, fkColumns[0].Value);
         }
 
@@ -439,14 +439,14 @@ namespace Tests.Tests
 
             // Act
 
-            List<Column> fkColumns =
+            List<ExtendedColumnSymbol> fkColumns =
                 // Remember: Insert record service populated with the record reference as given in the test initialization above.
                 this.insertRecordService.GetForeignKeyColumns(new[] { primaryKeyInsertRecordMock.Object }).ToList();
 
             // Assert
 
             Assert.AreEqual(1, fkColumns.Count);
-            Assert.AreEqual("ForeignKey", fkColumns[0].Name);
+            Assert.AreEqual("ForeignKey", fkColumns[0].ColumnName);
 
             Assert.AreEqual(Helper.GetDefaultValue(typeof (ForeignTable).GetProperty("ForeignKey").PropertyType),
                 fkColumns[0].Value);
@@ -478,13 +478,13 @@ namespace Tests.Tests
 
             // Act
 
-            List<Column> fkColumns =
+            List<ExtendedColumnSymbol> fkColumns =
                 this.insertRecordService.GetForeignKeyColumns(new[] { primaryKeyInsertRecordMock.Object }).ToList();
 
             // Assert
 
             Assert.AreEqual(1, fkColumns.Count);
-            Assert.AreEqual("ForeignKey", fkColumns[0].Name);
+            Assert.AreEqual("ForeignKey", fkColumns[0].ColumnName);
             Assert.AreEqual(explicitValue, fkColumns[0].Value);
         }
     }

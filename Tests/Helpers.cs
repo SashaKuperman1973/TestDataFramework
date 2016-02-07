@@ -15,6 +15,11 @@ namespace Tests
 {
     public static class Helpers
     {
+        public static IEnumerable<Column> ColumnSymbolToColumn(IEnumerable<ExtendedColumnSymbol> columnsSymbol)
+        {
+            return columnsSymbol.Select(fkc => new Column {Name = fkc.ColumnName, Value = fkc.Value});
+        }
+
         public static void ExceptionTest(Action getValue, Type exceptionType, string message)
         {
             // Act

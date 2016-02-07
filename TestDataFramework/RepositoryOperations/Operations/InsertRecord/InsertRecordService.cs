@@ -90,7 +90,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
         #region GetColumnData
 
-        public virtual IEnumerable<Column> GetForeignKeyColumns(IEnumerable<InsertRecord> primaryKeyOperations)
+        public virtual IEnumerable<ExtendedColumnSymbol> GetForeignKeyColumns(IEnumerable<InsertRecord> primaryKeyOperations)
         {
             InsertRecordService.Logger.Debug("Entering GetForeignKeyVariables");
 
@@ -123,20 +123,24 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                                 ? fkpa.PropertyInfo.GetValue(this.recordReference.RecordObject)
 
                                 : isForeignKeyPrimaryKeyMatch
+
                                     ? pkColumnMatch.Value
+
                                     : Helper.GetDefaultValue(fkpa.PropertyInfo.PropertyType),
 
                         FkPropertyAttribute = fkpa
                     };
             });
 
-            IEnumerable<Column> result =
+            IEnumerable<ExtendedColumnSymbol> result =
                 foreignKeys.Select(
                     fk =>
-                        new Column
+                        new ExtendedColumnSymbol
                         {
-                            Name = Helper.GetColumnName(fk.FkPropertyAttribute.PropertyInfo),
-                            Value = fk.PkColumnValue
+                            TableType = fk.FkPropertyAttribute.PropertyInfo.DeclaringType,
+                            ColumnName = Helper.GetColumnName(fk.FkPropertyAttribute.PropertyInfo),
+                            Value = fk.PkColumnValue,
+                            PropertyAttribute = fk.FkPropertyAttribute,
                         });
 
             return result;

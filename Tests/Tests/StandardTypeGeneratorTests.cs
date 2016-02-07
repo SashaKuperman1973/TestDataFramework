@@ -77,21 +77,50 @@ namespace Tests.Tests
         [TestMethod]
         public void GetObject_WithExplicitPropertySetters()
         {
-            throw new NotImplementedException();
+            // Arrange
+
+            const int expected = 7;
+
+            ConcurrentDictionary<PropertyInfo, Action<SecondClass>> explicitProperySetters =
+                        new ConcurrentDictionary<PropertyInfo, Action<SecondClass>>();
+
+            PropertyInfo propertyInfo = typeof (SecondClass).GetProperty("SecondInteger");
+
+            Action<SecondClass> setter = @object => propertyInfo.SetValue(@object, expected);
+            explicitProperySetters.AddOrUpdate(propertyInfo, setter, (pi, lambda) => setter);
+
+            // Act
+
+            var result = this.typeGenerator.GetObject<SecondClass>(explicitProperySetters) as SecondClass;
+
+            // Assert
+
+            Assert.AreEqual(expected, result.SecondInteger);
         }
 
         [TestMethod]
         public void GetObject_NoDefaultConstructor_ReturnsNull_Test()
         {
-            throw new NotImplementedException();
+            object result = this.typeGenerator.GetObject(typeof(ClassWithoutADefaultConstructor));
 
-            this.typeGenerator.GetObject(typeof (ClassWithoutADefaultConstructor));
+            Assert.IsNull(result);
         }
 
         [TestMethod]
         public void HandledType_Test()
         {
-            throw new NotImplementedException();
+            // Arrange
+
+            this.handledTypeGeneratorMock.Setup(m => m.GetObject(typeof (KeyValuePair<int, string>))).Returns(new KeyValuePair<int, string>(3, "ABCD"));
+
+            // Act
+
+            var result = (KeyValuePair<int, string>)this.typeGenerator.GetObject(typeof (KeyValuePair<int, string>));
+
+            // Assert
+
+            Assert.AreEqual(3, result.Key);
+            Assert.AreEqual("ABCD", result.Value);
         }
     }
 }

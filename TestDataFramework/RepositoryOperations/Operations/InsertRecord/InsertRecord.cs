@@ -19,7 +19,8 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
         private readonly InsertRecordService service;
 
         private readonly List<ColumnSymbol> primaryKeyValues = new List<ColumnSymbol>();
-        private IEnumerable<InsertRecord> primaryKeyOperations;
+        private IEnumerable<ExtendedColumnSymbol> foreignKeyColumns;
+        private readonly IEnumerable<InsertRecord> primaryKeyOperations;
 
         #endregion Private Fields
 
@@ -30,6 +31,8 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             this.Peers = peers;
             this.RecordReference = recordReference;
             this.service = service;
+
+            this.primaryKeyOperations = this.service.GetPrimaryKeyOperations(this.Peers).ToList();
 
             InsertRecord.Logger.Debug("Exiting constructor");
         }
@@ -52,9 +55,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                 return;
             }
 
-            breaker.Push<IWritePrimitives, Counter, AbstractRepositoryOperation[]>(this.Write);
-
-            this.primaryKeyOperations = this.service.GetPrimaryKeyOperations(this.Peers).ToList();
+            breaker.Push<IWritePrimitives, Counter, AbstractRepositoryOperation[]>(this.Write);            
 
             this.service.WritePrimaryKeyOperations(writer, this.primaryKeyOperations, breaker, order, orderedOperations);
 
@@ -101,19 +102,18 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                 propertiesForRead.Remove(property);
             }
 
-            IEnumerable<PropertyAttributes> foreignKeyProperties = InsertRecord.GetForeignKeyProperties(propertyAttributes);
+            IEnumerable<ExtendedColumnSymbol> specialForeignKeyColumns =
+                this.foreignKeyColumns.Where(c => c.Value.IsSpecialType());
 
-            foreignKeyProperties.ToList().ForEach(pa =>
+            specialForeignKeyColumns.ToList().ForEach(fkColumn =>
             {
-                var foreignKeyAttribute = pa.PropertyInfo.GetSingleAttribute<ForeignKeyAttribute>();
-
                 InsertRecord primaryKeyOperation = this.primaryKeyOperations.First(selectedPrimaryKeyOperation =>
-                    selectedPrimaryKeyOperation.RecordReference.RecordType == foreignKeyAttribute.PrimaryTableType);
+                    selectedPrimaryKeyOperation.RecordReference.RecordType == fkColumn.PropertyAttribute.Attribute.PrimaryTableType);
 
                 PropertyInfo primaryKeyProperty =
-                    InsertRecord.GetPrimaryKeyProperty(primaryKeyOperation.RecordReference.RecordType, foreignKeyAttribute);
+                    InsertRecord.GetPrimaryKeyProperty(primaryKeyOperation.RecordReference.RecordType, fkColumn.PropertyAttribute.Attribute);
 
-                pa.PropertyInfo.SetValue(this.RecordReference.RecordObject,
+                fkColumn.PropertyAttribute.PropertyInfo.SetValue(this.RecordReference.RecordObject,
                     primaryKeyProperty.GetValue(primaryKeyOperation.RecordReference.RecordObject));
             });
 
@@ -127,12 +127,13 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                     .First(
                         p =>
                             Helper.GetColumnName(p)
+
                                 .Equals(foreignKeyAttribute.PrimaryKeyName, StringComparison.Ordinal));
 
             return result;
         }
 
-        private static IEnumerable<Model.PropertyAttributes> GetForeignKeyProperties(IEnumerable<Model.PropertyAttributes> propertyAttributes)
+        private static IEnumerable<PropertyAttributes> GetForeignKeyProperties(IEnumerable<PropertyAttributes> propertyAttributes)
         {
             IEnumerable<PropertyAttributes> result =
                 propertyAttributes.Where(
@@ -159,26 +160,33 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             var result = new Columns();
 
             result.RegularColumns = this.service.GetRegularColumns(writer);
-            result.ForeignKeyColumns = this.service.GetForeignKeyColumns(primaryKeyOperations);
+
+            this.foreignKeyColumns = this.service.GetForeignKeyColumns(primaryKeyOperations);
+
+            result.ForeignKeyColumns =
+                this.foreignKeyColumns.Select(
+                    columnSymbol => new Column {Name = columnSymbol.ColumnName, Value = columnSymbol.Value});
 
             InsertRecord.Logger.Debug("Exiting GetColumnData");
             return result;
         }
 
-        private IEnumerable<PropertyInfo> GetPropertiesForRead(IEnumerable<Model.PropertyAttributes> propertyAttributes)
+        private IEnumerable<PropertyInfo> GetPropertiesForRead(IEnumerable<PropertyAttributes> propertyAttributes)
         {
-            IEnumerable<Model.PropertyAttributes> result = propertyAttributes.Where(pa =>
+            IEnumerable<PropertyAttributes> result = propertyAttributes.Where(pa =>
 
-                pa.Attributes.Any(
+                !this.RecordReference.IsExplicitlySet(pa.PropertyInfo)
+
+                &&
+
+                (pa.Attributes.Any(
                     a =>
 
                         (a.GetType() == typeof (PrimaryKeyAttribute) &&
                          ((PrimaryKeyAttribute) a).KeyType == PrimaryKeyAttribute.KeyTypeEnum.Auto)
                     )
 
-                && !this.RecordReference.IsExplicitlySet(pa.PropertyInfo)
-
-                || pa.PropertyInfo.PropertyType.IsGuid() && pa.Attributes.All(a => a.GetType() != typeof (ForeignKeyAttribute))
+                || pa.PropertyInfo.PropertyType.IsGuid() && pa.Attributes.All(a => a.GetType() != typeof (ForeignKeyAttribute)))
 
                 );
 

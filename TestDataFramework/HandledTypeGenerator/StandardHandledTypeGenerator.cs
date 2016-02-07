@@ -55,7 +55,7 @@ namespace TestDataFramework.HandledTypeGenerator
             };
         }
 
-        public object GetObject(Type forType)
+        public virtual object GetObject(Type forType)
         {
             StandardHandledTypeGenerator.Logger.Debug("Entering GetObject");
 
@@ -75,7 +75,7 @@ namespace TestDataFramework.HandledTypeGenerator
             return result;
         }
 
-        private object GetGenericCollection(Type forType, Type concreteOpenType, Func<Type[], object[]> genericCollectionValueGenerator)
+        protected virtual object GetGenericCollection(Type forType, Type concreteOpenType, Func<Type[], object[]> genericCollectionValueGenerator)
         {
             StandardHandledTypeGenerator.Logger.Debug("Entering GetGenericCollection");
 

@@ -81,7 +81,7 @@ namespace Tests.Tests
 
             this.serviceMock.Verify(m => m.WritePrimitives(this.writePrimitivesMock.Object, tableName, columnList, It.Is<List<ColumnSymbol>>(l => l.Count == 0)), Times.Once);
 
-            this.serviceMock.Verify(m => m.CopyPrimaryToForeignKeyColumns(Helpers.ColumnSymbolToColumn(foreignKeyColumns)), Times.Once());
+            this.serviceMock.Verify(m => m.CopyPrimaryToForeignKeyColumns(It.Is<IEnumerable<Column>>(c => !c.Any())), Times.Once());
         }
 
         
@@ -206,6 +206,7 @@ namespace Tests.Tests
 
             // Act
 
+            this.insertRecord.Write(this.breakerMock.Object, this.writePrimitivesMock.Object, new Counter(), new AbstractRepositoryOperation[1]);
             this.insertRecord.Read(streamReadPointer, returnValue);
 
             // Assert
@@ -230,6 +231,7 @@ namespace Tests.Tests
 
             // Act
 
+            this.insertRecord.Write(this.breakerMock.Object, this.writePrimitivesMock.Object, new Counter(), new AbstractRepositoryOperation[1]);
             this.insertRecord.Read(streamReadPointer, returnValue);
 
             // Assert

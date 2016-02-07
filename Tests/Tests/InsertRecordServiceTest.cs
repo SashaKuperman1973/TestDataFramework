@@ -26,6 +26,7 @@ namespace Tests.Tests
         private RecordReference<ForeignTable> recordReference;
         private Mock<IWritePrimitives> writerMock;
         private Mock<ITypeGenerator> typeGeneratorMock;
+        private IEnumerable<AbstractRepositoryOperation> peers;
 
         private ForeignTable foreignKeyTable;
         private List<Column> mainTableColumns;
@@ -42,6 +43,7 @@ namespace Tests.Tests
             this.recordReference.Populate();
             this.insertRecordService = new InsertRecordService(this.recordReference);
             this.writerMock = new Mock<IWritePrimitives>();
+            this.peers = Enumerable.Empty<AbstractRepositoryOperation>();
 
             this.mainTableColumns = Helpers.GetColumns(this.foreignKeyTable);
 
@@ -63,7 +65,7 @@ namespace Tests.Tests
                 new RecordReference<PrimaryTable>(primaryTableTypeGeneratorMock.Object),
             };
 
-            InsertRecord[] peerOperations = peerRecordreferences.Select(r => new InsertRecord(null, r, null)).ToArray();
+            InsertRecord[] peerOperations = peerRecordreferences.Select(r => new InsertRecord(this.insertRecordService, r, this.peers)).ToArray();
 
             // Act
 
@@ -86,8 +88,8 @@ namespace Tests.Tests
 
             var primaryKeyOperations = new[]
             {
-                new Mock<InsertRecord>(null, null, null),
-                new Mock<InsertRecord>(null, null, null),
+                new Mock<InsertRecord>(this.insertRecordService, null, this.peers),
+                new Mock<InsertRecord>(this.insertRecordService, null, this.peers),
             };
 
             // Act
@@ -398,9 +400,9 @@ namespace Tests.Tests
                 new ColumnSymbol {ColumnName = "Key", TableType = typeof (PrimaryTable), Value = primaryKeyValue}
             };
 
-            var primaryKeyInsertRecordMock = new Mock<InsertRecord>(null,
+            var primaryKeyInsertRecordMock = new Mock<InsertRecord>(this.insertRecordService,
                 new RecordReference<PrimaryTable>(Helpers.GetTypeGeneratorMock(new PrimaryTable()).Object),
-                null);
+                this.peers);
 
             primaryKeyInsertRecordMock.Setup(m => m.GetPrimaryKeySymbols()).Returns(primaryKeySymbols);
 
@@ -427,12 +429,12 @@ namespace Tests.Tests
                 new ColumnSymbol {ColumnName = "Key2", TableType = typeof (ManualKeyPrimaryTable), Value = 5},
             };
 
-            var primaryKeyInsertRecordMock = new Mock<InsertRecord>(null,
+            var primaryKeyInsertRecordMock = new Mock<InsertRecord>(this.insertRecordService,
 
                 new RecordReference<ManualKeyPrimaryTable>(
                     Helpers.GetTypeGeneratorMock(new ManualKeyPrimaryTable()).Object),
                 
-                null
+                this.peers
                 );
 
             primaryKeyInsertRecordMock.Setup(m => m.GetPrimaryKeySymbols()).Returns(primaryKeySymbols);
@@ -469,7 +471,7 @@ namespace Tests.Tests
             var recordReference =
                 new RecordReference<PrimaryTable>(Helpers.GetTypeGeneratorMock(new PrimaryTable()).Object);
 
-            var primaryKeyInsertRecordMock = new Mock<InsertRecord>(null, recordReference, null);
+            var primaryKeyInsertRecordMock = new Mock<InsertRecord>(this.insertRecordService, recordReference, this.peers);
 
             primaryKeyInsertRecordMock.Setup(m => m.GetPrimaryKeySymbols()).Returns(primaryKeySymbols);
 

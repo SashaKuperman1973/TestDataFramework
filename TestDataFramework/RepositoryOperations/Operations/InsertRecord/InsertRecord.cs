@@ -20,7 +20,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
         private readonly List<ColumnSymbol> primaryKeyValues = new List<ColumnSymbol>();
         private IEnumerable<ExtendedColumnSymbol> foreignKeyColumns;
-        private readonly IEnumerable<InsertRecord> primaryKeyOperations;
+        private IEnumerable<InsertRecord> primaryKeyOperations;
 
         #endregion Private Fields
 
@@ -31,8 +31,6 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             this.Peers = peers;
             this.RecordReference = recordReference;
             this.service = service;
-
-            this.primaryKeyOperations = this.service.GetPrimaryKeyOperations(this.Peers).ToList();
 
             InsertRecord.Logger.Debug("Exiting constructor");
         }
@@ -55,7 +53,9 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                 return;
             }
 
-            breaker.Push<IWritePrimitives, Counter, AbstractRepositoryOperation[]>(this.Write);            
+            breaker.Push<IWritePrimitives, Counter, AbstractRepositoryOperation[]>(this.Write);
+
+            this.primaryKeyOperations = this.service.GetPrimaryKeyOperations(this.Peers);
 
             this.service.WritePrimaryKeyOperations(writer, this.primaryKeyOperations, breaker, order, orderedOperations);
 

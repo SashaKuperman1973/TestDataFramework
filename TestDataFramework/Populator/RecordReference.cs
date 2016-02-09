@@ -45,7 +45,8 @@ namespace TestDataFramework.Populator
 
         public virtual void AddPrimaryRecordReference(RecordReference primaryRecordReference)
         {
-            RecordReference.Logger.Debug("Entering AddPrimaryRecordReference(RecordReference)");
+            RecordReference.Logger.Debug(
+                $"Entering AddPrimaryRecordReference(RecordReference). record object: {primaryRecordReference.RecordObject}");
 
             if (!this.ValidateRelationship(primaryRecordReference))
             {

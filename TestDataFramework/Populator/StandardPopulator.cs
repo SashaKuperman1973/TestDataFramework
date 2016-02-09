@@ -42,6 +42,8 @@ namespace TestDataFramework.Populator
 
         public virtual IList<RecordReference<T>> Add<T>(int copies, RecordReference primaryRecordReference = null) where T : new()
         {
+            StandardPopulator.Logger.Debug($"Entering Add. T: {typeof(T)}, copies: {copies}, primaryRecordReference: {primaryRecordReference}");
+
             var result = new List<RecordReference<T>>();
 
             for (int i = 0; i < copies; i++)
@@ -49,14 +51,13 @@ namespace TestDataFramework.Populator
                 result.Add(this.Add<T>(primaryRecordReference));
             }
 
+            StandardPopulator.Logger.Debug("Exiting Add");
             return result;
         }
 
         public virtual RecordReference<T> Add<T>(RecordReference primaryRecordReference = null) where T : new()
         {
-            StandardPopulator.Logger.Debug("Entering Add<T>(primaryRecordReference, propertyExpressionDictionary)");
-
-            StandardPopulator.Logger.Debug("Adding type " + typeof(T));
+            StandardPopulator.Logger.Debug($"Entering Add. T: {typeof(T)}, primaryRecordReference: {primaryRecordReference}");
 
             var recordReference = new RecordReference<T>(this.typeGenerator);
 
@@ -69,6 +70,7 @@ namespace TestDataFramework.Populator
 
             StandardPopulator.Logger.Debug("Exiting Add<T>(primaryRecordReference, propertyExpressionDictionary)");
 
+            StandardPopulator.Logger.Debug($"Exiting Add. record object: {recordReference.RecordObject}");
             return recordReference;
         }
 

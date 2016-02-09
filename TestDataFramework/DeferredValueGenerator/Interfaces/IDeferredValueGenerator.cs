@@ -15,6 +15,12 @@ namespace TestDataFramework.DeferredValueGenerator.Interfaces
 
         public T Item { get; set; }
         public DeferredValueGetterDelegate<T> ValueGetter { get; }
+
+        public override string ToString()
+        {
+            string result = $"Item: {this.Item}, ValueGetter: {this.ValueGetter}";
+            return result;
+        }
     }
 
     public interface IDeferredValueGenerator<out T>

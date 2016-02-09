@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using log4net;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Populator;
 using TestDataFramework.Helpers;
@@ -9,20 +10,32 @@ namespace TestDataFramework.Persistence
 {
     public class MemoryPersistence : IPersistence
     {
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(MemoryPersistence));
+
         private readonly IDeferredValueGenerator<LargeInteger> deferredValueGenerator;
 
         public MemoryPersistence(IDeferredValueGenerator<LargeInteger> deferredValueGenerator)
         {
+            MemoryPersistence.Logger.Debug("Entering constructor");
+
             this.deferredValueGenerator = deferredValueGenerator;
+
+            MemoryPersistence.Logger.Debug("Exiting constructor");
         }
 
         public void Persist(IEnumerable<RecordReference> recordReferences)
         {
+            MemoryPersistence.Logger.Debug("Entering Persist");
+
             recordReferences = recordReferences.ToList();
+
+            MemoryPersistence.Logger.Debug($"Records: {string.Join(", ", recordReferences.Select(r => r?.RecordObject))}");
 
             this.deferredValueGenerator.Execute(recordReferences);
 
             MemoryPersistence.CopyPrimaryToForeignKeys(recordReferences);
+
+            MemoryPersistence.Logger.Debug("Exiting Persist");
         }
 
         private static void CopyPrimaryToForeignKeys(IEnumerable<RecordReference> recordReferences)
@@ -53,7 +66,11 @@ namespace TestDataFramework.Persistence
                     return;
                 }
 
+                MemoryPersistence.Logger.Debug($"PropertyInfo to get from: {primaryKey.PkProperty}");
                 object primaryKeyPropertyValue = primaryKey.PkProperty.GetValue(primaryKey.Object);
+                MemoryPersistence.Logger.Debug($"primaryKeyPropertyValue: {primaryKeyPropertyValue}");
+
+                MemoryPersistence.Logger.Debug($"PropertyInfo to set: {fkpa.PropertyInfo}");
                 fkpa.PropertyInfo.SetValue(recordReference.RecordObject, primaryKeyPropertyValue);
             });
         }

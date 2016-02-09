@@ -18,18 +18,29 @@ namespace TestDataFramework.PropertyValueAccumulator
 
         public StandardPropertyValueAccumulator(LetterEncoder stringGenerator)
         {
+            StandardPropertyValueAccumulator.Logger.Debug("Entering contructor");
+
             this.stringGenerator = stringGenerator;
+
+            StandardPropertyValueAccumulator.Logger.Debug("Exiting contructor");
         }
 
         public object GetValue(PropertyInfo propertyInfo, LargeInteger initialCount)
         {
+            StandardPropertyValueAccumulator.Logger.Debug(
+                $"Entering GetValue. propertyInfo: {propertyInfo}, initialCount: {initialCount}");
+
             this.countDictionary.AddOrUpdate(propertyInfo, pi => initialCount, (pi, value) => ++value);
             object result = this.PrivateGetValue(propertyInfo);
+
+            StandardPropertyValueAccumulator.Logger.Debug("Exiting GetValue");
             return result;
         }
 
         public bool IsTypeHandled(Type type)
         {
+            StandardPropertyValueAccumulator.Logger.Debug("Entering IsTypeHandled");
+
             bool result = new[]
             {
                 typeof (string),
@@ -37,6 +48,7 @@ namespace TestDataFramework.PropertyValueAccumulator
                 typeof (uint), typeof (ushort), typeof (ulong),
             }.Contains(type);
 
+            StandardPropertyValueAccumulator.Logger.Debug($"Exiting IsTypeHandled. result: {result}");
             return result;
         }
 

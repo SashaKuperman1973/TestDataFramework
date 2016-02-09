@@ -96,7 +96,7 @@ namespace TestDataFramework.Exceptions
     public class PopulatePrimaryKeyException : ApplicationException
     {
         public PopulatePrimaryKeyException(string message, PropertyInfo propertyInfo)
-            : base(string.Format(message, propertyInfo.GetExtendedPropertyInfoString()))
+            : base(string.Format(message, propertyInfo.GetExtendedMemberInfoString()))
         {
         }
     }

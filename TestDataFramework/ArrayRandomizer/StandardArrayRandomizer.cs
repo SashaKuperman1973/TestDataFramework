@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using log4net;
+using TestDataFramework.Helpers;
 using TestDataFramework.ValueGenerator;
 using TestDataFramework.ValueGenerator.Interface;
 
@@ -28,6 +29,8 @@ namespace TestDataFramework.ArrayRandomizer
 
         public object GetArray(PropertyInfo propertyInfo, Type type)
         {
+            StandardArrayRandomizer.Logger.Debug($"Entering GetArray. propertyInfo: {propertyInfo.GetExtendedMemberInfoString()}, type: {type}");
+
             Array resultArray;
 
             int rank = type.GetArrayRank();
@@ -35,10 +38,13 @@ namespace TestDataFramework.ArrayRandomizer
 
             if (rank > 1)
             {
+                StandardArrayRandomizer.Logger.Debug($"rank > 1: {rank}");
+
                 var dimensionSizes = new int[rank];
 
                 for (int i = 0; i < dimensionSizes.Length; i++)
                 {
+                    StandardArrayRandomizer.Logger.Debug($"dimensionSize {i}: {dimensionSizes[i]}");
                     dimensionSizes[i] = this.random.Next(StandardArrayRandomizer.MaxDimensionLength) + 1;
                 }
 
@@ -47,6 +53,7 @@ namespace TestDataFramework.ArrayRandomizer
                 do
                 {
                     object resultElement = this.valueGenerator.GetValue(propertyInfo, basicType);
+                    StandardArrayRandomizer.Logger.Debug($"Result element: {resultElement}");
                     emptyArrayResult.Array.SetValue(resultElement, emptyArrayResult.Indices.Value);
                     emptyArrayResult.Indices++;
 
@@ -56,6 +63,8 @@ namespace TestDataFramework.ArrayRandomizer
             }
             else
             {
+                StandardArrayRandomizer.Logger.Debug($"rank <= 1: {rank}");
+
                 int dimensionLength = this.random.Next(StandardArrayRandomizer.MaxDimensionLength) + 1;
                 ConstructorInfo constructor = type.GetConstructor(new[] { typeof(int) });
                 resultArray = (Array)constructor.Invoke(new object[] { dimensionLength });
@@ -63,9 +72,12 @@ namespace TestDataFramework.ArrayRandomizer
                 for (int i = 0; i < dimensionLength; i++)
                 {
                     object value = this.valueGenerator.GetValue(propertyInfo, basicType);
+                    StandardArrayRandomizer.Logger.Debug($"Element value: {value}");
                     resultArray.SetValue(value, i);
                 }
             }
+
+            StandardArrayRandomizer.Logger.Debug("Exiting GetArray");
 
             return resultArray;
         }

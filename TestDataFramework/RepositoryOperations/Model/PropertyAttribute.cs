@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using TestDataFramework.Helpers;
 
 namespace TestDataFramework.RepositoryOperations.Model
 {
@@ -11,5 +12,13 @@ namespace TestDataFramework.RepositoryOperations.Model
     {
         public PropertyInfo PropertyInfo { get; set; }
         public T Attribute { get; set; }
+
+        public override string ToString()
+        {
+            string result =
+                $"PropertyInfo: {this.PropertyInfo.GetExtendedMemberInfoString()}. Attribute: {this.Attribute}";
+
+            return result;
+        }
     }
 }

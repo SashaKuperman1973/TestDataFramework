@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Transactions;
+using TestDataFramework.RepositoryOperations;
 using TestDataFramework.RepositoryOperations.Model;
 
 namespace TestDataFramework.Helpers
@@ -44,22 +45,16 @@ namespace TestDataFramework.Helpers
             foreach (PropertyInfo propertyInfo in propertyInfos)
             {
                 object value = propertyInfo.GetValue(objectValue);
-                string propertyName = propertyInfo.Name;
 
-                sb.AppendLine(propertyName + ": " + value);
+                sb.Append(propertyInfo.GetExtendedMemberInfoString() + ": " + value + ",");
             }
 
-            return sb.ToString();
+            return sb.Remove(sb.Length - 1, 1).ToString();
         }
 
         public static string PrintType(Type type)
         {
             return type.ToString();
-        }
-
-        public static string DumpMethod(Delegate operation)
-        {
-            return operation.Target.GetType().Name + "." + operation.Method.Name;
         }
 
         private static readonly List<Type> SpecialTypes = new List<Type>
@@ -120,9 +115,19 @@ namespace TestDataFramework.Helpers
                 : null;
         }
 
-        public static string GetExtendedPropertyInfoString(this PropertyInfo propertyInfo)
+        public static string GetExtendedMemberInfoString(this MemberInfo memberInfo)
         {
-            return propertyInfo + " - " + propertyInfo.DeclaringType;
+            return memberInfo + " - " + memberInfo.DeclaringType;
+        }
+
+        public static string GetRecordTypesString(this IEnumerable<AbstractRepositoryOperation> recordOperations)
+        {
+            return string.Join(", ", recordOperations.Select(p => p.RecordReference?.RecordType));
+        }
+
+        public static object ToCompositeString(IEnumerable<object> columns)
+        {
+            return string.Join(" || ", columns);
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using log4net;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
@@ -19,6 +20,8 @@ namespace TestDataFramework.Persistence
 {
     public class SqlClientPersistence : IPersistence
     {
+        private static readonly ILog Logger = LogManager.GetLogger(typeof (SqlClientPersistence));
+
         private readonly IWritePrimitives writePrimitives;
         private readonly IDeferredValueGenerator<LargeInteger> deferredValueGenerator;
 
@@ -30,12 +33,17 @@ namespace TestDataFramework.Persistence
 
         public virtual void Persist(IEnumerable<RecordReference> recordReferences)
         {
+            SqlClientPersistence.Logger.Debug("Entering Persist");
+
             recordReferences = recordReferences.ToList();
 
             if (!recordReferences.Any())
             {
+                SqlClientPersistence.Logger.Debug("Empty recordReference collection. Exiting.");
                 return;
             }
+
+            SqlClientPersistence.Logger.Debug($"Records: {string.Join(", ", recordReferences.Select(r => r?.RecordObject))}");
 
             this.deferredValueGenerator.Execute(recordReferences);
 
@@ -64,6 +72,8 @@ namespace TestDataFramework.Persistence
             {
                 orderedOperation.Read(readStreamPointer, returnValues);
             }
+
+            SqlClientPersistence.Logger.Debug("Exiting Persist");
         }
     }
 }

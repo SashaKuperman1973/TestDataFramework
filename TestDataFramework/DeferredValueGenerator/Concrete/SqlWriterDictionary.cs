@@ -20,18 +20,21 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(SqlWriterDictionary));
 
-
         private readonly LetterEncoder encoder;
         private readonly IWritePrimitives writePrimitives;
         private readonly SqlWriterCommandTextGenerator commandTextGenerator;
 
         public SqlWriterDictionary(LetterEncoder encoder, IWritePrimitives writePrimitives, SqlWriterCommandTextGenerator commandTextGenerator)
         {
+            SqlWriterDictionary.Logger.Debug("Entering constructor");
+
             this.encoder = encoder;
             this.writePrimitives = writePrimitives;
             this.commandTextGenerator = commandTextGenerator;
 
             this.PopulateWriterDictionary();
+
+            SqlWriterDictionary.Logger.Debug("Exiting constructor");
         }
 
         private void PopulateWriterDictionary()
@@ -55,7 +58,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
         {
             get
             {
-                SqlWriterDictionary.Logger.Debug("Entering Type indexer");
+                SqlWriterDictionary.Logger.Debug("Entering Type indexer. type: " + type);
 
                 WriterDelegate writer;
                 if (!this.writerDictionary.TryGetValue(type, out writer))
@@ -71,37 +74,40 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
 
         public object[] Execute()
         {
+            SqlWriterDictionary.Logger.Debug("Entering Execute");
+
             object[] result = this.writePrimitives.Execute();
 
+            SqlWriterDictionary.Logger.Debug("Exiting Execute");
             return result;
         }
 
         private DecoderDelegate WriteNumberCommand(PropertyInfo propertyInfo)
         {
-            SqlWriterDictionary.Logger.Debug("Entering WriteNumberCommand");
+            SqlWriterDictionary.Logger.Debug("Entering WriteNumberCommand. propertyInfo: " + propertyInfo.GetExtendedMemberInfoString());
 
             string commandText = this.commandTextGenerator.WriteNumber(propertyInfo);                
 
             this.writePrimitives.AddSqlCommand(commandText);
 
             SqlWriterDictionary.Logger.Debug("Exiting WriteNumberCommand");
-
             return SqlWriterDictionary.DecodeNumber;
         }
 
         private static LargeInteger DecodeNumber(PropertyInfo propertyInfo, object input)
         {
-            SqlWriterDictionary.Logger.Debug("Entering DecodeNumber");
+            SqlWriterDictionary.Logger.Debug($"Entering DecodeNumber. propertyInfo: {propertyInfo.GetExtendedMemberInfoString()}, input: {input}");
 
             if (input is DBNull)
             {
+                SqlWriterDictionary.Logger.Debug("input is DBNull");
                 return 0;
             }
 
             if (
                 !new[] { typeof(byte), typeof(int), typeof(short), typeof(long) }.Contains(input.GetType()))
             {
-                throw new UnexpectedTypeException(string.Format(Messages.UnexpectedHandlerType, propertyInfo, input));
+                throw new UnexpectedTypeException(string.Format(Messages.UnexpectedHandlerType, propertyInfo.GetExtendedMemberInfoString(), input));
             }
 
             LargeInteger result = (ulong)Convert.ChangeType(input, typeof(ulong));
@@ -113,7 +119,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
 
         private DecoderDelegate WriteStringCommand(PropertyInfo propertyInfo)
         {
-            SqlWriterDictionary.Logger.Debug("Entering WriteStringCommand");
+            SqlWriterDictionary.Logger.Debug("Entering WriteStringCommand. propertyInfo: " + propertyInfo.GetExtendedMemberInfoString());
 
             string commandText = this.commandTextGenerator.WriteString(propertyInfo);                
 
@@ -126,10 +132,11 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
 
         private LargeInteger DecodeString(PropertyInfo propertyInfo, object input)
         {
-            SqlWriterDictionary.Logger.Debug("Entering DecodeString");
+            SqlWriterDictionary.Logger.Debug($"Entering DecodeString. propertyInfo: {propertyInfo.GetExtendedMemberInfoString()}, input: {input}");
 
             if (input is DBNull)
             {
+                SqlWriterDictionary.Logger.Debug("input is DBNull");
                 return 0;
             }
 

@@ -19,13 +19,17 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
 
         public StandardDeferredValueGenerator(IPropertyDataGenerator<T> dataSource)
         {
+            StandardDeferredValueGenerator<T>.Logger.Debug($"Entering constructor. T: {typeof(T)}");
+
             this.dataSource = dataSource;
+
+            StandardDeferredValueGenerator<T>.Logger.Debug("Exiting constructor");
         }
 
         public void AddDelegate(PropertyInfo targetPropertyInfo, DeferredValueGetterDelegate<T> valueGetter)
         {
             StandardDeferredValueGenerator<T>.Logger.Debug(
-                $"Entering AddDelegate. targetPropertyInfo: {targetPropertyInfo}");
+                $"Entering AddDelegate. targetPropertyInfo: {targetPropertyInfo.GetExtendedMemberInfoString()}");
 
             if (this.propertyDataDictionary.ContainsKey(targetPropertyInfo))
             {
@@ -47,13 +51,16 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
 
             targets.ToList().ForEach(targetRecordReference =>
             {
+                StandardDeferredValueGenerator<T>.Logger.Debug("Target object type: " + targetRecordReference.RecordType);
+
                 targetRecordReference.RecordType.GetPropertiesHelper().ToList().ForEach(propertyInfo =>
                 {
+                    StandardDeferredValueGenerator<T>.Logger.Debug("Property: " + propertyInfo.GetExtendedMemberInfoString());
+
                     if (targetRecordReference.IsExplicitlySet(propertyInfo))
                     {
                         StandardDeferredValueGenerator<T>.Logger.Debug(
-                            "Property explicitly set. Continuing to next iteration. " +
-                            propertyInfo.GetExtendedPropertyInfoString());
+                            "Property explicitly set. Continuing to next iteration.");
 
                         return;
                     }
@@ -61,8 +68,13 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
                     Data<T> data;
                     if (!this.propertyDataDictionary.TryGetValue(propertyInfo, out data))
                     {
+                        StandardDeferredValueGenerator<T>.Logger.Debug(
+                            "Property not in deferred properties dictionary. Continuing to next iteration.");
+
                         return;
                     }
+
+                    StandardDeferredValueGenerator<T>.Logger.Debug($"Property found in deferred properties dictionary. Data: {data}");
 
                     object value = data.ValueGetter(data.Item);
 

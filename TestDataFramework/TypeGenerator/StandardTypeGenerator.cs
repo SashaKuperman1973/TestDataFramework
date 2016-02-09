@@ -26,8 +26,12 @@ namespace TestDataFramework.TypeGenerator
 
         public StandardTypeGenerator(IValueGenerator valueGenerator, IHandledTypeGenerator handledTypeGenerator)
         {
+            StandardTypeGenerator.Logger.Debug("Entering constructor");
+
             this.valueGenerator = valueGenerator;
             this.handledTypeGenerator = handledTypeGenerator;
+
+            StandardTypeGenerator.Logger.Debug("Exiting constructor");
         }
 
         #region Private methods
@@ -80,8 +84,12 @@ namespace TestDataFramework.TypeGenerator
 
         protected virtual void SetProperty(object objectToFill, PropertyInfo targetPropertyInfo)
         {
+            StandardTypeGenerator.Logger.Debug("Entering SetProperty. PropertyInfo: " + targetPropertyInfo.GetExtendedMemberInfoString());
+
             object targetPropertyValue = this.valueGenerator.GetValue(targetPropertyInfo);
             targetPropertyInfo.SetValue(objectToFill, targetPropertyValue);
+
+            StandardTypeGenerator.Logger.Debug("Exiting SetProperty");
         }
 
         #endregion Private methods
@@ -90,19 +98,21 @@ namespace TestDataFramework.TypeGenerator
 
         public virtual object GetObject<T>(ConcurrentDictionary<PropertyInfo, Action<T>> explicitProperySetters)
         {
+            StandardTypeGenerator.Logger.Debug($"Entering GetObject. T: {typeof(T)}");
+
             object result = this.ConstructObject(typeof (T), objectToFill => this.FillObject((T)objectToFill, explicitProperySetters));
 
-            StandardTypeGenerator.Logger.Debug("Exiting GetObject<T>");
+            StandardTypeGenerator.Logger.Debug($"Exiting GetObject. result: {result}");
             return result;
         }
 
         public virtual object GetObject(Type forType)
         {
-            StandardTypeGenerator.Logger.Debug("Entering GetObject");
+            StandardTypeGenerator.Logger.Debug($"Entering GetObject. forType: {forType}");
 
             object result = this.ConstructObject(forType, this.FillObject);
 
-            StandardTypeGenerator.Logger.Debug("Exiting GetObject");
+            StandardTypeGenerator.Logger.Debug($"Exiting GetObject. result: {result}");
             return result;
         }
 
@@ -136,10 +146,12 @@ namespace TestDataFramework.TypeGenerator
 
                 if (explicitProperySetters.TryGetValue(targetPropertyInfo, out setter))
                 {
+                    StandardTypeGenerator.Logger.Debug($"explicit property setter found: {setter}");
                     setter(objectToFill);
                 }
                 else
                 {
+                    StandardTypeGenerator.Logger.Debug("no explicit property setter found");
                     this.SetProperty(objectToFill, targetPropertyInfo);
                 }
             }

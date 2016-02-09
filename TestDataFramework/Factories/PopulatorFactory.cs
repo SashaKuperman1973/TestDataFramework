@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Data.SqlTypes;
 using Castle.Windsor;
 using Castle.MicroKernel.Registration;
+using log4net;
 using TestDataFramework.ArrayRandomizer;
 using TestDataFramework.DeferredValueGenerator.Concrete;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
@@ -30,6 +31,8 @@ namespace TestDataFramework.Factories
 {
     public class PopulatorFactory : IDisposable
     {
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(PopulatorFactory));
+
         private DisposableContainer sqlClientPopulatorContainer;
         private DisposableContainer memoryPopulatorContainer;
 
@@ -43,27 +46,37 @@ namespace TestDataFramework.Factories
         public IPopulator CreateSqlClientPopulator(string connectionStringWithDefaultCatalogue,
             bool mustBeInATransaction = true, bool throwIfUnhandledPrimaryKeyType = true)
         {
+            PopulatorFactory.Logger.Debug(
+                $"Entering CreateSqlClientPopulator. mustBeInATransaction: {mustBeInATransaction}, throwIfUnhandledPrimaryKeyType: {throwIfUnhandledPrimaryKeyType}");
+
             IWindsorContainer iocContainer = this.GetSqlClientPopulatorContainer(connectionStringWithDefaultCatalogue,
                 mustBeInATransaction, throwIfUnhandledPrimaryKeyType);
 
             var result = iocContainer.Resolve<IPopulator>();
 
+            PopulatorFactory.Logger.Debug("Exiting CreateSqlClientPopulator");
             return result;
         }
 
         public IPopulator CreateMemoryPopulator(bool throwIfUnhandledPrimaryKeyType = false)
         {
+            PopulatorFactory.Logger.Debug($"Entering CreateMemoryPopulator. throwIfUnhandledPrimaryKeyType: {throwIfUnhandledPrimaryKeyType}");
+
             IWindsorContainer iocContainer = this.GetMemoryPopulatorContainer(throwIfUnhandledPrimaryKeyType);
 
             var result = iocContainer.Resolve<IPopulator>();
 
+            PopulatorFactory.Logger.Debug("Exiting CreateMemoryPopulator");
             return result;
         }
 
         private IWindsorContainer GetSqlClientPopulatorContainer(string connectionStringWithDefaultCatalogue, bool mustBeInATransaction, bool throwIfUnhandledPrimaryKeyType)
         {
+            PopulatorFactory.Logger.Debug("Entering CreateMemoryPopulator");
+
             if (this.sqlClientPopulatorContainer != null && !this.sqlClientPopulatorContainer.IsDisposed)
             {
+                PopulatorFactory.Logger.Debug("Returning existing DI container");
                 return this.sqlClientPopulatorContainer.Container;
             }
 
@@ -106,13 +119,17 @@ namespace TestDataFramework.Factories
                     .Named(PopulatorFactory.StandardValueGenerator)
                 );
 
+            PopulatorFactory.Logger.Debug("Exiting CreateMemoryPopulator");
             return this.sqlClientPopulatorContainer.Container;
         }
 
         private IWindsorContainer GetMemoryPopulatorContainer(bool throwIfUnhandledPrimaryKeyType)
         {
+            PopulatorFactory.Logger.Debug("Entering GetMemoryPopulatorContainer");
+
             if (this.memoryPopulatorContainer != null && !this.memoryPopulatorContainer.IsDisposed)
             {
+                PopulatorFactory.Logger.Debug("Returning existing DI container");
                 return this.memoryPopulatorContainer.Container;
             }
 
@@ -144,6 +161,8 @@ namespace TestDataFramework.Factories
                     .Named(PopulatorFactory.StandardValueGenerator)
 
                 );
+
+            PopulatorFactory.Logger.Debug("Exiting GetMemoryPopulatorContainer");
 
             return this.memoryPopulatorContainer.Container;
         }

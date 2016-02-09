@@ -51,7 +51,11 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
         public InsertRecordService(RecordReference recordReference)
         {
+            InsertRecordService.Logger.Debug("Entering constructor");
+
             this.recordReference = recordReference;
+
+            InsertRecordService.Logger.Debug("Exiting constructor");
         }
 
         #endregion Constructor
@@ -59,6 +63,10 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
         public virtual IEnumerable<InsertRecord> GetPrimaryKeyOperations(IEnumerable<AbstractRepositoryOperation> peers)
         {
             InsertRecordService.Logger.Debug("Entering GetPrimaryKeyOperations");
+
+            peers = peers.ToList();
+
+            InsertRecordService.Logger.Debug($"peer objects: {peers.GetRecordTypesString()}");
 
             IEnumerable<InsertRecord> result = peers.Where(
                 peer =>
@@ -73,7 +81,8 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
                 }).Cast<InsertRecord>().ToList();
 
-            InsertRecordService.Logger.Debug("Exiting GetPrimaryKeyOperations");
+            InsertRecordService.Logger.Debug(
+                $"Exiting GetPrimaryKeyOperations. result: {result.GetRecordTypesString()}");
 
             return result;
         }
@@ -82,6 +91,12 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             CircularReferenceBreaker breaker, Counter order, AbstractRepositoryOperation[] orderedOperations)
         {
             InsertRecordService.Logger.Debug("Entering WritePrimaryKeyOperations");
+
+            primaryKeyOperations = primaryKeyOperations.ToList();
+
+            InsertRecordService.Logger.Debug($"primaryKeyOperations: {primaryKeyOperations.GetRecordTypesString()}");
+            InsertRecordService.Logger.Debug($"orderedOperations: {orderedOperations.GetRecordTypesString()}");
+            InsertRecordService.Logger.Debug($"order: {order.Value}");
 
             primaryKeyOperations.ToList().ForEach(o => o.Write(breaker, writer, order, orderedOperations));
 
@@ -94,14 +109,23 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
         {
             InsertRecordService.Logger.Debug("Entering GetForeignKeyVariables");
 
+            primaryKeyOperations = primaryKeyOperations.ToList();
+
+            InsertRecordService.Logger.Debug(
+                $"primaryKeyOperations: {primaryKeyOperations.GetRecordTypesString()}");
+
             List<IEnumerable<ColumnSymbol>> keyTableList =
                 primaryKeyOperations.Select(o => o.GetPrimaryKeySymbols()).ToList();
+
+            InsertRecordService.Logger.Debug($"keyTableList: {Helper.ToCompositeString(keyTableList.Select(kt => string.Join(", ", kt)))}");
 
             IEnumerable<PropertyAttribute<ForeignKeyAttribute>> foreignKeyPropertyAttributes =
                 this.recordReference.RecordType.GetPropertyAttributes<ForeignKeyAttribute>();
 
             var foreignKeys = foreignKeyPropertyAttributes.Select(fkpa =>
             {
+                InsertRecordService.Logger.Debug($"fkpa (foreign Key Property Arttribute) : {fkpa}");
+
                 ColumnSymbol pkColumnMatch = null;
 
                 bool isForeignKeyPrimaryKeyMatch = keyTableList.Any(pkTable =>
@@ -141,8 +165,9 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                             ColumnName = Helper.GetColumnName(fk.FkPropertyAttribute.PropertyInfo),
                             Value = fk.PkColumnValue,
                             PropertyAttribute = fk.FkPropertyAttribute,
-                        });
+                        }).ToList();
 
+            InsertRecordService.Logger.Debug($"result: {Helper.ToCompositeString(result)}");
             return result;
         }
 
@@ -187,9 +212,9 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
                             return column;
                         }
-                    );
+                    ).ToList();
 
-            InsertRecordService.Logger.Debug("Exiting GetRegularColumns");
+            InsertRecordService.Logger.Debug($"Exiting GetRegularColumns. result: {Helper.ToCompositeString(result)}");
 
             return result;
         }
@@ -204,6 +229,8 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
             columns = columns.ToList();
 
+            InsertRecordService.Logger.Debug($"tableName: {tableName}, columns: {Helper.ToCompositeString(columns)}");
+
             writer.Insert(tableName, columns);
 
             this.PopulatePrimaryKeyValues(writer, primaryKeyValues, columns);
@@ -214,6 +241,10 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
         private void PopulatePrimaryKeyValues(IWritePrimitives writer, List<ColumnSymbol> primaryKeyValues, IEnumerable<Column> columns)
         {
             InsertRecordService.Logger.Debug("Entering PopulatePrimaryKeyValues");
+
+            columns = columns.ToList();
+
+            InsertRecordService.Logger.Debug($"columns: {Helper.ToCompositeString(columns)}");
 
             IEnumerable<PropertyAttribute<PrimaryKeyAttribute>> pkPropertyAttributes =
                 this.recordReference.RecordType.GetPropertyAttributes<PrimaryKeyAttribute>();
@@ -252,9 +283,9 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                 };
 
                 return symbol;
-            });
+            }).ToList();
 
-            InsertRecordService.Logger.Debug("Exiting PopulatePrimaryKeyValues");
+            InsertRecordService.Logger.Debug($"Exiting PopulatePrimaryKeyValues. result: {Helper.ToCompositeString(result)}");
 
             primaryKeyValues.AddRange(result);
         }
@@ -263,8 +294,12 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
         public virtual void CopyPrimaryToForeignKeyColumns(IEnumerable<Column> foreignKeyColumns)
         {
+            InsertRecordService.Logger.Debug("Entering PopulatePrimaryKeyValues");
+
             foreignKeyColumns.ToList().ForEach(c =>
             {
+                InsertRecordService.Logger.Debug($"foreignKeyColumn: {c}");
+
                 if (c.Value.IsSpecialType())
                 {
                     return;
@@ -276,8 +311,12 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                         Helper.GetColumnName(p).Equals(c.Name)
                         );
 
+                InsertRecordService.Logger.Debug($"targetProperty: {targetProperty.GetExtendedMemberInfoString()}");
+
                 targetProperty.SetValue(this.recordReference.RecordObject, c.Value);
             });
+
+            InsertRecordService.Logger.Debug("Exiting PopulatePrimaryKeyValues");
         }
     }
 }

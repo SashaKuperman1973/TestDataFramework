@@ -39,7 +39,8 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
         public override void Write(CircularReferenceBreaker breaker, IWritePrimitives writer, Counter order, AbstractRepositoryOperation[] orderedOperations)
         {
-            InsertRecord.Logger.Debug("Entering Write:" + this.DumpObject());
+            InsertRecord.Logger.Debug("Entering Write:" + this);
+            InsertRecord.Logger.Debug($"breaker: {breaker}");
 
             if (breaker.IsVisited<IWritePrimitives, Counter, AbstractRepositoryOperation[]>(this.Write))
             {
@@ -62,6 +63,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             Columns columnData = this.GetColumnData(writer);
 
             this.Order = order.Value++;
+            InsertRecord.Logger.Debug($"this.Order: {this.Order}");
             orderedOperations[this.Order] = this;
 
             string tableName = Helper.GetTableName(this.RecordReference.RecordType);
@@ -79,12 +81,15 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
         public override void Read(Counter readStreamPointer, object[] data)
         {
-            InsertRecord.Logger.Debug("Entering Read");
+            InsertRecord.Logger.Debug($"Entering Read. readStreamPointer.Value: {readStreamPointer}, data: {string.Join(",", data)}");
 
             IEnumerable<PropertyAttributes> propertyAttributes =
                 this.RecordReference.RecordType.GetPropertyAttributes().ToList();
 
             List<PropertyInfo> propertiesForRead = this.GetPropertiesForRead(propertyAttributes).ToList();
+
+            InsertRecord.Logger.Debug(
+                $"propertiesForRead: {string.Join(",", propertiesForRead.Select(p => p.GetExtendedMemberInfoString()))}");
 
             while (propertiesForRead.Any())
             {
@@ -105,13 +110,22 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             IEnumerable<ExtendedColumnSymbol> specialForeignKeyColumns =
                 this.foreignKeyColumns.Where(c => c.Value.IsSpecialType());
 
+            InsertRecord.Logger.Debug("Iterating specialForeignKeyColumns");
+
             specialForeignKeyColumns.ToList().ForEach(fkColumn =>
             {
+                InsertRecord.Logger.Debug($"fkColumn: {fkColumn}");
+
                 InsertRecord primaryKeyOperation = this.primaryKeyOperations.First(selectedPrimaryKeyOperation =>
                     selectedPrimaryKeyOperation.RecordReference.RecordType == fkColumn.PropertyAttribute.Attribute.PrimaryTableType);
 
+                InsertRecord.Logger.Debug($"primaryKeyOperation: {primaryKeyOperation}");
+
                 PropertyInfo primaryKeyProperty =
-                    InsertRecord.GetPrimaryKeyProperty(primaryKeyOperation.RecordReference.RecordType, fkColumn.PropertyAttribute.Attribute);
+                    InsertRecord.GetPrimaryKeyProperty(primaryKeyOperation.RecordReference.RecordType,
+                        fkColumn.PropertyAttribute.Attribute);
+
+                InsertRecord.Logger.Debug($"primaryKeyProperty : {primaryKeyProperty.GetExtendedMemberInfoString()}");
 
                 fkColumn.PropertyAttribute.PropertyInfo.SetValue(this.RecordReference.RecordObject,
                     primaryKeyProperty.GetValue(primaryKeyOperation.RecordReference.RecordObject));
@@ -119,6 +133,17 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
             InsertRecord.Logger.Debug("Exiting Read");
         }
+
+        public virtual IEnumerable<ColumnSymbol> GetPrimaryKeySymbols()
+        {
+            InsertRecord.Logger.Debug("Executing GetPrimaryKeySymbols");
+
+            return this.primaryKeyValues;
+        }
+
+        #endregion Public methods
+
+        #region Private methods
 
         private static PropertyInfo GetPrimaryKeyProperty(Type recordType, ForeignKeyAttribute foreignKeyAttribute)
         {
@@ -138,19 +163,10 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             IEnumerable<PropertyAttributes> result =
                 propertyAttributes.Where(
                     pa =>
-                        pa.Attributes.Any(a => a.GetType() == typeof (ForeignKeyAttribute)));
+                        pa.Attributes.Any(a => a.GetType() == typeof(ForeignKeyAttribute)));
 
             return result;
         }
-
-        public virtual IEnumerable<ColumnSymbol> GetPrimaryKeySymbols()
-        {
-            return this.primaryKeyValues;
-        }
-
-        #endregion Public methods
-
-        #region Private methods
 
         private Columns GetColumnData(IWritePrimitives writer)
         {
@@ -191,11 +207,6 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                 );
 
             return result.Select(pa => pa.PropertyInfo);
-        }
-
-        private string DumpObject()
-        {
-            return Helper.DumpObject(this.RecordReference.RecordObject);
         }
 
         #endregion Private methods

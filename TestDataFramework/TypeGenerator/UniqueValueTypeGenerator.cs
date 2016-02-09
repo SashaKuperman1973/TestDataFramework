@@ -28,7 +28,8 @@ namespace TestDataFramework.TypeGenerator
 
         protected override void SetProperty(object objectToFill, PropertyInfo targetPropertyInfo)
         {
-            UniqueValueTypeGenerator.Logger.Debug("Entering ConstructObject. PropertyInfo: " + targetPropertyInfo);
+            UniqueValueTypeGenerator.Logger.Debug("Entering SetProperty. targetPropertyInfo: " +
+                                                  targetPropertyInfo.GetExtendedMemberInfoString());
 
             if (!targetPropertyInfo.PropertyType.IsValueLikeType())
             {
@@ -39,9 +40,10 @@ namespace TestDataFramework.TypeGenerator
             }
 
             object targetPropertyValue = this.accumulatorValueGenerator.GetValue(targetPropertyInfo);
+            UniqueValueTypeGenerator.Logger.Debug($"targetPropertyValue: {targetPropertyValue}");
             targetPropertyInfo.SetValue(objectToFill, targetPropertyValue);
 
-            UniqueValueTypeGenerator.Logger.Debug("Exiting ConstructObject");
+            UniqueValueTypeGenerator.Logger.Debug("Exiting SetProperty");
         }
     }
 }

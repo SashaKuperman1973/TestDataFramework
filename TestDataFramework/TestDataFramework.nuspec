@@ -12,6 +12,6 @@
     <description>$description$</description>
     <releaseNotes>Initial release - beta.</releaseNotes>
     <copyright>Copyright 2016</copyright>
-    <tags>unit test class type database data population</tags>
+    <tags>unit test class type database data population generation</tags>
   </metadata>
 </package>

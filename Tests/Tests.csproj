@@ -67,9 +67,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Helpers.cs" />
-    <Compile Include="Mocks\MockDbCommand.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Mocks\MockDbCommand.cs" />
     <Compile Include="Mocks\MockPersistence.cs" />
     <Compile Include="TestModels\IntegralManualPrimarkKeyClasses.cs" />
     <Compile Include="TestModels\PrimaryForeignReferenceSubjectClasses.cs" />
@@ -103,9 +101,6 @@
     <Compile Include="Tests\BaseUniqueValueGeneratorTests.cs" />
     <Compile Include="Tests\SqlClientValueFormatterTests.cs" />
     <Compile Include="Tests\AccumulatorValueProviderTests.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Tests To Do.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TestDataFramework\TestDataFramework.csproj">

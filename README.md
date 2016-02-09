@@ -15,7 +15,6 @@ The entry point is the IPopulator factory. For in-memory object population the u
   
   ...{populate/test}
 }
-```
 
 For the database population it's:
 

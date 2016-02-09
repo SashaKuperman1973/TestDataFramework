@@ -25,6 +25,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Tests")]
 [assembly: AssemblyDescription("Unit tests.")]
 [assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("Alexander Kuperman")]
 [assembly: AssemblyProduct("Tests")]
 [assembly: AssemblyCopyright("Copyright © Alexander Kuperman 2016")]
 [assembly: AssemblyTrademark("")]

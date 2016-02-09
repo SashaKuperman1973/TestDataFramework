@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.Reflection;
 
-namespace TestDataFramework.TypeGenerator
+namespace TestDataFramework.TypeGenerator.Interfaces
 {
     public interface ITypeGenerator
     {

@@ -1,17 +1,10 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.HandledTypeGenerator;
-using TestDataFramework.UniqueValueGenerator.Interface;
-using TestDataFramework.ValueGenerator;
-using TestDataFramework.ValueGenerator.Interface;
+using TestDataFramework.ValueGenerator.Interfaces;
 using Tests.TestModels;
 
 namespace Tests.Tests

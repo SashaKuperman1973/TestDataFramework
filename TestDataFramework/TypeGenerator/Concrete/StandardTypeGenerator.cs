@@ -3,13 +3,12 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 using log4net;
-using TestDataFramework.Exceptions;
 using TestDataFramework.HandledTypeGenerator;
 using TestDataFramework.Helpers;
-using TestDataFramework.ValueGenerator;
-using TestDataFramework.ValueGenerator.Interface;
+using TestDataFramework.TypeGenerator.Interfaces;
+using TestDataFramework.ValueGenerator.Interfaces;
 
-namespace TestDataFramework.TypeGenerator
+namespace TestDataFramework.TypeGenerator.Concrete
 {
     public class StandardTypeGenerator : ITypeGenerator
     {
@@ -87,6 +86,7 @@ namespace TestDataFramework.TypeGenerator
             StandardTypeGenerator.Logger.Debug("Entering SetProperty. PropertyInfo: " + targetPropertyInfo.GetExtendedMemberInfoString());
 
             object targetPropertyValue = this.valueGenerator.GetValue(targetPropertyInfo);
+            StandardTypeGenerator.Logger.Debug($"targetPropertyValue: {targetPropertyValue}");
             targetPropertyInfo.SetValue(objectToFill, targetPropertyValue);
 
             StandardTypeGenerator.Logger.Debug("Exiting SetProperty");

@@ -1,17 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+using log4net;
 using TestDataFramework.ArrayRandomizer;
-using TestDataFramework.UniqueValueGenerator.Interface;
-using TestDataFramework.ValueProvider;
+using TestDataFramework.UniqueValueGenerator.Interfaces;
+using TestDataFramework.ValueProvider.Interfaces;
 
 namespace TestDataFramework.ValueGenerator.Concrete
 {
     public class MemoryValueGenerator : BaseValueGenerator
     {
+        private static readonly ILog Logger = LogManager.GetLogger(typeof (MemoryValueGenerator));
+
         public MemoryValueGenerator(IValueProvider valueProvider, GetTypeGeneratorDelegate getTypeGenerator,
             Func<IArrayRandomizer> getArrayRandomizer, IUniqueValueGenerator uniqueValueGenerator)
             : base(valueProvider, getTypeGenerator, getArrayRandomizer, uniqueValueGenerator)
@@ -20,6 +19,8 @@ namespace TestDataFramework.ValueGenerator.Concrete
 
         protected override object GetGuid(PropertyInfo propertyInfo)
         {
+            MemoryValueGenerator.Logger.Debug("Executing GetGuid");
+
             return Guid.NewGuid();
         }
     }

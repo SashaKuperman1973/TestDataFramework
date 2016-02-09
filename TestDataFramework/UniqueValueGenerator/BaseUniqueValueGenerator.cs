@@ -5,7 +5,7 @@ using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
 using TestDataFramework.PropertyValueAccumulator;
-using TestDataFramework.UniqueValueGenerator.Interface;
+using TestDataFramework.UniqueValueGenerator.Interfaces;
 
 namespace TestDataFramework.UniqueValueGenerator
 {
@@ -33,7 +33,7 @@ namespace TestDataFramework.UniqueValueGenerator
 
             object result = this.accumulator.GetValue(propertyInfo, Helper.DefaultInitalCount);
 
-            BaseUniqueValueGenerator.Logger.Debug("Exiting GetValue");
+            BaseUniqueValueGenerator.Logger.Debug($"Exiting GetValue. result: {result}");
             return result;
         }
 

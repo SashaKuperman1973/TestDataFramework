@@ -2,16 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Castle.Core.Internal;
 using log4net;
 using TestDataFramework.ArrayRandomizer;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
-using TestDataFramework.TypeGenerator;
-using TestDataFramework.UniqueValueGenerator;
-using TestDataFramework.UniqueValueGenerator.Interface;
-using TestDataFramework.ValueGenerator.Interface;
-using TestDataFramework.ValueProvider;
+using TestDataFramework.TypeGenerator.Interfaces;
+using TestDataFramework.UniqueValueGenerator.Interfaces;
+using TestDataFramework.ValueGenerator.Interfaces;
+using TestDataFramework.ValueProvider.Interfaces;
 
 namespace TestDataFramework.ValueGenerator
 {
@@ -67,7 +65,7 @@ namespace TestDataFramework.ValueGenerator
         // This is the general entry point.
         public virtual object GetValue(PropertyInfo propertyInfo)
         {
-            BaseValueGenerator.Logger.Debug("Entering GetValue(PropertyInfo propertyInfo)");
+            BaseValueGenerator.Logger.Debug($"Entering GetValue(PropertyInfo). propertyInfo: {propertyInfo}");
 
             propertyInfo.IsNotNull(nameof(propertyInfo));
 
@@ -80,7 +78,7 @@ namespace TestDataFramework.ValueGenerator
 
             object result = getter != null ? getter(propertyInfo) : this.GetValue(propertyInfo, propertyInfo.PropertyType);
 
-            BaseValueGenerator.Logger.Debug("Exiting GetValue(PropertyInfo propertyInfo)");
+            BaseValueGenerator.Logger.Debug($"Exiting GetValue(PropertyInfo). result: {result}");
             return result;
         }
 
@@ -88,7 +86,8 @@ namespace TestDataFramework.ValueGenerator
         // PropertyInfo or property info doesn't exist in the calling context.
         public virtual object GetValue(PropertyInfo propertyInfo, Type type)
         {
-            BaseValueGenerator.Logger.Debug("Entering GetValue(PropertyInfo propertyInfo, Type type)");
+            BaseValueGenerator.Logger.Debug(
+                $"Entering GetValue(PropertyInfo, Type). propertyInfo: {propertyInfo}, type: {type}");
 
             type.IsNotNull(nameof(type));
 
@@ -106,7 +105,7 @@ namespace TestDataFramework.ValueGenerator
                 ? getter(propertyInfo)
                 : this.getTypeGenerator().GetObject(forType);
 
-            BaseValueGenerator.Logger.Debug("Exiting GetValue(PropertyInfo propertyInfo, Type type)");
+            BaseValueGenerator.Logger.Debug($"Exiting GetValue(PropertyInfo, Type). result: {result}");
             return result;
         }
 

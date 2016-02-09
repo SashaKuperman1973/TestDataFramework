@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using TestDataFramework;
-using TestDataFramework.ValueProvider;
+using TestDataFramework.ValueProvider.Interfaces;
 
 namespace IntegrationTests.TestModels
 {

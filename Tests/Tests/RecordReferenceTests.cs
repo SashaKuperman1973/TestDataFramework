@@ -7,8 +7,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
-using TestDataFramework.Populator;
-using TestDataFramework.TypeGenerator;
+using TestDataFramework.Populator.Concrete;
+using TestDataFramework.TypeGenerator.Interfaces;
 using Tests.TestModels;
 
 namespace Tests.Tests

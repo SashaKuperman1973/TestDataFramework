@@ -1,22 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using log4net;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
-using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
+using TestDataFramework.Persistence.Interfaces;
 using TestDataFramework.Populator;
 using TestDataFramework.RepositoryOperations;
 using TestDataFramework.RepositoryOperations.Model;
-using TestDataFramework.RepositoryOperations.Operations;
 using TestDataFramework.RepositoryOperations.Operations.InsertRecord;
-using TestDataFramework.WritePrimitives;
+using TestDataFramework.WritePrimitives.Interfaces;
 
-namespace TestDataFramework.Persistence
+namespace TestDataFramework.Persistence.Concrete
 {
     public class SqlClientPersistence : IPersistence
     {
@@ -25,7 +19,8 @@ namespace TestDataFramework.Persistence
         private readonly IWritePrimitives writePrimitives;
         private readonly IDeferredValueGenerator<LargeInteger> deferredValueGenerator;
 
-        public SqlClientPersistence(IWritePrimitives writePrimitives, IDeferredValueGenerator<LargeInteger> deferredValueGenerator)
+        public SqlClientPersistence(IWritePrimitives writePrimitives,
+            IDeferredValueGenerator<LargeInteger> deferredValueGenerator)
         {
             this.writePrimitives = writePrimitives;
             this.deferredValueGenerator = deferredValueGenerator;
@@ -43,7 +38,8 @@ namespace TestDataFramework.Persistence
                 return;
             }
 
-            SqlClientPersistence.Logger.Debug($"Records: {string.Join(", ", recordReferences.Select(r => r?.RecordObject))}");
+            SqlClientPersistence.Logger.Debug(
+                $"Records: {string.Join(", ", recordReferences.Select(r => r?.RecordObject))}");
 
             this.deferredValueGenerator.Execute(recordReferences);
 

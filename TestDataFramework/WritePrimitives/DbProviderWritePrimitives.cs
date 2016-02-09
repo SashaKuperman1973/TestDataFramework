@@ -5,9 +5,11 @@ using System.Data.Common;
 using System.Linq;
 using System.Text;
 using log4net;
+using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
 using TestDataFramework.RepositoryOperations.Model;
-using TestDataFramework.Exceptions;
+using TestDataFramework.ValueFormatter.Interfaces;
+using TestDataFramework.WritePrimitives.Interfaces;
 
 namespace TestDataFramework.WritePrimitives
 {
@@ -26,18 +28,28 @@ namespace TestDataFramework.WritePrimitives
         protected DbProviderWritePrimitives(string connectionStringWithDefaultCatalogue, DbProviderFactory dbProviderFactory,
             IValueFormatter formatter, bool mustBeInATransaction, NameValueCollection configuration)
         {
+            DbProviderWritePrimitives.Logger.Debug("Entering constructor");
+
             this.connectionStringWithDefaultCatalogue = connectionStringWithDefaultCatalogue;
             this.dbProviderFactory = dbProviderFactory;
             this.formatter = formatter;
             this.mustBeInATransaction = mustBeInATransaction;
             this.configuration = configuration ?? new NameValueCollection();
+
+            DbProviderWritePrimitives.Logger.Debug("Exiting constructor");
         }
 
         public void Insert(string tableName, IEnumerable<Column> columns)
         {
             DbProviderWritePrimitives.Logger.Debug("Entering Insert");
 
+            columns = columns.ToList();
+
+            DbProviderWritePrimitives.Logger.Debug($"Entering Insert. tableName: {tableName}. columns: {Helper.ToCompositeString(columns)}");
+
             string insertStatement = this.BuildInsertStatement(tableName, columns);
+            DbProviderWritePrimitives.Logger.Debug($"insertStatement: {insertStatement}");
+
             this.ExecutionStatements.AppendLine(insertStatement);
             this.ExecutionStatements.AppendLine();
 
@@ -46,7 +58,7 @@ namespace TestDataFramework.WritePrimitives
 
         public void AddSqlCommand(string command)
         {
-            DbProviderWritePrimitives.Logger.Debug("Entering AddACommand");
+            DbProviderWritePrimitives.Logger.Debug($"Entering AddACommand. command: {command}");
 
             this.ExecutionStatements.AppendLine(command);
             this.ExecutionStatements.AppendLine();
@@ -102,7 +114,7 @@ namespace TestDataFramework.WritePrimitives
 
             this.ExecutionStatements = new StringBuilder();
 
-            DbProviderWritePrimitives.Logger.Debug("Exiting Execute");
+            DbProviderWritePrimitives.Logger.Debug($"Exiting Execute. result set count: {result.Count}");
             return result.ToArray();
         }
 

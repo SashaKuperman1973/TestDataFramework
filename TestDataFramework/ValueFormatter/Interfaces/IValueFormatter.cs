@@ -1,4 +1,4 @@
-﻿namespace TestDataFramework.WritePrimitives
+﻿namespace TestDataFramework.ValueFormatter.Interfaces
 {
     public interface IValueFormatter
     {

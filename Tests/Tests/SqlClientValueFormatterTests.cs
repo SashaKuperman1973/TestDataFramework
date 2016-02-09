@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.RepositoryOperations.Model;
-using TestDataFramework.ValueFormatter;
+using TestDataFramework.ValueFormatter.Concrete;
 
 namespace Tests.Tests
 {

@@ -1,19 +1,9 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using log4net;
-using TestDataFramework.ArrayRandomizer;
-using TestDataFramework.PropertyValueAccumulator;
-using TestDataFramework.TypeGenerator;
-using TestDataFramework.UniqueValueGenerator.Interface;
-using TestDataFramework.ValueGenerator;
-using TestDataFramework.ValueProvider;
 using TestDataFramework.Helpers;
-using TestDataFramework.ValueGenerator.Interface;
+using TestDataFramework.ValueGenerator.Interfaces;
 
 namespace TestDataFramework.HandledTypeGenerator
 {

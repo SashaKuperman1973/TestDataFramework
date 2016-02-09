@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using IntegrationTests.Tests;
-using TestDataFramework.Populator;
-using Tests.TestModels;
+using TestDataFramework.Populator.Concrete;
 
 namespace IntegrationTests
 {

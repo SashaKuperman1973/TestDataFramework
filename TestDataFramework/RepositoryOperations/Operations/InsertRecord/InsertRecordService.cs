@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using log4net;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
 using TestDataFramework.Populator;
 using TestDataFramework.RepositoryOperations.Model;
-using TestDataFramework.WritePrimitives;
+using TestDataFramework.WritePrimitives.Interfaces;
 
 namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 {
@@ -95,8 +93,9 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             primaryKeyOperations = primaryKeyOperations.ToList();
 
             InsertRecordService.Logger.Debug($"primaryKeyOperations: {primaryKeyOperations.GetRecordTypesString()}");
-            InsertRecordService.Logger.Debug($"orderedOperations: {orderedOperations.GetRecordTypesString()}");
             InsertRecordService.Logger.Debug($"order: {order.Value}");
+
+            InsertRecordService.Logger.Debug($"orderedOperations: {orderedOperations.GetRecordTypesString()}");
 
             primaryKeyOperations.ToList().ForEach(o => o.Write(breaker, writer, order, orderedOperations));
 

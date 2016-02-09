@@ -1,17 +1,12 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using log4net;
 using TestDataFramework.Exceptions;
-using TestDataFramework.TypeGenerator;
+using TestDataFramework.TypeGenerator.Interfaces;
 
-namespace TestDataFramework.Populator
+namespace TestDataFramework.Populator.Concrete
 {
     public class RecordReference<T> : RecordReference
     {

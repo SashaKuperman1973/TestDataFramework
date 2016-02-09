@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using log4net;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
 using TestDataFramework.RepositoryOperations.Model;
-using TestDataFramework.TypeGenerator;
+using TestDataFramework.TypeGenerator.Interfaces;
 
 namespace TestDataFramework.Populator
 {

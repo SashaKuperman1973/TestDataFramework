@@ -5,11 +5,9 @@ using System.Reflection;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using TestDataFramework.Exceptions;
 using TestDataFramework.HandledTypeGenerator;
-using TestDataFramework.TypeGenerator;
-using TestDataFramework.ValueGenerator;
-using TestDataFramework.ValueGenerator.Interface;
+using TestDataFramework.TypeGenerator.Concrete;
+using TestDataFramework.ValueGenerator.Interfaces;
 using Tests.TestModels;
 
 namespace Tests.Tests

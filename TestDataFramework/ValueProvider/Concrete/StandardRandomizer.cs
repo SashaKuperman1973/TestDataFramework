@@ -4,8 +4,9 @@ using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
 using TestDataFramework.Helpers.Concrete;
 using TestDataFramework.Helpers.Interfaces;
+using TestDataFramework.ValueProvider.Interfaces;
 
-namespace TestDataFramework.ValueProvider
+namespace TestDataFramework.ValueProvider.Concrete
 {
     public class StandardRandomizer : IValueProvider
     {
@@ -40,7 +41,7 @@ namespace TestDataFramework.ValueProvider
 
             int result = this.random.Next(max.Value);
 
-            StandardRandomizer.Logger.Debug("Exiting GetInteger");
+            StandardRandomizer.Logger.Debug($"Exiting GetInteger. result: {result}");
             return result;
         }
 
@@ -71,7 +72,7 @@ namespace TestDataFramework.ValueProvider
                 result |= randomValue;
             }
 
-            StandardRandomizer.Logger.Debug("Exiting GetLongInteger");
+            StandardRandomizer.Logger.Debug($"Exiting GetLongInteger. result: {result}");
             return result;
         }
 
@@ -85,17 +86,17 @@ namespace TestDataFramework.ValueProvider
 
             int result = this.random.Next(max.Value);
 
-            StandardRandomizer.Logger.Debug("Exiting GetShortInteger");
+            StandardRandomizer.Logger.Debug($"Exiting GetShortInteger. result: {result}");
             return (short)result;
         }
 
         public virtual string GetString(int? length)
         {
-            StandardRandomizer.Logger.Debug("Entering GetString");
+            StandardRandomizer.Logger.Debug($"Entering GetString. length: {length}");
 
             string result = this.stringRandomizer.GetRandomString(length);
 
-            StandardRandomizer.Logger.Debug("Exiting GetString");
+            StandardRandomizer.Logger.Debug($"Exiting GetString. result: {result}");
             return result;
         }
 
@@ -107,21 +108,20 @@ namespace TestDataFramework.ValueProvider
 
             var result = (char)(letterCode + 65);
 
-            StandardRandomizer.Logger.Debug("Exiting GetCharacter");
+            StandardRandomizer.Logger.Debug($"Exiting GetCharacter. result: {result}");
             return result;
         }
 
         public virtual decimal GetDecimal(int? precision)
         {
             StandardRandomizer.Logger.Debug("Entering GetDecimal");
+            StandardRandomizer.Logger.Debug("precision = " + precision);
 
             precision = precision ?? 2;
 
-            StandardRandomizer.Logger.Debug("precision = " + precision);
-
             var result = (decimal) this.GetReal(precision.Value);
 
-            StandardRandomizer.Logger.Debug("Exiting GetDecimal");
+            StandardRandomizer.Logger.Debug($"Exiting GetDecimal. result: {result}");
             return result;
         }
 
@@ -133,17 +133,15 @@ namespace TestDataFramework.ValueProvider
 
             bool result = value == 1;
 
-            StandardRandomizer.Logger.Debug("Exiting GetBoolean");
+            StandardRandomizer.Logger.Debug($"Exiting GetBoolean. result: {result}");
             return result;
         }
 
         public virtual DateTime GetDateTime(PastOrFuture? pastOrFuture, Func<long?, long> longIntegerGetter)
         {
-            StandardRandomizer.Logger.Debug("Entering GetDateTime");
+            StandardRandomizer.Logger.Debug($"Entering GetDateTime. pastOrFuture: {pastOrFuture}");
 
             pastOrFuture = pastOrFuture ?? PastOrFuture.Past;
-
-            StandardRandomizer.Logger.Debug("pastOrFuture = " + pastOrFuture);
 
             DateTime dateTime = this.dateProvider();
             DateTime result;
@@ -167,13 +165,7 @@ namespace TestDataFramework.ValueProvider
                     throw new ArgumentException(Messages.UnknownPastOrFutureEnumValue, nameof(pastOrFuture));
             }
 
-            long ticks = this.GetLongInteger(null);
-
-            ticks = pastOrFuture == PastOrFuture.Future ? ticks : -ticks;
-
-            //DateTime result = this.dateProvider().AddTicks(ticks);
-
-            StandardRandomizer.Logger.Debug("Exiting GetDateTime");
+            StandardRandomizer.Logger.Debug($"Exiting GetDateTime. result: {result}");
             return result;
         }
 
@@ -187,31 +179,29 @@ namespace TestDataFramework.ValueProvider
 
             byte result = array[0];
 
-            StandardRandomizer.Logger.Debug("Exiting GetByte");
+            StandardRandomizer.Logger.Debug($"Exiting GetByte. result: {result}");
             return result;
         }
 
         public virtual double GetDouble(int? precision)
         {
             StandardRandomizer.Logger.Debug("Entering GetDouble");
+            StandardRandomizer.Logger.Debug("precision = " + precision);
 
             precision = precision ?? 2;
 
-            StandardRandomizer.Logger.Debug("precision = " + precision);
-
             double result = this.GetReal(precision.Value);
 
-            StandardRandomizer.Logger.Debug("Exiting GetDouble");
+            StandardRandomizer.Logger.Debug($"Exiting GetDouble. result: {result}");
             return result;
         }
 
         public virtual float GetFloat(int? precision)
         {
             StandardRandomizer.Logger.Debug("Entering GetFloat");
+            StandardRandomizer.Logger.Debug("precision = " + precision);
 
             precision = precision ?? 2;
-
-            StandardRandomizer.Logger.Debug("precision = " + precision);
 
             if (precision.Value > 7)
             {
@@ -220,7 +210,7 @@ namespace TestDataFramework.ValueProvider
 
             var result = (float)this.GetReal(precision.Value, (int) Math.Pow(10, 7 - precision.Value));
 
-            StandardRandomizer.Logger.Debug("Exiting GetFloat");
+            StandardRandomizer.Logger.Debug($"Exiting GetFloat. result: {result}");
             return result;
         }
 
@@ -231,7 +221,7 @@ namespace TestDataFramework.ValueProvider
             string namePart = this.stringRandomizer.GetRandomString(10).ToLower();
             string result = namePart + "@domain.com";
 
-            StandardRandomizer.Logger.Debug("Exiting GetEmailAddress");
+            StandardRandomizer.Logger.Debug($"Exiting GetEmailAddress. result: {result}");
             return result;
         }
 

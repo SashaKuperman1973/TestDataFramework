@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TestDataFramework.ValueProvider
+namespace TestDataFramework.ValueProvider.Interfaces
 {
     public enum PastOrFuture
     {

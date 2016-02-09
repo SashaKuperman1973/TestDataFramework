@@ -6,11 +6,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.ArrayRandomizer;
 using TestDataFramework.Exceptions;
-using TestDataFramework.TypeGenerator;
-using TestDataFramework.UniqueValueGenerator;
-using TestDataFramework.UniqueValueGenerator.Interface;
+using TestDataFramework.TypeGenerator.Interfaces;
+using TestDataFramework.UniqueValueGenerator.Interfaces;
 using TestDataFramework.ValueGenerator;
-using TestDataFramework.ValueProvider;
+using TestDataFramework.ValueProvider.Interfaces;
 using Tests.TestModels;
 
 namespace Tests.Tests

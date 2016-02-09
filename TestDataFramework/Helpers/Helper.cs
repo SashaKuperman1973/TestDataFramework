@@ -122,7 +122,7 @@ namespace TestDataFramework.Helpers
 
         public static string GetRecordTypesString(this IEnumerable<AbstractRepositoryOperation> recordOperations)
         {
-            return string.Join(", ", recordOperations.Select(p => p.RecordReference?.RecordType));
+            return string.Join(", ", recordOperations.Select(p => p?.RecordReference?.RecordType));
         }
 
         public static object ToCompositeString(IEnumerable<object> columns)

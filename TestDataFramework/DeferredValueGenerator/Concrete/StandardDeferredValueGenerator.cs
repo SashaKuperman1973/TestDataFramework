@@ -2,9 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using log4net;
-using log4net.Appender;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
-using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
 using TestDataFramework.Populator;
 

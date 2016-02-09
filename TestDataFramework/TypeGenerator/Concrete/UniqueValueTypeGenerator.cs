@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Reflection;
 using log4net;
 using TestDataFramework.HandledTypeGenerator;
-using TestDataFramework.ValueGenerator;
 using TestDataFramework.Helpers;
-using TestDataFramework.ValueGenerator.Interface;
+using TestDataFramework.TypeGenerator.Interfaces;
+using TestDataFramework.ValueGenerator.Interfaces;
 
-namespace TestDataFramework.TypeGenerator
+namespace TestDataFramework.TypeGenerator.Concrete
 {
     public class UniqueValueTypeGenerator : StandardTypeGenerator
     {

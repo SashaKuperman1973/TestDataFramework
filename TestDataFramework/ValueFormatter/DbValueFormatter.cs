@@ -1,16 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using log4net;
 using TestDataFramework.Exceptions;
-using TestDataFramework.RepositoryOperations.Model;
-using TestDataFramework.WritePrimitives;
+using TestDataFramework.ValueFormatter.Interfaces;
 
 namespace TestDataFramework.ValueFormatter
 {
     public abstract class DbValueFormatter : IValueFormatter
     {
+        private static readonly ILog Logger = LogManager.GetLogger(typeof (DbValueFormatter));
+
         public virtual string Format(object value)
         {
+            DbValueFormatter.Logger.Debug($"Entering Format. value: {value}");
+
             if (value == null)
             {
                 return null;
@@ -26,6 +30,8 @@ namespace TestDataFramework.ValueFormatter
             }
 
             string result = formatter(value);
+
+            DbValueFormatter.Logger.Debug($"Exiting Format. result: {result}");
             return result;
         }
 
@@ -51,48 +57,57 @@ namespace TestDataFramework.ValueFormatter
 
         private static string IntFormatter(object value)
         {
+            DbValueFormatter.Logger.Debug("Executing IntFormatter");
             string result = value.ToString();
             return result;
         }
 
         private static string StringFormatter(object value)
         {
+            DbValueFormatter.Logger.Debug("Executing StringFormatter");
             string result = "'" + (string)value + "'";
             return result;
         }
 
         private static string CharFormatter(object value)
         {
+            DbValueFormatter.Logger.Debug("Executing CharFormatter");
             string result = "'" + (char)value + "'";
             return result;
         }
 
         private static string DecimalFomatter(object value)
         {
+            DbValueFormatter.Logger.Debug("Executing DecimalFomatter");
             string result = ((decimal)value).ToString(NumberFormatInfo.InvariantInfo);
             return result;
         }
 
         private static string DoubleFomatter(object value)
         {
+            DbValueFormatter.Logger.Debug("Executing DoubleFomatter");
             string result = ((double)value).ToString(NumberFormatInfo.InvariantInfo);
             return result;
         }
 
         private static string FloatFomatter(object value)
         {
+            DbValueFormatter.Logger.Debug("Executing FloatFomatter");
             string result = ((float)value).ToString(NumberFormatInfo.InvariantInfo);
             return result;
         }
 
         private static string BoolFormatter(object value)
         {
+            DbValueFormatter.Logger.Debug("Executing BoolFormatter");
             string result = (bool)value ? "1" : "0";
             return result;
         }
 
         private static string DateTimeFormatter(object value)
         {
+            DbValueFormatter.Logger.Debug("Executing DateTimeFormatter");
+
             var dateTime = (DateTime)value;
             string result = "'" + dateTime.ToString("s") + "'";
 
@@ -101,6 +116,7 @@ namespace TestDataFramework.ValueFormatter
 
         private static string ByteFormatter(object value)
         {
+            DbValueFormatter.Logger.Debug("Executing ByteFormatter");
             return ((byte)value).ToString(NumberFormatInfo.InvariantInfo);
         }
 

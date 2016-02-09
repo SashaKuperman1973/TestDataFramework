@@ -2,14 +2,13 @@
 using System.Collections.Specialized;
 using System.Data;
 using System.Data.Common;
-using System.Linq;
 using System.Text;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.Exceptions;
-using TestDataFramework.Helpers.Interfaces;
 using TestDataFramework.RepositoryOperations.Model;
+using TestDataFramework.ValueFormatter.Interfaces;
 using TestDataFramework.WritePrimitives;
 using Tests.Mocks;
 

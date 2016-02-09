@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using TestDataFramework.Helpers;
-using TestDataFramework.Persistence;
+using TestDataFramework.Persistence.Interfaces;
 using TestDataFramework.Populator;
 
 namespace Tests.Mocks

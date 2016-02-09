@@ -5,7 +5,7 @@ using Moq;
 using TestDataFramework.DeferredValueGenerator.Concrete;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
-using TestDataFramework.WritePrimitives;
+using TestDataFramework.WritePrimitives.Interfaces;
 using Tests.TestModels;
 
 namespace Tests.Tests
@@ -105,7 +105,7 @@ namespace Tests.Tests
             DecoderDelegate decoder = stringWriter(propertyInfo);
 
             Helpers.ExceptionTest(() => decoder(propertyInfo, input), typeof(UnexpectedTypeException),
-                string.Format(Messages.UnexpectedHandlerType, propertyInfo, input));
+                string.Format(Messages.UnexpectedHandlerType, propertyInfo.GetExtendedMemberInfoString(), input));
         }
 
         [TestMethod]

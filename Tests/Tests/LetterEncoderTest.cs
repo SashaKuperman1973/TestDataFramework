@@ -3,7 +3,6 @@ using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
-using TestDataFramework.PropertyValueAccumulator;
 
 namespace Tests.Tests
 {

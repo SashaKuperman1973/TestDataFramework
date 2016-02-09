@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Eventing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using TestDataFramework.Helpers;
 using TestDataFramework.Populator;
 using TestDataFramework.RepositoryOperations.Model;
-using TestDataFramework.WritePrimitives;
+using TestDataFramework.WritePrimitives.Interfaces;
 
 namespace TestDataFramework.RepositoryOperations
 {

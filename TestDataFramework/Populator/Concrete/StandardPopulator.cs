@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
-using Castle.Windsor.Diagnostics.Inspectors;
 using log4net;
-using TestDataFramework.Exceptions;
-using TestDataFramework.Persistence;
-using TestDataFramework.TypeGenerator;
-using TestDataFramework.ValueGenerator;
+using TestDataFramework.Persistence.Interfaces;
+using TestDataFramework.Populator.Interfaces;
+using TestDataFramework.TypeGenerator.Interfaces;
 
-namespace TestDataFramework.Populator
+namespace TestDataFramework.Populator.Concrete
 {
     public class SetExpression<T>
     {

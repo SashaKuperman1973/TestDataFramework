@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.Design;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.ValueFormatter;

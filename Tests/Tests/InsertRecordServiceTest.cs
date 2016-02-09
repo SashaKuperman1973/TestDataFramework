@@ -1,21 +1,18 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using TestDataFramework;
+using TestDataFramework.Helpers;
 using TestDataFramework.Populator;
+using TestDataFramework.Populator.Concrete;
 using TestDataFramework.RepositoryOperations;
 using TestDataFramework.RepositoryOperations.Model;
 using TestDataFramework.RepositoryOperations.Operations.InsertRecord;
-using TestDataFramework.TypeGenerator;
-using TestDataFramework.WritePrimitives;
+using TestDataFramework.TypeGenerator.Interfaces;
+using TestDataFramework.WritePrimitives.Interfaces;
 using Tests.TestModels;
-using TestDataFramework.Helpers;
 
 namespace Tests.Tests
 {

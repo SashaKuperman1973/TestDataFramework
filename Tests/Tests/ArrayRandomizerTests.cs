@@ -4,8 +4,7 @@ using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.ArrayRandomizer;
-using TestDataFramework.ValueGenerator;
-using TestDataFramework.ValueGenerator.Interface;
+using TestDataFramework.ValueGenerator.Interfaces;
 using Tests.TestModels;
 
 namespace Tests.Tests

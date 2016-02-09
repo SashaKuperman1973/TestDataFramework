@@ -1,5 +1,5 @@
 ﻿using System;
-using TestDataFramework.ValueProvider;
+using TestDataFramework.ValueProvider.Interfaces;
 
 namespace TestDataFramework
 {
@@ -24,7 +24,7 @@ namespace TestDataFramework
     }
 
     public class EmailAttribute : Attribute
-    {        
+    {
     }
 
     public class MaxAttribute : Attribute
@@ -66,7 +66,7 @@ namespace TestDataFramework
     }
 
     public class AutoIdentityAttribute : Attribute
-    {   
+    {
     }
 
     public class PrimaryKeyAttribute : Attribute

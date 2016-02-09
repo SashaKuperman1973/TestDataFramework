@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace TestDataFramework.UniqueValueGenerator.Interface
+namespace TestDataFramework.UniqueValueGenerator.Interfaces
 {
     public interface IUniqueValueGenerator
     {

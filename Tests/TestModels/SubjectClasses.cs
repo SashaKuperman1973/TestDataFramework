@@ -1,6 +1,6 @@
 ﻿using System;
 using TestDataFramework;
-using TestDataFramework.ValueProvider;
+using TestDataFramework.ValueProvider.Interfaces;
 
 namespace Tests.TestModels
 {

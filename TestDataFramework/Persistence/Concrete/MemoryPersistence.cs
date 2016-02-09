@@ -2,15 +2,16 @@
 using System.Linq;
 using log4net;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
-using TestDataFramework.Populator;
 using TestDataFramework.Helpers;
+using TestDataFramework.Persistence.Interfaces;
+using TestDataFramework.Populator;
 using TestDataFramework.RepositoryOperations.Model;
 
-namespace TestDataFramework.Persistence
+namespace TestDataFramework.Persistence.Concrete
 {
     public class MemoryPersistence : IPersistence
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(MemoryPersistence));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof (MemoryPersistence));
 
         private readonly IDeferredValueGenerator<LargeInteger> deferredValueGenerator;
 
@@ -29,7 +30,8 @@ namespace TestDataFramework.Persistence
 
             recordReferences = recordReferences.ToList();
 
-            MemoryPersistence.Logger.Debug($"Records: {string.Join(", ", recordReferences.Select(r => r?.RecordObject))}");
+            MemoryPersistence.Logger.Debug(
+                $"Records: {string.Join(", ", recordReferences.Select(r => r?.RecordObject))}");
 
             this.deferredValueGenerator.Execute(recordReferences);
 
@@ -48,7 +50,7 @@ namespace TestDataFramework.Persistence
             var primaryKeys = recordReference.PrimaryKeyReferences.SelectMany(
                 pkRef =>
                     pkRef.RecordType.GetPropertyAttributes<PrimaryKeyAttribute>()
-                        .Select(pkpa => new { @Object = pkRef.RecordObject, PkProperty = pkpa.PropertyInfo }));
+                        .Select(pkpa => new {@Object = pkRef.RecordObject, PkProperty = pkpa.PropertyInfo}));
 
             IEnumerable<PropertyAttribute<ForeignKeyAttribute>> foreignKeyPropertyAttributes =
                 recordReference.RecordType.GetPropertyAttributes<ForeignKeyAttribute>();

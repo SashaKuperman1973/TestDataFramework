@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using TestDataFramework.Populator;
-using TestDataFramework.TypeGenerator;
+using TestDataFramework.Populator.Concrete;
+using TestDataFramework.TypeGenerator.Interfaces;
 using Tests.Mocks;
 using Tests.TestModels;
 

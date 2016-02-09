@@ -5,7 +5,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers.Interfaces;
-using TestDataFramework.ValueProvider;
+using TestDataFramework.ValueProvider.Concrete;
+using TestDataFramework.ValueProvider.Interfaces;
 
 namespace Tests.Tests
 {

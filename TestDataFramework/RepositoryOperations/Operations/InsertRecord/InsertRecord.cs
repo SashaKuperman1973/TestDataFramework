@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using log4net;
+using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
 using TestDataFramework.Populator;
 using TestDataFramework.RepositoryOperations.Model;
-using TestDataFramework.WritePrimitives;
+using TestDataFramework.WritePrimitives.Interfaces;
 using PropertyAttributes = TestDataFramework.RepositoryOperations.Model.PropertyAttributes;
 
 namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
@@ -81,7 +82,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
         public override void Read(Counter readStreamPointer, object[] data)
         {
-            InsertRecord.Logger.Debug($"Entering Read. readStreamPointer.Value: {readStreamPointer}, data: {string.Join(",", data)}");
+            InsertRecord.Logger.Debug($"Entering Read. readStreamPointer.Value: {readStreamPointer.Value}, data: {string.Join(",", data)}");
 
             IEnumerable<PropertyAttributes> propertyAttributes =
                 this.RecordReference.RecordType.GetPropertyAttributes().ToList();
@@ -99,10 +100,19 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                     p => Helper.GetColumnName(p).Equals(columnName, StringComparison.Ordinal)
                     );
 
-                property.SetValue(this.RecordReference.RecordObject,
-                    data[readStreamPointer.Value] is IConvertible
-                        ? Convert.ChangeType(data[readStreamPointer.Value++], property.PropertyType)
-                        : data[readStreamPointer.Value++]);
+                try
+                {
+                    property.SetValue(this.RecordReference.RecordObject,
+                        data[readStreamPointer.Value] is IConvertible
+                            ? Convert.ChangeType(data[readStreamPointer.Value++], property.PropertyType)
+                            : data[readStreamPointer.Value++]);
+                }
+                catch (OverflowException overflowException)
+                {
+                    throw new OverflowException(
+                        string.Format(Messages.TypeTooNarrow, property.GetExtendedMemberInfoString(),
+                            data[readStreamPointer.Value - 1]), overflowException);
+                }
 
                 propertiesForRead.Remove(property);
             }

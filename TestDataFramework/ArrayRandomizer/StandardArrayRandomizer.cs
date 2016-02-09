@@ -3,8 +3,7 @@ using System.Linq;
 using System.Reflection;
 using log4net;
 using TestDataFramework.Helpers;
-using TestDataFramework.ValueGenerator;
-using TestDataFramework.ValueGenerator.Interface;
+using TestDataFramework.ValueGenerator.Interfaces;
 
 namespace TestDataFramework.ArrayRandomizer
 {

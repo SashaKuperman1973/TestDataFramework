@@ -1,6 +1,4 @@
-﻿using System.CodeDom;
-using System.Net.Mime;
-using TestDataFramework;
+﻿using TestDataFramework;
 
 namespace Tests.TestModels
 {

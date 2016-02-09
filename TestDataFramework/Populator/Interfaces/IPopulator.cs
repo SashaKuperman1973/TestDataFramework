@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
+﻿using System.Collections.Generic;
+using TestDataFramework.Populator.Concrete;
 
-namespace TestDataFramework.Populator
+namespace TestDataFramework.Populator.Interfaces
 {
     public interface IPopulator
     {

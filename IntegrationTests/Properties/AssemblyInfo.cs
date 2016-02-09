@@ -26,6 +26,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("IntegrationTests")]
 [assembly: AssemblyDescription("Some end-to-end tests.")]
 [assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("Alexander Kuperman")]
 [assembly: AssemblyProduct("IntegrationTests")]
 [assembly: AssemblyCopyright("Copyright © Alexander Kuperman 2016")]
 [assembly: AssemblyTrademark("")]

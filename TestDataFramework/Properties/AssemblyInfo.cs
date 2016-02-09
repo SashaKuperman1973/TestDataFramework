@@ -26,6 +26,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("TestDataFramework")]
 [assembly: AssemblyDescription("Unit test data population tool.")]
 [assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("Alexander Kuperman")]
 [assembly: AssemblyProduct("TestDataFramework")]
 [assembly: AssemblyCopyright("Copyright © Alexander Kuperman 2016")]
 [assembly: AssemblyTrademark("")]

@@ -18,13 +18,13 @@ The entry point is the IPopulator factory. For in-memory object population the u
 
 For the database population it's:
 
-using (var factory = new PopulatorFactory())
-{
-  IPopulator testDataPopulator = factory.CreateSqlClientPopulator(
-    @"Data Source=.\SqlExpress;Initial Catalog=TestDataFramework;Integrated Security=SSPI;");
-  
-  ...{populate/test}
-}
+    using (var factory = new PopulatorFactory())
+    {
+      IPopulator testDataPopulator = factory.CreateSqlClientPopulator(
+        @"Data Source=.\SqlExpress;Initial Catalog=TestDataFramework;Integrated Security=SSPI;");
+      
+      ...{populate/test}
+    }
 
 Of course replace all values with what you need. Currently you need to specify the default catalogue. 
 For the next iteration I plan to associate specification of the catalogue with the individual class/type being populated, 

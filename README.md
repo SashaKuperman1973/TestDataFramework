@@ -43,47 +43,48 @@ NOTE: For properties to be picked up, they must be public with a getter and a se
 
 Here is an example of how to specify the objects to be generated. The usage is identical for both populators.
 
-using (var factory = new PopulatorFactory())
-{
-  IPopulator testDataPopulator = factory.Create...
-  
-  // a list 2 record references
-  IList<RecordReference<ManualKeyPrimaryTable>> primaries = populator.Add<ManualKeyPrimaryTable>(2);
-  
-  // a single record reference
-  RecordReference<ManualKeyPrimaryTable> aPrimary = populator.Add<ManualKeyPrimaryTable>();
-  
-  // a list of 2 foreign key record references:
-  IList<RecordReference<ManualKeyForeignTable>> foreignSet1 = populator.Add<ManualKeyForeignTable>(2);
-  
-  // specify which primary key records are associated with the foreign key records. 
-  // (Usage of primary/foreign key relationship property attributes is enforced)
-  foreignSet1.ToList().ForEach(f => f.AddPrimaryRecordReference(primaries[0]));
-
-  // another primary/foreign key record relationship created
-  IList<RecordReference<ManualKeyForeignTable>> foreignSet2 = populator.Add<ManualKeyForeignTable>(2);
-  foreignSet2.ToList().ForEach(f => f.AddPrimaryRecordReference(primaries[1]));
-  
-  // an example of specifying explicit values to be used on properties instead of random ones.
-  // these values will override any automatic agreement between foreign and primary key values 
-  // and it is possible to introduce foreign key constraint vialotions this way, so be careful!
-  // Of course this can be avoided by not giving explicit values to foreign key properties.
-  
-  primaries[0].Set(o => o.ADecimal, 112233.445566m).Set(o => o.AString, "AAXX").Set(o => o.Key1, "HummHummHumm");
-  foreignSet2[1].Set(o => o.ALong, 11111L).Set(o => o.AShort, (short) 1234);
-  
-  // Here's the call that runs the engine
-  
-  using (var transactionScope =
-      new TransactionScope(TransactionScopeOption.Required,
-          new TransactionOptions {IsolationLevel = IsolationLevel.ReadCommitted}))
-  {
-      populator.Bind();
-
-      // Typical use case: don't commit the transaction. So no transactionScope.Complete() statement.
-      
-      {Call your DB data consuming test semantics within the transaction scope if you don't want it to be committed}
-  }
+        using (var factory = new PopulatorFactory())
+        {
+          IPopulator testDataPopulator = factory.Create...
+          
+          // a list 2 record references
+          IList<RecordReference<ManualKeyPrimaryTable>> primaries = populator.Add<ManualKeyPrimaryTable>(2);
+          
+          // a single record reference
+          RecordReference<ManualKeyPrimaryTable> aPrimary = populator.Add<ManualKeyPrimaryTable>();
+          
+          // a list of 2 foreign key record references:
+          IList<RecordReference<ManualKeyForeignTable>> foreignSet1 = populator.Add<ManualKeyForeignTable>(2);
+          
+          // specify which primary key records are associated with the foreign key records. 
+          // (Usage of primary/foreign key relationship property attributes is enforced)
+          foreignSet1.ToList().ForEach(f => f.AddPrimaryRecordReference(primaries[0]));
+        
+          // another primary/foreign key record relationship created
+          IList<RecordReference<ManualKeyForeignTable>> foreignSet2 = populator.Add<ManualKeyForeignTable>(2);
+          foreignSet2.ToList().ForEach(f => f.AddPrimaryRecordReference(primaries[1]));
+          
+          // an example of specifying explicit values to be used on properties instead of random ones.
+          // these values will override any automatic agreement between foreign and primary key values 
+          // and it is possible to introduce foreign key constraint vialotions this way, so be careful!
+          // Of course this can be avoided by not giving explicit values to foreign key properties.
+          
+          primaries[0].Set(o => o.ADecimal, 112233.445566m).Set(o => o.AString, "AAXX").Set(o => o.Key1, "HummHummHumm");
+          foreignSet2[1].Set(o => o.ALong, 11111L).Set(o => o.AShort, (short) 1234);
+          
+          // Here's the call that runs the engine
+          
+          using (var transactionScope =
+              new TransactionScope(TransactionScopeOption.Required,
+                  new TransactionOptions {IsolationLevel = IsolationLevel.ReadCommitted}))
+          {
+              populator.Bind();
+        
+              // Typical use case: don't commit the transaction. So no transactionScope.Complete() statement.
+              
+              {Call your DB data consuming test semantics within the transaction scope if you don't want it to be committed}
+          }
+        }
   
 The transaction scope semantics can be completely omitted for the in-memory populator. 
 All classes involved will be populated after the call to IPopulator.Bind.

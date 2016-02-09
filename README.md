@@ -9,13 +9,12 @@ New implememntations of the persistence layer can be created to support addition
 
 The entry point is the IPopulator factory. For in-memory object population the usage of the factory is:
 
-```using (var factory = new PopulatorFactory())
-{
-  IPopulator populator = this.factory.CreateMemoryPopulator();
-  
-  ...{populate/test}
-}
-'''
+    using (var factory = new PopulatorFactory())
+    {
+      IPopulator populator = this.factory.CreateMemoryPopulator();
+      
+      ...{populate/test}
+    }
 
 For the database population it's:
 

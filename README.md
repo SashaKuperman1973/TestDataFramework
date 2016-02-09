@@ -85,7 +85,9 @@ Here is an example of how to specify the objects to be generated. The usage is i
               {Call your DB data consuming test semantics within the transaction scope if you don't want it to be committed}
           }
         }
-  
+
+NOTE: Access the generated object through the RecordObject property of the RecordReference<T>.
+
 The transaction scope semantics can be completely omitted for the in-memory populator. 
 All classes involved will be populated after the call to IPopulator.Bind.
 

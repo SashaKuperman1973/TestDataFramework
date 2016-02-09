@@ -26,6 +26,8 @@ For the database population it's:
       ...{populate/test}
     }
 
+NOTE: root namespace is TestDataFramework. The PopulatorFactory is in namespace TestDataFramework.Factories.
+
 Of course replace all values with what you need. Currently you need to specify the default catalogue. 
 For the next iteration I plan to associate specification of the catalogue with the individual class/type being populated, 
 which would override this value. For now, if you need multiple databases in play at the same time you should nest the

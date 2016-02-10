@@ -5,7 +5,7 @@ It is currently in beta.
 It includes the ability to write out objects to a database to populate it for tests which involve data access. 
 Using an uncommitted transaction scope makes it possible for the data to be temporary only. 
 Foreign/primary key relationships can be specified and are respected. Currently only SQL Server is supported.
-New implememntations of the persistence layer can be created to support additional database systems or any other persistence medium.
+New implementations of the persistence layer can be created to support additional database systems or any other persistence medium.
 
 The entry point is the IPopulator factory. For in-memory object population the usage of the factory is:
 

@@ -207,4 +207,10 @@ namespace Tests.TestModels
 
         public Guid? Key4 { get; set; }
     }
+
+    [Table(Name = "DbTable")]
+    public class ClrClass
+    {
+        
+    }
 }

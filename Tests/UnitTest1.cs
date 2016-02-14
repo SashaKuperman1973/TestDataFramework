@@ -35,22 +35,12 @@ namespace Tests
 
                     foreach (TypeInfo definedType in assembly.DefinedTypes)
                     {
-                        string tableName = null;
+                        var tableAttribute =
+                            definedType.GetCustomAttribute<TableAttribute>();
 
-                        CustomAttributeData tableAttributeData =
-                            definedType.CustomAttributes.FirstOrDefault(
-                                attributeData =>
-                                    attributeData.AttributeType == typeof (TableAttribute) &&
-                                    !string.IsNullOrWhiteSpace(tableName = (string)
-                                        attributeData.NamedArguments.First(
-                                            args =>
-                                                args.MemberName.Equals("Name",
-                                                    StringComparison.OrdinalIgnoreCase)).TypedValue.Value)
-                                );
-
-                        if (tableAttributeData != null)
+                        if (tableAttribute != null)
                         {
-                            tableAttributeDataDictionary.Add(tableName, definedType);
+                            tableAttributeDataDictionary.Add(tableAttribute.Name, definedType);
                         }
                     }
                 }

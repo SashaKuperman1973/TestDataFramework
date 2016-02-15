@@ -373,7 +373,7 @@ namespace TestDataFramework.Helpers
                 return value.memberValue;
             }
 
-            public void Half()
+            public void Halve()
             {
                 if (this.memberValue.data == null || this.memberValue.data.Count == 0 || this.memberValue.data.Count == 1 && this.memberValue.data[0] <= 1)
                 {
@@ -466,7 +466,7 @@ namespace TestDataFramework.Helpers
                         }
                         else
                         {
-                            adjuster.Half();
+                            adjuster.Halve();
                             quotientScratch -= adjuster;
                         }
                     }
@@ -485,7 +485,7 @@ namespace TestDataFramework.Helpers
                         }
                         else
                         {
-                            adjuster.Half();
+                            adjuster.Halve();
                             quotientScratch += adjuster;
                         }
                     }

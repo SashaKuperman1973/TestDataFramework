@@ -8,13 +8,13 @@
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    Foobar is distributed in the hope that it will be useful,
+    TestDataFramework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+    along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
 using System;
 using System.Collections.Generic;
@@ -49,7 +49,10 @@ namespace TestDataFramework.Helpers
 
         public static string GetColumnName(PropertyInfo propertyInfo)
         {
-            return propertyInfo.Name;
+            var columnAttribute = propertyInfo.GetCustomAttribute<ColumnAttribute>();
+
+            string result = columnAttribute?.Name ?? propertyInfo.Name;
+            return result;
         }
 
         public static string DumpObject(object objectValue)

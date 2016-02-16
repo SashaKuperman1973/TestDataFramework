@@ -101,6 +101,8 @@
     <Compile Include="Tests\BaseUniqueValueGeneratorTests.cs" />
     <Compile Include="Tests\SqlClientValueFormatterTests.cs" />
     <Compile Include="Tests\AccumulatorValueProviderTests.cs" />
+    <Compile Include="Tests\ForeignKeyTests.cs" />
+    <Compile Include="Tests\AttributeReadWriteTests.cs" />
     <Compile Include="UnitTest1.cs" />
   </ItemGroup>
   <ItemGroup>

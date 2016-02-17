@@ -115,6 +115,7 @@ namespace TestDataFramework.Helpers
             List<Attribute> programmaticAttributeList;
 
             List<T> result = DecoratorHelper.AttributeDicitonary.TryGetValue(memberInfo, out programmaticAttributeList)
+                
                 ? programmaticAttributeList.Where(a => a.GetType() == typeof (T)).Cast<T>().ToList()
                 : new List<T>();
 

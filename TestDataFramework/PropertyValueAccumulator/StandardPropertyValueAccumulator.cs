@@ -121,7 +121,7 @@ namespace TestDataFramework.PropertyValueAccumulator
 
             LargeInteger count = this.GetCount(propertyInfo);
 
-            var stringLengthAttribute = propertyInfo.GetAttribute<StringLengthAttribute>();
+            var stringLengthAttribute = propertyInfo.GetCustomAttributeHelper<StringLengthAttribute>();
 
             int stringLength = stringLengthAttribute?.Length ?? defaultStringLength;
 

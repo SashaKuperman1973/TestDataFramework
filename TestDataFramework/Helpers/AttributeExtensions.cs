@@ -35,7 +35,7 @@ namespace TestDataFramework.Helpers
             AttributeExtensions.Logger.Debug(
                 $"Entering GetSingleAttribute. T: {typeof(T)} memberInfo: {memberInfo.GetExtendedMemberInfoString()}");
 
-            T[] result = memberInfo.GetCustomAttributes<T>().ToArray();
+            T[] result = memberInfo.GetCustomAttributesHelper<T>().ToArray();
 
             if (result.Length <= 1)
             {
@@ -57,12 +57,12 @@ namespace TestDataFramework.Helpers
 
         public static IEnumerable<T> GetUniqueAttributes<T>(this Type type) where T : Attribute
         {
-            AttributeExtensions.Logger.Debug($"Entering GetSingleAttribute. T: {typeof(T)} type: {type}");
+            AttributeExtensions.Logger.Debug($"Entering GetUniqueAttributes. T: {typeof(T)} type: {type}");
 
             IEnumerable <T> result = type.GetPropertiesHelper()
                 .Select(p => p.GetSingleAttribute<T>()).Where(a => a != null);
 
-            AttributeExtensions.Logger.Debug($"Exiting GetSingleAttribute. result: {result}");
+            AttributeExtensions.Logger.Debug($"Exiting GetUniqueAttributes. result: {result}");
             return result;
         }
 
@@ -102,11 +102,42 @@ namespace TestDataFramework.Helpers
                         pi =>
                             new RepositoryOperations.Model.PropertyAttributes
                             {
-                                Attributes = pi.GetCustomAttributes().ToArray(),
+                                Attributes = pi.GetCustomAttributesHelper().ToArray(),
                                 PropertyInfo = pi
                             });
 
             AttributeExtensions.Logger.Debug($"Exiting GetPropertyAttributes. result: {result}");
+            return result;
+        }
+
+        public static IEnumerable<T> GetCustomAttributesHelper<T>(this MemberInfo memberInfo) where T : Attribute
+        {
+            List<Attribute> programmaticAttributeList;
+
+            List<T> result = DecoratorHelper.AttributeDicitonary.TryGetValue(memberInfo, out programmaticAttributeList)
+                ? programmaticAttributeList.Where(a => a.GetType() == typeof (T)).Cast<T>().ToList()
+                : new List<T>();
+
+            result.AddRange(memberInfo.GetCustomAttributes<T>());
+            return result;
+        }
+
+        public static T GetCustomAttributeHelper<T>(this MemberInfo memberInfo) where T : Attribute
+        {
+            T result = memberInfo.GetCustomAttributesHelper<T>().FirstOrDefault();
+            return result;
+        }
+
+        public static IEnumerable<Attribute> GetCustomAttributesHelper(this MemberInfo memberInfo)
+        {
+            List<Attribute> result;
+
+            if (!DecoratorHelper.AttributeDicitonary.TryGetValue(memberInfo, out result))
+            {
+                result = new List<Attribute>();
+            }
+
+            result.AddRange(memberInfo.GetCustomAttributes());
             return result;
         }
     }

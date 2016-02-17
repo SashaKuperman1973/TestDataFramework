@@ -89,10 +89,10 @@ namespace TestDataFramework.ValueGenerator
 
             GetValueForTypeDelegate getter = null;
 
-            propertyInfo.GetCustomAttributesData()
+            propertyInfo.GetCustomAttributesHelper()
                 .Any(
-                    attributeData =>
-                        this.typeValueGetterDictionary.TryGetValue(attributeData.AttributeType, out getter));
+                    attribute =>
+                        this.typeValueGetterDictionary.TryGetValue(attribute.GetType(), out getter));
 
             object result = getter != null ? getter(propertyInfo) : this.GetValue(propertyInfo, propertyInfo.PropertyType);
 
@@ -135,7 +135,7 @@ namespace TestDataFramework.ValueGenerator
         {
             BaseValueGenerator.Logger.Debug("Entering GetString");
 
-            var lengthAttribute = propertyInfo?.GetCustomAttribute<StringLengthAttribute>();
+            var lengthAttribute = propertyInfo?.GetCustomAttributeHelper<StringLengthAttribute>();
             int? length = lengthAttribute?.Length;
 
             string result = this.valueProvider.GetString(length);
@@ -148,7 +148,7 @@ namespace TestDataFramework.ValueGenerator
         {
             BaseValueGenerator.Logger.Debug("Entering GetDecimal");
 
-            var precisionAttribute = propertyInfo?.GetCustomAttribute<PrecisionAttribute>();
+            var precisionAttribute = propertyInfo?.GetCustomAttributeHelper<PrecisionAttribute>();
             int? precision = precisionAttribute?.Precision;
 
             decimal result = this.valueProvider.GetDecimal(precision);
@@ -161,7 +161,7 @@ namespace TestDataFramework.ValueGenerator
         {
             BaseValueGenerator.Logger.Debug("Entering GetDouble");
 
-            var precisionAttribute = propertyInfo?.GetCustomAttribute<PrecisionAttribute>();
+            var precisionAttribute = propertyInfo?.GetCustomAttributeHelper<PrecisionAttribute>();
             int? precision = precisionAttribute?.Precision;
 
             double result = this.valueProvider.GetDouble(precision);
@@ -174,7 +174,7 @@ namespace TestDataFramework.ValueGenerator
         {
             BaseValueGenerator.Logger.Debug("Entering GetFloat");
 
-            var precisionAttribute = propertyInfo?.GetCustomAttribute<PrecisionAttribute>();
+            var precisionAttribute = propertyInfo?.GetCustomAttributeHelper<PrecisionAttribute>();
             int? precision = precisionAttribute?.Precision;
 
             float result = this.valueProvider.GetFloat(precision);
@@ -187,7 +187,7 @@ namespace TestDataFramework.ValueGenerator
         {
             BaseValueGenerator.Logger.Debug("Entering GetInteger");
 
-            var maxAttribute = propertyInfo?.GetCustomAttribute<MaxAttribute>();
+            var maxAttribute = propertyInfo?.GetCustomAttributeHelper<MaxAttribute>();
             long? max = maxAttribute?.Max;
 
             if (max < 0)
@@ -210,7 +210,7 @@ namespace TestDataFramework.ValueGenerator
         {
             BaseValueGenerator.Logger.Debug("Entering GetLong");
 
-            var maxAttribute = propertyInfo?.GetCustomAttribute<MaxAttribute>();
+            var maxAttribute = propertyInfo?.GetCustomAttributeHelper<MaxAttribute>();
             long? max = maxAttribute?.Max;
 
             if (max < 0)
@@ -228,7 +228,7 @@ namespace TestDataFramework.ValueGenerator
         {
             BaseValueGenerator.Logger.Debug("Entering GetShort");
 
-            var maxAttribute = propertyInfo?.GetCustomAttribute<MaxAttribute>();
+            var maxAttribute = propertyInfo?.GetCustomAttributeHelper<MaxAttribute>();
             long? max = maxAttribute?.Max;
 
             if (max < 0)
@@ -251,7 +251,7 @@ namespace TestDataFramework.ValueGenerator
         {
             BaseValueGenerator.Logger.Debug("Entering GetDateTime");
 
-            var pastOrFutureAttribute = propertyInfo?.GetCustomAttribute<PastOrFutureAttribute>();
+            var pastOrFutureAttribute = propertyInfo?.GetCustomAttributeHelper<PastOrFutureAttribute>();
             PastOrFuture? pastOrFuture = pastOrFutureAttribute?.PastOrFuture;
 
             DateTime result = this.valueProvider.GetDateTime((PastOrFuture?)pastOrFuture, this.valueProvider.GetLongInteger);

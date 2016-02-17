@@ -8,6 +8,7 @@ using Castle.Core.Internal;
 using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework;
+using TestDataFramework.Helpers;
 
 namespace Tests
 {
@@ -36,7 +37,7 @@ namespace Tests
                     foreach (TypeInfo definedType in assembly.DefinedTypes)
                     {
                         var tableAttribute =
-                            definedType.GetCustomAttribute<TableAttribute>();
+                            definedType.GetCustomAttributeHelper<TableAttribute>();
 
                         if (tableAttribute != null)
                         {

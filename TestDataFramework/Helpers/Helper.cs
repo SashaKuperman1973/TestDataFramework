@@ -19,9 +19,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Transactions;
+using TestDataFramework.Exceptions;
 using TestDataFramework.RepositoryOperations;
 using TestDataFramework.RepositoryOperations.Model;
 
@@ -37,7 +39,7 @@ namespace TestDataFramework.Helpers
 
         public static string GetTableName(Type recordType)
         {
-            IEnumerable<TableAttribute> attrs = recordType.GetCustomAttributes<TableAttribute>();
+            IEnumerable<TableAttribute> attrs = recordType.GetCustomAttributesHelper<TableAttribute>();
 
             if (attrs == null || !(attrs = attrs.ToList()).Any())
             {
@@ -49,7 +51,7 @@ namespace TestDataFramework.Helpers
 
         public static string GetColumnName(PropertyInfo propertyInfo)
         {
-            var columnAttribute = propertyInfo.GetCustomAttribute<ColumnAttribute>();
+            var columnAttribute = propertyInfo.GetCustomAttributeHelper<ColumnAttribute>();
 
             string result = columnAttribute?.Name ?? propertyInfo.Name;
             return result;
@@ -149,6 +151,34 @@ namespace TestDataFramework.Helpers
         public static object ToCompositeString(IEnumerable<object> columns)
         {
             return string.Join(" || ", columns);
+        }
+
+        public static MemberInfo ValidateFieldExpression<T, TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression)
+        {
+            if (fieldExpression.Body.NodeType != ExpressionType.MemberAccess)
+            {
+                throw new SetExpressionException(Messages.MustBePropertyAccess);
+            }
+
+            var memberExpression = fieldExpression.Body as MemberExpression;
+
+            if (memberExpression != null) return memberExpression.Member;
+
+            var unaryExpression = fieldExpression.Body as UnaryExpression;
+
+            if (unaryExpression == null)
+            {
+                throw new SetExpressionException(Messages.MustBePropertyAccess);
+            }
+
+            memberExpression = unaryExpression.Operand as MemberExpression;
+
+            if (memberExpression == null)
+            {
+                throw new SetExpressionException(Messages.MustBePropertyAccess);
+            }
+
+            return memberExpression.Member;
         }
     }
 }

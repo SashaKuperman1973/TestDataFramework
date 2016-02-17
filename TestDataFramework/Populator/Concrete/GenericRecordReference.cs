@@ -22,6 +22,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using log4net;
 using TestDataFramework.Exceptions;
+using TestDataFramework.Helpers;
 using TestDataFramework.TypeGenerator.Interfaces;
 
 namespace TestDataFramework.Populator.Concrete
@@ -68,31 +69,7 @@ namespace TestDataFramework.Populator.Concrete
             RecordReference<T>.Logger.Debug(
                 $"Entering Set. TPropertyType: {typeof (TPropertyType)}, fieldExpression: {fieldExpression}, value: {value}");
 
-            if (fieldExpression.Body.NodeType != ExpressionType.MemberAccess)
-            {
-                throw new SetExpressionException(Messages.MustBePropertyAccess);
-            }
-
-            var memberExpression = fieldExpression.Body as MemberExpression;
-
-            if (memberExpression == null)
-            {
-                var unaryExpression = fieldExpression.Body as UnaryExpression;
-
-                if (unaryExpression == null)
-                {
-                    throw new SetExpressionException(Messages.MustBePropertyAccess);
-                }
-
-                memberExpression = unaryExpression.Operand as MemberExpression;
-
-                if (memberExpression == null)
-                {
-                    throw new SetExpressionException(Messages.MustBePropertyAccess);
-                }
-            }
-
-            var propertyInfo = memberExpression.Member as PropertyInfo;
+            var propertyInfo = Helper.ValidateFieldExpression(fieldExpression) as PropertyInfo;
 
             if (propertyInfo == null)
             {

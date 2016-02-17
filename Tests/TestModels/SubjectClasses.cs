@@ -213,4 +213,13 @@ namespace Tests.TestModels
     {
         
     }
+
+    public class AttributeReadWriteTestClass
+    {
+        public int Key1 { get; set; }
+        public string Key2 { get; set; }
+
+        [StringLength(20)]
+        public string Text { get; set; }
+    }
 }

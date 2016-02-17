@@ -1,5 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestDataFramework;
+using Tests.TestModels;
 
 namespace Tests.Tests
 {
@@ -9,7 +11,7 @@ namespace Tests.Tests
         [TestMethod]
         public void TestMethod1()
         {
-            throw new NotImplementedException();
+            Entity<AttributeReadWriteTestClass>.Decorate(c => c.Key1, new PrimaryKeyAttribute());
         }
     }
 }

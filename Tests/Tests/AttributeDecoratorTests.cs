@@ -203,6 +203,100 @@ namespace Tests.Tests
             attributes.Single(a => a.GetType() == typeof(PrimaryKeyAttribute));
         }
 
+        [TestMethod]
+        public void GetCustomAttributesHelper_Mixed_Test()
+        {
+            // Arrange
+
+            this.populator.DecorateType<AttributeReadWriteTestClass>()
+                .AddAttributeToMember(c => c.MultiAllowedProperty, new MultiAllowedAttribute { I = 55 });
+
+            // Act.
+
+            IEnumerable<Attribute> attributes =
+                this.attributeDecorator.GetCustomAttributes(
+                    typeof(AttributeReadWriteTestClass).GetProperty("MultiAllowedProperty")).ToList();
+
+            // Assert
+
+            Assert.AreEqual(3, attributes.Count());
+
+            IEnumerable<MultiAllowedAttribute> specificAttributes = attributes.Cast<MultiAllowedAttribute>();
+
+            specificAttributes.Single(a => a.I == 1);
+            specificAttributes.Single(a => a.I == 2);
+            specificAttributes.Single(a => a.I == 55);
+        }
+
         #endregion GetCustomAttributesHelper Non-generic Tests (Returns many values)
+
+        #region DecorateType Test
+
+        [TestMethod]
+        public void Decorate_Type_Programmatic_Test()
+        {
+            // Arrange
+
+            this.populator.DecorateType<AttributeReadWriteTestClass>()
+                .AddAttributeToType(new TableAttribute { Name = "TableNameA"});
+
+            this.populator.DecorateType<AttributeReadWriteTestClass>()
+                .AddAttributeToType(new TableAttribute { Name = "TableNameB" });
+
+            // Act
+
+            IEnumerable<TableAttribute> attributes =
+                this.attributeDecorator.GetCustomAttributes<TableAttribute>(typeof(AttributeReadWriteTestClass))
+                    .ToList();
+
+            // Assert
+
+            Assert.AreEqual(2, attributes.Count());
+            attributes.Single(a => a.Name == "TableNameA");
+            attributes.Single(a => a.Name == "TableNameB");
+        }
+
+        [TestMethod]
+        public void Decorate_Type_Declarative_Test()
+        {
+            // Arrange. Act
+
+            IEnumerable<MultiAllowedAttribute> attributes =
+                this.attributeDecorator.GetCustomAttributes<MultiAllowedAttribute>(typeof (AttributeReadWriteTestClass))
+                    .ToList();
+
+            // Assert
+
+            Assert.AreEqual(2, attributes.Count());
+            attributes.Single(a => a.I == 1);
+            attributes.Single(a => a.I == 2);
+        }
+
+        [TestMethod]
+        public void Decorate_Type_Mixed_Test()
+        {
+            // Arrange
+
+            this.populator.DecorateType<AttributeReadWriteTestClass>()
+                .AddAttributeToType(new MultiAllowedAttribute { I = 55 });
+
+            // Act.
+
+            IEnumerable<Attribute> attributes =
+                this.attributeDecorator.GetCustomAttributes(
+                    typeof(AttributeReadWriteTestClass)).ToList();
+
+            // Assert
+
+            Assert.AreEqual(3, attributes.Count());
+
+            IEnumerable<MultiAllowedAttribute> specificAttributes = attributes.Cast<MultiAllowedAttribute>();
+
+            specificAttributes.Single(a => a.I == 1);
+            specificAttributes.Single(a => a.I == 2);
+            specificAttributes.Single(a => a.I == 55);
+        }
+
+        #endregion DecorateType Test
     }
 }

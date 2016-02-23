@@ -214,12 +214,14 @@ namespace Tests.TestModels
         
     }
 
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property | AttributeTargets.Class, AllowMultiple = true)]
     public class MultiAllowedAttribute : Attribute
     {
         public int I { get; set; }
     }
 
+    [MultiAllowed(I = 1)]
+    [MultiAllowed(I = 2)]
     public class AttributeReadWriteTestClass
     {
         public int Key1 { get; set; }

@@ -24,6 +24,7 @@ using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework;
+using TestDataFramework.AttributeDecorator;
 using TestDataFramework.Helpers;
 using TestDataFramework.RepositoryOperations.Model;
 using TestDataFramework.TypeGenerator.Interfaces;
@@ -75,15 +76,18 @@ namespace Tests
                 .Returns(returnObject);
         }
 
-        public static List<Column> GetColumns<T>(T record)
+        public static List<Column> GetColumns<T>(T record, IAttributeDecorator attributeDecorator)
         {
+            PrimaryKeyAttribute primaryKeyAttribute;
+
             List<Column> result = record.GetType()
                 .GetProperties()
                 .Where(
                     p =>
-                        p.GetSingleAttribute<PrimaryKeyAttribute>() == null ||
-                        p.GetSingleAttribute<PrimaryKeyAttribute>().KeyType != PrimaryKeyAttribute.KeyTypeEnum.Auto)
-                .Select(p => new Column {Name = Helper.GetColumnName(p), Value = p.GetValue(record)}).ToList();
+                        (primaryKeyAttribute = attributeDecorator.GetSingleAttribute<PrimaryKeyAttribute>(p)) == null ||
+                        primaryKeyAttribute.KeyType != PrimaryKeyAttribute.KeyTypeEnum.Auto)
+
+                .Select(p => new Column {Name = Helper.GetColumnName(p, attributeDecorator), Value = p.GetValue(record)}).ToList();
 
             return result;
         }

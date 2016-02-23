@@ -21,6 +21,7 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using TestDataFramework.AttributeDecorator;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Helpers;
 using TestDataFramework.PropertyValueAccumulator;
@@ -43,7 +44,7 @@ namespace Tests.Tests
             this.propertyValueAccumulatorMock = new Mock<IPropertyValueAccumulator>();
             this.deferredValueGeneratorMock = new Mock<IDeferredValueGenerator<LargeInteger>>();
 
-            this.generator = new KeyTypeUniqueValueGenerator(this.propertyValueAccumulatorMock.Object,
+            this.generator = new KeyTypeUniqueValueGenerator(this.propertyValueAccumulatorMock.Object, new AttributeDecorator(), 
                 this.deferredValueGeneratorMock.Object, throwIfUnhandledType: false);
         }
 

@@ -102,8 +102,8 @@
     <Compile Include="Tests\SqlClientValueFormatterTests.cs" />
     <Compile Include="Tests\AccumulatorValueProviderTests.cs" />
     <Compile Include="Tests\ForeignKeyTests.cs" />
-    <Compile Include="Tests\AttributeReadWriteTests.cs" />
-    <Compile Include="UnitTest1.cs" />
+    <Compile Include="Tests\AttributeDecoratorTests.cs" />
+    <None Include="UnitTest1.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TestDataFramework\TestDataFramework.csproj">

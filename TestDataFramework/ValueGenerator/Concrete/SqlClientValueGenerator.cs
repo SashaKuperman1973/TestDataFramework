@@ -20,6 +20,7 @@ using System;
 using System.Reflection;
 using log4net;
 using TestDataFramework.ArrayRandomizer;
+using TestDataFramework.AttributeDecorator;
 using TestDataFramework.UniqueValueGenerator.Interfaces;
 using TestDataFramework.ValueProvider.Interfaces;
 
@@ -30,8 +31,8 @@ namespace TestDataFramework.ValueGenerator.Concrete
         private static readonly ILog Logger = LogManager.GetLogger(typeof(SqlClientValueGenerator));
 
         public SqlClientValueGenerator(IValueProvider valueProvider, GetTypeGeneratorDelegate getTypeGenerator,
-            Func<IArrayRandomizer> getArrayRandomizer, IUniqueValueGenerator uniqueValueGenerator)
-            : base(valueProvider, getTypeGenerator, getArrayRandomizer, uniqueValueGenerator)
+            Func<IArrayRandomizer> getArrayRandomizer, IUniqueValueGenerator uniqueValueGenerator, IAttributeDecorator attributeDecorator)
+            : base(valueProvider, getTypeGenerator, getArrayRandomizer, uniqueValueGenerator, attributeDecorator)
         {
         }
 

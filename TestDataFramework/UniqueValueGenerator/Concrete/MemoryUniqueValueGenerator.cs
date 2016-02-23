@@ -19,6 +19,7 @@
 using System;
 using System.Reflection;
 using log4net;
+using TestDataFramework.AttributeDecorator;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Helpers;
 using TestDataFramework.PropertyValueAccumulator;
@@ -29,10 +30,13 @@ namespace TestDataFramework.UniqueValueGenerator.Concrete
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof (MemoryUniqueValueGenerator));
 
-        public MemoryUniqueValueGenerator(IPropertyValueAccumulator accumulator,
+        private readonly IAttributeDecorator attributeDecorator;
+
+        public MemoryUniqueValueGenerator(IPropertyValueAccumulator accumulator, IAttributeDecorator attributeDecorator,
             IDeferredValueGenerator<LargeInteger> deferredValueGenerator, bool throwIfUnhandledType)
             : base(accumulator, deferredValueGenerator, throwIfUnhandledType)
         {
+            this.attributeDecorator = attributeDecorator;
         }
 
         public override object GetValue(PropertyInfo propertyInfo)
@@ -48,7 +52,7 @@ namespace TestDataFramework.UniqueValueGenerator.Concrete
                 return result;
             }
 
-            var primaryKeyAttribute = propertyInfo.GetSingleAttribute<PrimaryKeyAttribute>();
+            var primaryKeyAttribute = this.attributeDecorator.GetSingleAttribute<PrimaryKeyAttribute>(propertyInfo);
 
             if (primaryKeyAttribute == null)
             {

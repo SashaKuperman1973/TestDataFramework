@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using log4net;
+using TestDataFramework.AttributeDecorator;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
 using TestDataFramework.RepositoryOperations.Model;
@@ -33,10 +34,12 @@ namespace TestDataFramework.Populator
         private static readonly ILog Logger = LogManager.GetLogger(typeof(RecordReference));
 
         protected readonly ITypeGenerator TypeGenerator;
+        protected readonly IAttributeDecorator attributeDecorator;
 
-        protected RecordReference(ITypeGenerator typeGenerator)
+        protected RecordReference(ITypeGenerator typeGenerator, IAttributeDecorator attributeDecorator)
         {
             this.TypeGenerator = typeGenerator;
+            this.attributeDecorator = attributeDecorator;
         }
 
         #region Public fields/properties
@@ -84,18 +87,17 @@ namespace TestDataFramework.Populator
             RecordReference.Logger.Debug("Entering ValidateRelationship");
 
             IEnumerable<PropertyAttribute<ForeignKeyAttribute>> foreignKeyPropertyAttributes =
-                this.RecordType.GetPropertyAttributes<ForeignKeyAttribute>().ToList();
+                this.attributeDecorator.GetPropertyAttributes<ForeignKeyAttribute>(this.RecordType).ToList();
 
-            bool result =
-                primaryRecordReference.RecordType
-                    .GetPropertyAttributes<PrimaryKeyAttribute>()
+            bool result =                
+                    this.attributeDecorator.GetPropertyAttributes<PrimaryKeyAttribute>(primaryRecordReference.RecordType)
                     .All(
                         pkPa =>
                             foreignKeyPropertyAttributes.Any(
                                 fkPa =>
                                     pkPa.PropertyInfo.DeclaringType == fkPa.Attribute.PrimaryTableType
                                     &&
-                                    Helper.GetColumnName(pkPa.PropertyInfo)
+                                    Helper.GetColumnName(pkPa.PropertyInfo, this.attributeDecorator)
                                         .Equals(fkPa.Attribute.PrimaryKeyName, StringComparison.Ordinal)
                                     &&
                                     pkPa.PropertyInfo.PropertyType == fkPa.PropertyInfo.PropertyType

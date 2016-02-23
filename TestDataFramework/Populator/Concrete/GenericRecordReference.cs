@@ -21,6 +21,7 @@ using System.Collections.Concurrent;
 using System.Linq.Expressions;
 using System.Reflection;
 using log4net;
+using TestDataFramework.AttributeDecorator;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
 using TestDataFramework.TypeGenerator.Interfaces;
@@ -34,7 +35,7 @@ namespace TestDataFramework.Populator.Concrete
         private readonly ConcurrentDictionary<PropertyInfo, Action<T>> explicitProperySetters =
             new ConcurrentDictionary<PropertyInfo, Action<T>>();
 
-        public RecordReference(ITypeGenerator typeGenerator) : base(typeGenerator)
+        public RecordReference(ITypeGenerator typeGenerator, IAttributeDecorator attributeDecorator) : base(typeGenerator, attributeDecorator)
         {
             RecordReference<T>.Logger.Debug($"Entering constructor. T: {typeof(T)}");
 

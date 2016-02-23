@@ -23,6 +23,7 @@ using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.ArrayRandomizer;
+using TestDataFramework.AttributeDecorator;
 using TestDataFramework.Exceptions;
 using TestDataFramework.TypeGenerator.Interfaces;
 using TestDataFramework.UniqueValueGenerator.Interfaces;
@@ -57,8 +58,8 @@ namespace Tests.Tests
         private class ValueGenerator : BaseValueGenerator
         {
             public ValueGenerator(IValueProvider valueProvider, GetTypeGeneratorDelegate getTypeGenerator,
-                Func<IArrayRandomizer> getArrayRandomizer, IUniqueValueGenerator uniqueValueGenerator)
-                : base(valueProvider, getTypeGenerator, getArrayRandomizer, uniqueValueGenerator)
+                Func<IArrayRandomizer> getArrayRandomizer, IUniqueValueGenerator uniqueValueGenerator, IAttributeDecorator attributeDecorator)
+                : base(valueProvider, getTypeGenerator, getArrayRandomizer, uniqueValueGenerator, attributeDecorator)
             {
             }
 
@@ -96,7 +97,8 @@ namespace Tests.Tests
             this.randomizerMock.Setup(m => m.GetFloat(It.Is<int?>(precision => precision == null))).Returns(BaseValueGeneratorTests.FloatResult);
             this.randomizerMock.Setup(m => m.GetEmailAddress()).Returns(BaseValueGeneratorTests.EmailAddress);
 
-            this.valueGenerator = new ValueGenerator(this.randomizerMock.Object, () => this.typeGeneratorMock.Object, () => this.arrayRandomizerMock.Object, this.uniqueValueGeneratorMock.Object);
+            this.valueGenerator = new ValueGenerator(this.randomizerMock.Object, () => this.typeGeneratorMock.Object,
+                () => this.arrayRandomizerMock.Object, this.uniqueValueGeneratorMock.Object, new AttributeDecorator());
         }
 
         [TestMethod]

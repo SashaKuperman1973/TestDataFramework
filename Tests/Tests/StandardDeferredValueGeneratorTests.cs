@@ -21,6 +21,7 @@ using System.Collections.Concurrent;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using TestDataFramework.AttributeDecorator;
 using TestDataFramework.DeferredValueGenerator.Concrete;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Helpers;
@@ -49,8 +50,8 @@ namespace Tests.Tests
                 m => m.GetObject<ForeignTable>(It.IsAny<ConcurrentDictionary<PropertyInfo, Action<ForeignTable>>>()))
                 .Returns(new ForeignTable());
 
-            var recordObject1 = new RecordReference<PrimaryTable>(typeGeneratorMock.Object);
-            var recordObject2 = new RecordReference<ForeignTable>(typeGeneratorMock.Object);
+            var recordObject1 = new RecordReference<PrimaryTable>(typeGeneratorMock.Object, new AttributeDecorator());
+            var recordObject2 = new RecordReference<ForeignTable>(typeGeneratorMock.Object, new AttributeDecorator());
 
             var dataSource = new Mock<IPropertyDataGenerator<LargeInteger>>();
             var generator = new StandardDeferredValueGenerator<LargeInteger>(dataSource.Object);

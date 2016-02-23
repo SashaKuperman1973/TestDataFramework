@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using TestDataFramework.AttributeDecorator;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Helpers;
 using TestDataFramework.Persistence.Concrete;
@@ -39,13 +40,13 @@ namespace Tests.Tests
 
             var deferredValueGeneratorMock = new Mock<IDeferredValueGenerator<LargeInteger>>();
 
-            var persistence = new MemoryPersistence(deferredValueGeneratorMock.Object);
+            var persistence = new MemoryPersistence(deferredValueGeneratorMock.Object, new AttributeDecorator());
 
             var primaryTable = new PrimaryTable { Integer = 5, Text = "Text" };
 
             var primaryRecordReference = new RecordReference<PrimaryTable>(
-                Helpers.GetTypeGeneratorMock(primaryTable).Object
-                );
+                Helpers.GetTypeGeneratorMock(primaryTable).Object,
+                new AttributeDecorator());
 
             var recordReferenceArray = new RecordReference[] { primaryRecordReference };
 
@@ -66,16 +67,16 @@ namespace Tests.Tests
             // Arrange
 
             var primaryTable = new ManualKeyPrimaryTable { Key1 = "ABCD", Key2 = 5 };
-            var primaryReference = new RecordReference<ManualKeyPrimaryTable>(Helpers.GetTypeGeneratorMock(primaryTable).Object);
+            var primaryReference = new RecordReference<ManualKeyPrimaryTable>(Helpers.GetTypeGeneratorMock(primaryTable).Object, new AttributeDecorator());
                 
             var foreignTable = new ManualKeyForeignTable();
             var foreignReference =
-                new RecordReference<ManualKeyForeignTable>(Helpers.GetTypeGeneratorMock(foreignTable).Object);
+                new RecordReference<ManualKeyForeignTable>(Helpers.GetTypeGeneratorMock(foreignTable).Object, new AttributeDecorator());
 
             foreignReference.AddPrimaryRecordReference(primaryReference);
 
             var deferredValueGeneratorMock = new Mock<IDeferredValueGenerator<LargeInteger>>();
-            var persistence = new MemoryPersistence(deferredValueGeneratorMock.Object);
+            var persistence = new MemoryPersistence(deferredValueGeneratorMock.Object, new AttributeDecorator());
 
             // Act
 

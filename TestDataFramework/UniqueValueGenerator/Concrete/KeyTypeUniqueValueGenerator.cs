@@ -19,6 +19,7 @@
 using System.Linq;
 using System.Reflection;
 using log4net;
+using TestDataFramework.AttributeDecorator;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Helpers;
 using TestDataFramework.PropertyValueAccumulator;
@@ -29,10 +30,13 @@ namespace TestDataFramework.UniqueValueGenerator.Concrete
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof (KeyTypeUniqueValueGenerator));
 
-        public KeyTypeUniqueValueGenerator(IPropertyValueAccumulator accumulator,
+        private readonly IAttributeDecorator attributeDecorator;
+
+        public KeyTypeUniqueValueGenerator(IPropertyValueAccumulator accumulator, IAttributeDecorator attributeDecorator,
             IDeferredValueGenerator<LargeInteger> deferredValueGenerator, bool throwIfUnhandledType)
             : base(accumulator, deferredValueGenerator, throwIfUnhandledType)
         {
+            this.attributeDecorator = attributeDecorator;
         }
 
         public override object GetValue(PropertyInfo propertyInfo)
@@ -40,7 +44,7 @@ namespace TestDataFramework.UniqueValueGenerator.Concrete
             KeyTypeUniqueValueGenerator.Logger.Debug(
                 $"Entering GetValue. propertyInfo: {propertyInfo.GetExtendedMemberInfoString()}");
 
-            var primaryKeyAttribute = propertyInfo.GetSingleAttribute<PrimaryKeyAttribute>();
+            var primaryKeyAttribute = this.attributeDecorator.GetSingleAttribute<PrimaryKeyAttribute>(propertyInfo);
 
             if (primaryKeyAttribute == null)
             {
@@ -54,18 +58,18 @@ namespace TestDataFramework.UniqueValueGenerator.Concrete
 
             KeyTypeUniqueValueGenerator.Logger.Debug($"primaryKeyAttribute.KeyType: {primaryKeyAttribute.KeyType}");
 
-            if (propertyInfo.GetSingleAttribute<ForeignKeyAttribute>() == null
-                && primaryKeyAttribute.KeyType == PrimaryKeyAttribute.KeyTypeEnum.Manual &&
-                new[]
+            if (this.attributeDecorator.GetSingleAttribute<ForeignKeyAttribute>(propertyInfo) != null ||
+                primaryKeyAttribute.KeyType != PrimaryKeyAttribute.KeyTypeEnum.Manual || !new[]
                 {
                     typeof (byte), typeof (int), typeof (short), typeof (long), typeof (string),
                     typeof (uint), typeof (ushort), typeof (ulong),
-
                 }.Contains(propertyInfo.PropertyType))
             {
-                KeyTypeUniqueValueGenerator.Logger.Debug("Deferring value");
-                this.DeferValue(propertyInfo);
+                return Helper.GetDefaultValue(propertyInfo.PropertyType);                
             }
+
+            KeyTypeUniqueValueGenerator.Logger.Debug("Deferring value");
+            this.DeferValue(propertyInfo);
 
             return Helper.GetDefaultValue(propertyInfo.PropertyType);
         }

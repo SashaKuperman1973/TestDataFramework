@@ -21,6 +21,7 @@ using System.Linq;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using TestDataFramework.AttributeDecorator;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Helpers;
 using TestDataFramework.Persistence.Concrete;
@@ -45,7 +46,8 @@ namespace Tests.Tests
             this.writePrimitivesMock = new Mock<IWritePrimitives>();
             this.deferredValueGeneratorMock = new Mock<IDeferredValueGenerator<LargeInteger>>();
 
-            this.persistence = new SqlClientPersistence(this.writePrimitivesMock.Object, this.deferredValueGeneratorMock.Object);
+            this.persistence = new SqlClientPersistence(this.writePrimitivesMock.Object,
+                this.deferredValueGeneratorMock.Object, new AttributeDecorator());
 
             XmlConfigurator.Configure();
         }
@@ -57,7 +59,7 @@ namespace Tests.Tests
 
             var primaryTable = new PrimaryTable { Integer = 5, Text = "Text"};
 
-            var primaryRecordReference = new RecordReference<PrimaryTable>(Helpers.GetTypeGeneratorMock(primaryTable).Object);
+            var primaryRecordReference = new RecordReference<PrimaryTable>(Helpers.GetTypeGeneratorMock(primaryTable).Object, new AttributeDecorator());
             primaryRecordReference.Populate();
 
             string tableName = typeof(PrimaryTable).Name;
@@ -99,11 +101,11 @@ namespace Tests.Tests
             // Arrange
 
             var primaryTable = new PrimaryTable { Integer = 1};
-            var primaryRecordReference = new RecordReference<PrimaryTable>(Helpers.GetTypeGeneratorMock(primaryTable).Object);
+            var primaryRecordReference = new RecordReference<PrimaryTable>(Helpers.GetTypeGeneratorMock(primaryTable).Object, new AttributeDecorator());
             primaryRecordReference.Populate();
 
             var foreignTable = new ForeignTable {Integer = 1};
-            var foreignRecordReference = new RecordReference<ForeignTable>(Helpers.GetTypeGeneratorMock(foreignTable).Object);
+            var foreignRecordReference = new RecordReference<ForeignTable>(Helpers.GetTypeGeneratorMock(foreignTable).Object, new AttributeDecorator());
             foreignRecordReference.Populate();
 
             foreignRecordReference.AddPrimaryRecordReference(primaryRecordReference);
@@ -139,10 +141,10 @@ namespace Tests.Tests
             var primaryTable = new ManualKeyPrimaryTable {Key1 = "A", Key2 = 7};
             var foreignTable = new ManualKeyForeignTable();
 
-            var primaryRecordReference = new RecordReference<ManualKeyPrimaryTable>(Helpers.GetTypeGeneratorMock(primaryTable).Object);
+            var primaryRecordReference = new RecordReference<ManualKeyPrimaryTable>(Helpers.GetTypeGeneratorMock(primaryTable).Object, new AttributeDecorator());
             primaryRecordReference.Populate();
 
-            var foreignRecordReference = new RecordReference<ManualKeyForeignTable>(Helpers.GetTypeGeneratorMock(foreignTable).Object);
+            var foreignRecordReference = new RecordReference<ManualKeyForeignTable>(Helpers.GetTypeGeneratorMock(foreignTable).Object, new AttributeDecorator());
             foreignRecordReference.Populate();
 
             foreignRecordReference.AddPrimaryRecordReference(primaryRecordReference);
@@ -169,11 +171,11 @@ namespace Tests.Tests
             // Arrange
 
             var primaryTable = new PrimaryTable();
-            var primaryRecordReference = new RecordReference<PrimaryTable>(Helpers.GetTypeGeneratorMock(primaryTable).Object);
+            var primaryRecordReference = new RecordReference<PrimaryTable>(Helpers.GetTypeGeneratorMock(primaryTable).Object, new AttributeDecorator());
             primaryRecordReference.Populate();
 
             var foreignTable = new ForeignTable();
-            var foreignRecordReference = new RecordReference<ForeignTable>(Helpers.GetTypeGeneratorMock(foreignTable).Object);
+            var foreignRecordReference = new RecordReference<ForeignTable>(Helpers.GetTypeGeneratorMock(foreignTable).Object, new AttributeDecorator());
             foreignRecordReference.Populate();
 
             foreignRecordReference.AddPrimaryRecordReference(primaryRecordReference);

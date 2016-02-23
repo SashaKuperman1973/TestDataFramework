@@ -22,6 +22,7 @@ using System.Linq;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using TestDataFramework.AttributeDecorator;
 using TestDataFramework.Populator;
 using TestDataFramework.RepositoryOperations;
 using TestDataFramework.RepositoryOperations.Model;
@@ -52,7 +53,7 @@ namespace Tests.Tests
             this.recordReferenceMock = new Mock<RecordReference>(null);
             this.peers = new List<AbstractRepositoryOperation>();
             this.serviceMock = new Mock<InsertRecordService>(this.recordReferenceMock.Object);
-            this.insertRecord = new InsertRecord(this.serviceMock.Object, this.recordReferenceMock.Object, this.peers);
+            this.insertRecord = new InsertRecord(this.serviceMock.Object, this.recordReferenceMock.Object, this.peers, new AttributeDecorator());
 
             this.breakerMock = new Mock<CircularReferenceBreaker>();
             this.writePrimitivesMock = new Mock<IWritePrimitives>();
@@ -131,7 +132,7 @@ namespace Tests.Tests
             secondrecordReferenceMock.Setup(m => m.RecordObject).Returns(secondObject);
             secondrecordReferenceMock.Setup(m => m.RecordType).Returns(secondObject.GetType());
 
-            var secondInsertRecord = new InsertRecord(this.serviceMock.Object, secondrecordReferenceMock.Object, this.peers);
+            var secondInsertRecord = new InsertRecord(this.serviceMock.Object, secondrecordReferenceMock.Object, this.peers, new AttributeDecorator());
             var primaryKeyOperations = new List<InsertRecord> { secondInsertRecord };
 
             var regularColumns = new List<Column>();

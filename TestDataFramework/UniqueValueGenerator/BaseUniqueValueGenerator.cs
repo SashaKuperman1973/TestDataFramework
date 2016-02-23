@@ -36,7 +36,8 @@ namespace TestDataFramework.UniqueValueGenerator
         private readonly bool throwIfUnhandledType;
 
 
-        protected BaseUniqueValueGenerator(IPropertyValueAccumulator accumulator, IDeferredValueGenerator<LargeInteger> deferredValueGenerator, bool throwIfUnhandledType)
+        protected BaseUniqueValueGenerator(IPropertyValueAccumulator accumulator,
+            IDeferredValueGenerator<LargeInteger> deferredValueGenerator, bool throwIfUnhandledType)
         {
             this.accumulator = accumulator;
             this.deferredValueGenerator = deferredValueGenerator;

@@ -20,19 +20,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using log4net;
+using TestDataFramework.AttributeDecorator;
 using TestDataFramework.Persistence.Interfaces;
 using TestDataFramework.Populator.Interfaces;
 using TestDataFramework.TypeGenerator.Interfaces;
 
 namespace TestDataFramework.Populator.Concrete
 {
-    public class SetExpression<T>
-    {
-        public Expression<Func<T, object>> FieldExpression { get; set; }
-        public object Value { get; set; }
-    }
-
-    public class StandardPopulator : IPopulator
+    public class StandardPopulator : BasePopulator, IPopulator
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof (StandardPopulator));
 
@@ -41,7 +36,7 @@ namespace TestDataFramework.Populator.Concrete
 
         private readonly List<RecordReference> recordReferences = new List<RecordReference>();
 
-        public StandardPopulator(ITypeGenerator typeGenerator, IPersistence persistence)
+        public StandardPopulator(ITypeGenerator typeGenerator, IPersistence persistence, IAttributeDecorator attributeDecorator) : base(attributeDecorator)
         {
             StandardPopulator.Logger.Debug("Entering constructor");
 
@@ -72,7 +67,7 @@ namespace TestDataFramework.Populator.Concrete
         {
             StandardPopulator.Logger.Debug($"Entering Add. T: {typeof(T)}, primaryRecordReference: {primaryRecordReference}");
 
-            var recordReference = new RecordReference<T>(this.typeGenerator);
+            var recordReference = new RecordReference<T>(this.typeGenerator, this.AttributeDecorator);
 
             this.recordReferences.Add(recordReference);
 

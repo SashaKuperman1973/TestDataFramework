@@ -20,6 +20,7 @@ using System.Reflection;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using TestDataFramework.AttributeDecorator;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Helpers;
 using TestDataFramework.PropertyValueAccumulator;
@@ -43,7 +44,7 @@ namespace Tests.Tests
             this.propertyValueAccumulatorMock = new Mock<IPropertyValueAccumulator>();
             this.deferredValueGeneratorMock = new Mock<IDeferredValueGenerator<LargeInteger>>();
 
-            this.generator = new MemoryUniqueValueGenerator(this.propertyValueAccumulatorMock.Object,
+            this.generator = new MemoryUniqueValueGenerator(this.propertyValueAccumulatorMock.Object, new AttributeDecorator(),
                 this.deferredValueGeneratorMock.Object, throwIfUnhandledType: false);
         }
 

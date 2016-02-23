@@ -21,6 +21,7 @@ using System.Reflection;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using TestDataFramework.AttributeDecorator;
 using TestDataFramework.Helpers;
 using TestDataFramework.PropertyValueAccumulator;
 using Tests.TestModels;
@@ -39,7 +40,7 @@ namespace Tests.Tests
             XmlConfigurator.Configure();
 
             this.stringGeneratorMock = new Mock<LetterEncoder>();
-            this.accumulator = new StandardPropertyValueAccumulator(this.stringGeneratorMock.Object);
+            this.accumulator = new StandardPropertyValueAccumulator(this.stringGeneratorMock.Object, new AttributeDecorator());
         }
 
         [TestMethod]

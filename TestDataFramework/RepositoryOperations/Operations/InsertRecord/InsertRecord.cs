@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using log4net;
+using TestDataFramework.AttributeDecorator;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
 using TestDataFramework.Populator;
@@ -35,7 +36,9 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
         #region Private Fields
 
         private static readonly ILog Logger = LogManager.GetLogger(typeof(InsertRecord));
+
         private readonly InsertRecordService service;
+        private readonly IAttributeDecorator attributeDecorator;
 
         private readonly List<ColumnSymbol> primaryKeyValues = new List<ColumnSymbol>();
         private IEnumerable<ExtendedColumnSymbol> foreignKeyColumns;
@@ -43,13 +46,14 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
         #endregion Private Fields
 
-        public InsertRecord(InsertRecordService service, RecordReference recordReference, IEnumerable<AbstractRepositoryOperation> peers)
+        public InsertRecord(InsertRecordService service, RecordReference recordReference, IEnumerable<AbstractRepositoryOperation> peers, IAttributeDecorator attributeDecorator)
         {
             InsertRecord.Logger.Debug("Entering constructor");
 
             this.Peers = peers;
             this.RecordReference = recordReference;
             this.service = service;
+            this.attributeDecorator = attributeDecorator;
 
             InsertRecord.Logger.Debug("Exiting constructor");
         }
@@ -85,7 +89,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             InsertRecord.Logger.Debug($"this.Order: {this.Order}");
             orderedOperations[this.Order] = this;
 
-            string tableName = Helper.GetTableName(this.RecordReference.RecordType);
+            string tableName = Helper.GetTableName(this.RecordReference.RecordType, this.attributeDecorator);
 
             this.service.WritePrimitives(writer, tableName, columnData.AllColumns, this.primaryKeyValues);
 
@@ -103,7 +107,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             InsertRecord.Logger.Debug($"Entering Read. readStreamPointer.Value: {readStreamPointer.Value}, data: {string.Join(",", data)}");
 
             IEnumerable<PropertyAttributes> propertyAttributes =
-                this.RecordReference.RecordType.GetPropertyAttributes().ToList();
+                this.attributeDecorator.GetPropertyAttributes(this.RecordReference.RecordType).ToList();
 
             List<PropertyInfo> propertiesForRead = this.GetPropertiesForRead(propertyAttributes).ToList();
 
@@ -115,7 +119,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                 var columnName = (string) data[readStreamPointer.Value++];
 
                 PropertyInfo property = propertiesForRead.First(
-                    p => Helper.GetColumnName(p).Equals(columnName, StringComparison.Ordinal)
+                    p => Helper.GetColumnName(p, this.attributeDecorator).Equals(columnName, StringComparison.Ordinal)
                     );
 
                 try
@@ -150,7 +154,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                 InsertRecord.Logger.Debug($"primaryKeyOperation: {primaryKeyOperation}");
 
                 PropertyInfo primaryKeyProperty =
-                    InsertRecord.GetPrimaryKeyProperty(primaryKeyOperation.RecordReference.RecordType,
+                    this.GetPrimaryKeyProperty(primaryKeyOperation.RecordReference.RecordType,
                         fkColumn.PropertyAttribute.Attribute);
 
                 InsertRecord.Logger.Debug($"primaryKeyProperty : {primaryKeyProperty.GetExtendedMemberInfoString()}");
@@ -173,13 +177,13 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
         #region Private methods
 
-        private static PropertyInfo GetPrimaryKeyProperty(Type recordType, ForeignKeyAttribute foreignKeyAttribute)
+        private PropertyInfo GetPrimaryKeyProperty(Type recordType, ForeignKeyAttribute foreignKeyAttribute)
         {
             PropertyInfo result =
                 recordType.GetPropertiesHelper()
                     .First(
                         p =>
-                            Helper.GetColumnName(p)
+                            Helper.GetColumnName(p, this.attributeDecorator)
 
                                 .Equals(foreignKeyAttribute.PrimaryKeyName, StringComparison.Ordinal));
 

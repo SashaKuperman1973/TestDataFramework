@@ -62,6 +62,8 @@
   <ItemGroup>
     <Compile Include="ArrayRandomizer\IArrayRandomizer.cs" />
     <Compile Include="ArrayRandomizer\StandardArrayRandomizer.cs" />
+    <Compile Include="AttributeDecorator\AttributeDecorator.cs" />
+    <Compile Include="AttributeDecorator\IAttributeDecorator.cs" />
     <Compile Include="Attributes.cs" />
     <Compile Include="DeferredValueGenerator\Concrete\DefaultInitialCountGenerator.cs" />
     <Compile Include="DeferredValueGenerator\Concrete\SqlWriterCommandTextGenerator.cs" />
@@ -77,15 +79,14 @@
     <Compile Include="HandledTypeGenerator\IHandledTypeGenerator.cs" />
     <Compile Include="HandledTypeGenerator\StandardHandledTypeGenerator.cs" />
     <Compile Include="Helpers\AssertionExtension.cs" />
-    <Compile Include="Helpers\AttributeExtensions.cs" />
     <Compile Include="Helpers\Concrete\RandomSymbolStringGenerator.cs" />
     <Compile Include="Helpers\Helper.cs" />
     <Compile Include="Helpers\Interfaces\IRandomSymbolStringGenerator.cs" />
     <Compile Include="Helpers\LargeInteger.cs" />
-    <Compile Include="Entity.cs" />
     <Compile Include="Persistence\Interfaces\IPersistence.cs" />
     <Compile Include="Persistence\Concrete\MemoryPersistence.cs" />
     <Compile Include="Persistence\Concrete\SqlClientPersistence.cs" />
+    <Compile Include="Populator\BasePopulator.cs" />
     <Compile Include="Populator\Interfaces\IPopulator.cs" />
     <Compile Include="Populator\RecordReference.cs" />
     <Compile Include="Populator\Concrete\GenericRecordReference.cs" />

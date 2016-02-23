@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using log4net;
+using TestDataFramework.AttributeDecorator;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
 using TestDataFramework.Populator;
@@ -32,7 +33,9 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
     public class InsertRecordService
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(InsertRecordService));
+
         private readonly RecordReference recordReference;
+        private readonly IAttributeDecorator attributeDecorator;
 
         private PrimaryKeyAttribute.KeyTypeEnum? keyType;
         public PrimaryKeyAttribute.KeyTypeEnum KeyType
@@ -47,7 +50,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
         private PrimaryKeyAttribute.KeyTypeEnum DetermineKeyType()
         {
             IEnumerable<PrimaryKeyAttribute> pkAttributes =
-                this.recordReference.RecordType.GetUniqueAttributes<PrimaryKeyAttribute>().ToList();
+                this.attributeDecorator.GetUniqueAttributes<PrimaryKeyAttribute>(this.recordReference.RecordType).ToList();
 
             if (!pkAttributes.Any())
             {
@@ -65,11 +68,12 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
         #region Constructor
 
-        public InsertRecordService(RecordReference recordReference)
+        public InsertRecordService(RecordReference recordReference, IAttributeDecorator attributeDecorator)
         {
             InsertRecordService.Logger.Debug("Entering constructor");
 
             this.recordReference = recordReference;
+            this.attributeDecorator = attributeDecorator;
 
             InsertRecordService.Logger.Debug("Exiting constructor");
         }
@@ -137,7 +141,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             InsertRecordService.Logger.Debug($"keyTableList: {Helper.ToCompositeString(keyTableList.Select(kt => string.Join(", ", kt)))}");
 
             IEnumerable<PropertyAttribute<ForeignKeyAttribute>> foreignKeyPropertyAttributes =
-                this.recordReference.RecordType.GetPropertyAttributes<ForeignKeyAttribute>();
+                this.attributeDecorator.GetPropertyAttributes<ForeignKeyAttribute>(this.recordReference.RecordType);
 
             var foreignKeys = foreignKeyPropertyAttributes.Select(fkpa =>
             {
@@ -179,7 +183,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                         new ExtendedColumnSymbol
                         {
                             TableType = fk.FkPropertyAttribute.PropertyInfo.DeclaringType,
-                            ColumnName = Helper.GetColumnName(fk.FkPropertyAttribute.PropertyInfo),
+                            ColumnName = Helper.GetColumnName(fk.FkPropertyAttribute.PropertyInfo, this.attributeDecorator),
                             Value = fk.PkColumnValue,
                             PropertyAttribute = fk.FkPropertyAttribute,
                         }).ToList();
@@ -200,11 +204,11 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
                         bool filter =
 
-                            p.GetSingleAttribute<ForeignKeyAttribute>() == null
+                            this.attributeDecorator.GetSingleAttribute<ForeignKeyAttribute>(p) == null
 
                             &&
 
-                            ((pka = p.GetSingleAttribute<PrimaryKeyAttribute>()) == null ||
+                            ((pka = this.attributeDecorator.GetSingleAttribute<PrimaryKeyAttribute>(p)) == null ||
                              pka.KeyType != PrimaryKeyAttribute.KeyTypeEnum.Auto);
 
                         return filter;
@@ -212,7 +216,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                     .Select(
                         p =>
                         {
-                            string columnName = Helper.GetColumnName(p);
+                            string columnName = Helper.GetColumnName(p, this.attributeDecorator);
 
                             var column = new Column
                             {
@@ -264,11 +268,11 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             InsertRecordService.Logger.Debug($"columns: {Helper.ToCompositeString(columns)}");
 
             IEnumerable<PropertyAttribute<PrimaryKeyAttribute>> pkPropertyAttributes =
-                this.recordReference.RecordType.GetPropertyAttributes<PrimaryKeyAttribute>();
+                this.attributeDecorator.GetPropertyAttributes<PrimaryKeyAttribute>(this.recordReference.RecordType);
 
             IEnumerable<ColumnSymbol> result = pkPropertyAttributes.Select(pa =>
             {
-                string columnName = Helper.GetColumnName(pa.PropertyInfo);
+                string columnName = Helper.GetColumnName(pa.PropertyInfo, this.attributeDecorator);
 
                 Column sourceColumn = columns.FirstOrDefault(c => c.Name.Equals(columnName, StringComparison.Ordinal));
 
@@ -325,7 +329,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                 PropertyInfo targetProperty =
 
                     this.recordReference.RecordType.GetPropertiesHelper().First(p =>
-                        Helper.GetColumnName(p).Equals(c.Name)
+                        Helper.GetColumnName(p, this.attributeDecorator).Equals(c.Name)
                         );
 
                 InsertRecordService.Logger.Debug($"targetProperty: {targetProperty.GetExtendedMemberInfoString()}");

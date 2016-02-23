@@ -23,6 +23,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Transactions;
+using TestDataFramework.AttributeDecorator;
 using TestDataFramework.Exceptions;
 using TestDataFramework.RepositoryOperations;
 using TestDataFramework.RepositoryOperations.Model;
@@ -37,9 +38,9 @@ namespace TestDataFramework.Helpers
 
         public static DateTime Now => DateTime.Now;
 
-        public static string GetTableName(Type recordType)
+        public static string GetTableName(Type recordType, IAttributeDecorator attributeDecorator)
         {
-            IEnumerable<TableAttribute> attrs = recordType.GetCustomAttributesHelper<TableAttribute>();
+            IEnumerable<TableAttribute> attrs = attributeDecorator.GetCustomAttributes<TableAttribute>(recordType);
 
             if (attrs == null || !(attrs = attrs.ToList()).Any())
             {
@@ -49,9 +50,9 @@ namespace TestDataFramework.Helpers
             return attrs.First().Name;
         }
 
-        public static string GetColumnName(PropertyInfo propertyInfo)
+        public static string GetColumnName(PropertyInfo propertyInfo, IAttributeDecorator attributeDecorator)
         {
-            var columnAttribute = propertyInfo.GetCustomAttributeHelper<ColumnAttribute>();
+            var columnAttribute = attributeDecorator.GetCustomAttribute<ColumnAttribute>(propertyInfo);
 
             string result = columnAttribute?.Name ?? propertyInfo.Name;
             return result;

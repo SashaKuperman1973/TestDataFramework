@@ -19,6 +19,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using log4net;
+using TestDataFramework.AttributeDecorator;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Helpers;
 using TestDataFramework.Persistence.Interfaces;
@@ -32,12 +33,14 @@ namespace TestDataFramework.Persistence.Concrete
         private static readonly ILog Logger = LogManager.GetLogger(typeof (MemoryPersistence));
 
         private readonly IDeferredValueGenerator<LargeInteger> deferredValueGenerator;
+        private readonly IAttributeDecorator attributeDecorator;
 
-        public MemoryPersistence(IDeferredValueGenerator<LargeInteger> deferredValueGenerator)
+        public MemoryPersistence(IDeferredValueGenerator<LargeInteger> deferredValueGenerator, IAttributeDecorator attributeDecorator)
         {
             MemoryPersistence.Logger.Debug("Entering constructor");
 
             this.deferredValueGenerator = deferredValueGenerator;
+            this.attributeDecorator = attributeDecorator;
 
             MemoryPersistence.Logger.Debug("Exiting constructor");
         }
@@ -53,25 +56,25 @@ namespace TestDataFramework.Persistence.Concrete
 
             this.deferredValueGenerator.Execute(recordReferences);
 
-            MemoryPersistence.CopyPrimaryToForeignKeys(recordReferences);
+            this.CopyPrimaryToForeignKeys(recordReferences);
 
             MemoryPersistence.Logger.Debug("Exiting Persist");
         }
 
-        private static void CopyPrimaryToForeignKeys(IEnumerable<RecordReference> recordReferences)
+        private void CopyPrimaryToForeignKeys(IEnumerable<RecordReference> recordReferences)
         {
-            recordReferences.ToList().ForEach(MemoryPersistence.CopyPrimaryToForeignKeys);
+            recordReferences.ToList().ForEach(this.CopyPrimaryToForeignKeys);
         }
 
-        private static void CopyPrimaryToForeignKeys(RecordReference recordReference)
+        private void CopyPrimaryToForeignKeys(RecordReference recordReference)
         {
             var primaryKeys = recordReference.PrimaryKeyReferences.SelectMany(
                 pkRef =>
-                    pkRef.RecordType.GetPropertyAttributes<PrimaryKeyAttribute>()
+                    this.attributeDecorator.GetPropertyAttributes<PrimaryKeyAttribute>(pkRef.RecordType)
                         .Select(pkpa => new {@Object = pkRef.RecordObject, PkProperty = pkpa.PropertyInfo}));
 
             IEnumerable<PropertyAttribute<ForeignKeyAttribute>> foreignKeyPropertyAttributes =
-                recordReference.RecordType.GetPropertyAttributes<ForeignKeyAttribute>();
+                this.attributeDecorator.GetPropertyAttributes<ForeignKeyAttribute>(recordReference.RecordType);
 
             foreignKeyPropertyAttributes.ToList().ForEach(fkpa =>
             {
@@ -79,7 +82,7 @@ namespace TestDataFramework.Persistence.Concrete
                     primaryKeys.FirstOrDefault(
                         pk =>
                             pk.PkProperty.DeclaringType == fkpa.Attribute.PrimaryTableType &&
-                            Helper.GetColumnName(pk.PkProperty) == fkpa.Attribute.PrimaryKeyName);
+                            Helper.GetColumnName(pk.PkProperty, this.attributeDecorator) == fkpa.Attribute.PrimaryKeyName);
 
                 if (primaryKey == null)
                 {

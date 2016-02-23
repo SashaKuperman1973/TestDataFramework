@@ -21,6 +21,7 @@ using System.Linq;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using TestDataFramework.AttributeDecorator;
 using TestDataFramework.Populator.Concrete;
 using TestDataFramework.TypeGenerator.Interfaces;
 using Tests.Mocks;
@@ -42,7 +43,7 @@ namespace Tests.Tests
         {
             // Arrange
             var expected = new SubjectClass();
-            var populator = new StandardPopulator(Helpers.GetTypeGeneratorMock(expected).Object, new MockPersistence());
+            var populator = new StandardPopulator(Helpers.GetTypeGeneratorMock(expected).Object, new MockPersistence(), new AttributeDecorator());
 
             // Act
 
@@ -63,7 +64,7 @@ namespace Tests.Tests
 
             var expected = new SubjectClass { AnEmailAddress = "email"};
             var mockPersistence = new MockPersistence();
-            var populator = new StandardPopulator(Helpers.GetTypeGeneratorMock(expected).Object, mockPersistence);
+            var populator = new StandardPopulator(Helpers.GetTypeGeneratorMock(expected).Object, mockPersistence, new AttributeDecorator());
 
             // Act
 
@@ -96,7 +97,7 @@ namespace Tests.Tests
 
             Mock<ITypeGenerator> typeGeneratorMock = Helpers.GetTypeGeneratorMock(inputRecord);
 
-            var populator = new StandardPopulator(typeGeneratorMock.Object, persistence);
+            var populator = new StandardPopulator(typeGeneratorMock.Object, persistence, new AttributeDecorator());
 
             // Act
 
@@ -123,7 +124,7 @@ namespace Tests.Tests
             Mock<ITypeGenerator> typeGeneratorMock = Helpers.GetTypeGeneratorMock(new SubjectClass());
             Helpers.SetupTypeGeneratorMock(typeGeneratorMock, new SecondClass());
 
-            var populator = new StandardPopulator(typeGeneratorMock.Object, persistence);
+            var populator = new StandardPopulator(typeGeneratorMock.Object, persistence, new AttributeDecorator());
 
             // Act
 

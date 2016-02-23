@@ -23,6 +23,7 @@ using System.Linq;
 using System.Reflection;
 using Castle.Core.Internal;
 using log4net;
+using TestDataFramework.AttributeDecorator;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
 
@@ -33,12 +34,14 @@ namespace TestDataFramework.PropertyValueAccumulator
         private static readonly ILog Logger = LogManager.GetLogger(typeof(StandardPropertyValueAccumulator));
 
         private readonly LetterEncoder stringGenerator;
+        private readonly IAttributeDecorator attributeDecorator;
 
-        public StandardPropertyValueAccumulator(LetterEncoder stringGenerator)
+        public StandardPropertyValueAccumulator(LetterEncoder stringGenerator, IAttributeDecorator attributeDecorator)
         {
             StandardPropertyValueAccumulator.Logger.Debug("Entering contructor");
 
             this.stringGenerator = stringGenerator;
+            this.attributeDecorator = attributeDecorator;
 
             StandardPropertyValueAccumulator.Logger.Debug("Exiting contructor");
         }
@@ -121,7 +124,7 @@ namespace TestDataFramework.PropertyValueAccumulator
 
             LargeInteger count = this.GetCount(propertyInfo);
 
-            var stringLengthAttribute = propertyInfo.GetCustomAttributeHelper<StringLengthAttribute>();
+            var stringLengthAttribute = this.attributeDecorator.GetCustomAttribute<StringLengthAttribute>(propertyInfo);
 
             int stringLength = stringLengthAttribute?.Length ?? defaultStringLength;
 

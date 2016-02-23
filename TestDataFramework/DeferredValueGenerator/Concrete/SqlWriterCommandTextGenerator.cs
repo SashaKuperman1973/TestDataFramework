@@ -18,6 +18,7 @@
 */
 using System.Reflection;
 using log4net;
+using TestDataFramework.AttributeDecorator;
 using TestDataFramework.Helpers;
 
 namespace TestDataFramework.DeferredValueGenerator.Concrete
@@ -26,12 +27,19 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(SqlWriterCommandTextGenerator));
 
+        private readonly IAttributeDecorator attributeDecorator;
+
+        public SqlWriterCommandTextGenerator(IAttributeDecorator attributeDecorator)
+        {
+            this.attributeDecorator = attributeDecorator;
+        }
+
         public virtual string WriteString(PropertyInfo propertyInfo)
         {
             SqlWriterCommandTextGenerator.Logger.Debug("Entering WriteString. propertyInfo:" + propertyInfo.GetExtendedMemberInfoString());
 
-            string tableName = "[" + Helper.GetTableName(propertyInfo.DeclaringType) + "]";
-            string columnName = "[" + Helper.GetColumnName(propertyInfo) + "]";
+            string tableName = "[" + Helper.GetTableName(propertyInfo.DeclaringType, this.attributeDecorator) + "]";
+            string columnName = "[" + Helper.GetColumnName(propertyInfo, this.attributeDecorator) + "]";
 
             string result =
                 $"Select Max({columnName}) from {tableName} where {columnName} not like '%[^A-Z]%' And LEN({columnName}) = (Select Max(Len({columnName})) From {tableName} where {columnName} not like '%[^A-Z]%' )";
@@ -46,7 +54,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
         {
             SqlWriterCommandTextGenerator.Logger.Debug("Entering WriteNumber. propertyInfo:" + propertyInfo.GetExtendedMemberInfoString());
 
-            string result = $"Select MAX([{Helper.GetColumnName(propertyInfo)}]) From [{Helper.GetTableName(propertyInfo.DeclaringType)}]";
+            string result = $"Select MAX([{Helper.GetColumnName(propertyInfo, this.attributeDecorator)}]) From [{Helper.GetTableName(propertyInfo.DeclaringType, this.attributeDecorator)}]";
 
             SqlWriterCommandTextGenerator.Logger.Debug($"Result statement: {result}");
 

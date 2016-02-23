@@ -27,5 +27,7 @@ namespace TestDataFramework.AttributeDecorator
         void DecorateMember<T, TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression, Attribute attribute);
 
         void DecorateType(Type type, Attribute attribute);
+
+        Type GetTableType(ForeignKeyAttribute foreignAttribute, Type foreignType);
     }
 }

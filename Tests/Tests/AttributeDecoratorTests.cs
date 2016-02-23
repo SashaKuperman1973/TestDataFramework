@@ -27,7 +27,7 @@ namespace Tests.Tests
         [TestInitialize]
         public void TestInitialize()
         {
-            this.attributeDecorator = new AttributeDecorator();
+            this.attributeDecorator = new StandardAttributeDecorator();
             this.populator = new Populator(this.attributeDecorator);
         }
 

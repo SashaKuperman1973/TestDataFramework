@@ -56,8 +56,8 @@ namespace Tests.Tests
             var primaryTable = new T1();
             var foreignTable = new T2();
 
-            var primaryRecordReference = new RecordReference<T1>(Helpers.GetTypeGeneratorMock(primaryTable).Object, new AttributeDecorator());
-            var foreignRecordReference = new RecordReference<T2>(Helpers.GetTypeGeneratorMock(foreignTable).Object, new AttributeDecorator());
+            var primaryRecordReference = new RecordReference<T1>(Helpers.GetTypeGeneratorMock(primaryTable).Object, new StandardAttributeDecorator());
+            var foreignRecordReference = new RecordReference<T2>(Helpers.GetTypeGeneratorMock(foreignTable).Object, new StandardAttributeDecorator());
 
             // Act
 
@@ -76,8 +76,8 @@ namespace Tests.Tests
             var primaryTable = new PrimaryTable();
             var foreignTable = new ForeignTable();
 
-            var primaryRecordReference = new RecordReference<PrimaryTable>(Helpers.GetTypeGeneratorMock(primaryTable).Object, new AttributeDecorator());
-            var foreignRecordReference = new RecordReference<ForeignTable>(Helpers.GetTypeGeneratorMock(foreignTable).Object, new AttributeDecorator());
+            var primaryRecordReference = new RecordReference<PrimaryTable>(Helpers.GetTypeGeneratorMock(primaryTable).Object, new StandardAttributeDecorator());
+            var foreignRecordReference = new RecordReference<ForeignTable>(Helpers.GetTypeGeneratorMock(foreignTable).Object, new StandardAttributeDecorator());
 
             // Act
 
@@ -98,7 +98,7 @@ namespace Tests.Tests
 
             var typeGeneratorMock = new Mock<ITypeGenerator>();
 
-            var recordReference = new RecordReference<PrimaryTable>(typeGeneratorMock.Object, new AttributeDecorator());
+            var recordReference = new RecordReference<PrimaryTable>(typeGeneratorMock.Object, new StandardAttributeDecorator());
 
             var testRecord = new PrimaryTable();
 
@@ -128,7 +128,7 @@ namespace Tests.Tests
 
             Mock<ITypeGenerator> typeGeneratorMock = Helpers.GetTypeGeneratorMock(record);
 
-            var recordReference = new RecordReference<PrimaryTable>(typeGeneratorMock.Object, new AttributeDecorator());
+            var recordReference = new RecordReference<PrimaryTable>(typeGeneratorMock.Object, new StandardAttributeDecorator());
 
             // Act
 

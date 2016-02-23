@@ -50,8 +50,8 @@ namespace Tests.Tests
                 m => m.GetObject<ForeignTable>(It.IsAny<ConcurrentDictionary<PropertyInfo, Action<ForeignTable>>>()))
                 .Returns(new ForeignTable());
 
-            var recordObject1 = new RecordReference<PrimaryTable>(typeGeneratorMock.Object, new AttributeDecorator());
-            var recordObject2 = new RecordReference<ForeignTable>(typeGeneratorMock.Object, new AttributeDecorator());
+            var recordObject1 = new RecordReference<PrimaryTable>(typeGeneratorMock.Object, new StandardAttributeDecorator());
+            var recordObject2 = new RecordReference<ForeignTable>(typeGeneratorMock.Object, new StandardAttributeDecorator());
 
             var dataSource = new Mock<IPropertyDataGenerator<LargeInteger>>();
             var generator = new StandardDeferredValueGenerator<LargeInteger>(dataSource.Object);

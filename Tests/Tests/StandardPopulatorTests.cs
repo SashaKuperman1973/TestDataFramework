@@ -43,7 +43,7 @@ namespace Tests.Tests
         {
             // Arrange
             var expected = new SubjectClass();
-            var populator = new StandardPopulator(Helpers.GetTypeGeneratorMock(expected).Object, new MockPersistence(), new AttributeDecorator());
+            var populator = new StandardPopulator(Helpers.GetTypeGeneratorMock(expected).Object, new MockPersistence(), new StandardAttributeDecorator());
 
             // Act
 
@@ -64,7 +64,7 @@ namespace Tests.Tests
 
             var expected = new SubjectClass { AnEmailAddress = "email"};
             var mockPersistence = new MockPersistence();
-            var populator = new StandardPopulator(Helpers.GetTypeGeneratorMock(expected).Object, mockPersistence, new AttributeDecorator());
+            var populator = new StandardPopulator(Helpers.GetTypeGeneratorMock(expected).Object, mockPersistence, new StandardAttributeDecorator());
 
             // Act
 
@@ -97,7 +97,7 @@ namespace Tests.Tests
 
             Mock<ITypeGenerator> typeGeneratorMock = Helpers.GetTypeGeneratorMock(inputRecord);
 
-            var populator = new StandardPopulator(typeGeneratorMock.Object, persistence, new AttributeDecorator());
+            var populator = new StandardPopulator(typeGeneratorMock.Object, persistence, new StandardAttributeDecorator());
 
             // Act
 
@@ -124,7 +124,7 @@ namespace Tests.Tests
             Mock<ITypeGenerator> typeGeneratorMock = Helpers.GetTypeGeneratorMock(new SubjectClass());
             Helpers.SetupTypeGeneratorMock(typeGeneratorMock, new SecondClass());
 
-            var populator = new StandardPopulator(typeGeneratorMock.Object, persistence, new AttributeDecorator());
+            var populator = new StandardPopulator(typeGeneratorMock.Object, persistence, new StandardAttributeDecorator());
 
             // Act
 

@@ -17,10 +17,20 @@
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
 using System;
+using System.Linq;
 using TestDataFramework.ValueProvider.Interfaces;
 
 namespace TestDataFramework
 {
+    internal class AttributeHelper
+    {
+        public static object[] GetStrings(params object[] inputs)
+        {
+            object[] result = inputs.Select(i => i?.ToString() ?? "<null>").ToArray();
+            return result;
+        }
+    }
+
     public class StringLengthAttribute : Attribute
     {
         public StringLengthAttribute(int length)
@@ -79,21 +89,20 @@ namespace TestDataFramework
             this.PrimaryKeyName = primaryKeyName;
         }
 
-
-        public ForeignKeyAttribute(string schemaName, string primaryTableName, string primaryKeyName)
-        {
-            this.PrimaryTableName = primaryTableName;
-            this.SchemaName = schemaName;
-            this.PrimaryKeyName = primaryKeyName;
-        }
-
         public Type PrimaryTableType { get; }
 
         public string PrimaryTableName { get; }
 
-        public string SchemaName { get; }
-
         public string PrimaryKeyName { get; }
+
+        public override string ToString()
+        {
+            string result =
+                string.Format("PrimaryTableType: {0}, PrimaryTableName: {1}, PrimaryKeyName: {2}",
+                    AttributeHelper.GetStrings(this.PrimaryTableType, this.PrimaryTableName, this.PrimaryKeyName));
+
+            return result;
+        }
     }
 
     public class TableAttribute : Attribute

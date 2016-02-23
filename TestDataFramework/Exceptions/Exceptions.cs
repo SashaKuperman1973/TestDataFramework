@@ -124,4 +124,12 @@ namespace TestDataFramework.Exceptions
         {            
         }
     }
+
+    public class AttributeDecoratorException : ApplicationException
+    {
+        public AttributeDecoratorException(string message, ForeignKeyAttribute foreignAttribute, Type foreignType)
+            : base(string.Format(message, foreignAttribute, foreignType))
+        {
+        }
+    }
 }

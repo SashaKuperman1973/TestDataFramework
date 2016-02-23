@@ -81,7 +81,7 @@ namespace TestDataFramework.Persistence.Concrete
                 var primaryKey =
                     primaryKeys.FirstOrDefault(
                         pk =>
-                            pk.PkProperty.DeclaringType == fkpa.Attribute.PrimaryTableType &&
+                            pk.PkProperty.DeclaringType == this.attributeDecorator.GetTableType(fkpa.Attribute, recordReference.RecordType) &&
                             Helper.GetColumnName(pk.PkProperty, this.attributeDecorator) == fkpa.Attribute.PrimaryKeyName);
 
                 if (primaryKey == null)

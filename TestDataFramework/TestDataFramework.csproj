@@ -62,7 +62,7 @@
   <ItemGroup>
     <Compile Include="ArrayRandomizer\IArrayRandomizer.cs" />
     <Compile Include="ArrayRandomizer\StandardArrayRandomizer.cs" />
-    <Compile Include="AttributeDecorator\AttributeDecorator.cs" />
+    <Compile Include="AttributeDecorator\StandardAttributeDecorator.cs" />
     <Compile Include="AttributeDecorator\IAttributeDecorator.cs" />
     <Compile Include="Attributes.cs" />
     <Compile Include="DeferredValueGenerator\Concrete\DefaultInitialCountGenerator.cs" />

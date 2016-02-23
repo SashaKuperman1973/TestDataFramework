@@ -95,5 +95,8 @@ namespace TestDataFramework.Exceptions
         public const string AutoKeyMustBeInteger = "Only integral integer types can be used as Auto increment keys. {0}";
 
         public const string TypeTooNarrow = "Type too narrow attempting to set property {0} to result from database: {1}";
+
+        public const string CannotResolveForeignTableString =
+            "Cannot resolve foreign table string. Foreign Key Attribute: {0}, foreign type: {1}";
     }
 }

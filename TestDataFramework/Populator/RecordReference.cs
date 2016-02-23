@@ -95,7 +95,7 @@ namespace TestDataFramework.Populator
                         pkPa =>
                             foreignKeyPropertyAttributes.Any(
                                 fkPa =>
-                                    pkPa.PropertyInfo.DeclaringType == fkPa.Attribute.PrimaryTableType
+                                    pkPa.PropertyInfo.DeclaringType == this.attributeDecorator.GetTableType(fkPa.Attribute, this.RecordType)
                                     &&
                                     Helper.GetColumnName(pkPa.PropertyInfo, this.attributeDecorator)
                                         .Equals(fkPa.Attribute.PrimaryKeyName, StringComparison.Ordinal)

@@ -25,6 +25,7 @@ using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using log4net;
 using TestDataFramework.ArrayRandomizer;
+using TestDataFramework.AttributeDecorator;
 using TestDataFramework.DeferredValueGenerator.Concrete;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.HandledTypeGenerator;
@@ -248,6 +249,8 @@ namespace TestDataFramework.Factories
                         .Named(PopulatorFactory.StandardValueProvider),
 
                     Component.For<IRandomSymbolStringGenerator>().ImplementedBy<RandomSymbolStringGenerator>(),
+
+                    Component.For<IAttributeDecorator>().ImplementedBy<StandardAttributeDecorator>(),
 
                     #endregion Common Region
 

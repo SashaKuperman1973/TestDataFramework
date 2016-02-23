@@ -40,7 +40,8 @@ namespace TestDataFramework.Helpers
 
         public static string GetTableName(Type recordType, IAttributeDecorator attributeDecorator)
         {
-            IEnumerable<TableAttribute> attrs = attributeDecorator.GetCustomAttributes<TableAttribute>(recordType);
+            IEnumerable<TableAttribute> attrs =
+                attributeDecorator.GetCustomAttributes<TableAttribute>(recordType)?.ToList();
 
             if (attrs == null || !(attrs = attrs.ToList()).Any())
             {

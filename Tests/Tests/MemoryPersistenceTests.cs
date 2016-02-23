@@ -40,13 +40,13 @@ namespace Tests.Tests
 
             var deferredValueGeneratorMock = new Mock<IDeferredValueGenerator<LargeInteger>>();
 
-            var persistence = new MemoryPersistence(deferredValueGeneratorMock.Object, new AttributeDecorator());
+            var persistence = new MemoryPersistence(deferredValueGeneratorMock.Object, new StandardAttributeDecorator());
 
             var primaryTable = new PrimaryTable { Integer = 5, Text = "Text" };
 
             var primaryRecordReference = new RecordReference<PrimaryTable>(
                 Helpers.GetTypeGeneratorMock(primaryTable).Object,
-                new AttributeDecorator());
+                new StandardAttributeDecorator());
 
             var recordReferenceArray = new RecordReference[] { primaryRecordReference };
 
@@ -67,16 +67,16 @@ namespace Tests.Tests
             // Arrange
 
             var primaryTable = new ManualKeyPrimaryTable { Key1 = "ABCD", Key2 = 5 };
-            var primaryReference = new RecordReference<ManualKeyPrimaryTable>(Helpers.GetTypeGeneratorMock(primaryTable).Object, new AttributeDecorator());
+            var primaryReference = new RecordReference<ManualKeyPrimaryTable>(Helpers.GetTypeGeneratorMock(primaryTable).Object, new StandardAttributeDecorator());
                 
             var foreignTable = new ManualKeyForeignTable();
             var foreignReference =
-                new RecordReference<ManualKeyForeignTable>(Helpers.GetTypeGeneratorMock(foreignTable).Object, new AttributeDecorator());
+                new RecordReference<ManualKeyForeignTable>(Helpers.GetTypeGeneratorMock(foreignTable).Object, new StandardAttributeDecorator());
 
             foreignReference.AddPrimaryRecordReference(primaryReference);
 
             var deferredValueGeneratorMock = new Mock<IDeferredValueGenerator<LargeInteger>>();
-            var persistence = new MemoryPersistence(deferredValueGeneratorMock.Object, new AttributeDecorator());
+            var persistence = new MemoryPersistence(deferredValueGeneratorMock.Object, new StandardAttributeDecorator());
 
             // Act
 

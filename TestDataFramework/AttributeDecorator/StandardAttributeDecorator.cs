@@ -11,9 +11,9 @@ using TestDataFramework.RepositoryOperations.Model;
 
 namespace TestDataFramework.AttributeDecorator
 {
-    public class AttributeDecorator : IAttributeDecorator
+    public class StandardAttributeDecorator : IAttributeDecorator
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(AttributeDecorator));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(StandardAttributeDecorator));
 
         private readonly ConcurrentDictionary<MemberInfo, List<Attribute>> memberAttributeDicitonary =
             new ConcurrentDictionary<MemberInfo, List<Attribute>>();
@@ -41,7 +41,7 @@ namespace TestDataFramework.AttributeDecorator
 
         public T GetSingleAttribute<T>(MemberInfo memberInfo) where T : Attribute
         {
-            AttributeDecorator.Logger.Debug(
+            StandardAttributeDecorator.Logger.Debug(
                 $"Entering GetSingleAttribute. T: {typeof(T)} memberInfo: {memberInfo.GetExtendedMemberInfoString()}");
 
             T[] result = this.GetCustomAttributes<T>(memberInfo).ToArray();
@@ -50,7 +50,7 @@ namespace TestDataFramework.AttributeDecorator
             {
                 T firstOrDefaultResult = result.FirstOrDefault();
 
-                AttributeDecorator.Logger.Debug($"Member attributes count <= 1. firstOrDefaultResult: {firstOrDefaultResult}");
+                StandardAttributeDecorator.Logger.Debug($"Member attributes count <= 1. firstOrDefaultResult: {firstOrDefaultResult}");
                 return firstOrDefaultResult;
             }
 
@@ -66,18 +66,18 @@ namespace TestDataFramework.AttributeDecorator
 
         public IEnumerable<T> GetUniqueAttributes<T>(Type type) where T : Attribute
         {
-            AttributeDecorator.Logger.Debug($"Entering GetUniqueAttributes. T: {typeof(T)} type: {type}");
+            StandardAttributeDecorator.Logger.Debug($"Entering GetUniqueAttributes. T: {typeof(T)} type: {type}");
 
             IEnumerable<T> result = type.GetPropertiesHelper()
                 .Select(this.GetSingleAttribute<T>).Where(a => a != null);
 
-            AttributeDecorator.Logger.Debug($"Exiting GetUniqueAttributes. result: {result}");
+            StandardAttributeDecorator.Logger.Debug($"Exiting GetUniqueAttributes. result: {result}");
             return result;
         }
 
         public PropertyAttribute<T> GetPropertyAttribute<T>(PropertyInfo propertyInfo) where T : Attribute
         {
-            AttributeDecorator.Logger.Debug($"Entering GetPropertyAttribute. T: {typeof(T)} propertyInfo: {propertyInfo.GetExtendedMemberInfoString()}");
+            StandardAttributeDecorator.Logger.Debug($"Entering GetPropertyAttribute. T: {typeof(T)} propertyInfo: {propertyInfo.GetExtendedMemberInfoString()}");
 
             var result = new PropertyAttribute<T>
             {
@@ -85,25 +85,25 @@ namespace TestDataFramework.AttributeDecorator
                 Attribute = this.GetSingleAttribute<T>(propertyInfo)
             };
 
-            AttributeDecorator.Logger.Debug($"Exiting GetPropertyAttribute. result: {result}");
+            StandardAttributeDecorator.Logger.Debug($"Exiting GetPropertyAttribute. result: {result}");
             return result;
         }
 
         public IEnumerable<PropertyAttribute<T>> GetPropertyAttributes<T>(Type type) where T : Attribute
         {
-            AttributeDecorator.Logger.Debug($"Entering GetPropertyAttributes. T: {typeof(T)}, type: {type}");
+            StandardAttributeDecorator.Logger.Debug($"Entering GetPropertyAttributes. T: {typeof(T)}, type: {type}");
 
             IEnumerable<PropertyAttribute<T>> result =
                 type.GetPropertiesHelper().Select(this.GetPropertyAttribute<T>).Where(pa => pa.Attribute != null);
 
-            AttributeDecorator.Logger.Debug($"Exiting GetPropertyAttributes. result: {result}");
+            StandardAttributeDecorator.Logger.Debug($"Exiting GetPropertyAttributes. result: {result}");
 
             return result;
         }
 
         public IEnumerable<RepositoryOperations.Model.PropertyAttributes> GetPropertyAttributes(Type type)
         {
-            AttributeDecorator.Logger.Debug($"Entering GetPropertyAttributes. type: {type}");
+            StandardAttributeDecorator.Logger.Debug($"Entering GetPropertyAttributes. type: {type}");
 
             IEnumerable<RepositoryOperations.Model.PropertyAttributes> result =
                 type.GetPropertiesHelper()
@@ -115,7 +115,7 @@ namespace TestDataFramework.AttributeDecorator
                                 PropertyInfo = pi
                             });
 
-            AttributeDecorator.Logger.Debug($"Exiting GetPropertyAttributes. result: {result}");
+            StandardAttributeDecorator.Logger.Debug($"Exiting GetPropertyAttributes. result: {result}");
             return result;
         }
 
@@ -149,6 +149,58 @@ namespace TestDataFramework.AttributeDecorator
 
             result.AddRange(memberInfo.GetCustomAttributes());
             return result;
+        }
+
+        private readonly ConcurrentDictionary<Assembly, ConcurrentDictionary<string, Type>> stringTypeDictionary =
+            new ConcurrentDictionary<Assembly, ConcurrentDictionary<string, Type>>();
+
+        public virtual Type GetTableType(ForeignKeyAttribute foreignAttribute, Type foreignType)
+        {
+            if (foreignAttribute.PrimaryTableType != null)
+            {
+                return foreignAttribute.PrimaryTableType;
+            }
+
+            Assembly assembly = foreignType.Assembly;
+
+            ConcurrentDictionary<string, Type> typeDictionary = this.stringTypeDictionary.AddOrUpdate(assembly,
+                new ConcurrentDictionary<string, Type>(), (a, d) => d);
+
+            Type cachedType;
+            if (typeDictionary.TryGetValue(foreignAttribute.PrimaryTableName, out cachedType))
+            {
+                return cachedType;
+            }
+
+            List<AssemblyName> assemblyNameList = assembly.GetReferencedAssemblies().ToList();
+            assemblyNameList.Add(assembly.GetName());
+
+            AppDomain domain = AppDomain.CreateDomain("TestDataFramework_" + Guid.NewGuid(), null, AppDomain.CurrentDomain.SetupInformation);
+
+            foreach (AssemblyName assemblyName in assemblyNameList)
+            {
+                Assembly loadedAssembly = domain.Load(assemblyName);
+
+                foreach (TypeInfo definedType in loadedAssembly.DefinedTypes)
+                {
+                    var tableAttribute = this.GetSingleAttribute<TableAttribute>(definedType);
+
+                    if (tableAttribute != null)
+                    {
+                        typeDictionary.TryAdd(tableAttribute.Name, definedType);
+                    }
+                }
+            }
+
+            AppDomain.Unload(domain);
+
+            if (typeDictionary.TryGetValue(foreignAttribute.PrimaryTableName, out cachedType))
+            {
+                return cachedType;
+            }
+
+            throw new AttributeDecoratorException(Messages.CannotResolveForeignTableString, foreignAttribute,
+                foreignType);
         }
     }
 }

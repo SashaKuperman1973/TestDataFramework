@@ -16,10 +16,11 @@
     You should have received a copy of the GNU General Public License
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 using System;
 using TestDataFramework;
 
-namespace Tests.TestModels
+namespace IntegrationTests.TestModels
 {
     public class PrimaryTable
     {
@@ -44,7 +45,8 @@ namespace Tests.TestModels
         public int Integer { get; set; }
     }
     
-    public class ManualKeyPrimaryTable
+    [Table(Name = "ManualKeyPrimaryTable")]
+    public class ManualKeyPrimaryTableClass
     {
         [PrimaryKey]
         [StringLength(20)]
@@ -69,10 +71,11 @@ namespace Tests.TestModels
 
         [StringLength(20)]
         [PrimaryKey]
-        [ForeignKey(typeof(ManualKeyPrimaryTable), "Key1")]
+        //[ForeignKey(typeof(ManualKeyPrimaryTableClass), "Key1")]
+        [ForeignKey("ManualKeyPrimaryTable", "Key1")]
         public string ForeignKey1 { get; set; }
 
-        [ForeignKey(typeof(ManualKeyPrimaryTable), "Key2")]
+        [ForeignKey(typeof(ManualKeyPrimaryTableClass), "Key2")]
         public int ForeignKey2 { get; set; }
 
         public short AShort { get; set; }

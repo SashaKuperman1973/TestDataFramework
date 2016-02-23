@@ -26,7 +26,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.Factories;
 using TestDataFramework.Populator.Concrete;
 using TestDataFramework.Populator.Interfaces;
-using Tests.TestModels;
 
 namespace IntegrationTests.Tests
 {
@@ -77,7 +76,7 @@ namespace IntegrationTests.Tests
                 @"Data Source=.\SqlExpress;Initial Catalog=TestDataFramework;Integrated Security=SSPI;",
                 mustBeInATransaction: false);
 
-            IList<RecordReference<ManualKeyPrimaryTable>> result = populator.Add<ManualKeyPrimaryTable>(5);
+            IList<RecordReference<ManualKeyPrimaryTableClass>> result = populator.Add<ManualKeyPrimaryTableClass>(5);
 
             populator.Bind();
 
@@ -108,7 +107,7 @@ namespace IntegrationTests.Tests
 
         private static void PrimaryKeyForeignKeyTest(IPopulator populator)
         {
-            IList<RecordReference<ManualKeyPrimaryTable>> primaries = populator.Add<ManualKeyPrimaryTable>(2);
+            IList<RecordReference<ManualKeyPrimaryTableClass>> primaries = populator.Add<ManualKeyPrimaryTableClass>(2);
 
             IList<RecordReference<ManualKeyForeignTable>> foreignSet1 = populator.Add<ManualKeyForeignTable>(2);
             foreignSet1.ToList().ForEach(f => f.AddPrimaryRecordReference(primaries[0]));
@@ -139,7 +138,7 @@ namespace IntegrationTests.Tests
             {
                 populator.Bind();
                 
-                //transactionScope.Complete();
+                transactionScope.Complete();
             }
 
             Helpers.Dump(primaries);

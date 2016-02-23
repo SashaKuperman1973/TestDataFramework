@@ -153,7 +153,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
                     pkTable.Any(pk =>
 
-                        fkpa.Attribute.PrimaryTableType == (pkColumnMatch = pk).TableType
+                        this.attributeDecorator.GetTableType(fkpa.Attribute, this.recordReference.RecordType) == (pkColumnMatch = pk).TableType
                         && fkpa.Attribute.PrimaryKeyName.Equals(pk.ColumnName, StringComparison.Ordinal)
                         )
                     );

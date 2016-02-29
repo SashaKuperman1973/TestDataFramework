@@ -96,7 +96,15 @@ namespace TestDataFramework.Exceptions
 
         public const string TypeTooNarrow = "Type too narrow attempting to set property {0} to result from database: {1}";
 
-        public const string CannotResolveForeignTableString =
-            "Cannot resolve foreign table string. Foreign Key Attribute: {0}, foreign type: {1}";
+        public const string CannotResolveForeignKey =
+            "Cannot resolve foreign key. Foreign Key Attribute: {0}, foreign type: {1}";
+
+        public const string DuplicateTableName =
+            "Attempted to add a type that resolves to an existing type's table definition. You can use TableAttribute to differentiate table names for identically named types in different namespaces. Types involved: {0}";
+
+        public const string ErrorGettingDefinedType =
+            "Internal Error. Attimpted to get defined type from dictionary. Table variable: {0}";
+
+        public const string AssemblyCacheNotPopulated = "Cache for assembly does not exist. Assembly: {0}";
     }
 }

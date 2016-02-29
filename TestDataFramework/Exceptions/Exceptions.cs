@@ -18,7 +18,9 @@
 */
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using TestDataFramework.AttributeDecorator;
 using TestDataFramework.Helpers;
 
 namespace TestDataFramework.Exceptions
@@ -127,8 +129,29 @@ namespace TestDataFramework.Exceptions
 
     public class AttributeDecoratorException : ApplicationException
     {
-        public AttributeDecoratorException(string message, ForeignKeyAttribute foreignAttribute, Type foreignType)
-            : base(string.Format(message, foreignAttribute, foreignType))
+        public AttributeDecoratorException(string cannotResolveForeignTableMessage, ForeignKeyAttribute foreignAttribute, Type foreignType)
+            : base(string.Format(cannotResolveForeignTableMessage, foreignAttribute, foreignType))
+        {
+        }
+    }
+
+    public class TableTypeLookupException : ApplicationException
+    {
+        public TableTypeLookupException(string assemblyCacheNotPopulatedMessage, Assembly assembly)
+            : base(string.Format(assemblyCacheNotPopulatedMessage, assembly))
+        {            
+        }
+    }
+
+    public class TableTypeCacheException : ApplicationException
+    {
+        public TableTypeCacheException(string duplicateTableNameMessage, IEnumerable<Type> typesInvolved)
+            : base(string.Format(duplicateTableNameMessage, string.Join(", ", typesInvolved)))
+        {
+        }
+
+        public TableTypeCacheException(string errorGettingDefinedTypeMessage, Table table)
+            : base(string.Format(errorGettingDefinedTypeMessage, table))
         {
         }
     }

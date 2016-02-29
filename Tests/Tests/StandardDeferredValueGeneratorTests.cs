@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Reflection;
+using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.AttributeDecorator;
@@ -35,6 +36,18 @@ namespace Tests.Tests
     [TestClass]
     public class StandardDeferredValueGeneratorTests
     {
+        private TableTypeCache tableTypeCache;
+        private IAttributeDecorator attributeDecorator;
+
+        [TestInitialize]
+        public void Initialize()
+        {
+            XmlConfigurator.Configure();
+
+            this.tableTypeCache = new TableTypeCache();
+            this.attributeDecorator = new StandardAttributeDecorator(this.tableTypeCache);
+        }
+
         [TestMethod]
         public void DeferredValueGenerator_Test()
         {
@@ -50,8 +63,8 @@ namespace Tests.Tests
                 m => m.GetObject<ForeignTable>(It.IsAny<ConcurrentDictionary<PropertyInfo, Action<ForeignTable>>>()))
                 .Returns(new ForeignTable());
 
-            var recordObject1 = new RecordReference<PrimaryTable>(typeGeneratorMock.Object, new StandardAttributeDecorator());
-            var recordObject2 = new RecordReference<ForeignTable>(typeGeneratorMock.Object, new StandardAttributeDecorator());
+            var recordObject1 = new RecordReference<PrimaryTable>(typeGeneratorMock.Object, this.attributeDecorator);
+            var recordObject2 = new RecordReference<ForeignTable>(typeGeneratorMock.Object, this.attributeDecorator);
 
             var dataSource = new Mock<IPropertyDataGenerator<LargeInteger>>();
             var generator = new StandardDeferredValueGenerator<LargeInteger>(dataSource.Object);

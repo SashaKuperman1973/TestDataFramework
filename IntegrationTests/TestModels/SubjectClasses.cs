@@ -23,7 +23,7 @@ using TestDataFramework.ValueProvider.Interfaces;
 
 namespace IntegrationTests.TestModels
 {
-    [Table(Name = "Subject")]
+    [Table("Subject")]
     public class SubjectClass
     {
         public const int StringLength = 5;

@@ -44,8 +44,9 @@ namespace Tests.Tests
             this.propertyValueAccumulatorMock = new Mock<IPropertyValueAccumulator>();
             this.deferredValueGeneratorMock = new Mock<IDeferredValueGenerator<LargeInteger>>();
 
-            this.generator = new KeyTypeUniqueValueGenerator(this.propertyValueAccumulatorMock.Object, new StandardAttributeDecorator(), 
-                this.deferredValueGeneratorMock.Object, throwIfUnhandledType: false);
+            this.generator = new KeyTypeUniqueValueGenerator(this.propertyValueAccumulatorMock.Object,
+                new StandardAttributeDecorator(new TableTypeCache()), this.deferredValueGeneratorMock.Object,
+                throwIfUnhandledType: false);
         }
 
         [TestMethod]

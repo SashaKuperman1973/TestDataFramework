@@ -29,7 +29,7 @@ using TestDataFramework.Populator.Interfaces;
 
 namespace IntegrationTests.Tests
 {
-    [Ignore]
+    //[Ignore]
     [TestClass]
     public class SqlClientAndMemoryTests
     {
@@ -95,7 +95,7 @@ namespace IntegrationTests.Tests
             SqlClientAndMemoryTests.PrimaryKeyForeignKeyTest(populator);
         }
 
-        [Ignore]
+        //[Ignore]
         [TestMethod]
         public void SqlCient_Test()
         {

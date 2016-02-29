@@ -43,17 +43,24 @@ namespace Tests.Tests
         private Mock<CircularReferenceBreaker> breakerMock;
         private Mock<IWritePrimitives> writePrimitivesMock;
 
+        private TableTypeCache tableTypeCache;
+        private IAttributeDecorator attributeDecorator;
+
         private SubjectClass subject;
 
         [TestInitialize]
         public void Initialize()
         {
             XmlConfigurator.Configure();
+
+            this.tableTypeCache = new TableTypeCache();
+            this.attributeDecorator = new StandardAttributeDecorator(this.tableTypeCache);
+
             this.subject = new SubjectClass();
             this.recordReferenceMock = new Mock<RecordReference>(null);
             this.peers = new List<AbstractRepositoryOperation>();
             this.serviceMock = new Mock<InsertRecordService>(this.recordReferenceMock.Object);
-            this.insertRecord = new InsertRecord(this.serviceMock.Object, this.recordReferenceMock.Object, this.peers, new StandardAttributeDecorator());
+            this.insertRecord = new InsertRecord(this.serviceMock.Object, this.recordReferenceMock.Object, this.peers, this.attributeDecorator);
 
             this.breakerMock = new Mock<CircularReferenceBreaker>();
             this.writePrimitivesMock = new Mock<IWritePrimitives>();
@@ -132,7 +139,7 @@ namespace Tests.Tests
             secondrecordReferenceMock.Setup(m => m.RecordObject).Returns(secondObject);
             secondrecordReferenceMock.Setup(m => m.RecordType).Returns(secondObject.GetType());
 
-            var secondInsertRecord = new InsertRecord(this.serviceMock.Object, secondrecordReferenceMock.Object, this.peers, new StandardAttributeDecorator());
+            var secondInsertRecord = new InsertRecord(this.serviceMock.Object, secondrecordReferenceMock.Object, this.peers, this.attributeDecorator);
             var primaryKeyOperations = new List<InsertRecord> { secondInsertRecord };
 
             var regularColumns = new List<Column>();

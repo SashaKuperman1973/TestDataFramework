@@ -208,7 +208,7 @@ namespace Tests.TestModels
         public Guid? Key4 { get; set; }
     }
 
-    [Table(Name = "DbTable")]
+    [Table("DbTable")]
     public class ClrClass
     {
         

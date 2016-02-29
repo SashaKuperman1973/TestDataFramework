@@ -70,6 +70,7 @@
     <Compile Include="Mocks\MockDbCommand.cs" />
     <Compile Include="Mocks\MockPersistence.cs" />
     <Compile Include="TestModels\IntegralManualPrimarkKeyClasses.cs" />
+    <Compile Include="TestModels\MultiNamespaceClasses.cs" />
     <Compile Include="TestModels\PrimaryForeignReferenceSubjectClasses.cs" />
     <Compile Include="TestModels\SubjectClasses.cs" />
     <Compile Include="Tests\CircularReferenceBreakerTests.cs" />
@@ -101,8 +102,9 @@
     <Compile Include="Tests\BaseUniqueValueGeneratorTests.cs" />
     <Compile Include="Tests\SqlClientValueFormatterTests.cs" />
     <Compile Include="Tests\AccumulatorValueProviderTests.cs" />
-    <Compile Include="Tests\ForeignKeyTests.cs" />
-    <Compile Include="Tests\AttributeDecoratorTests.cs" />
+    <Compile Include="Tests\StandardAttributeDecoratorTests.cs" />
+    <Compile Include="Tests\TableTypeCacheTests.cs" />
+    <Compile Include="Tests\TableTests.cs" />
     <None Include="UnitTest1.cs" />
   </ItemGroup>
   <ItemGroup>

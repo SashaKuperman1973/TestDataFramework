@@ -35,7 +35,7 @@ namespace Tests.TestModels
         [PrimaryKey(KeyType = PrimaryKeyAttribute.KeyTypeEnum.Auto)]
         public int Key { get; set; }
 
-        [ForeignKey(primaryTable: typeof (PrimaryTable), primaryKeyName: "Key")]
+        [ForeignKey(primaryTableType: typeof (PrimaryTable), primaryKeyName: "Key")]
         public int ForeignKey { get; set; }
 
         public string Text { get; set; }

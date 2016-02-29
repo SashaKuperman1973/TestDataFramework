@@ -36,15 +36,21 @@ namespace Tests.Tests
         private Mock<IPropertyValueAccumulator> propertyValueAccumulatorMock;
         private Mock<IDeferredValueGenerator<LargeInteger>> deferredValueGeneratorMock;
 
+        private TableTypeCache tableTypeCache;
+        private IAttributeDecorator attributeDecorator;
+
         [TestInitialize]
         public void Initialize()
         {
             XmlConfigurator.Configure();
 
+            this.tableTypeCache = new TableTypeCache();
+            this.attributeDecorator = new StandardAttributeDecorator(this.tableTypeCache);
+
             this.propertyValueAccumulatorMock = new Mock<IPropertyValueAccumulator>();
             this.deferredValueGeneratorMock = new Mock<IDeferredValueGenerator<LargeInteger>>();
 
-            this.generator = new MemoryUniqueValueGenerator(this.propertyValueAccumulatorMock.Object, new StandardAttributeDecorator(),
+            this.generator = new MemoryUniqueValueGenerator(this.propertyValueAccumulatorMock.Object, this.attributeDecorator,
                 this.deferredValueGeneratorMock.Object, throwIfUnhandledType: false);
         }
 

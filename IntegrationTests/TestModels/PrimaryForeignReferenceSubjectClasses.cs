@@ -37,7 +37,7 @@ namespace IntegrationTests.TestModels
         [PrimaryKey(KeyType = PrimaryKeyAttribute.KeyTypeEnum.Auto)]
         public int Key { get; set; }
 
-        [ForeignKey(primaryTable: typeof (PrimaryTable), primaryKeyName: "Key")]
+        [ForeignKey(primaryTableType: typeof (PrimaryTable), primaryKeyName: "Key")]
         public int ForeignKey { get; set; }
 
         public string Text { get; set; }
@@ -45,7 +45,7 @@ namespace IntegrationTests.TestModels
         public int Integer { get; set; }
     }
     
-    [Table(Name = "ManualKeyPrimaryTable")]
+    [Table("ManualKeyPrimaryTable")]
     public class ManualKeyPrimaryTableClass
     {
         [PrimaryKey]
@@ -71,7 +71,6 @@ namespace IntegrationTests.TestModels
 
         [StringLength(20)]
         [PrimaryKey]
-        //[ForeignKey(typeof(ManualKeyPrimaryTableClass), "Key1")]
         [ForeignKey("ManualKeyPrimaryTable", "Key1")]
         public string ForeignKey1 { get; set; }
 
@@ -83,27 +82,27 @@ namespace IntegrationTests.TestModels
         public long ALong { get; set; }
     }
 
-    public class TertiaryManualKeyForeignTable
-    {
-        [PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Auto)]
-        public int Pk { get; set; }
+    //public class TertiaryManualKeyForeignTable
+    //{
+    //    [PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Auto)]
+    //    public int Pk { get; set; }
 
-        [ForeignKey(typeof(ManualKeyForeignTable), "UserId")]
-        public Guid FkManualKeyForeignTable { get; set; }
+    //    [ForeignKey(typeof(ManualKeyForeignTable), "UserId")]
+    //    public Guid FkManualKeyForeignTable { get; set; }
 
-        [ForeignKey(typeof(ManualKeyForeignTable), "ForeignKey1")]
-        [StringLength(20)]
-        public string FkStringForeignKey { get; set; }
+    //    [ForeignKey(typeof(ManualKeyForeignTable), "ForeignKey1")]
+    //    [StringLength(20)]
+    //    public string FkStringForeignKey { get; set; }
 
-        public int AnInt { get; set; }
-    }
+    //    public int AnInt { get; set; }
+    //}
 
-    public class ForeignToAutoPrimaryTable
-    {
-        [PrimaryKey]
-        [ForeignKey(typeof(TertiaryManualKeyForeignTable), "Pk")]
-        public int ForignKey { get; set; }
-    }
+    //public class ForeignToAutoPrimaryTable
+    //{
+    //    [PrimaryKey]
+    //    [ForeignKey(typeof(TertiaryManualKeyForeignTable), "Pk")]
+    //    public int ForignKey { get; set; }
+    //}
 
     public class KeyNoneTable
     {

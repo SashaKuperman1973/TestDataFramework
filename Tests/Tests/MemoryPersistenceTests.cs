@@ -33,6 +33,16 @@ namespace Tests.Tests
     [TestClass]
     public class MemoryPersistenceTests
     {
+        private TableTypeCache tableTypeCache;
+        private IAttributeDecorator attributeDecorator;
+
+        [TestInitialize]
+        public void Initialize()
+        {
+            this.tableTypeCache = new TableTypeCache();
+            this.attributeDecorator = new StandardAttributeDecorator(this.tableTypeCache);
+        }
+
         [TestMethod]
         public void Persist_Test()
         {
@@ -40,13 +50,13 @@ namespace Tests.Tests
 
             var deferredValueGeneratorMock = new Mock<IDeferredValueGenerator<LargeInteger>>();
 
-            var persistence = new MemoryPersistence(deferredValueGeneratorMock.Object, new StandardAttributeDecorator());
+            var persistence = new MemoryPersistence(deferredValueGeneratorMock.Object, this.attributeDecorator);
 
             var primaryTable = new PrimaryTable { Integer = 5, Text = "Text" };
 
             var primaryRecordReference = new RecordReference<PrimaryTable>(
                 Helpers.GetTypeGeneratorMock(primaryTable).Object,
-                new StandardAttributeDecorator());
+                this.attributeDecorator);
 
             var recordReferenceArray = new RecordReference[] { primaryRecordReference };
 
@@ -67,16 +77,16 @@ namespace Tests.Tests
             // Arrange
 
             var primaryTable = new ManualKeyPrimaryTable { Key1 = "ABCD", Key2 = 5 };
-            var primaryReference = new RecordReference<ManualKeyPrimaryTable>(Helpers.GetTypeGeneratorMock(primaryTable).Object, new StandardAttributeDecorator());
+            var primaryReference = new RecordReference<ManualKeyPrimaryTable>(Helpers.GetTypeGeneratorMock(primaryTable).Object, this.attributeDecorator);
                 
             var foreignTable = new ManualKeyForeignTable();
             var foreignReference =
-                new RecordReference<ManualKeyForeignTable>(Helpers.GetTypeGeneratorMock(foreignTable).Object, new StandardAttributeDecorator());
+                new RecordReference<ManualKeyForeignTable>(Helpers.GetTypeGeneratorMock(foreignTable).Object, this.attributeDecorator);
 
             foreignReference.AddPrimaryRecordReference(primaryReference);
 
             var deferredValueGeneratorMock = new Mock<IDeferredValueGenerator<LargeInteger>>();
-            var persistence = new MemoryPersistence(deferredValueGeneratorMock.Object, new StandardAttributeDecorator());
+            var persistence = new MemoryPersistence(deferredValueGeneratorMock.Object, this.attributeDecorator);
 
             // Act
 

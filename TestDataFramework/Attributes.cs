@@ -18,6 +18,7 @@
 */
 using System;
 using System.Linq;
+using TestDataFramework.Helpers;
 using TestDataFramework.ValueProvider.Interfaces;
 
 namespace TestDataFramework
@@ -77,20 +78,32 @@ namespace TestDataFramework
 
     public class ForeignKeyAttribute : Attribute
     {
-        public ForeignKeyAttribute(Type primaryTable, string primaryKeyName)
+        public ForeignKeyAttribute(Type primaryTableType, string primaryKeyName)
         {
-            this.PrimaryTableType = primaryTable;
+            primaryTableType.IsNotNull(nameof(primaryTableType));
+            this.PrimaryTableName = primaryTableType.Name;
+            this.PrimaryTableType = primaryTableType;
             this.PrimaryKeyName = primaryKeyName;
         }
 
+        /// <summary>
+        /// This overload will set the schema to dbo.
+        /// </summary>
         public ForeignKeyAttribute(string primaryTableName, string primaryKeyName)
         {
             this.PrimaryTableName = primaryTableName;
             this.PrimaryKeyName = primaryKeyName;
         }
 
-        public Type PrimaryTableType { get; }
+        public ForeignKeyAttribute(string schema, string primaryTableName, string primaryKeyName)
+        {
+            this.PrimaryTableName = primaryTableName;
+            this.PrimaryKeyName = primaryKeyName;
+            this.Schema = schema;
+        }
 
+        public Type PrimaryTableType { get; }
+        public string Schema { get; } = "dbo";
         public string PrimaryTableName { get; }
 
         public string PrimaryKeyName { get; }
@@ -107,7 +120,46 @@ namespace TestDataFramework
 
     public class TableAttribute : Attribute
     {
-        public string Name { get; set; }
+        public TableAttribute(string schema, string name)
+        {
+            name.IsNotNull(nameof(name));
+
+            this.Name = name;
+            this.Schema = schema;
+        }
+
+        public TableAttribute(string name)
+        {
+            name.IsNotNull(nameof(name));
+            this.Name = name;
+        }
+
+        public string Name { get; }
+        public string Schema { get; } = "dbo";
+
+        public override int GetHashCode()
+        {
+            if (this.Schema == null)
+            {
+                return this.Name.GetHashCode();
+            }
+
+            return this.Name.GetHashCode() ^ this.Schema.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            var value = obj as TableAttribute;
+
+            bool result = value != null && this.Schema.Equals(value.Schema) && this.Name.Equals(value.Name);
+            return result;
+        }
+
+        public override string ToString()
+        {
+            string result = $"Name: {this.Name}, Schema: {this.Schema ?? "<null>"}";
+            return result;
+        }
     }
 
     public class ColumnAttribute : Attribute

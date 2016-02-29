@@ -32,10 +32,16 @@ namespace Tests.Tests
     [TestClass]
     public class StandardPopulatorTests
     {
+        private TableTypeCache tableTypeCache;
+        private IAttributeDecorator attributeDecorator;
+
         [TestInitialize]
         public void Initialize()
         {
             XmlConfigurator.Configure();
+
+            this.tableTypeCache = new TableTypeCache();
+            this.attributeDecorator = new StandardAttributeDecorator(this.tableTypeCache);
         }
 
         [TestMethod]
@@ -43,7 +49,7 @@ namespace Tests.Tests
         {
             // Arrange
             var expected = new SubjectClass();
-            var populator = new StandardPopulator(Helpers.GetTypeGeneratorMock(expected).Object, new MockPersistence(), new StandardAttributeDecorator());
+            var populator = new StandardPopulator(Helpers.GetTypeGeneratorMock(expected).Object, new MockPersistence(), this.attributeDecorator);
 
             // Act
 
@@ -64,7 +70,7 @@ namespace Tests.Tests
 
             var expected = new SubjectClass { AnEmailAddress = "email"};
             var mockPersistence = new MockPersistence();
-            var populator = new StandardPopulator(Helpers.GetTypeGeneratorMock(expected).Object, mockPersistence, new StandardAttributeDecorator());
+            var populator = new StandardPopulator(Helpers.GetTypeGeneratorMock(expected).Object, mockPersistence, this.attributeDecorator);
 
             // Act
 
@@ -97,7 +103,7 @@ namespace Tests.Tests
 
             Mock<ITypeGenerator> typeGeneratorMock = Helpers.GetTypeGeneratorMock(inputRecord);
 
-            var populator = new StandardPopulator(typeGeneratorMock.Object, persistence, new StandardAttributeDecorator());
+            var populator = new StandardPopulator(typeGeneratorMock.Object, persistence, this.attributeDecorator);
 
             // Act
 
@@ -124,7 +130,7 @@ namespace Tests.Tests
             Mock<ITypeGenerator> typeGeneratorMock = Helpers.GetTypeGeneratorMock(new SubjectClass());
             Helpers.SetupTypeGeneratorMock(typeGeneratorMock, new SecondClass());
 
-            var populator = new StandardPopulator(typeGeneratorMock.Object, persistence, new StandardAttributeDecorator());
+            var populator = new StandardPopulator(typeGeneratorMock.Object, persistence, this.attributeDecorator);
 
             // Act
 

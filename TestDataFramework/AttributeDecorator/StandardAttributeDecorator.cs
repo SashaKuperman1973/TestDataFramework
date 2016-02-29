@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -18,7 +19,14 @@ namespace TestDataFramework.AttributeDecorator
         private readonly ConcurrentDictionary<MemberInfo, List<Attribute>> memberAttributeDicitonary =
             new ConcurrentDictionary<MemberInfo, List<Attribute>>();
 
-        public void DecorateMember<T, TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression, Attribute attribute)
+        private readonly TableTypeCache tableTypeCache;
+
+        public StandardAttributeDecorator(TableTypeCache tableTypeCache)
+        {
+            this.tableTypeCache = tableTypeCache;
+        }
+
+        public virtual void DecorateMember<T, TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression, Attribute attribute)
         {
             MemberInfo memberInfo = Helper.ValidateFieldExpression(fieldExpression);
 
@@ -30,7 +38,7 @@ namespace TestDataFramework.AttributeDecorator
                 });
         }
 
-        public void DecorateType(Type type, Attribute attribute)
+        public virtual void DecorateType(Type type, Attribute attribute)
         {
             this.memberAttributeDicitonary.AddOrUpdate(type, new List<Attribute> {attribute}, (t, list) =>
             {
@@ -39,7 +47,7 @@ namespace TestDataFramework.AttributeDecorator
             });
         }
 
-        public T GetSingleAttribute<T>(MemberInfo memberInfo) where T : Attribute
+        public virtual T GetSingleAttribute<T>(MemberInfo memberInfo) where T : Attribute
         {
             StandardAttributeDecorator.Logger.Debug(
                 $"Entering GetSingleAttribute. T: {typeof(T)} memberInfo: {memberInfo.GetExtendedMemberInfoString()}");
@@ -64,7 +72,7 @@ namespace TestDataFramework.AttributeDecorator
             throw new AmbiguousMatchException(string.Format(message, typeof(T), memberInfo.Name, memberInfo.DeclaringType));
         }
 
-        public IEnumerable<T> GetUniqueAttributes<T>(Type type) where T : Attribute
+        public virtual IEnumerable<T> GetUniqueAttributes<T>(Type type) where T : Attribute
         {
             StandardAttributeDecorator.Logger.Debug($"Entering GetUniqueAttributes. T: {typeof(T)} type: {type}");
 
@@ -75,7 +83,7 @@ namespace TestDataFramework.AttributeDecorator
             return result;
         }
 
-        public PropertyAttribute<T> GetPropertyAttribute<T>(PropertyInfo propertyInfo) where T : Attribute
+        public virtual PropertyAttribute<T> GetPropertyAttribute<T>(PropertyInfo propertyInfo) where T : Attribute
         {
             StandardAttributeDecorator.Logger.Debug($"Entering GetPropertyAttribute. T: {typeof(T)} propertyInfo: {propertyInfo.GetExtendedMemberInfoString()}");
 
@@ -89,7 +97,7 @@ namespace TestDataFramework.AttributeDecorator
             return result;
         }
 
-        public IEnumerable<PropertyAttribute<T>> GetPropertyAttributes<T>(Type type) where T : Attribute
+        public virtual IEnumerable<PropertyAttribute<T>> GetPropertyAttributes<T>(Type type) where T : Attribute
         {
             StandardAttributeDecorator.Logger.Debug($"Entering GetPropertyAttributes. T: {typeof(T)}, type: {type}");
 
@@ -101,7 +109,7 @@ namespace TestDataFramework.AttributeDecorator
             return result;
         }
 
-        public IEnumerable<RepositoryOperations.Model.PropertyAttributes> GetPropertyAttributes(Type type)
+        public virtual IEnumerable<RepositoryOperations.Model.PropertyAttributes> GetPropertyAttributes(Type type)
         {
             StandardAttributeDecorator.Logger.Debug($"Entering GetPropertyAttributes. type: {type}");
 
@@ -119,7 +127,7 @@ namespace TestDataFramework.AttributeDecorator
             return result;
         }
 
-        public IEnumerable<T> GetCustomAttributes<T>(MemberInfo memberInfo) where T : Attribute
+        public virtual IEnumerable<T> GetCustomAttributes<T>(MemberInfo memberInfo) where T : Attribute
         {
             List<Attribute> programmaticAttributeList;
 
@@ -132,13 +140,13 @@ namespace TestDataFramework.AttributeDecorator
             return result;
         }
 
-        public T GetCustomAttribute<T>(MemberInfo memberInfo) where T : Attribute
+        public virtual T GetCustomAttribute<T>(MemberInfo memberInfo) where T : Attribute
         {
             T result = this.GetCustomAttributes<T>(memberInfo).FirstOrDefault();
             return result;
         }
 
-        public IEnumerable<Attribute> GetCustomAttributes(MemberInfo memberInfo)
+        public virtual IEnumerable<Attribute> GetCustomAttributes(MemberInfo memberInfo)
         {
             List<Attribute> result;
 
@@ -151,9 +159,6 @@ namespace TestDataFramework.AttributeDecorator
             return result;
         }
 
-        private readonly ConcurrentDictionary<Assembly, ConcurrentDictionary<string, Type>> stringTypeDictionary =
-            new ConcurrentDictionary<Assembly, ConcurrentDictionary<string, Type>>();
-
         public virtual Type GetTableType(ForeignKeyAttribute foreignAttribute, Type foreignType)
         {
             if (foreignAttribute.PrimaryTableType != null)
@@ -161,45 +166,19 @@ namespace TestDataFramework.AttributeDecorator
                 return foreignAttribute.PrimaryTableType;
             }
 
-            Assembly assembly = foreignType.Assembly;
+            if (!this.tableTypeCache.IsAssemblyCachePopulated(foreignType.Assembly))
+            {
+                this.tableTypeCache.PopulateAssemblyCache(foreignType.Assembly, this.GetSingleAttribute<TableAttribute>);
+            }
 
-            ConcurrentDictionary<string, Type> typeDictionary = this.stringTypeDictionary.AddOrUpdate(assembly,
-                new ConcurrentDictionary<string, Type>(), (a, d) => d);
+            Type cachedType = this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType.Assembly);
 
-            Type cachedType;
-            if (typeDictionary.TryGetValue(foreignAttribute.PrimaryTableName, out cachedType))
+            if (cachedType != null)
             {
                 return cachedType;
             }
 
-            List<AssemblyName> assemblyNameList = assembly.GetReferencedAssemblies().ToList();
-            assemblyNameList.Add(assembly.GetName());
-
-            AppDomain domain = AppDomain.CreateDomain("TestDataFramework_" + Guid.NewGuid(), null, AppDomain.CurrentDomain.SetupInformation);
-
-            foreach (AssemblyName assemblyName in assemblyNameList)
-            {
-                Assembly loadedAssembly = domain.Load(assemblyName);
-
-                foreach (TypeInfo definedType in loadedAssembly.DefinedTypes)
-                {
-                    var tableAttribute = this.GetSingleAttribute<TableAttribute>(definedType);
-
-                    if (tableAttribute != null)
-                    {
-                        typeDictionary.TryAdd(tableAttribute.Name, definedType);
-                    }
-                }
-            }
-
-            AppDomain.Unload(domain);
-
-            if (typeDictionary.TryGetValue(foreignAttribute.PrimaryTableName, out cachedType))
-            {
-                return cachedType;
-            }
-
-            throw new AttributeDecoratorException(Messages.CannotResolveForeignTableString, foreignAttribute,
+            throw new AttributeDecoratorException(Messages.CannotResolveForeignKey, foreignAttribute,
                 foreignType);
         }
     }

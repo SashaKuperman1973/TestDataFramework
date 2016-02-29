@@ -35,29 +35,35 @@ namespace Tests.Tests
     [TestClass]
     public class RecordReferenceTests
     {
+        private TableTypeCache tableTypeCache;
+        private IAttributeDecorator attributeDecorator;
+
         [TestInitialize]
         public void Initialize()
         {
             XmlConfigurator.Configure();
+
+            this.tableTypeCache = new TableTypeCache();
+            this.attributeDecorator = new StandardAttributeDecorator(this.tableTypeCache);
         }
 
         [TestMethod]
         public void ThrowsWhenTypeMismatch_Test()
         {
-            RecordReferenceTests.ThrowsWhenTypeMismatch<TypeMismatchPrimaryTable, TypeMismatchForeignTable>();
-            RecordReferenceTests.ThrowsWhenTypeMismatch<TableTypeMismatchPrimaryTable, TableTypeMismatchForeignTable>();
-            RecordReferenceTests.ThrowsWhenTypeMismatch<PropertyNameMismatchPrimaryTable, PropertyNameMismatchForeignTable>();
+            this.ThrowsWhenTypeMismatch<TypeMismatchPrimaryTable, TypeMismatchForeignTable>();
+            this.ThrowsWhenTypeMismatch<TableTypeMismatchPrimaryTable, TableTypeMismatchForeignTable>();
+            this.ThrowsWhenTypeMismatch<PropertyNameMismatchPrimaryTable, PropertyNameMismatchForeignTable>();
         }
 
-        private static void ThrowsWhenTypeMismatch<T1, T2>() where T1 : new() where T2 : new()
+        private void ThrowsWhenTypeMismatch<T1, T2>() where T1 : new() where T2 : new()
         {
             // Arrange
 
             var primaryTable = new T1();
             var foreignTable = new T2();
 
-            var primaryRecordReference = new RecordReference<T1>(Helpers.GetTypeGeneratorMock(primaryTable).Object, new StandardAttributeDecorator());
-            var foreignRecordReference = new RecordReference<T2>(Helpers.GetTypeGeneratorMock(foreignTable).Object, new StandardAttributeDecorator());
+            var primaryRecordReference = new RecordReference<T1>(Helpers.GetTypeGeneratorMock(primaryTable).Object, this.attributeDecorator);
+            var foreignRecordReference = new RecordReference<T2>(Helpers.GetTypeGeneratorMock(foreignTable).Object, this.attributeDecorator);
 
             // Act
 
@@ -76,8 +82,8 @@ namespace Tests.Tests
             var primaryTable = new PrimaryTable();
             var foreignTable = new ForeignTable();
 
-            var primaryRecordReference = new RecordReference<PrimaryTable>(Helpers.GetTypeGeneratorMock(primaryTable).Object, new StandardAttributeDecorator());
-            var foreignRecordReference = new RecordReference<ForeignTable>(Helpers.GetTypeGeneratorMock(foreignTable).Object, new StandardAttributeDecorator());
+            var primaryRecordReference = new RecordReference<PrimaryTable>(Helpers.GetTypeGeneratorMock(primaryTable).Object, this.attributeDecorator);
+            var foreignRecordReference = new RecordReference<ForeignTable>(Helpers.GetTypeGeneratorMock(foreignTable).Object, this.attributeDecorator);
 
             // Act
 
@@ -98,7 +104,7 @@ namespace Tests.Tests
 
             var typeGeneratorMock = new Mock<ITypeGenerator>();
 
-            var recordReference = new RecordReference<PrimaryTable>(typeGeneratorMock.Object, new StandardAttributeDecorator());
+            var recordReference = new RecordReference<PrimaryTable>(typeGeneratorMock.Object, this.attributeDecorator);
 
             var testRecord = new PrimaryTable();
 
@@ -128,7 +134,7 @@ namespace Tests.Tests
 
             Mock<ITypeGenerator> typeGeneratorMock = Helpers.GetTypeGeneratorMock(record);
 
-            var recordReference = new RecordReference<PrimaryTable>(typeGeneratorMock.Object, new StandardAttributeDecorator());
+            var recordReference = new RecordReference<PrimaryTable>(typeGeneratorMock.Object, this.attributeDecorator);
 
             // Act
 

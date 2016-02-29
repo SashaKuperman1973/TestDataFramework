@@ -98,7 +98,7 @@ namespace Tests.Tests
             this.randomizerMock.Setup(m => m.GetEmailAddress()).Returns(BaseValueGeneratorTests.EmailAddress);
 
             this.valueGenerator = new ValueGenerator(this.randomizerMock.Object, () => this.typeGeneratorMock.Object,
-                () => this.arrayRandomizerMock.Object, this.uniqueValueGeneratorMock.Object, new StandardAttributeDecorator());
+                () => this.arrayRandomizerMock.Object, this.uniqueValueGeneratorMock.Object, new StandardAttributeDecorator(new TableTypeCache()));
         }
 
         [TestMethod]

@@ -1,6 +1,6 @@
 using TestDataFramework;
 
-namespace IntegrationTests.TestModels
+namespace IntegrationTests.TestModels.Generated.Declarative
 {
   public class ForeignToAutoPrimaryTable
   {

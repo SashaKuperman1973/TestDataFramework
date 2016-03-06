@@ -34,10 +34,10 @@ namespace IntegrationTests.TestModels
         public int Getter { get { throw new NotImplementedException();} }
         public int Setter { set { throw new NotImplementedException();} }
 
-        [PrimaryKey(KeyType = PrimaryKeyAttribute.KeyTypeEnum.Manual)]
+        [PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Manual)]
         public int Key { get; set; }
 
-        [PrimaryKey(KeyType = PrimaryKeyAttribute.KeyTypeEnum.Manual)]
+        [PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Manual)]
         public Guid GuidKey { get; set; }
 
         public int Integer { get; set; }

@@ -23,7 +23,7 @@ namespace Tests.TestModels
 {
     public class PrimaryTable
     {
-        [PrimaryKey(KeyType = PrimaryKeyAttribute.KeyTypeEnum.Auto)]
+        [PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Auto)]
         public int Key { get; set; }
 
         public string Text { get; set; }
@@ -33,7 +33,7 @@ namespace Tests.TestModels
 
     public class ForeignTable
     {
-        [PrimaryKey(KeyType = PrimaryKeyAttribute.KeyTypeEnum.Auto)]
+        [PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Auto)]
         public int Key { get; set; }
 
         [ForeignKey(primaryTableType: typeof (PrimaryTable), primaryKeyName: "Key")]

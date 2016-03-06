@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
 using IntegrationTests.TestModels;
+using IntegrationTests.TestModels.Generated.Declarative;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.Factories;

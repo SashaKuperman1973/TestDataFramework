@@ -23,11 +23,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("TestDataFramework")]
+[assembly: AssemblyTitle("Test Data Framework")]
 [assembly: AssemblyDescription("Unit test data population tool.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Alexander Kuperman")]
-[assembly: AssemblyProduct("TestDataFramework")]
+[assembly: AssemblyProduct("Test Data Framework")]
 [assembly: AssemblyCopyright("Copyright © Alexander Kuperman 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

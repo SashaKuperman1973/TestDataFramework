@@ -16,9 +16,9 @@
     You should have received a copy of the GNU General Public License
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using TestDataFramework.AttributeDecorator;
 using TestDataFramework.Helpers;
@@ -73,13 +73,6 @@ namespace TestDataFramework.Exceptions
     public class NotInATransactionException : ApplicationException
     {
         public NotInATransactionException() : base(Messages.NotInATransaction)
-        {
-        }
-    }
-
-    public class ContractException : ApplicationException
-    {
-        public ContractException(string message) : base(message)
         {
         }
     }

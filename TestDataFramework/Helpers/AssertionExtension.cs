@@ -16,7 +16,8 @@
     You should have received a copy of the GNU General Public License
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
-using TestDataFramework.Exceptions;
+
+using System;
 
 namespace TestDataFramework.Helpers
 {
@@ -26,7 +27,7 @@ namespace TestDataFramework.Helpers
         {
             if (value == null)
             {
-                throw new ContractException(string.Format(Messages.NonNullExpected, name));
+                throw new ArgumentNullException(name);
             }
         }
     }

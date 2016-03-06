@@ -47,8 +47,6 @@ namespace TestDataFramework.Exceptions
 
         public const string UnknownPastOrFutureEnumValue = "Unrecognized PastOrFuture enum value";
 
-        public const string NonNullExpected = "Non-null value expected for argument: {0}";
-
         public const string DeferredValueGeneratorExecuted = "Cannot invoke Deferred value generator again after Execute method called";
 
         public const string UnexpectedHandlerType =

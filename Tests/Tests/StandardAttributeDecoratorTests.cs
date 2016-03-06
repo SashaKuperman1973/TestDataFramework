@@ -5,11 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework;
 using TestDataFramework.AttributeDecorator;
-using TestDataFramework.Exceptions;
-using TestDataFramework.Helpers;
 using TestDataFramework.Populator;
-using TestDataFramework.Populator.Concrete;
-using TestDataFramework.Populator.Interfaces;
 using Tests.TestModels;
 using Tests.TestModels.Simple;
 

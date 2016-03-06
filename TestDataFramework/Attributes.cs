@@ -188,7 +188,12 @@ namespace TestDataFramework
 
     public class ColumnAttribute : Attribute
     {
-        public string Name { get; set; }
+        public ColumnAttribute(string name)
+        {
+            this.Name = name;
+        }
+
+        public string Name { get; }
     }
 
     public class PrimaryKeyAttribute : Attribute
@@ -205,6 +210,6 @@ namespace TestDataFramework
             this.KeyType = keyType;
         }
 
-        public KeyTypeEnum KeyType { get; set; }
+        public KeyTypeEnum KeyType { get; }
     }
 }

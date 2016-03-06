@@ -59,7 +59,7 @@ namespace Tests.Tests
             // Arrange
 
             this.populator.DecorateType<AttributeReadWriteTestClass>()
-                .AddAttributeToMember(c => c.Key1, new PrimaryKeyAttribute {KeyType = PrimaryKeyAttribute.KeyTypeEnum.Auto});
+                .AddAttributeToMember(c => c.Key1, new PrimaryKeyAttribute(PrimaryKeyAttribute.KeyTypeEnum.Auto));
 
             // Act
 
@@ -93,7 +93,7 @@ namespace Tests.Tests
 
             this.populator.DecorateType<AttributeReadWriteTestClass>()
                 .AddAttributeToMember(c => c.Text,
-                    new PrimaryKeyAttribute {KeyType = PrimaryKeyAttribute.KeyTypeEnum.Auto});
+                    new PrimaryKeyAttribute(PrimaryKeyAttribute.KeyTypeEnum.Auto));
 
             // Act
 

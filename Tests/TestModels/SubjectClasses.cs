@@ -32,7 +32,7 @@ namespace Tests.TestModels
         public int Getter { get { throw new NotImplementedException();} }
         public int Setter { set { throw new NotImplementedException();} }
 
-        [PrimaryKey(KeyType = PrimaryKeyAttribute.KeyTypeEnum.Auto)]
+        [PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Auto)]
         public int Key { get; set; }
 
         public int Integer { get; set; }

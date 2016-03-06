@@ -23,11 +23,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("IntegrationTests")]
+[assembly: AssemblyTitle("Integration Tests")]
 [assembly: AssemblyDescription("Some end-to-end tests.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Alexander Kuperman")]
-[assembly: AssemblyProduct("IntegrationTests")]
+[assembly: AssemblyProduct("Integration Tests")]
 [assembly: AssemblyCopyright("Copyright © Alexander Kuperman 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

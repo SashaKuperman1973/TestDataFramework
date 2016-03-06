@@ -18,6 +18,7 @@
 */
 using System;
 using System.Linq;
+using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
 using TestDataFramework.ValueProvider.Interfaces;
 
@@ -81,6 +82,7 @@ namespace TestDataFramework
         public ForeignKeyAttribute(Type primaryTableType, string primaryKeyName)
         {
             primaryTableType.IsNotNull(nameof(primaryTableType));
+
             this.PrimaryTableName = primaryTableType.Name;
             this.PrimaryTableType = primaryTableType;
             this.PrimaryKeyName = primaryKeyName;
@@ -120,6 +122,20 @@ namespace TestDataFramework
 
     public class TableAttribute : Attribute
     {
+        public TableAttribute(string catalogueName, string schema, string name)
+        {
+            name.IsNotNull(nameof(name));
+
+            if (catalogueName != null && schema == null)
+            {
+                throw new TableAttributeException(Messages.CatalogueAndNoSchema, catalogueName, name);
+            }
+
+            this.CatalogueName = catalogueName;
+            this.Name = name;
+            this.Schema = schema;
+        }
+
         public TableAttribute(string schema, string name)
         {
             name.IsNotNull(nameof(name));
@@ -134,24 +150,29 @@ namespace TestDataFramework
             this.Name = name;
         }
 
+        public string CatalogueName { get; }
         public string Name { get; }
         public string Schema { get; } = "dbo";
 
         public override int GetHashCode()
         {
-            if (this.Schema == null)
-            {
-                return this.Name.GetHashCode();
-            }
-
-            return this.Name.GetHashCode() ^ this.Schema.GetHashCode();
+            return this.Name.GetHashCode() ^ (this.Schema?.GetHashCode() ?? 0) ^
+                   (this.CatalogueName?.GetHashCode() ?? 0);
         }
 
         public override bool Equals(object obj)
         {
             var value = obj as TableAttribute;
 
-            bool result = value != null && this.Schema.Equals(value.Schema) && this.Name.Equals(value.Name);
+            bool result = value != null && 
+
+                (this.Schema == null && value.Schema == null ||
+                    (this.Schema?.Equals(value.Schema) ?? false)) &&
+                
+                    (this.CatalogueName == null && value.CatalogueName == null ||
+                    (this.CatalogueName?.Equals(value.CatalogueName) ?? false)) &&
+
+                this.Name.Equals(value.Name);
             return result;
         }
 

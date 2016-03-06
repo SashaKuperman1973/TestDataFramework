@@ -20,6 +20,7 @@ using System;
 using System.Collections.Specialized;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
 using System.Text;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -151,7 +152,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void Insert_Test()
+        public void Insert_TableName_Test()
         {
             // Arrange
 
@@ -168,7 +169,7 @@ namespace Tests.Tests
 
             // Act
 
-            this.primitives.Insert(tableName, columns);
+            this.primitives.Insert(null, null, tableName, columns);
             this.primitives.Execute();
 
             // Assert
@@ -181,6 +182,90 @@ namespace Tests.Tests
                     .ToString();
 
             this.insertCommandMock.VerifySet(m => m.CommandText = expectedText);
+        }
+
+        [TestMethod]
+        public void Insert_Schema_TableName_Test()
+        {
+            // Arrange
+
+            var columns = new[]
+            {
+                new Column { Name = "Row1", Value = 1},
+                new Column { Name = "Row2", Value = "B"},
+            };
+
+            this.formatterMock.Setup(m => m.Format(columns[0].Value)).Returns("1st Value");
+            this.formatterMock.Setup(m => m.Format(columns[1].Value)).Returns("2nd Value");
+
+            const string schema = "schemaXX";
+            const string tableName = "tableNameXX";
+
+            // Act
+
+            this.primitives.Insert(null, schema, tableName, columns);
+            this.primitives.Execute();
+
+            // Assert
+
+            this.formatterMock.Verify();
+
+            string expectedText =
+                new StringBuilder($"insert into [{schema}].[{tableName}] ([Row1], [Row2]) values (1st Value, 2nd Value);").AppendLine()
+                    .AppendLine()
+                    .ToString();
+
+            this.insertCommandMock.VerifySet(m => m.CommandText = expectedText);
+        }
+
+        [TestMethod]
+        public void Insert_Catalogue_Schema_TableName_Test()
+        {
+            // Arrange
+
+            var columns = new[]
+            {
+                new Column { Name = "Row1", Value = 1},
+                new Column { Name = "Row2", Value = "B"},
+            };
+
+            this.formatterMock.Setup(m => m.Format(columns[0].Value)).Returns("1st Value");
+            this.formatterMock.Setup(m => m.Format(columns[1].Value)).Returns("2nd Value");
+
+            const string catalogueName = "catXX";
+            const string schema = "schemaXX";
+            const string tableName = "tableNameXX";
+
+            // Act
+
+            this.primitives.Insert(catalogueName, schema, tableName, columns);
+            this.primitives.Execute();
+
+            // Assert
+
+            this.formatterMock.Verify();
+
+            string expectedText =
+                new StringBuilder($"insert into [{catalogueName}].[{schema}].[{tableName}] ([Row1], [Row2]) values (1st Value, 2nd Value);").AppendLine()
+                    .AppendLine()
+                    .ToString();
+
+            this.insertCommandMock.VerifySet(m => m.CommandText = expectedText);
+        }
+
+        [TestMethod]
+        public void Insert_Catlogue_NoSchema_Exception_Test()
+        {
+            // Arrange
+
+            const string catalogueName = "catXX";
+            const string tableName = "tableNameXX";
+
+            // Act. Assert.
+
+            Helpers.ExceptionTest(() => this.primitives.Insert(catalogueName, null, tableName, Enumerable.Empty<Column>()),
+                typeof (WritePrimitivesException),
+                string.Format(Messages.CatalogueAndNoSchema, catalogueName, tableName));
         }
 
         [TestMethod]

@@ -106,5 +106,8 @@ namespace TestDataFramework.Exceptions
             "Internal Error. Attimpted to get defined type from dictionary. Table variable: {0}";
 
         public const string AssemblyCacheNotPopulated = "Cache for assembly does not exist. Assembly: {0}";
+
+        public const string CatalogueAndNoSchema =
+            "Cannot have catalogue specified without a schema given. Catalogue: {0}, Table name: {1}";
     }
 }

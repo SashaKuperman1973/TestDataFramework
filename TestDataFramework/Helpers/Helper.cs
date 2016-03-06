@@ -38,17 +38,19 @@ namespace TestDataFramework.Helpers
 
         public static DateTime Now => DateTime.Now;
 
-        public static string GetTableName(Type recordType, IAttributeDecorator attributeDecorator)
+        public static TableName GetTableName(Type recordType, IAttributeDecorator attributeDecorator)
         {
             IEnumerable<TableAttribute> attrs =
                 attributeDecorator.GetCustomAttributes<TableAttribute>(recordType)?.ToList();
 
             if (attrs == null || !(attrs = attrs.ToList()).Any())
             {
-                return recordType.Name;
+                return new TableName(recordType.Name);
             }
 
-            return attrs.First().Name;
+            TableAttribute tableAttribute = attrs.First();
+
+            return new TableName(tableAttribute.CatalogueName, tableAttribute.Schema, tableAttribute.Name);
         }
 
         public static string GetColumnName(PropertyInfo propertyInfo, IAttributeDecorator attributeDecorator)

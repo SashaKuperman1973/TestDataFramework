@@ -23,7 +23,7 @@ namespace TestDataFramework.WritePrimitives.Interfaces
 {
     public interface IWritePrimitives
     {
-        void Insert(string tableName, IEnumerable<Column> columns);
+        void Insert(string catalogueName, string schema, string tableName, IEnumerable<Column> columns);
         object SelectIdentity(string columnName);
         object[] Execute();
         void AddSqlCommand(string command);

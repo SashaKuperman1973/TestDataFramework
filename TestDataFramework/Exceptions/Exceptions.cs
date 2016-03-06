@@ -155,4 +155,20 @@ namespace TestDataFramework.Exceptions
         {
         }
     }
+
+    public class WritePrimitivesException : ApplicationException
+    {
+        public WritePrimitivesException(string catalogueAndNoSchemaMessage, string catalogueName, string tableName)
+            : base(string.Format(catalogueAndNoSchemaMessage, catalogueName, tableName))
+        {            
+        }
+    }
+
+    public class TableAttributeException : ApplicationException
+    {
+        public TableAttributeException(string catalogueAndNoSchemaMessage, string catalogueName, string tableName)
+            : base(string.Format(catalogueAndNoSchemaMessage, catalogueName, tableName))
+        {
+        }
+    }
 }

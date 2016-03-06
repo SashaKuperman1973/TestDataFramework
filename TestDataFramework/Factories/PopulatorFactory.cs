@@ -252,6 +252,8 @@ namespace TestDataFramework.Factories
 
                     Component.For<IAttributeDecorator>().ImplementedBy<StandardAttributeDecorator>(),
 
+                    Component.For<TableTypeCache>().ImplementedBy<TableTypeCache>(),
+
                     #endregion Common Region
 
                     #region Handled Type Generator

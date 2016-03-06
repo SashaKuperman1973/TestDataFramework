@@ -46,7 +46,8 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
         #endregion Private Fields
 
-        public InsertRecord(InsertRecordService service, RecordReference recordReference, IEnumerable<AbstractRepositoryOperation> peers, IAttributeDecorator attributeDecorator)
+        public InsertRecord(InsertRecordService service, RecordReference recordReference,
+            IEnumerable<AbstractRepositoryOperation> peers, IAttributeDecorator attributeDecorator)
         {
             InsertRecord.Logger.Debug("Entering constructor");
 
@@ -89,9 +90,9 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             InsertRecord.Logger.Debug($"this.Order: {this.Order}");
             orderedOperations[this.Order] = this;
 
-            string tableName = Helper.GetTableName(this.RecordReference.RecordType, this.attributeDecorator);
+            TableName tableName = Helper.GetTableName(this.RecordReference.RecordType, this.attributeDecorator);
 
-            this.service.WritePrimitives(writer, tableName, columnData.AllColumns, this.primaryKeyValues);
+            this.service.WritePrimitives(writer, tableName.CatalogueName, tableName.Schema, tableName.Name, columnData.AllColumns, this.primaryKeyValues);
 
             this.service.CopyPrimaryToForeignKeyColumns(columnData.ForeignKeyColumns);
 

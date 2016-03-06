@@ -41,7 +41,7 @@ namespace Tests.Tests
         {
             this.encoderMock = new Mock<LetterEncoder>();
             this.primitivesMock = new Mock<IWritePrimitives>();
-            this.commandGenerator = new Mock<SqlWriterCommandTextGenerator>();
+            this.commandGenerator = new Mock<SqlWriterCommandTextGenerator>(null);
 
             this.writerDictionary = new SqlWriterDictionary(this.encoderMock.Object, this.primitivesMock.Object,
                 this.commandGenerator.Object);

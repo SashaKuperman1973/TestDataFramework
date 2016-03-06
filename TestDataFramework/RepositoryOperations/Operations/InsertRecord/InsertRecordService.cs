@@ -244,7 +244,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
         #region WritePrimitives
 
-        public virtual void WritePrimitives(IWritePrimitives writer, string tableName, IEnumerable<Column> columns, List<ColumnSymbol> primaryKeyValues)
+        public virtual void WritePrimitives(IWritePrimitives writer, string catalogueName, string schema, string tableName, IEnumerable<Column> columns, List<ColumnSymbol> primaryKeyValues)
         {
             InsertRecordService.Logger.Debug("Entering WritePrimitives");
 
@@ -252,7 +252,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
             InsertRecordService.Logger.Debug($"tableName: {tableName}, columns: {Helper.ToCompositeString(columns)}");
 
-            writer.Insert(tableName, columns);
+            writer.Insert(catalogueName, schema, tableName, columns);
 
             this.PopulatePrimaryKeyValues(writer, primaryKeyValues, columns);
 

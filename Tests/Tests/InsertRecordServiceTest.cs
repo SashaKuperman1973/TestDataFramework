@@ -108,8 +108,8 @@ namespace Tests.Tests
 
             var primaryKeyOperations = new[]
             {
-                new Mock<InsertRecord>(this.insertRecordService, null, this.peers),
-                new Mock<InsertRecord>(this.insertRecordService, null, this.peers),
+                new Mock<InsertRecord>(this.insertRecordService, null, this.peers, null),
+                new Mock<InsertRecord>(this.insertRecordService, null, this.peers, null),
             };
 
             // Act
@@ -134,15 +134,17 @@ namespace Tests.Tests
         public void WritePrimitives_Insert_Test()
         {
             var primaryKeyValues = new List<ColumnSymbol>();
+            const string catalogueName = "catABC";
+            const string schema = "schemaABC";
             const string tableName = "ABCD";
 
             // Act
 
-            this.insertRecordService.WritePrimitives(this.writerMock.Object, tableName, this.mainTableColumns, primaryKeyValues);
+            this.insertRecordService.WritePrimitives(this.writerMock.Object, catalogueName, schema, tableName, this.mainTableColumns, primaryKeyValues);
 
             // Assert
 
-            this.writerMock.Verify(m => m.Insert(tableName, this.mainTableColumns));
+            this.writerMock.Verify(m => m.Insert(catalogueName, schema, tableName, this.mainTableColumns));
         }
 
         [TestMethod]
@@ -151,13 +153,15 @@ namespace Tests.Tests
             var primaryKeyValues = new List<ColumnSymbol>();
 
             const string identityVariableSymbol = "ABCD";
+            const string catalogueName = "catABC";
+            const string schema = "schemaABC";
             string tableName = this.foreignKeyTable.GetType().Name;
 
             this.writerMock.Setup(m => m.SelectIdentity(It.IsAny<string>())).Returns(identityVariableSymbol);
 
             // Act
 
-            this.insertRecordService.WritePrimitives(this.writerMock.Object, tableName, this.mainTableColumns, primaryKeyValues);
+            this.insertRecordService.WritePrimitives(this.writerMock.Object, catalogueName, schema, tableName, this.mainTableColumns, primaryKeyValues);
 
             // Assert
 
@@ -179,6 +183,8 @@ namespace Tests.Tests
 
             const string keyValue1 = "ABCD";
             const int keyValue2 = 5;
+            const string catalogueName = "catABC";
+            const string schema = "schemaABC";
             const string tableName = "XYZ";
 
             ManualKeyPrimaryTable table;
@@ -194,7 +200,7 @@ namespace Tests.Tests
                             }).Object, this.attributeDecorator), this.attributeDecorator);
             // Act
 
-            this.insertRecordService.WritePrimitives(this.writerMock.Object, tableName, Helpers.GetColumns(table, this.attributeDecorator), primaryKeyValues);
+            this.insertRecordService.WritePrimitives(this.writerMock.Object, catalogueName, schema, tableName, Helpers.GetColumns(table, this.attributeDecorator), primaryKeyValues);
 
             // Assert
 
@@ -224,10 +230,12 @@ namespace Tests.Tests
                             new KeyNoneTable()).Object, this.attributeDecorator), this.attributeDecorator);
 
             const string tableName = "ABCD";
+            const string catalogueName = "catABC";
+            const string schema = "schemaABC";
 
             // Act
 
-            this.insertRecordService.WritePrimitives(this.writerMock.Object, tableName, columns, primaryKeyValues);
+            this.insertRecordService.WritePrimitives(this.writerMock.Object, catalogueName, schema, tableName, columns, primaryKeyValues);
 
             // Assert
 
@@ -422,7 +430,7 @@ namespace Tests.Tests
 
             var primaryKeyInsertRecordMock = new Mock<InsertRecord>(this.insertRecordService,
                 new RecordReference<PrimaryTable>(Helpers.GetTypeGeneratorMock(new PrimaryTable()).Object, this.attributeDecorator),
-                this.peers);
+                this.peers, null);
 
             primaryKeyInsertRecordMock.Setup(m => m.GetPrimaryKeySymbols()).Returns(primaryKeySymbols);
 
@@ -454,7 +462,7 @@ namespace Tests.Tests
                 new RecordReference<ManualKeyPrimaryTable>(
                     Helpers.GetTypeGeneratorMock(new ManualKeyPrimaryTable()).Object, this.attributeDecorator),
                 
-                this.peers
+                this.peers, this.attributeDecorator
                 );
 
             primaryKeyInsertRecordMock.Setup(m => m.GetPrimaryKeySymbols()).Returns(primaryKeySymbols);
@@ -491,7 +499,7 @@ namespace Tests.Tests
             var recordReference =
                 new RecordReference<PrimaryTable>(Helpers.GetTypeGeneratorMock(new PrimaryTable()).Object, this.attributeDecorator);
 
-            var primaryKeyInsertRecordMock = new Mock<InsertRecord>(this.insertRecordService, recordReference, this.peers);
+            var primaryKeyInsertRecordMock = new Mock<InsertRecord>(this.insertRecordService, recordReference, this.peers, this.attributeDecorator);
 
             primaryKeyInsertRecordMock.Setup(m => m.GetPrimaryKeySymbols()).Returns(primaryKeySymbols);
 

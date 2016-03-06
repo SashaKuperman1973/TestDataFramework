@@ -57,15 +57,16 @@ namespace TestDataFramework.WritePrimitives
             DbProviderWritePrimitives.Logger.Debug("Exiting constructor");
         }
 
-        public void Insert(string tableName, IEnumerable<Column> columns)
+        public void Insert(string catalogueName, string schema, string tableName, IEnumerable<Column> columns)
         {
             DbProviderWritePrimitives.Logger.Debug("Entering Insert");
 
             columns = columns.ToList();
 
-            DbProviderWritePrimitives.Logger.Debug($"Entering Insert. tableName: {tableName}. columns: {Helper.ToCompositeString(columns)}");
+            DbProviderWritePrimitives.Logger.Debug(
+                $"Entering Insert. tableName: {tableName}. schema: {schema ?? "<null>"}. catalogueName: {catalogueName ?? "<null>"} columns: {Helper.ToCompositeString(columns)}");
 
-            string insertStatement = this.BuildInsertStatement(tableName, columns);
+            string insertStatement = this.BuildInsertStatement(catalogueName, schema, tableName, columns);
             DbProviderWritePrimitives.Logger.Debug($"insertStatement: {insertStatement}");
 
             this.ExecutionStatements.AppendLine(insertStatement);
@@ -136,13 +137,36 @@ namespace TestDataFramework.WritePrimitives
             return result.ToArray();
         }
 
-        private string BuildInsertStatement(string tableName, IEnumerable<Column> columns)
+        private string BuildInsertStatement(string catalogueName, string schema, string tableName, IEnumerable<Column> columns)
         {
             columns = columns.ToList();
             string parameterList = DbProviderWritePrimitives.BuildParameterListText(columns);
             string valueList = this.BuildValueListText(columns);
 
-            string result = $"insert into [{tableName}] " + parameterList + " values " + valueList + ";";
+            string fullTableName = DbProviderWritePrimitives.BuildFullTableName(catalogueName, schema, tableName);
+
+            string result = $"insert into {fullTableName} " + parameterList + " values " + valueList + ";";
+            return result;
+        }
+
+        private static string BuildFullTableName(string catalogueName, string schema, string tableName)
+        {
+            string result = $"[{tableName}]";
+
+            if (schema != null)
+            {
+                result = $"[{schema}]." + result;
+
+                if (catalogueName != null)
+                {
+                    result = $"[{catalogueName}]." + result;
+                }
+            }
+            else if (catalogueName != null)
+            {
+                throw new WritePrimitivesException(Messages.CatalogueAndNoSchema, catalogueName, tableName);
+            }
+
             return result;
         }
 

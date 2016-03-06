@@ -57,9 +57,9 @@ namespace Tests.Tests
             this.attributeDecorator = new StandardAttributeDecorator(this.tableTypeCache);
 
             this.subject = new SubjectClass();
-            this.recordReferenceMock = new Mock<RecordReference>(null);
+            this.recordReferenceMock = new Mock<RecordReference>(null, this.attributeDecorator);
             this.peers = new List<AbstractRepositoryOperation>();
-            this.serviceMock = new Mock<InsertRecordService>(this.recordReferenceMock.Object);
+            this.serviceMock = new Mock<InsertRecordService>(this.recordReferenceMock.Object, this.attributeDecorator);
             this.insertRecord = new InsertRecord(this.serviceMock.Object, this.recordReferenceMock.Object, this.peers, this.attributeDecorator);
 
             this.breakerMock = new Mock<CircularReferenceBreaker>();
@@ -104,7 +104,10 @@ namespace Tests.Tests
 
             Assert.AreEqual(this.insertRecord, orderedOperations[0]);
 
-            this.serviceMock.Verify(m => m.WritePrimitives(this.writePrimitivesMock.Object, tableName, columnList, It.Is<List<ColumnSymbol>>(l => l.Count == 0)), Times.Once);
+            this.serviceMock.Verify(
+                m =>
+                    m.WritePrimitives(this.writePrimitivesMock.Object, null, It.IsAny<string>(), tableName, columnList,
+                        It.Is<List<ColumnSymbol>>(l => l.Count == 0)), Times.Once);
 
             this.serviceMock.Verify(m => m.CopyPrimaryToForeignKeyColumns(It.Is<IEnumerable<Column>>(c => !c.Any())), Times.Once());
         }
@@ -135,7 +138,7 @@ namespace Tests.Tests
 
             var orderedOpertations = new AbstractRepositoryOperation[2];
             var secondObject = new SubjectClass();
-            var secondrecordReferenceMock = new Mock<RecordReference>(null);
+            var secondrecordReferenceMock = new Mock<RecordReference>(null, this.attributeDecorator);
             secondrecordReferenceMock.Setup(m => m.RecordObject).Returns(secondObject);
             secondrecordReferenceMock.Setup(m => m.RecordType).Returns(secondObject.GetType());
 

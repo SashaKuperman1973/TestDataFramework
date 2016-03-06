@@ -105,7 +105,7 @@
     <Compile Include="Tests\StandardAttributeDecoratorTests.cs" />
     <Compile Include="Tests\TableTypeCacheTests.cs" />
     <Compile Include="Tests\TableTests.cs" />
-    <None Include="UnitTest1.cs" />
+    <Compile Include="Tests\TableAttributeTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TestDataFramework\TestDataFramework.csproj">

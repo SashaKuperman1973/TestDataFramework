@@ -16,6 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 using System;
 using System.Linq;
 using TestDataFramework.Exceptions;
@@ -107,14 +108,13 @@ namespace TestDataFramework
         public Type PrimaryTableType { get; }
         public string Schema { get; } = "dbo";
         public string PrimaryTableName { get; }
-
         public string PrimaryKeyName { get; }
 
         public override string ToString()
         {
             string result =
-                string.Format("PrimaryTableType: {0}, PrimaryTableName: {1}, PrimaryKeyName: {2}",
-                    AttributeHelper.GetStrings(this.PrimaryTableType, this.PrimaryTableName, this.PrimaryKeyName));
+                string.Format("PrimaryTableType: {0}, PrimaryTableName: {1}, PrimaryKeyName: {2}, Schema: {3}",
+                    AttributeHelper.GetStrings(this.PrimaryTableType, this.PrimaryTableName, this.PrimaryKeyName, this.Schema));
 
             return result;
         }
@@ -144,6 +144,9 @@ namespace TestDataFramework
             this.Schema = schema;
         }
 
+        /// <summary>
+        /// This overload will set the Schema to dbo.
+        /// </summary>
         public TableAttribute(string name)
         {
             name.IsNotNull(nameof(name));
@@ -178,7 +181,7 @@ namespace TestDataFramework
 
         public override string ToString()
         {
-            string result = $"Name: {this.Name}, Schema: {this.Schema ?? "<null>"}";
+            string result = $"Name: {this.Name}, Schema: {this.Schema ?? "<null>"}, Catalogue: {this.CatalogueName ?? "<null>"}";
             return result;
         }
     }

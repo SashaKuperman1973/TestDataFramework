@@ -3,6 +3,7 @@ using TestDataFramework;
 
 namespace IntegrationTests.TestModels.Generated.Declarative
 {
+  [Table("TestDataFramework", "dbo", "TertiaryManualKeyForeignTable")]
   public class TertiaryManualKeyForeignTable
   {
 	[PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Auto)]

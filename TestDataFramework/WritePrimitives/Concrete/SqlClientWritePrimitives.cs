@@ -17,9 +17,12 @@
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data.Common;
+using System.Linq;
 using log4net;
+using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers.Interfaces;
 using TestDataFramework.RepositoryOperations.Model;
 using TestDataFramework.ValueFormatter.Interfaces;
@@ -78,6 +81,33 @@ namespace TestDataFramework.WritePrimitives.Concrete
             var result = new Variable(symbol);
 
             SqlClientWritePrimitives.Logger.Debug($"Exiting WriteGuid");
+            return result;
+        }
+
+        public static string BuildFullTableName(string catalogueName, string schema, string tableName)
+        {
+            string result = $"[{tableName}]";
+
+            if (schema != null)
+            {
+                result = $"[{schema}]." + result;
+
+                if (catalogueName != null)
+                {
+                    result = $"[{catalogueName}]." + result;
+                }
+            }
+            else if (catalogueName != null)
+            {
+                throw new WritePrimitivesException(Messages.CatalogueAndNoSchema, catalogueName, tableName);
+            }
+
+            return result;
+        }
+
+        public static string BuildParameterListText(IEnumerable<Column> columns)
+        {
+            string result = "(" + string.Join(", ", columns.Select(c => "[" + c.Name + "]")) + ")";
             return result;
         }
     }  

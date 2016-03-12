@@ -28,7 +28,8 @@ namespace TestDataFramework.AttributeDecorator
 {
     public class TableTypeCache
     {
-        private readonly TypeDictionaryEqualityComparer typeDictionaryEqualityComparer = new TypeDictionaryEqualityComparer();
+        private readonly TypeDictionaryEqualityComparer typeDictionaryEqualityComparer =
+            new TypeDictionaryEqualityComparer();
 
         private readonly ConcurrentDictionary<Assembly, AssemblyLookupContext> tableTypeDictionary =
             new ConcurrentDictionary<Assembly, AssemblyLookupContext>();
@@ -39,23 +40,16 @@ namespace TestDataFramework.AttributeDecorator
             return result;
         }
 
-        public virtual Type GetCachedTableType(ForeignKeyAttribute foreignAttribute, Assembly assembly)
+        public virtual Type GetCachedTableType(ForeignKeyAttribute foreignKeyAttribute, Type foreignType, Func<Type, TableAttribute> getTableAttibute)
         {
-            AssemblyLookupContext assemblyLookupContext = this.tableTypeDictionary.GetOrAdd(assembly, a =>
+            AssemblyLookupContext assemblyLookupContext = this.tableTypeDictionary.GetOrAdd(foreignType.Assembly, a =>
             {
-                throw new TableTypeLookupException(Messages.AssemblyCacheNotPopulated, assembly);
+                throw new TableTypeLookupException(Messages.AssemblyCacheNotPopulated, foreignType.Assembly);
             });
 
-            this.typeDictionaryEqualityComparer.CompareForTableAttribute = true;
+            TableAttribute tableAttribute = getTableAttibute(foreignType);
 
-            Type result = TableTypeCache.GetCachedTableType(foreignAttribute, assemblyLookupContext);
-
-            this.typeDictionaryEqualityComparer.CompareForTableAttribute = false;
-
-            if (result == null)
-            {
-                result = TableTypeCache.GetCachedTableType(foreignAttribute, assemblyLookupContext);
-            }
+            Type result = this.GetCachedTableType(foreignKeyAttribute, tableAttribute, assemblyLookupContext);
 
             return result;
         }
@@ -83,41 +77,47 @@ namespace TestDataFramework.AttributeDecorator
 
             AppDomain domain = AppDomain.CreateDomain("TestDataFramework_" + Guid.NewGuid(), null, AppDomain.CurrentDomain.SetupInformation);
 
-            foreach (AssemblyName assemblyName in assemblyNameList)
+            assemblyNameList.ForEach(assemblyName =>
             {
                 Assembly loadedAssembly = domain.Load(assemblyName);
 
-                foreach (TypeInfo definedType in loadedAssembly.DefinedTypes)
+                loadedAssembly.DefinedTypes.ToList().ForEach(definedType =>
                 {
+
                     TableAttribute tableAttribute = getTableAttibute(definedType);
 
                     Table table = tableAttribute != null
                         ? new Table(tableAttribute)
                         : new Table(definedType);
 
-                    TableTypeCache.TryAdd(table, definedType, assemblyLookupContext);
-                }
-            }
+                    this.TryAdd(table, definedType, assemblyLookupContext);
+                });
+            });
 
             AppDomain.Unload(domain);
         }
 
-        private static void TryAdd(Table table, Type definedType, AssemblyLookupContext assemblyLookupContext)
+        private void TryAdd(Table table, Type definedType, AssemblyLookupContext assemblyLookupContext)
         {
-            if (!assemblyLookupContext.TypeDictionary.TryAdd(table, definedType))
+            bool crtieriaTryAddResult =
+                this.PerformTypeDictionaryOperation(
+                    () => assemblyLookupContext.TypeDictionary.TryAdd(table, definedType));
+
+            if (!crtieriaTryAddResult)
             {
                 assemblyLookupContext.CollisionDictionary.AddOrUpdate(table, new List<Type>
-                        {
-                            // first item of collision to add to list
-                            assemblyLookupContext.TypeDictionary.GetOrAdd(table,
-                                t =>
-                                {
-                                    throw new TableTypeCacheException(Messages.ErrorGettingDefinedType, table);
-                                }),
+                {
 
-                            // second item of collision to add to list
-                            definedType
-                        },
+                    // first item of collision to add to list
+                    assemblyLookupContext.TypeDictionary.GetOrAdd(table,
+                        t =>
+                        {
+                            throw new TableTypeCacheException(Messages.ErrorGettingDefinedType, table);
+                        }),
+
+                    // second item of collision to add to list
+                    definedType
+                },
 
                 // collision key already exists. update collision list with newly attempted type.
                 (tbl, list) =>
@@ -128,69 +128,95 @@ namespace TestDataFramework.AttributeDecorator
             }
         }
 
-        private static Type GetCachedTableType(ForeignKeyAttribute foreignAttribute, AssemblyLookupContext assemblyLookupContext)
+        private delegate bool TypeDictionaryOperationDelegate<TResult>(out TResult output);
+        private delegate bool TypeDictionaryOperationDelegate();
+
+        private bool PerformTypeDictionaryOperation(TypeDictionaryOperationDelegate typeDictionaryOperation)
         {
-            var table = new Table(foreignAttribute);
+            object output;
 
-            List<Type> collisionTypes;
-            if (assemblyLookupContext.CollisionDictionary.TryGetValue(table, out collisionTypes))
+            bool result = this.PerformTypeDictionaryOperation((out object x) =>
             {
-                throw new TableTypeCacheException(Messages.DuplicateTableName, collisionTypes);
-            }
+                x = null;
+                return typeDictionaryOperation();
 
-            Type cachedType;
-            Type result = assemblyLookupContext.TypeDictionary.TryGetValue(table, out cachedType) ? cachedType : null;
+            }, out output);
 
             return result;
         }
 
+        private bool PerformTypeDictionaryOperation<TOut>(TypeDictionaryOperationDelegate<TOut> typeDictionaryOperation, out TOut output)
+        {
+            this.typeDictionaryEqualityComparer.SetEqualsCriteria(
+                (fromSet, input) =>
+                    fromSet.HasTableAttribute && fromSet.HasCatalogueName && input.HasTableAttribute &&
+                    input.HasCatalogueName);
+
+            // Note: If HasCatlogueName then HasTableAttribute
+
+            var equalsCriteriaSet = new TypeDictionaryEqualityComparer
+                .EqualsCriteriaDelegate[]
+            {
+                (fromSet, input) =>
+                    fromSet.HasCatalogueName && input.HasCatalogueName &&
+                    fromSet.CatalogueName.Equals(input.CatalogueName),
+
+                // Higher priority because it is explicitly decorated
+                (fromSet, input) =>
+                    fromSet.HasTableAttribute,
+
+                (fromSet, input) => true,
+
+            };
+
+            foreach (TypeDictionaryEqualityComparer.EqualsCriteriaDelegate criteria in equalsCriteriaSet)
+            {
+                this.typeDictionaryEqualityComparer.SetEqualsCriteria(criteria);
+
+                if (typeDictionaryOperation(out output))
+                {
+                    return true;
+                }
+            }
+
+            output = default(TOut);
+            return false;
+        }
+
+        private Type GetCachedTableType(ForeignKeyAttribute foreignAttribute, TableAttribute tableAttribute, AssemblyLookupContext assemblyLookupContext)
+        {
+            var table = new Table(foreignAttribute, tableAttribute);
+
+            List<Type> collisionTypes;
+            if (
+                this.PerformTypeDictionaryOperation(
+                    (out List<Type> fnCollisionTypes) =>
+                        assemblyLookupContext.CollisionDictionary.TryGetValue(table, out fnCollisionTypes),
+                    out collisionTypes))
+            {
+                throw new TableTypeCacheException(Messages.DuplicateTableName, collisionTypes);
+            }
+
+            Type result;
+            this.PerformTypeDictionaryOperation((out Type fnResult) => assemblyLookupContext.TypeDictionary.TryGetValue(table, out fnResult), out result);
+
+            return result;
+        }
+        
         private class TypeDictionaryEqualityComparer : IEqualityComparer<Table>
         {
-            public TypeDictionaryEqualityComparer()
+            public delegate bool EqualsCriteriaDelegate(Table fromSet, Table input);
+            private EqualsCriteriaDelegate equalsCriteria;
+
+            public void SetEqualsCriteria(EqualsCriteriaDelegate equalsCriteria)
             {
-                this.CompareForTableAttribute = false;
+                this.equalsCriteria = equalsCriteria;
             }
 
-            private Func<Table, Table, bool> equalsFunc;
-
-            public bool CompareForTableAttribute
+            public bool Equals(Table fromSet, Table input)
             {
-                set
-                {
-                    if (value)
-                    {
-                        this.equalsFunc = TypeDictionaryEqualityComparer.EqualsAndHasTableAttribute;
-                    }
-                    else
-                    {
-                        this.equalsFunc = TypeDictionaryEqualityComparer.StandardEquals;
-                    }
-                }
-
-                get { return this.equalsFunc == TypeDictionaryEqualityComparer.EqualsAndHasTableAttribute; }
-            }
-
-            private static bool StandardEquals(Table x, Table y)
-            {
-                bool result = (y.HasTableAttribute == Table.HasTableAttributeEnum.NotSet ||
-                               x.HasTableAttribute == y.HasTableAttribute) && x.Equals(y);
+                bool result = this.equalsCriteria(fromSet, input) && fromSet.Equals(input);
                 return result;
-            }
-
-            private static bool EqualsAndHasTableAttribute(Table x, Table y)
-            {
-                if (y.HasTableAttribute != Table.HasTableAttributeEnum.NotSet)
-                {
-                    throw new ApplicationException("EqualsAndHasTableAttribute: Table y.HasTableAttribute should not be specified");
-                }
-
-                bool result = x.HasTableAttribute == Table.HasTableAttributeEnum.True && x.Equals(y);
-                return result;
-            }
-
-            public bool Equals(Table x, Table y)
-            {
-                return this.equalsFunc(x, y);
             }
 
             public int GetHashCode(Table obj)
@@ -198,5 +224,6 @@ namespace TestDataFramework.AttributeDecorator
                 return obj.GetHashCode();
             }
         }
+        
     }
 }

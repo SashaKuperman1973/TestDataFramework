@@ -21,6 +21,7 @@ using System;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using TestDataFramework.AttributeDecorator;
 using TestDataFramework.DeferredValueGenerator.Concrete;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
@@ -35,17 +36,21 @@ namespace Tests.Tests
         private SqlWriterDictionary writerDictionary;
         private Mock<LetterEncoder> encoderMock;
         private Mock<IWritePrimitives> primitivesMock;
-        private Mock<SqlWriterCommandTextGenerator> commandGenerator;
+        private Mock<SqlWriterCommandTextGenerator> commandGeneratorMock;
+        private Mock<SqlWriterCommandText> commandTextProviderMock;
+        private Mock<IAttributeDecorator> attributeDecoratorMock;
 
         [TestInitialize]
         public void Initialize()
         {
             this.encoderMock = new Mock<LetterEncoder>();
             this.primitivesMock = new Mock<IWritePrimitives>();
-            this.commandGenerator = new Mock<SqlWriterCommandTextGenerator>(null);
+            this.commandTextProviderMock = new Mock<SqlWriterCommandText>();
+            this.commandGeneratorMock = new Mock<SqlWriterCommandTextGenerator>(this.attributeDecoratorMock, this.commandTextProviderMock.Object);
+            this.attributeDecoratorMock = new Mock<IAttributeDecorator>();
 
             this.writerDictionary = new SqlWriterDictionary(this.encoderMock.Object, this.primitivesMock.Object,
-                this.commandGenerator.Object);
+                this.commandGeneratorMock.Object);
         }
 
         [TestMethod]
@@ -56,7 +61,7 @@ namespace Tests.Tests
             PropertyInfo propertyInfo = typeof(ClassWithIntAutoPrimaryKey).GetProperty("Key");
 
             const string command = "XXXX";
-            this.commandGenerator.Setup(m => m.WriteNumber(propertyInfo)).Returns(command);
+            this.commandGeneratorMock.Setup(m => m.WriteNumber(propertyInfo)).Returns(command);
 
             var values = new object[] { (byte)1, (int)2, (short)3, (long)4 };
 
@@ -85,7 +90,7 @@ namespace Tests.Tests
             var expected = new LargeInteger(7);
 
             const string command = "XXXX";
-            this.commandGenerator.Setup(m => m.WriteString(propertyInfo)).Returns(command);
+            this.commandGeneratorMock.Setup(m => m.WriteString(propertyInfo)).Returns(command);
 
             this.encoderMock.Setup(m => m.Decode(value)).Returns(expected);
 
@@ -98,7 +103,7 @@ namespace Tests.Tests
             // Assert
 
             Assert.AreEqual(expected, result);
-            this.commandGenerator.Verify(m => m.WriteString(propertyInfo), Times.Once);
+            this.commandGeneratorMock.Verify(m => m.WriteString(propertyInfo), Times.Once);
             this.primitivesMock.Verify(m => m.AddSqlCommand(command));
         }
 

@@ -18,52 +18,60 @@
 */
 
 using System;
+using TestDataFramework.Helpers;
 
 namespace TestDataFramework.AttributeDecorator
 {
     public class Table
     {
-        public enum HasTableAttributeEnum
+        // Constructs input to check against dictionary contents when looking up an input.
+        public Table(ForeignKeyAttribute foreignKeyAttribute, TableAttribute tableAttribute)
         {
-            True,
-            False,
-            NotSet
-        }
+            foreignKeyAttribute.IsNotNull(nameof(foreignKeyAttribute));
 
-        public Table(ForeignKeyAttribute foreignKeyAttribute)
-        {
+            this.HasTableAttribute = tableAttribute != null;
+            this.CatalogueName = tableAttribute?.CatalogueName;
             this.TableName = foreignKeyAttribute.PrimaryTableName;
             this.Schema = foreignKeyAttribute.Schema;
-            this.HasTableAttribute = HasTableAttributeEnum.NotSet;
         }
 
+        // Constructs a value to add to dictionary when type has no TableAttribute.
         public Table(Type type)
         {
+            type.IsNotNull(nameof(type));
+
             this.TableName = type.Name;
-            this.HasTableAttribute = HasTableAttributeEnum.False;
+            this.HasTableAttribute = false;
         }
 
+        // Constructs a value to add to dictionary.
         public Table(TableAttribute tableAttribute)
         {
+            tableAttribute.IsNotNull(nameof(tableAttribute));
+
             this.TableName = tableAttribute.Name;
             this.Schema = tableAttribute.Schema;
             this.CatalogueName = tableAttribute.CatalogueName;
-            this.HasTableAttribute = HasTableAttributeEnum.True;
+            this.HasTableAttribute = true;
         }
 
-        public HasTableAttributeEnum HasTableAttribute { get; }
+        public bool HasTableAttribute { get; }
+        public bool HasCatalogueName => this.CatalogueName != null;
+
         public string CatalogueName { get; }
-        public string Schema { get; } = "dbo";
+        public string Schema { get; }
         public string TableName { get; }
 
         public override int GetHashCode()
         {
-            int result = (this.Schema?.GetHashCode() ?? 0) ^ (this.CatalogueName?.GetHashCode() ?? 0) ^
-                         this.TableName.GetHashCode();
+            int result = (this.Schema?.GetHashCode() ?? 0) ^ this.TableName.GetHashCode();
 
             return result;
         }
 
+        /// <summary>
+        /// Equals only operates on TableName and Schema
+        /// </summary>
         public override bool Equals(object obj)
         {
             var table = obj as Table;
@@ -72,9 +80,6 @@ namespace TestDataFramework.AttributeDecorator
 
                           (table.Schema == null && this.Schema == null ||
                            (table.Schema?.Equals(this.Schema) ?? false)) &&
-
-                          (table.CatalogueName == null && this.CatalogueName == null ||
-                           (table.CatalogueName?.Equals(this.CatalogueName) ?? false)) &&
 
                            table.TableName.Equals(this.TableName);
 

@@ -20,6 +20,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework;
@@ -109,6 +110,12 @@ namespace Tests.Tests
 
             Assert.AreEqual(PrimaryKeyAttribute.KeyTypeEnum.Auto, primaryKeyAttribute.KeyType);
             Assert.AreEqual(20, stringLengthAttribute.Length);
+        }
+
+        [TestMethod]
+        public void GetSingleAttribute_Test()
+        {
+            throw new NotImplementedException();
         }
 
         #endregion GetCustomAttributeHelper Tests (Returns single value)
@@ -349,7 +356,7 @@ namespace Tests.Tests
             Type returnedType = typeof (PrimaryClass);
 
             this.tableTypeCacheMock.Setup(m => m.IsAssemblyCachePopulated(foreignType.Assembly)).Returns(false);
-            this.tableTypeCacheMock.Setup(m => m.GetCachedTableType(foreignKeyAtribute, foreignType.Assembly))
+            this.tableTypeCacheMock.Setup(m => m.GetCachedTableType(foreignKeyAtribute, foreignType, this.attributeDecorator.GetSingleAttribute<TableAttribute>))
                 .Returns(returnedType);
 
             // Act
@@ -373,7 +380,7 @@ namespace Tests.Tests
             Type returnedType = typeof(PrimaryClass);
 
             this.tableTypeCacheMock.Setup(m => m.IsAssemblyCachePopulated(foreignType.Assembly)).Returns(true);
-            this.tableTypeCacheMock.Setup(m => m.GetCachedTableType(foreignKeyAtribute, foreignType.Assembly))
+            this.tableTypeCacheMock.Setup(m => m.GetCachedTableType(foreignKeyAtribute, foreignType, this.attributeDecorator.GetSingleAttribute<TableAttribute>))
                 .Returns(returnedType);
 
             // Act
@@ -396,7 +403,7 @@ namespace Tests.Tests
 
             Type expected = typeof(PrimaryClass);
 
-            this.tableTypeCacheMock.Setup(m => m.GetCachedTableType(foreignKeyAtribute, foreignType.Assembly))
+            this.tableTypeCacheMock.Setup(m => m.GetCachedTableType(foreignKeyAtribute, foreignType, this.attributeDecorator.GetSingleAttribute<TableAttribute>))
                 .Returns(expected);
 
             // Act

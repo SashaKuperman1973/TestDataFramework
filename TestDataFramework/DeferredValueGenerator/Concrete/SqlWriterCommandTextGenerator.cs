@@ -21,31 +21,52 @@ using System.Reflection;
 using log4net;
 using TestDataFramework.AttributeDecorator;
 using TestDataFramework.Helpers;
+using TestDataFramework.WritePrimitives;
+using TestDataFramework.WritePrimitives.Concrete;
 
 namespace TestDataFramework.DeferredValueGenerator.Concrete
 {
+    public class SqlWriterCommandText
+    {
+        public virtual string GetStringSelect(string catalogueName, string schema, string tableName, string columnName)
+        {
+            string fullTableName = SqlClientWritePrimitives.BuildFullTableName(catalogueName, schema, tableName);
+            columnName = "[" + columnName + "]";
+
+            string result =
+                $"Select Max({columnName}) from {fullTableName} where {columnName} not like '%[^A-Z]%' And LEN({columnName}) = (Select Max(Len({columnName})) From {fullTableName} where {columnName} not like '%[^A-Z]%' );";
+
+            return result;
+        }
+
+        public virtual string GetNumberSelect(string catalogueName, string schema, string tableName, string columnName)
+        {
+            string fullTableName = SqlClientWritePrimitives.BuildFullTableName(catalogueName, schema, tableName);
+
+            string result = $"Select MAX([{columnName}]) From {fullTableName};";
+
+            return result;
+        }
+    }
+
     public class SqlWriterCommandTextGenerator
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(SqlWriterCommandTextGenerator));
 
         private readonly IAttributeDecorator attributeDecorator;
+        private readonly SqlWriterCommandText sqlWriterCommandText;
 
-        public SqlWriterCommandTextGenerator(IAttributeDecorator attributeDecorator)
+        public SqlWriterCommandTextGenerator(IAttributeDecorator attributeDecorator, SqlWriterCommandText sqlWriterCommandText)
         {
             this.attributeDecorator = attributeDecorator;
+            this.sqlWriterCommandText = sqlWriterCommandText;
         }
 
         public virtual string WriteString(PropertyInfo propertyInfo)
         {
-            SqlWriterCommandTextGenerator.Logger.Debug("Entering WriteString. propertyInfo:" + propertyInfo.GetExtendedMemberInfoString());
+            SqlWriterCommandTextGenerator.Logger.Debug("Entering WriteString");
 
-            string tableName = "[" + Helper.GetTableName(propertyInfo.DeclaringType, this.attributeDecorator) + "]";
-            string columnName = "[" + Helper.GetColumnName(propertyInfo, this.attributeDecorator) + "]";
-
-            string result =
-                $"Select Max({columnName}) from {tableName} where {columnName} not like '%[^A-Z]%' And LEN({columnName}) = (Select Max(Len({columnName})) From {tableName} where {columnName} not like '%[^A-Z]%' )";
-
-            SqlWriterCommandTextGenerator.Logger.Debug($"Result statement: {result}");
+            string result = this.Write(propertyInfo, this.sqlWriterCommandText.GetStringSelect);
 
             SqlWriterCommandTextGenerator.Logger.Debug("Exiting WriteString");
             return result;
@@ -53,13 +74,29 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
 
         public virtual string WriteNumber(PropertyInfo propertyInfo)
         {
-            SqlWriterCommandTextGenerator.Logger.Debug("Entering WriteNumber. propertyInfo:" + propertyInfo.GetExtendedMemberInfoString());
+            SqlWriterCommandTextGenerator.Logger.Debug("Entering WriteNumber");
 
-            string result = $"Select MAX([{Helper.GetColumnName(propertyInfo, this.attributeDecorator)}]) From [{Helper.GetTableName(propertyInfo.DeclaringType, this.attributeDecorator)}]";
+            string result = this.Write(propertyInfo, this.sqlWriterCommandText.GetNumberSelect);
+
+            SqlWriterCommandTextGenerator.Logger.Debug("Exiting WriteNumber");
+            return result;
+        }
+
+        private delegate string GetSelectDelegate(
+            string catalogueName, string schema, string tableName, string columnName);
+
+        private string Write(PropertyInfo propertyInfo, GetSelectDelegate getSelectDelegate)
+        {
+            SqlWriterCommandTextGenerator.Logger.Debug("Entering Write. propertyInfo:" + propertyInfo.GetExtendedMemberInfoString());
+
+            TableName tableName = Helper.GetTableName(propertyInfo.DeclaringType, this.attributeDecorator);
+            string columnName = Helper.GetColumnName(propertyInfo, this.attributeDecorator);
+
+            string result = getSelectDelegate(tableName.CatalogueName, tableName.Schema, tableName.Name, columnName);
 
             SqlWriterCommandTextGenerator.Logger.Debug($"Result statement: {result}");
 
-            SqlWriterCommandTextGenerator.Logger.Debug("Exiting WriteNumber");
+            SqlWriterCommandTextGenerator.Logger.Debug("Exiting Write");
             return result;
         }
     }

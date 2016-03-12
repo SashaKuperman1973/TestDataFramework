@@ -22,6 +22,7 @@ using System.Reflection;
 using log4net;
 using TestDataFramework.ArrayRandomizer;
 using TestDataFramework.AttributeDecorator;
+using TestDataFramework.TypeGenerator.Interfaces;
 using TestDataFramework.UniqueValueGenerator.Interfaces;
 using TestDataFramework.ValueProvider.Interfaces;
 
@@ -41,7 +42,7 @@ namespace TestDataFramework.ValueGenerator.Concrete
         {
             SqlClientValueGenerator.Logger.Debug("Executing GetGuid");
 
-            return default(Guid);
+            return default(Guid); 
         }
     }
 }

@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
 using IntegrationTests.TestModels;
+using IntegrationTests.TestModels.Generated;
 using IntegrationTests.TestModels.Generated.Declarative;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -89,25 +90,43 @@ namespace IntegrationTests.Tests
             Console.WriteLine(result[1].RecordObject.Key2);
         }
 
-        [Ignore]
+        //[Ignore]
         [TestMethod]
-        public void Memory_Test()
+        public void Memory_Declarative_Test()
         {
             IPopulator populator = this.factory.CreateMemoryPopulator();
-            SqlClientAndMemoryTests.PrimaryKeyForeignKeyTest(populator);
+            SqlClientAndMemoryTests.PrimaryKeyForeignKeyTest(populator, new DeclarativeGeneratorIntegrationTest());
         }
 
         //[Ignore]
         [TestMethod]
-        public void SqlCient_Test()
+        public void Memory_POCO_Test()
+        {
+            IPopulator populator = this.factory.CreateMemoryPopulator();
+            SqlClientAndMemoryTests.PrimaryKeyForeignKeyTest(populator, new PocoGeneratorIntegrationTest());
+        }
+
+        //[Ignore]
+        [TestMethod]
+        public void SqlCient_Declarative_Test()
         {
             IPopulator populator = this.factory.CreateSqlClientPopulator(
                 @"Data Source=.\SqlExpress;Initial Catalog=TestDataFramework;Integrated Security=SSPI;");
 
-            SqlClientAndMemoryTests.PrimaryKeyForeignKeyTest(populator);
+            SqlClientAndMemoryTests.PrimaryKeyForeignKeyTest(populator, new DeclarativeGeneratorIntegrationTest());
         }
 
-        private static void PrimaryKeyForeignKeyTest(IPopulator populator)
+        //[Ignore]
+        [TestMethod]
+        public void SqlCient_POCO_Test()
+        {
+            IPopulator populator = this.factory.CreateSqlClientPopulator(
+                @"Data Source=.\SqlExpress;Initial Catalog=TestDataFramework;Integrated Security=SSPI;");
+
+            SqlClientAndMemoryTests.PrimaryKeyForeignKeyTest(populator, new PocoGeneratorIntegrationTest());
+        }
+
+        private static void PrimaryKeyForeignKeyTest(IPopulator populator, ICodeGeneratorIntegration codeGeneratorIntegration)
         {
             IList<RecordReference<ManualKeyPrimaryTableClass>> primaries = populator.Add<ManualKeyPrimaryTableClass>(2);
 
@@ -117,18 +136,9 @@ namespace IntegrationTests.Tests
             IList<RecordReference<ManualKeyForeignTable>> foreignSet2 = populator.Add<ManualKeyForeignTable>(2);
             foreignSet2.ToList().ForEach(f => f.AddPrimaryRecordReference(primaries[1]));
 
-            IList<RecordReference<TertiaryManualKeyForeignTable>> tertiaryForeignSet =
-                populator.Add<TertiaryManualKeyForeignTable>(4);
-
-            tertiaryForeignSet[0].AddPrimaryRecordReference(foreignSet1[0]);
-            tertiaryForeignSet[1].AddPrimaryRecordReference(foreignSet1[1]);
-            tertiaryForeignSet[2].AddPrimaryRecordReference(foreignSet2[0]);
-            tertiaryForeignSet[3].AddPrimaryRecordReference(foreignSet2[1]);
+            codeGeneratorIntegration.AddTypes(populator, foreignSet1, foreignSet2);
 
             IList<RecordReference<ForeignToAutoPrimaryTable>> foreignToAutoSet = populator.Add<ForeignToAutoPrimaryTable>(2);
-
-            foreignToAutoSet[0].AddPrimaryRecordReference(tertiaryForeignSet[0]);
-            foreignToAutoSet[1].AddPrimaryRecordReference(tertiaryForeignSet[1]);
 
             primaries[0].Set(o => o.ADecimal, 112233.445566m).Set(o => o.AString, "AAXX").Set(o => o.Key1, "HummHummHumm");
 
@@ -146,8 +156,7 @@ namespace IntegrationTests.Tests
             Helpers.Dump(primaries);
             Helpers.Dump(foreignSet1);
             Helpers.Dump(foreignSet2);
-            Helpers.Dump(tertiaryForeignSet);
-            Helpers.Dump(foreignToAutoSet);
+            codeGeneratorIntegration.Dump();
 
             Console.WriteLine();
 

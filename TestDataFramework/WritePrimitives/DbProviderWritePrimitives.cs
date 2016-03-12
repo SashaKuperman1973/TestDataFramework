@@ -28,6 +28,7 @@ using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
 using TestDataFramework.RepositoryOperations.Model;
 using TestDataFramework.ValueFormatter.Interfaces;
+using TestDataFramework.WritePrimitives.Concrete;
 using TestDataFramework.WritePrimitives.Interfaces;
 
 namespace TestDataFramework.WritePrimitives
@@ -141,39 +142,12 @@ namespace TestDataFramework.WritePrimitives
         private string BuildInsertStatement(string catalogueName, string schema, string tableName, IEnumerable<Column> columns)
         {
             columns = columns.ToList();
-            string parameterList = DbProviderWritePrimitives.BuildParameterListText(columns);
+            string parameterList = SqlClientWritePrimitives.BuildParameterListText(columns);
             string valueList = this.BuildValueListText(columns);
 
-            string fullTableName = DbProviderWritePrimitives.BuildFullTableName(catalogueName, schema, tableName);
+            string fullTableName = SqlClientWritePrimitives.BuildFullTableName(catalogueName, schema, tableName);
 
             string result = $"insert into {fullTableName} " + parameterList + " values " + valueList + ";";
-            return result;
-        }
-
-        private static string BuildFullTableName(string catalogueName, string schema, string tableName)
-        {
-            string result = $"[{tableName}]";
-
-            if (schema != null)
-            {
-                result = $"[{schema}]." + result;
-
-                if (catalogueName != null)
-                {
-                    result = $"[{catalogueName}]." + result;
-                }
-            }
-            else if (catalogueName != null)
-            {
-                throw new WritePrimitivesException(Messages.CatalogueAndNoSchema, catalogueName, tableName);
-            }
-
-            return result;
-        }
-
-        private static string BuildParameterListText(IEnumerable<Column> columns)
-        {
-            string result = "(" + string.Join(", ", columns.Select(c => "[" + c.Name + "]")) + ")";
             return result;
         }
 

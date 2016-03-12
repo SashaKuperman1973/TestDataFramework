@@ -97,7 +97,7 @@ namespace TestDataFramework.Factories
 
         private IWindsorContainer GetSqlClientPopulatorContainer(string connectionStringWithDefaultCatalogue, bool mustBeInATransaction, bool throwIfUnhandledPrimaryKeyType)
         {
-            PopulatorFactory.Logger.Debug("Entering CreateMemoryPopulator");
+            PopulatorFactory.Logger.Debug("Entering GetSqlClientPopulatorContainer");
 
             if (this.sqlClientPopulatorContainer != null && !this.sqlClientPopulatorContainer.IsDisposed)
             {
@@ -141,10 +141,13 @@ namespace TestDataFramework.Factories
                     .DependsOn(
                         ServiceOverride.ForKey<BaseValueGenerator.GetTypeGeneratorDelegate>()
                             .Eq(PopulatorFactory.GetStandardTypeGenerator))
-                    .Named(PopulatorFactory.StandardValueGenerator)
+                    .Named(PopulatorFactory.StandardValueGenerator),
+
+                Component.For<SqlWriterCommandText>().ImplementedBy<SqlWriterCommandText>()
+
                 );
 
-            PopulatorFactory.Logger.Debug("Exiting CreateMemoryPopulator");
+            PopulatorFactory.Logger.Debug("Exiting GetSqlClientPopulatorContainer");
             return this.sqlClientPopulatorContainer.Container;
         }
 

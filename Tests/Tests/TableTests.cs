@@ -28,6 +28,8 @@ namespace Tests.Tests
     [TestClass]
     public class TableTests
     {
+        #region Constructor tests
+
         [TestMethod]
         public void ForeignKeyAttribute_Constructor_Test()
         {
@@ -41,16 +43,45 @@ namespace Tests.Tests
 
             // Act
 
-            var table = new Table(fkAttribute);
+            var table = new Table(fkAttribute, null);
 
             // Assert
 
-            Assert.AreEqual(Table.HasTableAttributeEnum.NotSet, table.HasTableAttribute);
-            Assert.AreEqual(null, table.CatalogueName);
+            Assert.IsFalse(table.HasTableAttribute);
+            Assert.IsFalse(table.HasCatalogueName);
+            Assert.IsNull(table.CatalogueName);
             Assert.AreEqual(schema, table.Schema);
             Assert.AreEqual(primaryTableName, table.TableName);
 
-            Assert.AreEqual(schema.GetHashCode() ^ primaryTableName.GetHashCode() , table.GetHashCode());
+            Assert.AreEqual(schema.GetHashCode() ^ primaryTableName.GetHashCode(), table.GetHashCode());
+        }
+
+        [TestMethod]
+        public void ForeignKeyAttribute_TableAttribute_Constructor_Test()
+        {
+            // Arrange
+
+            const string schema = "schemaABC";
+            const string primaryTableName = "primaryTableNameABC";
+            const string primaryKeyName = "primaryKeyNameABC";
+
+            var fkAttribute = new ForeignKeyAttribute(schema, primaryTableName, primaryKeyName);
+
+            const string catalogueName = "catalogueNameABC";
+            
+            var tableAttribute = new TableAttribute(catalogueName, "fkTableSchemaABC", "fkTableName");
+
+            // Act
+
+            var table = new Table(fkAttribute, tableAttribute);
+
+            // Assert
+
+            Assert.IsTrue(table.HasTableAttribute);
+            Assert.IsTrue(table.HasCatalogueName);
+            Assert.AreEqual(catalogueName, table.CatalogueName);
+
+            Assert.AreEqual(schema.GetHashCode() ^ primaryTableName.GetHashCode(), table.GetHashCode());
         }
 
         [TestMethod]
@@ -62,12 +93,12 @@ namespace Tests.Tests
 
             // Assert
 
-            Assert.AreEqual(Table.HasTableAttributeEnum.False, table.HasTableAttribute);
-            Assert.AreEqual(null, table.CatalogueName);
-            Assert.AreEqual("dbo", table.Schema);
+            Assert.IsFalse(table.HasTableAttribute);
+            Assert.IsNull(table.CatalogueName);
+            Assert.IsNull(table.Schema);
             Assert.AreEqual(nameof(SubjectClass), table.TableName);
 
-            Assert.AreEqual("dbo".GetHashCode() ^ nameof(SubjectClass).GetHashCode(), table.GetHashCode());
+            Assert.AreEqual(nameof(SubjectClass).GetHashCode(), table.GetHashCode());
         }
 
         [TestMethod]
@@ -87,13 +118,15 @@ namespace Tests.Tests
 
             // Assert
 
-            Assert.AreEqual(Table.HasTableAttributeEnum.True, table.HasTableAttribute);
+            Assert.IsTrue(table.HasTableAttribute);
             Assert.AreEqual(catalogueName, table.CatalogueName);
             Assert.AreEqual(schema, table.Schema);
             Assert.AreEqual(tableName, table.TableName);
 
-            Assert.AreEqual(schema.GetHashCode() ^ tableName.GetHashCode() ^ catalogueName.GetHashCode(), table.GetHashCode());
+            Assert.AreEqual(schema.GetHashCode() ^ tableName.GetHashCode(), table.GetHashCode());
         }
+
+        #endregion Constructor tests
 
         #region Equals tests
 
@@ -108,7 +141,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void NullSchema_NullCatalogue_Equals_Test()
+        public void NoSchemaInput_NoCatalogueInput_Equals_Test()
         {
             var table1 = new Table(typeof(SubjectClass));
             var table2 = new Table(typeof(SubjectClass));
@@ -117,23 +150,23 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void NullCatalogue_SameSchema_Equals_Test()
+        public void InputForTryGet_NoTableAttribute_Equals_Test()
         {
             const string schema = "schemaABC";
             const string primaryTableName = "primaryTableNameABC";
             const string primaryKeyName = "primaryKeyNameABC";
 
             var fkAttribute1 = new ForeignKeyAttribute(schema, primaryTableName, primaryKeyName);
-            var table1 = new Table(fkAttribute1);
+            var table1 = new Table(fkAttribute1, null);
 
             var fkAttribute2 = new ForeignKeyAttribute(schema, primaryTableName, primaryKeyName);
-            var table2 = new Table(fkAttribute2);
+            var table2 = new Table(fkAttribute2, null);
 
             Assert.IsTrue(table1.Equals(table2));
         }
 
         [TestMethod]
-        public void NullCatalogue_DifferentSchema_DoesNotEqual_Test()
+        public void DifferentSchema_NoTableAttribute_DoesNotEqual_Test()
         {
             const string schema1 = "schema1ABC";
             const string schema2 = "schema2ABC";
@@ -141,10 +174,10 @@ namespace Tests.Tests
             const string primaryKeyName = "primaryKeyNameABC";
 
             var fkAttribute1 = new ForeignKeyAttribute(schema1, primaryTableName, primaryKeyName);
-            var table1 = new Table(fkAttribute1);
+            var table1 = new Table(fkAttribute1, null);
 
             var fkAttribute2 = new ForeignKeyAttribute(schema2, primaryTableName, primaryKeyName);
-            var table2 = new Table(fkAttribute2);
+            var table2 = new Table(fkAttribute2, null);
 
             Assert.IsFalse(table1.Equals(table2));
         }
@@ -167,7 +200,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void DifferentCatalogue_SameSchema_DoesNotEqual_Test()
+        public void DifferentCatalogue_SameSchema_Equals_Test()
         {
             const string catalogue1 = "catalogue1ABC";
             const string catalogue2 = "catalogue2ABC";
@@ -180,7 +213,7 @@ namespace Tests.Tests
             var tableAttribute2 = new TableAttribute(catalogue2, schema, tableName);
             var table2 = new Table(tableAttribute2);
 
-            Assert.IsFalse(table1.Equals(table2));
+            Assert.IsTrue(table1.Equals(table2));
         }
         [TestMethod]
         public void SameCatalogue_SameSchema_DifferentTable_DoesNotEqual_Test()

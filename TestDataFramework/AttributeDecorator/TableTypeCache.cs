@@ -169,141 +169,88 @@ namespace TestDataFramework.AttributeDecorator
                 (fromSet, input) =>
                     !input.HasCatalogueName || !fromSet.HasCatalogueName;
 
-            // The rules here are checked in order. First match wins.
-
             // The dictionary strategy AND's the externally set input condition 
             // with the result of comparing input and dictionary collection
             // schema and table.
 
-            var collisionCriteriaSet = new TypeDictionaryEqualityComparer
-                .EqualsCriteriaDelegate[]
-            {
-                // Match on all properties exist and corresponding properties are equal to each other
-                completeMatchCriteria,
-
-                // Consition where !input.HasCataloguName && fromSet.HasCatalogueName is processed below,
-                // at this priority.
-
-                // Match on what's decorated
-                matchOnWhatIsDecorated,
-
-                // Match on everything not already tried
-                matchOnEverythingNotAlreadyTried
-            };
-
-            // Check for collision based on above criteria
-
-            List<Type> collisionTypes;
-
-            if (this.PerformTypeDictionaryOperation(
-                    
-                    (out List<Type> fnCollisionTypes) =>
-                        assemblyLookupContext.CollisionDictionary.TryGetValue(table, out fnCollisionTypes),
-
-                    collisionCriteriaSet, 
-
-                    out collisionTypes
-                )
-            )
-            {
-                throw new TableTypeCacheException(Messages.DuplicateTableName, collisionTypes);
-            }
-
             Type result;
 
+            // 1.
             // Test for a complete match
-
-            this.typeDictionaryEqualityComparer.SetEqualsCriteria(completeMatchCriteria);
-            if (assemblyLookupContext.TypeDictionary.TryGetValue(table, out result))
+            if ((result = this.GetTableTypeByCriteria(table, completeMatchCriteria, assemblyLookupContext)) != null)
             {
                 return result;
             }
 
+            // 2.
             // !input.HasCataloguName && fromSet.HasCatalogueName
-            if (!table.HasCatalogueName)
+            if ((result = this.GetTableTypeWithCatalogue(table, assemblyLookupContext)) != null)
             {
-                this.typeDictionaryEqualityComparer.SetEqualsCriteria((fromSet, input) => fromSet.HasCatalogueName);
-
-                if (assemblyLookupContext.TypeDictionary.TryGetValue(table, out result))
-                {
-                    // Test for collision where !input.HasCatalogueName and values 
-                    // match on input but have different catalogue names specified.
-
-                    var resultTableAttribute = this.tableTypeCacheService.GetSingleAttribute<TableAttribute>(result);
-
-                    this.typeDictionaryEqualityComparer.SetEqualsCriteria(
-                        (fromSet, input) =>
-                            fromSet.HasCatalogueName &&
-                            !fromSet.CatalogueName.Equals(resultTableAttribute.CatalogueName)
-                    );
-
-                    Type abmigousConditionType;
-
-                    if (assemblyLookupContext.TypeDictionary.TryGetValue(table, out abmigousConditionType))
-                    {
-                        throw new TableTypeCacheException(Messages.AmbigousTableSearchConditions, table, result,
-                            abmigousConditionType);
-                    }
-
-                    return result;
-                }
+                return result;
             }
 
-            var decoratedAndEverythingElseCriteriaSet = new TypeDictionaryEqualityComparer
-                .EqualsCriteriaDelegate[]
+            // 3.
+            // Match on what's decorated
+            if ((result = this.GetTableTypeByCriteria(table, matchOnWhatIsDecorated, assemblyLookupContext)) != null)
             {
-                // Match on what's decorated
-                matchOnWhatIsDecorated,
-
-                // Match on everything not already tried
-                matchOnEverythingNotAlreadyTried
-            };
-
-            this.PerformTypeDictionaryOperation(
-                (out Type fnResult) => assemblyLookupContext.TypeDictionary.TryGetValue(table, out fnResult),
-                decoratedAndEverythingElseCriteriaSet, out result);
-
-            return result;
-        }
-
-        private delegate bool TypeDictionaryOperationDelegate<TResult>(out TResult output);
-        private delegate bool TypeDictionaryOperationDelegate();
-
-        private bool PerformTypeDictionaryOperation(TypeDictionaryOperationDelegate typeDictionaryOperation, IEnumerable<TypeDictionaryEqualityComparer.EqualsCriteriaDelegate> equalsCriteriaSet)
-        {
-            object output;
-
-            bool result = this.PerformTypeDictionaryOperation(
-                
-                (out object x) =>
-                {
-                    x = null;
-                    return typeDictionaryOperation();
-
-                }, 
-            
-                equalsCriteriaSet, 
-            
-                out output
-            );
-
-            return result;
-        }
-
-        private bool PerformTypeDictionaryOperation<TOut>(TypeDictionaryOperationDelegate<TOut> typeDictionaryOperation, IEnumerable<TypeDictionaryEqualityComparer.EqualsCriteriaDelegate> equalsCriteriaSet, out TOut output)
-        {
-            foreach (TypeDictionaryEqualityComparer.EqualsCriteriaDelegate criteria in equalsCriteriaSet)
-            {
-                this.typeDictionaryEqualityComparer.SetEqualsCriteria(criteria);
-
-                if (typeDictionaryOperation(out output))
-                {
-                    return true;
-                }
+                return result;
             }
 
-            output = default(TOut);
-            return false;
+            // 4.
+            // Match on everything not already tried
+            if ((result = this.GetTableTypeByCriteria(table, matchOnEverythingNotAlreadyTried, assemblyLookupContext)) != null)
+            {
+                return result;
+            }
+
+            return null;
+        }
+
+        private Type GetTableTypeByCriteria(Table table, TypeDictionaryEqualityComparer.EqualsCriteriaDelegate matchCriteria, AssemblyLookupContext assemblyLookupContext)
+        {
+            Type result;
+            List<Type> collisionTypes;
+
+            this.typeDictionaryEqualityComparer.SetEqualsCriteria(matchCriteria);
+
+            if (assemblyLookupContext.CollisionDictionary.TryGetValue(table, out collisionTypes))
+            {
+                throw new TableTypeCacheException(Messages.DuplicateTableName, collisionTypes);
+            }
+
+            return assemblyLookupContext.TypeDictionary.TryGetValue(table, out result) ? result : null;
+        }
+
+        private Type GetTableTypeWithCatalogue(Table table, AssemblyLookupContext assemblyLookupContext)
+        {
+            if (table.HasCatalogueName) return null;
+
+            Type result;
+
+            this.typeDictionaryEqualityComparer.SetEqualsCriteria((fromSet, input) => fromSet.HasCatalogueName);
+
+            if (!assemblyLookupContext.TypeDictionary.TryGetValue(table, out result)) return null;
+
+            // Test for collision where !input.HasCatalogueName and values 
+            // match on input but have different catalogue names specified.
+
+            var resultTableAttribute = this.tableTypeCacheService.GetSingleAttribute<TableAttribute>(result);
+
+            this.typeDictionaryEqualityComparer.SetEqualsCriteria(
+                (fromSet, input) =>
+                    fromSet.HasCatalogueName &&
+                    !fromSet.CatalogueName.Equals(resultTableAttribute.CatalogueName)
+                );
+
+            Type abmigousConditionType;
+
+            if (assemblyLookupContext.TypeDictionary.TryGetValue(table, out abmigousConditionType))
+            {
+                throw new TableTypeCacheException(Messages.AmbigousTableSearchConditions, table, result,
+                    abmigousConditionType);
+            }
+
+            return result;
         }
 
         private class TypeDictionaryEqualityComparer : IEqualityComparer<Table>

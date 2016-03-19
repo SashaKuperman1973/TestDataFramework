@@ -40,6 +40,7 @@ namespace Tests.Tests
             Assert.AreEqual(catalogue, tableAttribute.CatalogueName);
             Assert.AreEqual(schema, tableAttribute.Schema);
             Assert.AreEqual(tableName, tableAttribute.Name);
+            Assert.IsFalse(tableAttribute.IsDefaultSchema);
 
             Assert.AreEqual(catalogue.GetHashCode() ^ schema.GetHashCode() ^ tableName.GetHashCode(),
                 tableAttribute.GetHashCode());
@@ -53,9 +54,10 @@ namespace Tests.Tests
 
             var tableAttribute = new TableAttribute(schema, tableName);
 
-            Assert.AreEqual(null, tableAttribute.CatalogueName);
+            Assert.IsNull(tableAttribute.CatalogueName);
             Assert.AreEqual(schema, tableAttribute.Schema);
             Assert.AreEqual(tableName, tableAttribute.Name);
+            Assert.IsFalse(tableAttribute.IsDefaultSchema);
 
             Assert.AreEqual(schema.GetHashCode() ^ tableName.GetHashCode(),
                 tableAttribute.GetHashCode());
@@ -68,12 +70,12 @@ namespace Tests.Tests
 
             var tableAttribute = new TableAttribute(tableName);
 
-            Assert.AreEqual(null, tableAttribute.CatalogueName);
-            Assert.AreEqual("dbo", tableAttribute.Schema);
+            Assert.IsNull(tableAttribute.CatalogueName);
+            Assert.IsNull(tableAttribute.Schema);
             Assert.AreEqual(tableName, tableAttribute.Name);
+            Assert.IsTrue(tableAttribute.IsDefaultSchema);
 
-            Assert.AreEqual("dbo".GetHashCode() ^ tableName.GetHashCode(),
-                tableAttribute.GetHashCode());
+            Assert.AreEqual(tableName.GetHashCode(), tableAttribute.GetHashCode());
         }
 
         [TestMethod]

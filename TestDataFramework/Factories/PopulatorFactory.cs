@@ -148,7 +148,10 @@ namespace TestDataFramework.Factories
                 Component.For<SqlWriterCommandText>().ImplementedBy<SqlWriterCommandText>(),
 
                 Component.For<Func<TableTypeCache, IAttributeDecorator>>()
-                    .Instance(tableTypeCache => new StandardAttributeDecorator(x => tableTypeCache, defaultSchema))
+                    .Instance(tableTypeCache => new StandardAttributeDecorator(x => tableTypeCache, defaultSchema)),
+
+                Component.For<IAttributeDecorator>().ImplementedBy<StandardAttributeDecorator>().DependsOn(Dependency.OnValue("defaultSchema", defaultSchema))
+
                 );
 
             PopulatorFactory.Logger.Debug("Exiting GetSqlClientPopulatorContainer");
@@ -193,7 +196,10 @@ namespace TestDataFramework.Factories
                     .Named(PopulatorFactory.StandardValueGenerator),
 
                 Component.For<Func<TableTypeCache, IAttributeDecorator>>()
-                    .Instance(tableTypeCache => new StandardAttributeDecorator(x => tableTypeCache, null))
+                    .Instance(tableTypeCache => new StandardAttributeDecorator(x => tableTypeCache, null)),
+
+                Component.For<IAttributeDecorator>().ImplementedBy<StandardAttributeDecorator>()
+
                 );
 
             PopulatorFactory.Logger.Debug("Exiting GetMemoryPopulatorContainer");
@@ -267,8 +273,6 @@ namespace TestDataFramework.Factories
                         .Named(PopulatorFactory.StandardValueProvider),
 
                     Component.For<IRandomSymbolStringGenerator>().ImplementedBy<RandomSymbolStringGenerator>(),
-
-                    Component.For<IAttributeDecorator>().ImplementedBy<StandardAttributeDecorator>(),
 
                     Component.For<TableTypeCache>().ImplementedBy<TableTypeCache>(),
 

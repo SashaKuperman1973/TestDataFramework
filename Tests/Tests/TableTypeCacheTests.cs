@@ -168,8 +168,8 @@ namespace Tests.Tests
             Helpers.ExceptionTest(() => this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType, CustomAttributeExtensions.GetCustomAttribute<TableAttribute>),
                 typeof (TableTypeCacheException), string.Format(Messages.DuplicateTableName, 
                 string.Join(", ", new object[] {
-                    typeof (Test.TestModels.DecoratedCollision.B.DecoratedCollisionClass),
-                    typeof (Test.TestModels.DecoratedCollision.A.DecoratedCollisionClass)}
+                    typeof (TestModels.DecoratedCollision.B.DecoratedCollisionClass),
+                    typeof (TestModels.DecoratedCollision.A.DecoratedCollisionClass)}
                 )));
         }
 
@@ -191,9 +191,9 @@ namespace Tests.Tests
                 typeof (TableTypeCacheException), string.Format(Messages.DuplicateTableName,
                     string.Join(", ", new object[]
                     {
-                        typeof (Test.TestModels.DecoratedCollision.ThreeWay.DecoratedCollisionClass3Way),
-                        typeof (Test.TestModels.DecoratedCollision.B.DecoratedCollisionClass3Way),
-                        typeof (Test.TestModels.DecoratedCollision.A.DecoratedCollisionClass3Way)
+                        typeof (TestModels.DecoratedCollision.ThreeWay.DecoratedCollisionClass3Way),
+                        typeof (TestModels.DecoratedCollision.B.DecoratedCollisionClass3Way),
+                        typeof (TestModels.DecoratedCollision.A.DecoratedCollisionClass3Way)
                     }
                         )));
         }
@@ -217,10 +217,10 @@ namespace Tests.Tests
                     string.Join(", ", new object[]
                     {
                         typeof (
-                            Test.TestModels.DecoratedCollisionWithDifferentClassName.B.
+                            TestModels.DecoratedCollisionWithDifferentClassName.B.
                                 DecoratedCollisionWithDifferentClassName_B),
                         typeof (
-                            Test.TestModels.DecoratedCollisionWithDifferentClassName.A.
+                            TestModels.DecoratedCollisionWithDifferentClassName.A.
                                 DecoratedCollisionWithDifferentClassName_A)
                     }
                         )));
@@ -244,9 +244,9 @@ namespace Tests.Tests
                 typeof(TableTypeCacheException), string.Format(Messages.DuplicateTableName,
                     string.Join(", ", new object[]
                     {
-                        typeof (Test.TestModels.DecoratedCollisionWithDifferentClassName.ThreeWay.DecoratedCollisionWithDifferentClassName_3Way_ThreeWay),
-                        typeof (Test.TestModels.DecoratedCollisionWithDifferentClassName.B.DecoratedCollisionWithDifferentClassName_3Way_B),
-                        typeof (Test.TestModels.DecoratedCollisionWithDifferentClassName.A.DecoratedCollisionWithDifferentClassName_3Way_A)
+                        typeof (TestModels.DecoratedCollisionWithDifferentClassName.ThreeWay.DecoratedCollisionWithDifferentClassName_3Way_ThreeWay),
+                        typeof (TestModels.DecoratedCollisionWithDifferentClassName.B.DecoratedCollisionWithDifferentClassName_3Way_B),
+                        typeof (TestModels.DecoratedCollisionWithDifferentClassName.A.DecoratedCollisionWithDifferentClassName_3Way_A)
                     }
                         )));
         }

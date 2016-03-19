@@ -40,7 +40,7 @@ namespace Tests.TestModels.Collision
     }
 }
 
-namespace Test.TestModels.DecoratedCollision.A
+namespace Tests.TestModels.DecoratedCollision.A
 {
     [Table("DecoratedCollisionTable")]
     public class DecoratedCollisionClass
@@ -57,7 +57,7 @@ namespace Test.TestModels.DecoratedCollision.A
     }
 }
 
-namespace Test.TestModels.DecoratedCollision.B
+namespace Tests.TestModels.DecoratedCollision.B
 {
     [Table("DecoratedCollisionTable")]
     public class DecoratedCollisionClass
@@ -74,7 +74,7 @@ namespace Test.TestModels.DecoratedCollision.B
     }
 }
 
-namespace Test.TestModels.DecoratedCollision.ThreeWay
+namespace Tests.TestModels.DecoratedCollision.ThreeWay
 {
     [Table("DecoratedCollisionTable3Way")]
     public class DecoratedCollisionClass3Way
@@ -84,7 +84,7 @@ namespace Test.TestModels.DecoratedCollision.ThreeWay
     }
 }
 
-namespace Test.TestModels.DecoratedCollisionWithDifferentClassName.A
+namespace Tests.TestModels.DecoratedCollisionWithDifferentClassName.A
 {
     [Table("DecoratedCollisionWithDifferentClassName")]
     public class DecoratedCollisionWithDifferentClassName_A
@@ -101,7 +101,7 @@ namespace Test.TestModels.DecoratedCollisionWithDifferentClassName.A
     }
 }
 
-namespace Test.TestModels.DecoratedCollisionWithDifferentClassName.B
+namespace Tests.TestModels.DecoratedCollisionWithDifferentClassName.B
 {
     [Table("DecoratedCollisionWithDifferentClassName")]
     public class DecoratedCollisionWithDifferentClassName_B
@@ -118,7 +118,7 @@ namespace Test.TestModels.DecoratedCollisionWithDifferentClassName.B
     }
 }
 
-namespace Test.TestModels.DecoratedCollisionWithDifferentClassName.ThreeWay
+namespace Tests.TestModels.DecoratedCollisionWithDifferentClassName.ThreeWay
 {
     [Table("DecoratedCollisionWithDifferentClassName3Way")]
     public class DecoratedCollisionWithDifferentClassName_3Way_ThreeWay

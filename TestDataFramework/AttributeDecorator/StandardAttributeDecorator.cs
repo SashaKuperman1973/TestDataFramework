@@ -40,6 +40,11 @@ namespace TestDataFramework.AttributeDecorator
         private readonly TableTypeCache tableTypeCache;
         private readonly string defaultSchema;
 
+        public StandardAttributeDecorator(Func<ITableTypeCacheService, TableTypeCache> createTableTypeCache) : this(createTableTypeCache, null)
+        {
+            
+        }
+
         public StandardAttributeDecorator(Func<ITableTypeCacheService, TableTypeCache> createTableTypeCache, string defaultSchema)
         {
             this.tableTypeCache = createTableTypeCache(this);

@@ -25,6 +25,12 @@ using TestDataFramework.ValueProvider.Interfaces;
 
 namespace TestDataFramework
 {
+    public interface ICanHaveDefaultSchema
+    {
+        Attribute GetAttributeUsingDefaultSchema(string defaultSchema);
+        bool IsDefaultSchema { get; }
+    }
+
     internal class AttributeHelper
     {
         public static object[] GetStrings(params object[] inputs)
@@ -78,7 +84,7 @@ namespace TestDataFramework
         public PastOrFuture PastOrFuture { get; }
     }
 
-    public class ForeignKeyAttribute : Attribute
+    public class ForeignKeyAttribute : Attribute, ICanHaveDefaultSchema
     {
         public ForeignKeyAttribute(Type primaryTableType, string primaryKeyName)
         {
@@ -87,15 +93,14 @@ namespace TestDataFramework
             this.PrimaryTableName = primaryTableType.Name;
             this.PrimaryTableType = primaryTableType;
             this.PrimaryKeyName = primaryKeyName;
+            this.IsDefaultSchema = false;
         }
 
-        /// <summary>
-        /// This overload will set the schema to dbo.
-        /// </summary>
         public ForeignKeyAttribute(string primaryTableName, string primaryKeyName)
         {
             this.PrimaryTableName = primaryTableName;
             this.PrimaryKeyName = primaryKeyName;
+            this.IsDefaultSchema = true;
         }
 
         public ForeignKeyAttribute(string schema, string primaryTableName, string primaryKeyName)
@@ -103,12 +108,20 @@ namespace TestDataFramework
             this.PrimaryTableName = primaryTableName;
             this.PrimaryKeyName = primaryKeyName;
             this.Schema = schema;
+            this.IsDefaultSchema = false;
+        }
+
+        public virtual Attribute GetAttributeUsingDefaultSchema(string defaultSchema)
+        {
+            return new ForeignKeyAttribute(defaultSchema, this.PrimaryTableName, this.PrimaryKeyName);
         }
 
         public Type PrimaryTableType { get; }
-        public string Schema { get; } = "dbo";
+        public string Schema { get; }
         public string PrimaryTableName { get; }
         public string PrimaryKeyName { get; }
+
+        public bool IsDefaultSchema { get; }
 
         public override string ToString()
         {
@@ -120,7 +133,7 @@ namespace TestDataFramework
         }
     }
 
-    public class TableAttribute : Attribute
+    public class TableAttribute : Attribute, ICanHaveDefaultSchema
     {
         public TableAttribute(string catalogueName, string schema, string name)
         {
@@ -134,6 +147,7 @@ namespace TestDataFramework
             this.CatalogueName = catalogueName;
             this.Name = name;
             this.Schema = schema;
+            this.IsDefaultSchema = false;
         }
 
         public TableAttribute(string schema, string name)
@@ -142,20 +156,26 @@ namespace TestDataFramework
 
             this.Name = name;
             this.Schema = schema;
+            this.IsDefaultSchema = false;
         }
 
-        /// <summary>
-        /// This overload will set the Schema to dbo.
-        /// </summary>
+        public virtual Attribute GetAttributeUsingDefaultSchema(string defaultSchema)
+        {
+            return new TableAttribute(this.CatalogueName, defaultSchema, this.Name);
+        }
+
         public TableAttribute(string name)
         {
             name.IsNotNull(nameof(name));
             this.Name = name;
+            this.IsDefaultSchema = true;
         }
 
         public string CatalogueName { get; }
         public string Name { get; }
-        public string Schema { get; } = "dbo";
+        public string Schema { get; }
+
+        public bool IsDefaultSchema { get; }
 
         public override int GetHashCode()
         {

@@ -41,7 +41,8 @@ namespace Tests.Tests
             XmlConfigurator.Configure();
 
             this.stringGeneratorMock = new Mock<LetterEncoder>();
-            this.accumulator = new StandardPropertyValueAccumulator(this.stringGeneratorMock.Object, new StandardAttributeDecorator(new TableTypeCache()));
+            this.accumulator = new StandardPropertyValueAccumulator(this.stringGeneratorMock.Object,
+                new StandardAttributeDecorator(attributeDecorator => null, null));
         }
 
         [TestMethod]

@@ -63,6 +63,7 @@
   <ItemGroup>
     <Compile Include="ArrayRandomizer\IArrayRandomizer.cs" />
     <Compile Include="ArrayRandomizer\StandardArrayRandomizer.cs" />
+    <Compile Include="AttributeDecorator\ITableTypeCacheService.cs" />
     <Compile Include="AttributeDecorator\StandardAttributeDecorator.cs" />
     <Compile Include="AttributeDecorator\IAttributeDecorator.cs" />
     <Compile Include="AttributeDecorator\Table.cs" />

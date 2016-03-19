@@ -44,7 +44,6 @@ namespace Tests.Tests
         private Mock<IWritePrimitives> writerMock;
         private Mock<ITypeGenerator> typeGeneratorMock;
         private IEnumerable<AbstractRepositoryOperation> peers;
-        private TableTypeCache tableTypeCache;
         private IAttributeDecorator attributeDecorator;
 
         private ForeignTable foreignKeyTable;
@@ -57,8 +56,7 @@ namespace Tests.Tests
 
             this.foreignKeyTable = new ForeignTable();
 
-            this.tableTypeCache = new TableTypeCache();
-            this.attributeDecorator = new StandardAttributeDecorator(this.tableTypeCache);
+            this.attributeDecorator = new StandardAttributeDecorator(attributeDecorator => null, null);
             this.typeGeneratorMock = Helpers.GetTypeGeneratorMock(this.foreignKeyTable);
             this.recordReference = new RecordReference<ForeignTable>(this.typeGeneratorMock.Object, this.attributeDecorator);
             this.recordReference.Populate();

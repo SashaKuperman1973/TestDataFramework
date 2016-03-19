@@ -107,5 +107,8 @@ namespace TestDataFramework.Exceptions
 
         public const string CatalogueAndNoSchema =
             "Cannot have catalogue specified without a schema given. Catalogue: {0}, Table name: {1}";
+
+        public const string AmbigousTableSearchConditions =
+            "Ambigous type match when attempting to resolve primary-foreign type/table reference. Foreign Table object used: [{0}], Types involved in the collision: [{1}], [{2}]";
     }
 }

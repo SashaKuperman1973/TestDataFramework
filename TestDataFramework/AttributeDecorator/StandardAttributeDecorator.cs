@@ -30,7 +30,7 @@ using TestDataFramework.RepositoryOperations.Model;
 
 namespace TestDataFramework.AttributeDecorator
 {
-    public class StandardAttributeDecorator : IAttributeDecorator
+    public class StandardAttributeDecorator : IAttributeDecorator, ITableTypeCacheService
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(StandardAttributeDecorator));
 
@@ -38,10 +38,12 @@ namespace TestDataFramework.AttributeDecorator
             new ConcurrentDictionary<MemberInfo, List<Attribute>>();
 
         private readonly TableTypeCache tableTypeCache;
+        private readonly string defaultSchema;
 
-        public StandardAttributeDecorator(TableTypeCache tableTypeCache)
+        public StandardAttributeDecorator(Func<ITableTypeCacheService, TableTypeCache> createTableTypeCache, string defaultSchema)
         {
-            this.tableTypeCache = tableTypeCache;
+            this.tableTypeCache = createTableTypeCache(this);
+            this.defaultSchema = defaultSchema;
         }
 
         public virtual void DecorateMember<T, TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression, Attribute attribute)
@@ -149,18 +151,16 @@ namespace TestDataFramework.AttributeDecorator
         {
             List<Attribute> programmaticAttributeList;
 
-            List<T> result = this.memberAttributeDicitonary.TryGetValue(memberInfo, out programmaticAttributeList)
+            List<Attribute> attributeResult = this.memberAttributeDicitonary.TryGetValue(memberInfo, out programmaticAttributeList)
 
-                ? programmaticAttributeList.Where(a => a.GetType() == typeof(T)).Cast<T>().ToList()
-                : new List<T>();
+                ? programmaticAttributeList.Where(a => a.GetType() == typeof(T)).ToList()
 
-            result.AddRange(memberInfo.GetCustomAttributes<T>());
-            return result;
-        }
+                : new List<Attribute>();
 
-        public virtual T GetCustomAttribute<T>(MemberInfo memberInfo) where T : Attribute
-        {
-            T result = this.GetCustomAttributes<T>(memberInfo).FirstOrDefault();
+            attributeResult.AddRange(memberInfo.GetCustomAttributes<T>());
+
+            List<T> result = this.InsertDefaultSchema(attributeResult).Cast<T>().ToList();
+
             return result;
         }
 
@@ -174,6 +174,31 @@ namespace TestDataFramework.AttributeDecorator
             }
 
             result.AddRange(memberInfo.GetCustomAttributes());
+
+            result = this.InsertDefaultSchema(result);
+            return result;
+        }
+
+        private List<Attribute> InsertDefaultSchema(IEnumerable<Attribute> attributes)
+        {
+            List<Attribute> result = attributes.Select(a =>
+            {
+                var canHaveDefaultSchema = a as ICanHaveDefaultSchema;
+
+                Attribute resultAttribute = canHaveDefaultSchema?.IsDefaultSchema ?? false
+                    ? canHaveDefaultSchema.GetAttributeUsingDefaultSchema(this.defaultSchema)
+                    : a;
+
+                return resultAttribute;
+
+            }).ToList();
+
+            return result;
+        }
+
+        public virtual T GetCustomAttribute<T>(MemberInfo memberInfo) where T : Attribute
+        {
+            T result = this.GetCustomAttributes<T>(memberInfo).FirstOrDefault();
             return result;
         }
 

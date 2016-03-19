@@ -72,7 +72,7 @@ namespace TestDataFramework.AttributeDecorator
         /// <summary>
         /// Equals only operates on TableName and Schema
         /// </summary>
-        public override bool Equals(object obj)
+        public bool BasicFieldsEqual(object obj)
         {
             var table = obj as Table;
 

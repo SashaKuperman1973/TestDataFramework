@@ -239,4 +239,12 @@ namespace Tests.TestModels
         [PrimaryKey]
         public string MultiAtributeProperty { get; set; }
     }
+
+    public class ClassWithSchemaInForeignKey
+    {
+        public const string Schema = "aSchema123";
+
+        [ForeignKey(ClassWithSchemaInForeignKey.Schema, "PrimaryClass", "Key")]
+        public int ForeignKey { get; set; }
+    }
 }

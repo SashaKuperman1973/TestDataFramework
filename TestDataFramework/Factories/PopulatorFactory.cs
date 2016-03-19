@@ -74,8 +74,10 @@ namespace TestDataFramework.Factories
             PopulatorFactory.Logger.Debug(
                 $"Entering CreateSqlClientPopulator. mustBeInATransaction: {mustBeInATransaction}, throwIfUnhandledPrimaryKeyType: {throwIfUnhandledPrimaryKeyType}");
 
+            const string defaultSchema = "dbo";
+
             IWindsorContainer iocContainer = this.GetSqlClientPopulatorContainer(connectionStringWithDefaultCatalogue,
-                mustBeInATransaction, throwIfUnhandledPrimaryKeyType);
+                mustBeInATransaction, throwIfUnhandledPrimaryKeyType, defaultSchema);
 
             var result = iocContainer.Resolve<IPopulator>();
 
@@ -95,7 +97,7 @@ namespace TestDataFramework.Factories
             return result;
         }
 
-        private IWindsorContainer GetSqlClientPopulatorContainer(string connectionStringWithDefaultCatalogue, bool mustBeInATransaction, bool throwIfUnhandledPrimaryKeyType)
+        private IWindsorContainer GetSqlClientPopulatorContainer(string connectionStringWithDefaultCatalogue, bool mustBeInATransaction, bool throwIfUnhandledPrimaryKeyType, string defaultSchema)
         {
             PopulatorFactory.Logger.Debug("Entering GetSqlClientPopulatorContainer");
 
@@ -143,8 +145,10 @@ namespace TestDataFramework.Factories
                             .Eq(PopulatorFactory.GetStandardTypeGenerator))
                     .Named(PopulatorFactory.StandardValueGenerator),
 
-                Component.For<SqlWriterCommandText>().ImplementedBy<SqlWriterCommandText>()
+                Component.For<SqlWriterCommandText>().ImplementedBy<SqlWriterCommandText>(),
 
+                Component.For<Func<TableTypeCache, IAttributeDecorator>>()
+                    .Instance(tableTypeCache => new StandardAttributeDecorator(x => tableTypeCache, defaultSchema))
                 );
 
             PopulatorFactory.Logger.Debug("Exiting GetSqlClientPopulatorContainer");
@@ -186,8 +190,10 @@ namespace TestDataFramework.Factories
                     .DependsOn(
                         ServiceOverride.ForKey<BaseValueGenerator.GetTypeGeneratorDelegate>()
                             .Eq(PopulatorFactory.GetStandardTypeGenerator))
-                    .Named(PopulatorFactory.StandardValueGenerator)
+                    .Named(PopulatorFactory.StandardValueGenerator),
 
+                Component.For<Func<TableTypeCache, IAttributeDecorator>>()
+                    .Instance(tableTypeCache => new StandardAttributeDecorator(x => tableTypeCache, null))
                 );
 
             PopulatorFactory.Logger.Debug("Exiting GetMemoryPopulatorContainer");
@@ -208,7 +214,14 @@ namespace TestDataFramework.Factories
 
                 commonContainer.Register(
 
-                    #region Common Region
+                #region Common Region
+
+                #region Delegates
+
+                    Component.For<Func<ITableTypeCacheService, TableTypeCache>>()
+                        .Instance(attributeDecorator => new TableTypeCache(x => attributeDecorator)),
+
+                #endregion Delegates
 
                     Component.For<IPopulator>().ImplementedBy<StandardPopulator>()
                         .DependsOn(ServiceOverride.ForKey<ITypeGenerator>().Eq(standardTypeGenerator)),
@@ -223,12 +236,13 @@ namespace TestDataFramework.Factories
                         .Instance(() => commonContainer.Resolve<ITypeGenerator>(standardTypeGenerator))
                         .Named(PopulatorFactory.GetStandardTypeGenerator),
 
+                    Component.For<Func<IArrayRandomizer>>()
+                        .Instance(
+                            () => commonContainer.Resolve<IArrayRandomizer>(PopulatorFactory.StandardValueGenerator)),
+
                     Component.For<Random>().ImplementedBy<Random>(),
 
                     Component.For<DateTimeProvider>().Instance(() => Helper.Now),
-
-                    Component.For<Func<IArrayRandomizer>>()
-                        .Instance(() => commonContainer.Resolve<IArrayRandomizer>(PopulatorFactory.StandardValueGenerator)),
 
                     Component.For<IArrayRandomizer>()
                         .ImplementedBy<StandardArrayRandomizer>()
@@ -258,9 +272,9 @@ namespace TestDataFramework.Factories
 
                     Component.For<TableTypeCache>().ImplementedBy<TableTypeCache>(),
 
-                    #endregion Common Region
+                #endregion Common Region
 
-                    #region Handled Type Generator
+                #region Handled Type Generator
 
                     Component.For<IHandledTypeGenerator>()
                         .ImplementedBy<StandardHandledTypeGenerator>()
@@ -289,7 +303,9 @@ namespace TestDataFramework.Factories
 
                     Component.For<ITypeGenerator>()
                         .ImplementedBy<UniqueValueTypeGenerator>()
-                        .DependsOn(ServiceOverride.ForKey<IHandledTypeGenerator>().Eq(accumulatorValueGenerator_StandardHandledTypeGenerator))
+                        .DependsOn(
+                            ServiceOverride.ForKey<IHandledTypeGenerator>()
+                                .Eq(accumulatorValueGenerator_StandardHandledTypeGenerator))
                         .Named(uniqueValueTypeGenerator),
 
                     Component.For<UniqueValueTypeGenerator.GetAccumulatorValueGenerator>()
@@ -297,7 +313,7 @@ namespace TestDataFramework.Factories
                             typeGenerator =>
                                 commonContainer.Resolve<IValueGenerator>(PopulatorFactory.AccumulatorValueGenerator))
 
-                    #endregion Handled Type Generator
+                #endregion Handled Type Generator
 
                     );
 

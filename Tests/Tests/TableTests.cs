@@ -128,7 +128,7 @@ namespace Tests.Tests
 
         #endregion Constructor tests
 
-        #region Equals tests
+        #region BasicFieldsEqual tests
 
         [TestMethod]
         public void Different_Object_Equals_Test()
@@ -137,7 +137,7 @@ namespace Tests.Tests
 
             var table = new Table(typeof(SubjectClass));
 
-            Assert.IsFalse(table.Equals(s));
+            Assert.IsFalse(table.BasicFieldsEqual(s));
         }
 
         [TestMethod]
@@ -146,7 +146,7 @@ namespace Tests.Tests
             var table1 = new Table(typeof(SubjectClass));
             var table2 = new Table(typeof(SubjectClass));
 
-            Assert.IsTrue(table1.Equals(table2));
+            Assert.IsTrue(table1.BasicFieldsEqual(table2));
         }
 
         [TestMethod]
@@ -162,7 +162,7 @@ namespace Tests.Tests
             var fkAttribute2 = new ForeignKeyAttribute(schema, primaryTableName, primaryKeyName);
             var table2 = new Table(fkAttribute2, null);
 
-            Assert.IsTrue(table1.Equals(table2));
+            Assert.IsTrue(table1.BasicFieldsEqual(table2));
         }
 
         [TestMethod]
@@ -179,7 +179,7 @@ namespace Tests.Tests
             var fkAttribute2 = new ForeignKeyAttribute(schema2, primaryTableName, primaryKeyName);
             var table2 = new Table(fkAttribute2, null);
 
-            Assert.IsFalse(table1.Equals(table2));
+            Assert.IsFalse(table1.BasicFieldsEqual(table2));
         }
 
         [TestMethod]
@@ -196,7 +196,7 @@ namespace Tests.Tests
             var tableAttribute2 = new TableAttribute(catalogue, schema2, tableName);
             var table2 = new Table(tableAttribute2);
 
-            Assert.IsFalse(table1.Equals(table2));
+            Assert.IsFalse(table1.BasicFieldsEqual(table2));
         }
 
         [TestMethod]
@@ -213,8 +213,9 @@ namespace Tests.Tests
             var tableAttribute2 = new TableAttribute(catalogue2, schema, tableName);
             var table2 = new Table(tableAttribute2);
 
-            Assert.IsTrue(table1.Equals(table2));
+            Assert.IsTrue(table1.BasicFieldsEqual(table2));
         }
+
         [TestMethod]
         public void SameCatalogue_SameSchema_DifferentTable_DoesNotEqual_Test()
         {
@@ -229,9 +230,9 @@ namespace Tests.Tests
             var tableAttribute2 = new TableAttribute(catalogue, schema, tableName2);
             var table2 = new Table(tableAttribute2);
 
-            Assert.IsFalse(table1.Equals(table2));
+            Assert.IsFalse(table1.BasicFieldsEqual(table2));
         }
 
-        #endregion Equals tests
+        #endregion BasicFieldsEqual tests
     }
 }

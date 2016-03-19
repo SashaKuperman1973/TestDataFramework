@@ -41,7 +41,7 @@ namespace Tests.Tests
         private Mock<ITypeGenerator> typeGeneratorMock;
         private Mock<IArrayRandomizer> arrayRandomizerMock;
         private BaseValueGenerator valueGenerator;
-        private Mock<IUniqueValueGenerator> uniqueValueGeneratorMock = new Mock<IUniqueValueGenerator>();
+        private Mock<IUniqueValueGenerator> uniqueValueGeneratorMock;
 
         private const int IntegerResult = 5;
         private const long LongResult = 6;
@@ -99,7 +99,7 @@ namespace Tests.Tests
             this.randomizerMock.Setup(m => m.GetEmailAddress()).Returns(BaseValueGeneratorTests.EmailAddress);
 
             this.valueGenerator = new ValueGenerator(this.randomizerMock.Object, () => this.typeGeneratorMock.Object,
-                () => this.arrayRandomizerMock.Object, this.uniqueValueGeneratorMock.Object, new StandardAttributeDecorator(new TableTypeCache()));
+                () => this.arrayRandomizerMock.Object, this.uniqueValueGeneratorMock.Object, new StandardAttributeDecorator(x => null, null));
         }
 
         [TestMethod]
@@ -161,7 +161,7 @@ namespace Tests.Tests
 
             // Act
 
-            object result = this.valueGenerator.GetValue(propertyInfo);
+            this.valueGenerator.GetValue(propertyInfo);
 
             // Assert
 

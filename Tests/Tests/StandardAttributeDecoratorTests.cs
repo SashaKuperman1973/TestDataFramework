@@ -47,15 +47,15 @@ namespace Tests.Tests
         [TestInitialize]
         public void TestInitialize()
         {
-            this.tableTypeCacheMock = new Mock<TableTypeCache>();
-            this.attributeDecorator = new StandardAttributeDecorator(this.tableTypeCacheMock.Object);
+            this.tableTypeCacheMock = new Mock<TableTypeCache>((Func<TableTypeCache, ITableTypeCacheService>)(x => null));
+            this.attributeDecorator = new StandardAttributeDecorator(x => this.tableTypeCacheMock.Object, null);
             this.populator = new Populator(this.attributeDecorator);
         }
 
-        #region GetCustomAttributeHelper Tests (Returns single value)
+        #region GetCustomAttribute Tests (Returns single value)
 
         [TestMethod]
-        public void GetCustomAttributeHelper_Programmatic_Test()
+        public void GetCustomAttribute_Programmatic_Test()
         {
             // Arrange
 
@@ -74,7 +74,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void GetCustomAttributeHelper_Declarative_Test()
+        public void GetCustomAttribute_Declarative_Test()
         {
             // Act
 
@@ -88,7 +88,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void GetCustomAttributeHelper_Mixed_Test()
+        public void GetCustomAttribute_Mixed_Test()
         {
             // Arrange
 
@@ -118,12 +118,12 @@ namespace Tests.Tests
             throw new NotImplementedException();
         }
 
-        #endregion GetCustomAttributeHelper Tests (Returns single value)
+        #endregion GetCustomAttribute Tests (Returns single value)
 
-        #region GetCustomAttributesHelper<T> Tests (Returns many values)
+        #region GetCustomAttributes<T> Tests (Returns many values)
 
         [TestMethod]
-        public void GetCustomAttributesHelperOfT_Programmatic_Test()
+        public void GetCustomAttributesOfT_Programmatic_Test()
         {
             // Arrange
 
@@ -148,7 +148,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void GetCustomAttributesHelperOfT_Declarative_Test()
+        public void GetCustomAttributesOfT_Declarative_Test()
         {
             // Arrange. Act.
 
@@ -165,7 +165,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void GetCustomAttributesHelperOfT_Mixed_Test()
+        public void GetCustomAttributesOfT_Mixed_Test()
         {
             // Arrange
 
@@ -186,12 +186,12 @@ namespace Tests.Tests
             attributes.Single(a => a.I == 55);
         }
 
-        #endregion GetCustomAttributesHelper<T> Tests (Returns many values)
+        #endregion GetCustomAttributes<T> Tests (Returns many values)
 
-        #region GetCustomAttributesHelper Non-generic Tests (Returns many values)
+        #region GetCustomAttributes Non-generic Tests (Returns many values)
 
         [TestMethod]
-        public void GetCustomAttributesHelper_Programmatic_Test()
+        public void GetCustomAttributes_Programmatic_Test()
         {
             // Arrange
 
@@ -215,7 +215,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void GetCustomAttributesHelper_Declarative_Test()
+        public void GetCustomAttributes_Declarative_Test()
         {
             // Arrange. Act
 
@@ -231,7 +231,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void GetCustomAttributesHelper_Mixed_Test()
+        public void GetCustomAttributes_Mixed_Test()
         {
             // Arrange
 
@@ -255,7 +255,7 @@ namespace Tests.Tests
             specificAttributes.Single(a => a.I == 55);
         }
 
-        #endregion GetCustomAttributesHelper Non-generic Tests (Returns many values)
+        #endregion GetCustomAttributes Non-generic Tests (Returns many values)
 
         #region DecorateType Test
 
@@ -416,5 +416,95 @@ namespace Tests.Tests
         }
 
         #endregion GetTableType tests
+
+        #region Default schema handling
+
+        [TestMethod]
+        public void GetCustomAttributes_NonGeneric_InsertDefaultSchema_ForeignKeyAttribute_Test()
+        {
+            // Arrange
+
+            const string defaultSchema = "defaultSchema123";
+
+            var attributeDecorator = new StandardAttributeDecorator(x => null, defaultSchema);
+
+            // Act
+
+            IEnumerable<Attribute> resultSet =
+                attributeDecorator.GetCustomAttributes(typeof (ForeignClass).GetProperty("ForeignKey"));
+
+            Attribute result = resultSet.First();
+
+            // Assert
+
+            Assert.AreEqual(defaultSchema, ((ForeignKeyAttribute)result).Schema);
+        }
+
+        [TestMethod]
+        public void GetCustomAttributes_NonGeneric_InsertDefaultSchema_ExplicitSchema_Test()
+        {
+            // Arrange
+
+            const string defaultSchema = "defaultSchema123";
+
+            var attributeDecorator = new StandardAttributeDecorator(x => null, defaultSchema);
+
+            // Act
+
+            IEnumerable<Attribute> resultSet =
+                attributeDecorator.GetCustomAttributes(typeof(ClassWithSchemaInForeignKey).GetProperty("ForeignKey"));
+
+            Attribute result = resultSet.First();
+
+            // Assert
+
+            Assert.AreEqual(ClassWithSchemaInForeignKey.Schema, ((ForeignKeyAttribute)result).Schema);
+        }
+
+        [TestMethod]
+        public void GetCustomAttributes_Generic_InsertDefaultSchema_ForeignKeyAttribute_Test()
+        {
+            // Arrange
+
+            const string defaultSchema = "defaultSchema123";
+
+            var attributeDecorator = new StandardAttributeDecorator(x => null, defaultSchema);
+
+            // Act
+
+            IEnumerable<ForeignKeyAttribute> resultSet =
+                attributeDecorator.GetCustomAttributes<ForeignKeyAttribute>(
+                    typeof (ForeignClass).GetProperty("ForeignKey"));
+
+            ForeignKeyAttribute result = resultSet.First();
+
+            // Assert
+
+            Assert.AreEqual(defaultSchema, result.Schema);
+        }
+
+        [TestMethod]
+        public void GetCustomAttributes_Generic_InsertDefaultSchema_ExplicitSchema_Test()
+        {
+            // Arrange
+
+            const string defaultSchema = "defaultSchema123";
+
+            var attributeDecorator = new StandardAttributeDecorator(x => null, defaultSchema);
+
+            // Act
+
+            IEnumerable<ForeignKeyAttribute> resultSet =
+                attributeDecorator.GetCustomAttributes<ForeignKeyAttribute>(
+                    typeof (ClassWithSchemaInForeignKey).GetProperty("ForeignKey"));
+
+            ForeignKeyAttribute result = resultSet.First();
+
+            // Assert
+
+            Assert.AreEqual(ClassWithSchemaInForeignKey.Schema, result.Schema);
+        }
+
+        #endregion Default schema handling
     }
 }

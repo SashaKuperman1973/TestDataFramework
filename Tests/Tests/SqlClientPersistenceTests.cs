@@ -40,14 +40,12 @@ namespace Tests.Tests
         private SqlClientPersistence persistence;
         private Mock<IWritePrimitives> writePrimitivesMock;
         private Mock<IDeferredValueGenerator<LargeInteger>> deferredValueGeneratorMock;
-        private TableTypeCache tableTypeCache;
         private IAttributeDecorator attributeDecorator;
 
         [TestInitialize]
         public void Initialize()
         {
-            this.tableTypeCache = new TableTypeCache();
-            this.attributeDecorator = new StandardAttributeDecorator(this.tableTypeCache);
+            this.attributeDecorator = new StandardAttributeDecorator(attributeDecorator => null, null);
             this.writePrimitivesMock = new Mock<IWritePrimitives>();
             this.deferredValueGeneratorMock = new Mock<IDeferredValueGenerator<LargeInteger>>();
 

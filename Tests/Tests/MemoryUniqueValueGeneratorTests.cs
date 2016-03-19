@@ -37,7 +37,6 @@ namespace Tests.Tests
         private Mock<IPropertyValueAccumulator> propertyValueAccumulatorMock;
         private Mock<IDeferredValueGenerator<LargeInteger>> deferredValueGeneratorMock;
 
-        private TableTypeCache tableTypeCache;
         private IAttributeDecorator attributeDecorator;
 
         [TestInitialize]
@@ -45,8 +44,7 @@ namespace Tests.Tests
         {
             XmlConfigurator.Configure();
 
-            this.tableTypeCache = new TableTypeCache();
-            this.attributeDecorator = new StandardAttributeDecorator(this.tableTypeCache);
+            this.attributeDecorator = new StandardAttributeDecorator(attributeDecorator => null, null);
 
             this.propertyValueAccumulatorMock = new Mock<IPropertyValueAccumulator>();
             this.deferredValueGeneratorMock = new Mock<IDeferredValueGenerator<LargeInteger>>();

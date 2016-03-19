@@ -44,7 +44,6 @@ namespace Tests.Tests
         private Mock<CircularReferenceBreaker> breakerMock;
         private Mock<IWritePrimitives> writePrimitivesMock;
 
-        private TableTypeCache tableTypeCache;
         private IAttributeDecorator attributeDecorator;
 
         private SubjectClass subject;
@@ -54,8 +53,7 @@ namespace Tests.Tests
         {
             XmlConfigurator.Configure();
 
-            this.tableTypeCache = new TableTypeCache();
-            this.attributeDecorator = new StandardAttributeDecorator(this.tableTypeCache);
+            this.attributeDecorator = new StandardAttributeDecorator(attributeDecorator => null, null);
 
             this.subject = new SubjectClass();
             this.recordReferenceMock = new Mock<RecordReference>(null, this.attributeDecorator);

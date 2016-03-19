@@ -147,6 +147,12 @@ namespace TestDataFramework.Exceptions
             : base(string.Format(errorGettingDefinedTypeMessage, table))
         {
         }
+
+        public TableTypeCacheException(string ambigousTableSearchConditionsMessage, Table table, Type ambigousType1,
+            Type ambigousType2)
+            : base(string.Format(ambigousTableSearchConditionsMessage, table, ambigousType1, ambigousType2))
+        {
+        }
     }
 
     public class WritePrimitivesException : ApplicationException

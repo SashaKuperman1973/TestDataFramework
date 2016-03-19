@@ -20,6 +20,7 @@
 using System;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using TestDataFramework;
 using TestDataFramework.AttributeDecorator;
 using TestDataFramework.Exceptions;
@@ -34,7 +35,7 @@ namespace Tests.Tests
         [TestInitialize]
         public void Initialize()
         {
-            this.tableTypeCache = new TableTypeCache();
+            this.tableTypeCache = new TableTypeCache(tableTypeCache => new StandardAttributeDecorator(x => tableTypeCache, null));
         }
 
         #region IsAssemblyCachePopulated tests

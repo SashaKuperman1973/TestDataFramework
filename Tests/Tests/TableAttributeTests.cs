@@ -18,6 +18,7 @@
 */
 
 using System;
+using System.Runtime.Remoting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework;
 using TestDataFramework.Exceptions;
@@ -168,5 +169,44 @@ namespace Tests.Tests
         }
 
         #endregion Equals tests
+
+        [TestMethod]
+        public void GetAttributeUsingDefaultSchema_Test()
+        {
+            // Arrange. 
+
+            var concreteOriginalAttribute = new TableAttribute("tableName123");
+            ICanHaveDefaultSchema originalTableAttribute = concreteOriginalAttribute;
+
+            // Act.
+
+            const string defaultSchema = "defaultSchema123";
+            Attribute newAttribute = originalTableAttribute.GetAttributeUsingDefaultSchema(defaultSchema);
+            var newTableAttribute = newAttribute as TableAttribute;
+
+            // Assert
+
+            Assert.IsNotNull(newTableAttribute);
+            Assert.IsFalse(newTableAttribute.IsDefaultSchema);
+            Assert.AreEqual(defaultSchema, newTableAttribute.Schema);
+            Assert.AreEqual(concreteOriginalAttribute.CatalogueName, newTableAttribute.CatalogueName);
+            Assert.AreEqual(concreteOriginalAttribute.Name, newTableAttribute.Name);
+        }
+
+        [TestMethod]
+        public void IsDefaultSchema_TrueFalse_Test()
+        {
+            // Arrange. Act.
+
+            ICanHaveDefaultSchema tableAttributeWithName = new TableAttribute("tableName123");
+            ICanHaveDefaultSchema tableAttributeWithSchema = new TableAttribute("schema123", "tableName123");
+            ICanHaveDefaultSchema tableAttributeWithCatalogue = new TableAttribute("catalogueName123", "schema123", "tableName123");
+
+            // Assert
+
+            Assert.IsTrue(tableAttributeWithName.IsDefaultSchema);
+            Assert.IsFalse(tableAttributeWithSchema.IsDefaultSchema);
+            Assert.IsFalse(tableAttributeWithCatalogue.IsDefaultSchema);
+        }
     }
 }

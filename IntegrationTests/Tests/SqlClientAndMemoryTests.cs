@@ -90,7 +90,7 @@ namespace IntegrationTests.Tests
             Console.WriteLine(result[1].RecordObject.Key2);
         }
 
-        //[Ignore]
+        [Ignore]
         [TestMethod]
         public void Memory_Declarative_Test()
         {
@@ -98,7 +98,7 @@ namespace IntegrationTests.Tests
             SqlClientAndMemoryTests.PrimaryKeyForeignKeyTest(populator, new DeclarativeGeneratorIntegrationTest());
         }
 
-        //[Ignore]
+        [Ignore]
         [TestMethod]
         public void Memory_POCO_Test()
         {
@@ -106,7 +106,7 @@ namespace IntegrationTests.Tests
             SqlClientAndMemoryTests.PrimaryKeyForeignKeyTest(populator, new PocoGeneratorIntegrationTest());
         }
 
-        //[Ignore]
+        [Ignore]
         [TestMethod]
         public void SqlCient_Declarative_Test()
         {
@@ -116,7 +116,7 @@ namespace IntegrationTests.Tests
             SqlClientAndMemoryTests.PrimaryKeyForeignKeyTest(populator, new DeclarativeGeneratorIntegrationTest());
         }
 
-        //[Ignore]
+        [Ignore]
         [TestMethod]
         public void SqlCient_POCO_Test()
         {
@@ -150,7 +150,7 @@ namespace IntegrationTests.Tests
             {
                 populator.Bind();
                 
-                transactionScope.Complete();
+                //transactionScope.Complete();
             }
 
             Helpers.Dump(primaries);

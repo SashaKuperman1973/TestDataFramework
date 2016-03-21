@@ -87,9 +87,13 @@ namespace Tests.Tests
         [TestMethod]
         public void Type_Constructor_Test()
         {
-            // Arrange. Act.
+            // Arrange
 
-            var table = new Table(typeof(SubjectClass));
+            const string defaultSchema = "schema123";
+
+            // Act
+
+            var table = new Table(typeof(SubjectClass), defaultSchema);
 
             // Assert
 
@@ -135,7 +139,7 @@ namespace Tests.Tests
         {
             String s = "ABCD";
 
-            var table = new Table(typeof(SubjectClass));
+            var table = new Table(typeof(SubjectClass), null);
 
             Assert.IsFalse(table.BasicFieldsEqual(s));
         }
@@ -143,8 +147,8 @@ namespace Tests.Tests
         [TestMethod]
         public void NoSchemaInput_NoCatalogueInput_Equals_Test()
         {
-            var table1 = new Table(typeof(SubjectClass));
-            var table2 = new Table(typeof(SubjectClass));
+            var table1 = new Table(typeof(SubjectClass), null);
+            var table2 = new Table(typeof(SubjectClass), null);
 
             Assert.IsTrue(table1.BasicFieldsEqual(table2));
         }

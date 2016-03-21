@@ -98,7 +98,7 @@ namespace Tests.Tests
             Assert.IsFalse(newForeignKeyAttribute.IsDefaultSchema);
             Assert.AreEqual(defaultSchema, newForeignKeyAttribute.Schema);
             Assert.AreEqual(concreteOriginalAttribute.PrimaryKeyName, newForeignKeyAttribute.PrimaryKeyName);
-            Assert.AreEqual(concreteOriginalAttribute.PrimaryTableType, newForeignKeyAttribute.PrimaryTableType);
+            Assert.IsNull(newForeignKeyAttribute.PrimaryTableType);
         }
 
         [TestMethod]

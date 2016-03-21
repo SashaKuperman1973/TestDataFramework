@@ -216,7 +216,7 @@ namespace TestDataFramework.AttributeDecorator
 
             if (!this.tableTypeCache.IsAssemblyCachePopulated(foreignType.Assembly))
             {
-                this.tableTypeCache.PopulateAssemblyCache(foreignType.Assembly, this.GetSingleAttribute<TableAttribute>);
+                this.tableTypeCache.PopulateAssemblyCache(foreignType.Assembly, this.GetSingleAttribute<TableAttribute>, this.defaultSchema);
             }
 
             Type cachedType = this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType, this.GetSingleAttribute<TableAttribute>);

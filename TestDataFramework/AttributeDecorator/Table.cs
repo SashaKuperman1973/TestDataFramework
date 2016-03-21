@@ -36,11 +36,12 @@ namespace TestDataFramework.AttributeDecorator
         }
 
         // Constructs a value to add to dictionary when type has no TableAttribute.
-        public Table(Type type)
+        public Table(Type type, string defaultSchema)
         {
             type.IsNotNull(nameof(type));
 
             this.TableName = type.Name;
+            this.Schema = defaultSchema;
             this.HasTableAttribute = false;
         }
 

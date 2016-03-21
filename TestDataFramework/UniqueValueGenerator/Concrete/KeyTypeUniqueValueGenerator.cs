@@ -54,6 +54,7 @@ namespace TestDataFramework.UniqueValueGenerator.Concrete
                 object result = base.GetValue(propertyInfo);
 
                 KeyTypeUniqueValueGenerator.Logger.Debug($"result fom base: {result}");
+
                 return result ?? Helper.GetDefaultValue(propertyInfo.PropertyType);
             }
 
@@ -70,6 +71,7 @@ namespace TestDataFramework.UniqueValueGenerator.Concrete
             }
 
             KeyTypeUniqueValueGenerator.Logger.Debug("Deferring value");
+
             this.DeferValue(propertyInfo);
 
             return Helper.GetDefaultValue(propertyInfo.PropertyType);

@@ -365,7 +365,7 @@ namespace Tests.Tests
 
             // Assert
 
-            this.tableTypeCacheMock.Verify(m => m.PopulateAssemblyCache(foreignType.Assembly, this.attributeDecorator.GetSingleAttribute<TableAttribute>), Times.Once);
+            this.tableTypeCacheMock.Verify(m => m.PopulateAssemblyCache(foreignType.Assembly, this.attributeDecorator.GetSingleAttribute<TableAttribute>, null), Times.Once);
         }
 
         [TestMethod]
@@ -389,7 +389,7 @@ namespace Tests.Tests
 
             // Assert
 
-            this.tableTypeCacheMock.Verify(m => m.PopulateAssemblyCache(foreignType.Assembly, this.attributeDecorator.GetSingleAttribute<TableAttribute>), Times.Never);
+            this.tableTypeCacheMock.Verify(m => m.PopulateAssemblyCache(foreignType.Assembly, this.attributeDecorator.GetSingleAttribute<TableAttribute>, null), Times.Never);
         }
 
         [TestMethod]

@@ -57,7 +57,7 @@ namespace Tests.Tests
         {
             // Arrange
             Type foreignType = typeof(TestModels.Foreign.ForeignClass);
-            this.tableTypeCache.PopulateAssemblyCache(foreignType.Assembly, type => (TableAttribute)type.GetCustomAttribute(typeof(TableAttribute)));
+            this.tableTypeCache.PopulateAssemblyCache(foreignType.Assembly, type => (TableAttribute)type.GetCustomAttribute(typeof(TableAttribute)), null);
 
             // Act
 
@@ -92,7 +92,7 @@ namespace Tests.Tests
             var foreignAttribute =
                 foreignType.GetProperty("TableName_ForeignKey").GetCustomAttribute<ForeignKeyAttribute>();
 
-            this.tableTypeCache.PopulateAssemblyCache(foreignType.Assembly, type => (TableAttribute)type.GetCustomAttribute(typeof(TableAttribute)));
+            this.tableTypeCache.PopulateAssemblyCache(foreignType.Assembly, type => (TableAttribute)type.GetCustomAttribute(typeof(TableAttribute)), null);
 
             // Act
 
@@ -113,7 +113,7 @@ namespace Tests.Tests
             var foreignAttribute =
                 foreignType.GetProperty("ForeignKey").GetCustomAttribute<ForeignKeyAttribute>();
 
-            this.tableTypeCache.PopulateAssemblyCache(foreignType.Assembly, type => (TableAttribute)type.GetCustomAttribute(typeof(TableAttribute)));
+            this.tableTypeCache.PopulateAssemblyCache(foreignType.Assembly, type => (TableAttribute)type.GetCustomAttribute(typeof(TableAttribute)), null);
 
             // Act
 
@@ -134,7 +134,7 @@ namespace Tests.Tests
             var foreignAttribute =
                 foreignType.GetProperty("ForeignKey").GetCustomAttribute<ForeignKeyAttribute>();
 
-            this.tableTypeCache.PopulateAssemblyCache(foreignType.Assembly, type => (TableAttribute)type.GetCustomAttribute(typeof(TableAttribute)));
+            this.tableTypeCache.PopulateAssemblyCache(foreignType.Assembly, type => (TableAttribute)type.GetCustomAttribute(typeof(TableAttribute)), null);
 
             // Act
 
@@ -161,7 +161,7 @@ namespace Tests.Tests
             var foreignAttribute =
                 foreignType.GetProperty("DecoratedCollision_ForeignKey").GetCustomAttribute<ForeignKeyAttribute>();
 
-            this.tableTypeCache.PopulateAssemblyCache(foreignType.Assembly, type => (TableAttribute)type.GetCustomAttribute(typeof(TableAttribute)));
+            this.tableTypeCache.PopulateAssemblyCache(foreignType.Assembly, type => (TableAttribute)type.GetCustomAttribute(typeof(TableAttribute)), null);
 
             // Act
 
@@ -183,7 +183,7 @@ namespace Tests.Tests
             var foreignAttribute =
                 foreignType.GetProperty("DecoratedCollision3Way_ForeignKey").GetCustomAttribute<ForeignKeyAttribute>();
 
-            this.tableTypeCache.PopulateAssemblyCache(foreignType.Assembly, type => (TableAttribute)type.GetCustomAttribute(typeof(TableAttribute)));
+            this.tableTypeCache.PopulateAssemblyCache(foreignType.Assembly, type => (TableAttribute)type.GetCustomAttribute(typeof(TableAttribute)), null);
 
             // Act
 
@@ -208,7 +208,7 @@ namespace Tests.Tests
             var foreignAttribute =
                 foreignType.GetProperty("DecoratedCollisionWithDifferentClassName_ForeignKey").GetCustomAttribute<ForeignKeyAttribute>();
 
-            this.tableTypeCache.PopulateAssemblyCache(foreignType.Assembly, type => (TableAttribute)type.GetCustomAttribute(typeof(TableAttribute)));
+            this.tableTypeCache.PopulateAssemblyCache(foreignType.Assembly, type => (TableAttribute)type.GetCustomAttribute(typeof(TableAttribute)), null);
 
             // Act
 
@@ -236,7 +236,7 @@ namespace Tests.Tests
             var foreignAttribute =
                 foreignType.GetProperty("DecoratedCollisionWithDifferentClassName3Way_ForeignKey").GetCustomAttribute<ForeignKeyAttribute>();
 
-            this.tableTypeCache.PopulateAssemblyCache(foreignType.Assembly, type => (TableAttribute)type.GetCustomAttribute(typeof(TableAttribute)));
+            this.tableTypeCache.PopulateAssemblyCache(foreignType.Assembly, type => (TableAttribute)type.GetCustomAttribute(typeof(TableAttribute)), null);
 
             // Act
 

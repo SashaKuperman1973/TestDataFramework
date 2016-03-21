@@ -70,7 +70,7 @@ namespace TestDataFramework.AttributeDecorator
             public ConcurrentDictionary<Table, List<Type>> CollisionDictionary { get; set; }
         }
 
-        public virtual void PopulateAssemblyCache(Assembly assembly, Func<Type, TableAttribute> getTableAttibute)
+        public virtual void PopulateAssemblyCache(Assembly assembly, Func<Type, TableAttribute> getTableAttibute, string defaultSchema)
         {
             AssemblyLookupContext assemblyLookupContext = this.tableTypeDictionary.AddOrUpdate(assembly,
                 new AssemblyLookupContext
@@ -98,7 +98,7 @@ namespace TestDataFramework.AttributeDecorator
 
                     Table table = tableAttribute != null
                         ? new Table(tableAttribute)
-                        : new Table(definedType);
+                        : new Table(definedType, defaultSchema);
 
                     this.TryAdd(table, definedType, assemblyLookupContext);
                 });

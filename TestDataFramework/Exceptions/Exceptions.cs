@@ -170,4 +170,12 @@ namespace TestDataFramework.Exceptions
         {
         }
     }
+
+    public class InserRecordServiceException : ApplicationException
+    {
+        public InserRecordServiceException(string message, string foreignTypeName, string propertyName)
+            : base(string.Format(message, foreignTypeName, propertyName))
+        {            
+        }
+    }
 }

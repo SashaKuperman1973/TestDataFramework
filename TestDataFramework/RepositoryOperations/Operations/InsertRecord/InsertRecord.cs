@@ -193,16 +193,6 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             return result;
         }
 
-        private static IEnumerable<PropertyAttributes> GetForeignKeyProperties(IEnumerable<PropertyAttributes> propertyAttributes)
-        {
-            IEnumerable<PropertyAttributes> result =
-                propertyAttributes.Where(
-                    pa =>
-                        pa.Attributes.Any(a => a.GetType() == typeof(ForeignKeyAttribute)));
-
-            return result;
-        }
-
         private Columns GetColumnData(IWritePrimitives writer)
         {
             InsertRecord.Logger.Debug("Entering GetColumnData");

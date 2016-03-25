@@ -68,16 +68,15 @@ namespace TestDataFramework.Factories
         private const string AccumulatorValueGenerator = "AccumulatorValueGenerator";
         private const string GetUniqueValueTypeGenerator = "GetUniqueValueTypeGenerator";
 
-        public IPopulator CreateSqlClientPopulator(string connectionStringWithDefaultCatalogue,
-            bool mustBeInATransaction = true, bool throwIfUnhandledPrimaryKeyType = true)
+        public IPopulator CreateSqlClientPopulator(string connectionStringWithDefaultCatalogue, 
+            bool mustBeInATransaction = true, string defaultSchema = "dbo",
+            bool enforceKeyReferenceCheck = true, bool throwIfUnhandledPrimaryKeyType = true)
         {
             PopulatorFactory.Logger.Debug(
                 $"Entering CreateSqlClientPopulator. mustBeInATransaction: {mustBeInATransaction}, throwIfUnhandledPrimaryKeyType: {throwIfUnhandledPrimaryKeyType}");
 
-            const string defaultSchema = "dbo";
-
             IWindsorContainer iocContainer = this.GetSqlClientPopulatorContainer(connectionStringWithDefaultCatalogue,
-                mustBeInATransaction, throwIfUnhandledPrimaryKeyType, defaultSchema);
+                mustBeInATransaction, defaultSchema, enforceKeyReferenceCheck, throwIfUnhandledPrimaryKeyType);
 
             var result = iocContainer.Resolve<IPopulator>();
 
@@ -97,7 +96,8 @@ namespace TestDataFramework.Factories
             return result;
         }
 
-        private IWindsorContainer GetSqlClientPopulatorContainer(string connectionStringWithDefaultCatalogue, bool mustBeInATransaction, bool throwIfUnhandledPrimaryKeyType, string defaultSchema)
+        private IWindsorContainer GetSqlClientPopulatorContainer(string connectionStringWithDefaultCatalogue, bool mustBeInATransaction, string defaultSchema,
+            bool enforceKeyReferenceCheck, bool throwIfUnhandledPrimaryKeyType)
         {
             PopulatorFactory.Logger.Debug("Entering GetSqlClientPopulatorContainer");
 
@@ -120,7 +120,7 @@ namespace TestDataFramework.Factories
 
                 Component.For<IPropertyDataGenerator<LargeInteger>>().ImplementedBy<SqlClientInitialCountGenerator>(),
 
-                Component.For<IPersistence>().ImplementedBy<SqlClientPersistence>(),
+                Component.For<IPersistence>().ImplementedBy<SqlClientPersistence>().DependsOn(Dependency.OnValue("enforceKeyReferenceCheck", enforceKeyReferenceCheck)),
 
                 Component.For<IUniqueValueGenerator>().ImplementedBy<KeyTypeUniqueValueGenerator>().DependsOn(new { throwIfUnhandledType = throwIfUnhandledPrimaryKeyType }),
 

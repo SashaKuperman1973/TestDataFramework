@@ -99,10 +99,10 @@ namespace Tests.Tests
 
             Assert.IsFalse(table.HasTableAttribute);
             Assert.IsNull(table.CatalogueName);
-            Assert.IsNull(table.Schema);
+            Assert.AreEqual(defaultSchema, table.Schema);
             Assert.AreEqual(nameof(SubjectClass), table.TableName);
 
-            Assert.AreEqual(nameof(SubjectClass).GetHashCode(), table.GetHashCode());
+            Assert.AreEqual(defaultSchema.GetHashCode() ^ nameof(SubjectClass).GetHashCode(), table.GetHashCode());
         }
 
         [TestMethod]

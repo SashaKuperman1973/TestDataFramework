@@ -58,7 +58,7 @@ namespace Tests.Tests
             this.subject = new SubjectClass();
             this.recordReferenceMock = new Mock<RecordReference>(null, this.attributeDecorator);
             this.peers = new List<AbstractRepositoryOperation>();
-            this.serviceMock = new Mock<InsertRecordService>(this.recordReferenceMock.Object, this.attributeDecorator);
+            this.serviceMock = new Mock<InsertRecordService>(this.recordReferenceMock.Object, this.attributeDecorator, true);
             this.insertRecord = new InsertRecord(this.serviceMock.Object, this.recordReferenceMock.Object, this.peers, this.attributeDecorator);
 
             this.breakerMock = new Mock<CircularReferenceBreaker>();

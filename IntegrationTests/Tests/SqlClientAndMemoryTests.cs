@@ -32,7 +32,7 @@ using TestDataFramework.Populator.Interfaces;
 
 namespace IntegrationTests.Tests
 {
-    [Ignore]
+    //[Ignore]
     [TestClass]
     public class SqlClientAndMemoryTests
     {
@@ -138,8 +138,6 @@ namespace IntegrationTests.Tests
 
             codeGeneratorIntegration.AddTypes(populator, foreignSet1, foreignSet2);
 
-            IList<RecordReference<ForeignToAutoPrimaryTable>> foreignToAutoSet = populator.Add<ForeignToAutoPrimaryTable>(2);
-
             primaries[0].Set(o => o.ADecimal, 112233.445566m).Set(o => o.AString, "AAXX").Set(o => o.Key1, "HummHummHumm");
 
             foreignSet2[1].Set(o => o.ALong, 11111L).Set(o => o.AShort, (short) 1234);
@@ -160,8 +158,6 @@ namespace IntegrationTests.Tests
 
             Console.WriteLine();
 
-            Console.WriteLine(foreignToAutoSet[0].RecordObject.ForignKey);
-            Console.WriteLine(foreignToAutoSet[1].RecordObject.ForignKey);
             Console.WriteLine(foreignSet1[0].RecordObject.ForeignKey1);
             Console.WriteLine(foreignSet1[1].RecordObject.ForeignKey1);
             Console.WriteLine(foreignSet2[0].RecordObject.ForeignKey1);

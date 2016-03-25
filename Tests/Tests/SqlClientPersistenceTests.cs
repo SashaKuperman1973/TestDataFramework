@@ -50,7 +50,7 @@ namespace Tests.Tests
             this.deferredValueGeneratorMock = new Mock<IDeferredValueGenerator<LargeInteger>>();
 
             this.persistence = new SqlClientPersistence(this.writePrimitivesMock.Object,
-                this.deferredValueGeneratorMock.Object, this.attributeDecorator);
+                this.deferredValueGeneratorMock.Object, this.attributeDecorator, true);
 
             XmlConfigurator.Configure();
         }

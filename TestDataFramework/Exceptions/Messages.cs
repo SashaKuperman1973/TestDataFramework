@@ -110,5 +110,8 @@ namespace TestDataFramework.Exceptions
 
         public const string AmbigousTableSearchConditions =
             "Ambigous type match when attempting to resolve primary-foreign type/table reference. Foreign Table object used: [{0}], Types involved in the collision: [{1}], [{2}]";
+
+        public const string ForeignKeyRecordWithNoPrimaryKeyRecord =
+            "Foreign key in record found without corresponding record/primary key assigned. Foreign type: {0}, Property name: {1}";
     }
 }

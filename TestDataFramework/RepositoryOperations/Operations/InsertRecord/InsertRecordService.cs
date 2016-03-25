@@ -37,6 +37,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
         private readonly RecordReference recordReference;
         private readonly IAttributeDecorator attributeDecorator;
+        private readonly bool enforceKeyReferenceCheck;
 
         private PrimaryKeyAttribute.KeyTypeEnum? keyType;
         public PrimaryKeyAttribute.KeyTypeEnum KeyType
@@ -69,12 +70,13 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
         #region Constructor
 
-        public InsertRecordService(RecordReference recordReference, IAttributeDecorator attributeDecorator)
+        public InsertRecordService(RecordReference recordReference, IAttributeDecorator attributeDecorator, bool enforceKeyReferenceCheck)
         {
             InsertRecordService.Logger.Debug("Entering constructor");
 
             this.recordReference = recordReference;
             this.attributeDecorator = attributeDecorator;
+            this.enforceKeyReferenceCheck = enforceKeyReferenceCheck;
 
             InsertRecordService.Logger.Debug("Exiting constructor");
         }
@@ -158,6 +160,15 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                         && fkpa.Attribute.PrimaryKeyName.Equals(pk.ColumnName, StringComparison.Ordinal)
                         )
                     );
+
+                if (this.enforceKeyReferenceCheck && !isForeignKeyPrimaryKeyMatch)
+                {
+                    InsertRecordService.Logger.Debug(
+                        $"Key reference check branch taken. Referential integrity check failed. Foreign Key PropertyAttribute : {fkpa}");
+
+                    throw new InserRecordServiceException(Messages.ForeignKeyRecordWithNoPrimaryKeyRecord,
+                        fkpa.PropertyInfo.DeclaringType.FullName, fkpa.PropertyInfo.Name);
+                }
 
                 return
                     new

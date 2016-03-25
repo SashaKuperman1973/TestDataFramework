@@ -106,7 +106,7 @@ namespace IntegrationTests.Tests
             SqlClientAndMemoryTests.PrimaryKeyForeignKeyTest(populator, new PocoGeneratorIntegrationTest());
         }
 
-        [Ignore]
+        //[Ignore]
         [TestMethod]
         public void SqlCient_Declarative_Test()
         {

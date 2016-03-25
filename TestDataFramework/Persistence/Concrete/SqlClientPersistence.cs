@@ -39,14 +39,16 @@ namespace TestDataFramework.Persistence.Concrete
         private readonly IWritePrimitives writePrimitives;
         private readonly IDeferredValueGenerator<LargeInteger> deferredValueGenerator;
         private readonly IAttributeDecorator attributeDecorator;
+        private readonly bool enforceKeyReferenceCheck;
 
         public SqlClientPersistence(IWritePrimitives writePrimitives,
             IDeferredValueGenerator<LargeInteger> deferredValueGenerator,
-            IAttributeDecorator attributeDecorator)
+            IAttributeDecorator attributeDecorator, bool enforceKeyReferenceCheck)
         {
             this.writePrimitives = writePrimitives;
             this.deferredValueGenerator = deferredValueGenerator;
             this.attributeDecorator = attributeDecorator;
+            this.enforceKeyReferenceCheck = enforceKeyReferenceCheck;
         }
 
         public virtual void Persist(IEnumerable<RecordReference> recordReferences)
@@ -70,7 +72,10 @@ namespace TestDataFramework.Persistence.Concrete
 
             foreach (RecordReference recordReference in recordReferences)
             {
-                operations.Add(new InsertRecord(new InsertRecordService(recordReference, this.attributeDecorator), recordReference, operations, this.attributeDecorator));
+                operations.Add(
+                    new InsertRecord(
+                        new InsertRecordService(recordReference, this.attributeDecorator, this.enforceKeyReferenceCheck),
+                        recordReference, operations, this.attributeDecorator));
             }
 
             var orderedOperations = new AbstractRepositoryOperation[operations.Count];

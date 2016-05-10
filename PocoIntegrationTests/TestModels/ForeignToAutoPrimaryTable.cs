@@ -5,7 +5,7 @@ namespace IntegrationTests.TestModels.Generated.POCO
 {
   public class ForeignToAutoPrimaryTable
   {
-    public int ForignKey { get; set; }
+    public int ForeignKey { get; set; }
 	
   }
 }

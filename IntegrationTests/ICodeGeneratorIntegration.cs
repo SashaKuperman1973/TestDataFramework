@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using IntegrationTests.TestModels;
 using TestDataFramework.Populator.Concrete;
 using TestDataFramework.Populator.Interfaces;
 
-namespace IntegrationTests.TestModels.Generated
+namespace IntegrationTests
 {
     public interface ICodeGeneratorIntegration
     {

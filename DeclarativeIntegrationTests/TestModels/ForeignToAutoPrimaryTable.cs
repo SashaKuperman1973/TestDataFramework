@@ -1,7 +1,6 @@
-using System;
 using TestDataFramework;
 
-namespace IntegrationTests.TestModels.Generated.Declarative
+namespace DeclarativeIntegrationTests.TestModels
 {
   [Table("TestDataFramework", "dbo", "ForeignToAutoPrimaryTable")]
   public class ForeignToAutoPrimaryTable

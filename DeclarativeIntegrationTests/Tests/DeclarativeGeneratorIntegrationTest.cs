@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
-using IntegrationTests.TestModels.Generated.Declarative;
+using DeclarativeIntegrationTests.TestModels;
+using IntegrationTests;
+using IntegrationTests.TestModels;
 using TestDataFramework.Populator.Concrete;
 using TestDataFramework.Populator.Interfaces;
 
-namespace IntegrationTests.TestModels.Generated
+namespace DeclarativeIntegrationTests.Tests
 {
     public class DeclarativeGeneratorIntegrationTest : ICodeGeneratorIntegration
     {

@@ -19,11 +19,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Transactions;
 using IntegrationTests.TestModels;
-using IntegrationTests.TestModels.Generated;
-using IntegrationTests.TestModels.Generated.Declarative;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.Factories;
@@ -32,7 +28,7 @@ using TestDataFramework.Populator.Interfaces;
 
 namespace IntegrationTests.Tests
 {
-    //[Ignore]
+    [Ignore]
     [TestClass]
     public class SqlClientAndMemoryTests
     {
@@ -52,7 +48,7 @@ namespace IntegrationTests.Tests
             this.factory.Dispose();
         }
 
-        [Ignore]
+        //[Ignore]
         [TestMethod]
         public void SubjectClass_Test()
         {
@@ -71,7 +67,7 @@ namespace IntegrationTests.Tests
             Console.WriteLine(result[1].RecordObject.GuidKey);
         }
 
-        [Ignore]
+        //[Ignore]
         [TestMethod]
         public void ManualKeyPrimaryTable_Test()
         {
@@ -88,80 +84,6 @@ namespace IntegrationTests.Tests
 
             Console.WriteLine(result[1].RecordObject.Key1);
             Console.WriteLine(result[1].RecordObject.Key2);
-        }
-
-        [Ignore]
-        [TestMethod]
-        public void Memory_Declarative_Test()
-        {
-            IPopulator populator = this.factory.CreateMemoryPopulator();
-            SqlClientAndMemoryTests.PrimaryKeyForeignKeyTest(populator, new DeclarativeGeneratorIntegrationTest());
-        }
-
-        [Ignore]
-        [TestMethod]
-        public void Memory_POCO_Test()
-        {
-            IPopulator populator = this.factory.CreateMemoryPopulator();
-            SqlClientAndMemoryTests.PrimaryKeyForeignKeyTest(populator, new PocoGeneratorIntegrationTest());
-        }
-
-        //[Ignore]
-        [TestMethod]
-        public void SqlCient_Declarative_Test()
-        {
-            IPopulator populator = this.factory.CreateSqlClientPopulator(
-                @"Data Source=.\SqlExpress;Initial Catalog=TestDataFramework;Integrated Security=SSPI;");
-
-            SqlClientAndMemoryTests.PrimaryKeyForeignKeyTest(populator, new DeclarativeGeneratorIntegrationTest());
-        }
-
-        [Ignore]
-        [TestMethod]
-        public void SqlCient_POCO_Test()
-        {
-            IPopulator populator = this.factory.CreateSqlClientPopulator(
-                @"Data Source=.\SqlExpress;Initial Catalog=TestDataFramework;Integrated Security=SSPI;");
-
-            SqlClientAndMemoryTests.PrimaryKeyForeignKeyTest(populator, new PocoGeneratorIntegrationTest());
-        }
-
-        private static void PrimaryKeyForeignKeyTest(IPopulator populator, ICodeGeneratorIntegration codeGeneratorIntegration)
-        {
-            IList<RecordReference<ManualKeyPrimaryTableClass>> primaries = populator.Add<ManualKeyPrimaryTableClass>(2);
-
-            IList<RecordReference<ManualKeyForeignTable>> foreignSet1 = populator.Add<ManualKeyForeignTable>(2);
-            foreignSet1.ToList().ForEach(f => f.AddPrimaryRecordReference(primaries[0]));
-
-            IList<RecordReference<ManualKeyForeignTable>> foreignSet2 = populator.Add<ManualKeyForeignTable>(2);
-            foreignSet2.ToList().ForEach(f => f.AddPrimaryRecordReference(primaries[1]));
-
-            codeGeneratorIntegration.AddTypes(populator, foreignSet1, foreignSet2);
-
-            primaries[0].Set(o => o.ADecimal, 112233.445566m).Set(o => o.AString, "AAXX").Set(o => o.Key1, "HummHummHumm");
-
-            foreignSet2[1].Set(o => o.ALong, 11111L).Set(o => o.AShort, (short) 1234);
-
-            using (var transactionScope =
-                new TransactionScope(TransactionScopeOption.Required,
-                    new TransactionOptions {IsolationLevel = IsolationLevel.ReadCommitted}))
-            {
-                populator.Bind();
-                
-                //transactionScope.Complete();
-            }
-
-            Helpers.Dump(primaries);
-            Helpers.Dump(foreignSet1);
-            Helpers.Dump(foreignSet2);
-            codeGeneratorIntegration.Dump();
-
-            Console.WriteLine();
-
-            Console.WriteLine(foreignSet1[0].RecordObject.ForeignKey1);
-            Console.WriteLine(foreignSet1[1].RecordObject.ForeignKey1);
-            Console.WriteLine(foreignSet2[0].RecordObject.ForeignKey1);
-            Console.WriteLine(foreignSet2[1].RecordObject.ForeignKey1);
         }
     }
 }

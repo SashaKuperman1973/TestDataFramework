@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
+using IntegrationTests;
+using IntegrationTests.TestModels;
 using IntegrationTests.TestModels.Generated.POCO;
+using PocoIntegrationTests.TestModels;
 using TestDataFramework.Populator.Concrete;
 using TestDataFramework.Populator.Interfaces;
 
-namespace IntegrationTests.TestModels.Generated
+namespace PocoIntegrationTests.Tests
 {
     public class PocoGeneratorIntegrationTest : ICodeGeneratorIntegration
     {

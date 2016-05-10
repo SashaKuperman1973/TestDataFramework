@@ -82,28 +82,6 @@ namespace IntegrationTests.TestModels
         public long ALong { get; set; }
     }
 
-    //public class TertiaryManualKeyForeignTable
-    //{
-    //    [PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Auto)]
-    //    public int Pk { get; set; }
-
-    //    [ForeignKey(typeof(ManualKeyForeignTable), "UserId")]
-    //    public Guid FkManualKeyForeignTable { get; set; }
-
-    //    [ForeignKey(typeof(ManualKeyForeignTable), "ForeignKey1")]
-    //    [StringLength(20)]
-    //    public string FkStringForeignKey { get; set; }
-
-    //    public int AnInt { get; set; }
-    //}
-
-    //public class ForeignToAutoPrimaryTable
-    //{
-    //    [PrimaryKey]
-    //    [ForeignKey(typeof(TertiaryManualKeyForeignTable), "Pk")]
-    //    public int ForignKey { get; set; }
-    //}
-
     public class KeyNoneTable
     {
         public string Text { get; set; }

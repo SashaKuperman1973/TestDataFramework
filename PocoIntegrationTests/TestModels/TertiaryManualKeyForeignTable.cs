@@ -1,7 +1,6 @@
 using System;
-using TestDataFramework;
 
-namespace IntegrationTests.TestModels.Generated.POCO
+namespace PocoIntegrationTests.TestModels
 {
   public class TertiaryManualKeyForeignTable
   {

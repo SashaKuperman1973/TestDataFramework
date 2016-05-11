@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
-using IntegrationTests;
-using IntegrationTests.TestModels;
-using IntegrationTests.TestModels.Generated.POCO;
+using CommonIntegrationTests;
+using CommonIntegrationTests.TestModels;
+using NameSpace1;
+using NameSpace2;
 using PocoIntegrationTests.TestModels;
 using TestDataFramework.Populator.Concrete;
 using TestDataFramework.Populator.Interfaces;

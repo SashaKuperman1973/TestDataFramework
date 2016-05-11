@@ -22,7 +22,7 @@ using System.Collections.Generic;
 using TestDataFramework;
 using TestDataFramework.ValueProvider.Interfaces;
 
-namespace IntegrationTests.TestModels
+namespace CommonIntegrationTests.TestModels
 {
     [Table("Subject")]
     public class SubjectClass

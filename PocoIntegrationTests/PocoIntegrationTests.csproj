@@ -55,7 +55,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="TestModels\Decorator.cs" />
+    <Compile Include="TestModels\Decorator2.cs" />
     <Compile Include="TestModels\ForeignToAutoPrimaryTable.cs" />
     <Compile Include="TestModels\TertiaryManualKeyForeignTable.cs" />
     <Compile Include="Tests\PocoGeneratorIntegrationTest.cs" />
@@ -63,7 +63,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\IntegrationTests\CommonIntegrationTests.csproj">
+    <ProjectReference Include="..\CommonIntegrationTests\CommonIntegrationTests.csproj">
       <Project>{cd4e9947-9578-4660-b3d1-b7c10d274b0e}</Project>
       <Name>CommonIntegrationTests</Name>
     </ProjectReference>
@@ -73,6 +73,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Choose>

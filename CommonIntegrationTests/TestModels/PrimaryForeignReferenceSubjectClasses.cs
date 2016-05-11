@@ -20,7 +20,7 @@
 using System;
 using TestDataFramework;
 
-namespace IntegrationTests.TestModels
+namespace CommonIntegrationTests.TestModels
 {
     public class PrimaryTable
     {

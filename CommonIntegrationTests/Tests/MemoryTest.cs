@@ -19,18 +19,18 @@
 
 using System;
 using System.Collections.Generic;
-using IntegrationTests.TestModels;
+using CommonIntegrationTests.TestModels;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.Factories;
 using TestDataFramework.Populator.Concrete;
 using TestDataFramework.Populator.Interfaces;
 
-namespace IntegrationTests.Tests
+namespace CommonIntegrationTests.Tests
 {
-    [Ignore]
+    //[Ignore]
     [TestClass]
-    public class SqlClientAndMemoryTests
+    public class MemoryTest
     {
         private PopulatorFactory factory;
 
@@ -48,42 +48,34 @@ namespace IntegrationTests.Tests
             this.factory.Dispose();
         }
 
-        //[Ignore]
         [TestMethod]
-        public void SubjectClass_Test()
+        public void Test()
         {
-            IPopulator populator = this.factory.CreateSqlClientPopulator(
-                @"Data Source=.\SqlExpress;Initial Catalog=TestDataFramework;Integrated Security=SSPI;",
-                mustBeInATransaction: false);
+            IPopulator populator = this.factory.CreateMemoryPopulator();
 
-            IList<RecordReference<SubjectClass>> result = populator.Add<SubjectClass>(2);
-
+            IList<RecordReference<SubjectClass>> subjectReference = populator.Add<SubjectClass>(2);
+            RecordReference<ForeignSubjectClass> foreignReference = populator.Add<ForeignSubjectClass>(subjectReference[1]);
             populator.Bind();
 
-            Console.WriteLine(result[0].RecordObject.Key);
-            Console.WriteLine(result[0].RecordObject.GuidKey);
-
-            Console.WriteLine(result[1].RecordObject.Key);
-            Console.WriteLine(result[1].RecordObject.GuidKey);
+            Helpers.Dump(subjectReference[0].RecordObject);
+            Helpers.Dump(subjectReference[1].RecordObject);
+            Helpers.Dump(foreignReference.RecordObject);
         }
 
-        //[Ignore]
         [TestMethod]
-        public void ManualKeyPrimaryTable_Test()
+        public void Dictionary_UniqueValueTypeKeys_Test()
         {
-            IPopulator populator = this.factory.CreateSqlClientPopulator(
-                @"Data Source=.\SqlExpress;Initial Catalog=TestDataFramework;Integrated Security=SSPI;",
-                mustBeInATransaction: false);
+            IPopulator populator = this.factory.CreateMemoryPopulator();
 
-            IList<RecordReference<ManualKeyPrimaryTableClass>> result = populator.Add<ManualKeyPrimaryTableClass>(5);
-
+            RecordReference<ClassWithHandledTypes> recordReference = populator.Add<ClassWithHandledTypes>();
             populator.Bind();
 
-            Console.WriteLine(result[0].RecordObject.Key1);
-            Console.WriteLine(result[0].RecordObject.Key2);
+            IDictionary<KeyValuePair<int, string>, object> dictionary = recordReference.RecordObject.ADictionary;
 
-            Console.WriteLine(result[1].RecordObject.Key1);
-            Console.WriteLine(result[1].RecordObject.Key2);
+            foreach (KeyValuePair<KeyValuePair<int, string>, object> item in dictionary)
+            {
+                Console.WriteLine(item.Key);
+            }
         }
     }
 }

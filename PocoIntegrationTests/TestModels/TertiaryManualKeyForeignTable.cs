@@ -1,6 +1,7 @@
 using System;
+using TestDataFramework;
 
-namespace PocoIntegrationTests.TestModels
+namespace NameSpace2
 {
   public class TertiaryManualKeyForeignTable
   {

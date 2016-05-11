@@ -22,6 +22,7 @@ using System.Configuration;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Data.SqlTypes;
+using System.Reflection;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using log4net;
@@ -76,7 +77,7 @@ namespace TestDataFramework.Factories
                 $"Entering CreateSqlClientPopulator. mustBeInATransaction: {mustBeInATransaction}, throwIfUnhandledPrimaryKeyType: {throwIfUnhandledPrimaryKeyType}");
 
             IWindsorContainer iocContainer = this.GetSqlClientPopulatorContainer(connectionStringWithDefaultCatalogue,
-                mustBeInATransaction, defaultSchema, enforceKeyReferenceCheck, throwIfUnhandledPrimaryKeyType);
+                mustBeInATransaction, defaultSchema, enforceKeyReferenceCheck, throwIfUnhandledPrimaryKeyType, Assembly.GetCallingAssembly());
 
             var result = iocContainer.Resolve<IPopulator>();
 
@@ -84,11 +85,11 @@ namespace TestDataFramework.Factories
             return result;
         }
 
-        public IPopulator CreateMemoryPopulator(bool throwIfUnhandledPrimaryKeyType = false)
+        public IPopulator CreateMemoryPopulator(bool throwIfUnhandledPrimaryKeyType = false, string defaultSchema = null)
         {
             PopulatorFactory.Logger.Debug($"Entering CreateMemoryPopulator. throwIfUnhandledPrimaryKeyType: {throwIfUnhandledPrimaryKeyType}");
 
-            IWindsorContainer iocContainer = this.GetMemoryPopulatorContainer(throwIfUnhandledPrimaryKeyType);
+            IWindsorContainer iocContainer = this.GetMemoryPopulatorContainer(Assembly.GetCallingAssembly(), throwIfUnhandledPrimaryKeyType, defaultSchema);
 
             var result = iocContainer.Resolve<IPopulator>();
 
@@ -97,7 +98,7 @@ namespace TestDataFramework.Factories
         }
 
         private IWindsorContainer GetSqlClientPopulatorContainer(string connectionStringWithDefaultCatalogue, bool mustBeInATransaction, string defaultSchema,
-            bool enforceKeyReferenceCheck, bool throwIfUnhandledPrimaryKeyType)
+            bool enforceKeyReferenceCheck, bool throwIfUnhandledPrimaryKeyType, Assembly callingAssembly)
         {
             PopulatorFactory.Logger.Debug("Entering GetSqlClientPopulatorContainer");
 
@@ -107,7 +108,7 @@ namespace TestDataFramework.Factories
                 return this.sqlClientPopulatorContainer.Container;
             }
 
-            this.sqlClientPopulatorContainer = new DisposableContainer(PopulatorFactory.CommonContainer);
+            this.sqlClientPopulatorContainer = new DisposableContainer(PopulatorFactory.GetCommonContainer(callingAssembly, defaultSchema));
 
             this.sqlClientPopulatorContainer.Container.Register(
 
@@ -148,9 +149,7 @@ namespace TestDataFramework.Factories
                 Component.For<SqlWriterCommandText>().ImplementedBy<SqlWriterCommandText>(),
 
                 Component.For<Func<TableTypeCache, IAttributeDecorator>>()
-                    .Instance(tableTypeCache => new StandardAttributeDecorator(x => tableTypeCache, defaultSchema)),
-
-                Component.For<IAttributeDecorator>().ImplementedBy<StandardAttributeDecorator>().DependsOn(Dependency.OnValue("defaultSchema", defaultSchema))
+                    .Instance(tableTypeCache => new StandardAttributeDecorator(x => tableTypeCache, callingAssembly, defaultSchema))
 
                 );
 
@@ -158,7 +157,7 @@ namespace TestDataFramework.Factories
             return this.sqlClientPopulatorContainer.Container;
         }
 
-        private IWindsorContainer GetMemoryPopulatorContainer(bool throwIfUnhandledPrimaryKeyType)
+        private IWindsorContainer GetMemoryPopulatorContainer(Assembly callingAssembly, bool throwIfUnhandledPrimaryKeyType, string defaultSchema)
         {
             PopulatorFactory.Logger.Debug("Entering GetMemoryPopulatorContainer");
 
@@ -168,7 +167,7 @@ namespace TestDataFramework.Factories
                 return this.memoryPopulatorContainer.Container;
             }
 
-            this.memoryPopulatorContainer = new DisposableContainer(PopulatorFactory.CommonContainer);
+            this.memoryPopulatorContainer = new DisposableContainer(PopulatorFactory.GetCommonContainer(callingAssembly, defaultSchema));
 
             this.memoryPopulatorContainer.Container.Register(
 
@@ -196,9 +195,7 @@ namespace TestDataFramework.Factories
                     .Named(PopulatorFactory.StandardValueGenerator),
 
                 Component.For<Func<TableTypeCache, IAttributeDecorator>>()
-                    .Instance(tableTypeCache => new StandardAttributeDecorator(x => tableTypeCache, null)),
-
-                Component.For<IAttributeDecorator>().ImplementedBy<StandardAttributeDecorator>()
+                    .Instance(tableTypeCache => new StandardAttributeDecorator(x => tableTypeCache, callingAssembly, null))
 
                 );
 
@@ -207,122 +204,136 @@ namespace TestDataFramework.Factories
             return this.memoryPopulatorContainer.Container;
         }
 
-        private static IWindsorContainer CommonContainer
+        private static IWindsorContainer GetCommonContainer(Assembly callingAssembly, string defaultSchema)
         {
-            get
-            {
-                const string uniqueValueTypeGenerator = "UniqueValueTypeGenerator";
-                const string standardTypeGenerator = "StandardTypeGenerator";
-                const string standardHandledTypeGenerator = "StandardHandledTypeGenerator";
-                const string accumulatorValueGenerator_StandardHandledTypeGenerator = "AccumulatorValueGenerator_StandardHandledTypeGenerator ";                
+            const string uniqueValueTypeGenerator = "UniqueValueTypeGenerator";
+            const string standardTypeGenerator = "StandardTypeGenerator";
+            const string standardHandledTypeGenerator = "StandardHandledTypeGenerator";
+            const string accumulatorValueGenerator_StandardHandledTypeGenerator = "AccumulatorValueGenerator_StandardHandledTypeGenerator ";                
 
-                var commonContainer = new WindsorContainer();
+            var commonContainer = new WindsorContainer();
 
-                commonContainer.Register(
+            commonContainer.Register(
 
-                #region Common Region
+            #region Common Region
 
-                #region Delegates
+            #region Delegates
 
-                    Component.For<Func<ITableTypeCacheService, TableTypeCache>>()
-                        .Instance(attributeDecorator => new TableTypeCache(x => attributeDecorator)),
+                Component.For<Func<ITableTypeCacheService, TableTypeCache>>()
+                    .Instance(attributeDecorator => new TableTypeCache(x => attributeDecorator)),
 
-                #endregion Delegates
+            #endregion Delegates
 
-                    Component.For<IPopulator>().ImplementedBy<StandardPopulator>()
-                        .DependsOn(ServiceOverride.ForKey<ITypeGenerator>().Eq(standardTypeGenerator)),
+                Component.For<IPopulator>().ImplementedBy<StandardPopulator>()
+                    .DependsOn(ServiceOverride.ForKey<ITypeGenerator>().Eq(standardTypeGenerator)),
 
-                    Component.For<ITypeGenerator>()
-                        .ImplementedBy<StandardTypeGenerator>()
-                        .DependsOn(ServiceOverride.ForKey<IValueGenerator>().Eq(PopulatorFactory.StandardValueGenerator))
-                        .DependsOn(ServiceOverride.ForKey<IHandledTypeGenerator>().Eq(standardHandledTypeGenerator))
-                        .Named(standardTypeGenerator),
+                Component.For<ITypeGenerator>()
+                    .ImplementedBy<StandardTypeGenerator>()
+                    .DependsOn(ServiceOverride.ForKey<IValueGenerator>().Eq(PopulatorFactory.StandardValueGenerator))
+                    .DependsOn(ServiceOverride.ForKey<IHandledTypeGenerator>().Eq(standardHandledTypeGenerator))
+                    .Named(standardTypeGenerator),
 
-                    Component.For<BaseValueGenerator.GetTypeGeneratorDelegate>()
-                        .Instance(() => commonContainer.Resolve<ITypeGenerator>(standardTypeGenerator))
-                        .Named(PopulatorFactory.GetStandardTypeGenerator),
+                Component.For<BaseValueGenerator.GetTypeGeneratorDelegate>()
+                    .Instance(() => commonContainer.Resolve<ITypeGenerator>(standardTypeGenerator))
+                    .Named(PopulatorFactory.GetStandardTypeGenerator),
 
-                    Component.For<Func<IArrayRandomizer>>()
-                        .Instance(
-                            () => commonContainer.Resolve<IArrayRandomizer>(PopulatorFactory.StandardValueGenerator)),
+                Component.For<Func<IArrayRandomizer>>()
+                    .Instance(
+                        () => commonContainer.Resolve<IArrayRandomizer>(PopulatorFactory.StandardValueGenerator)),
 
-                    Component.For<Random>().ImplementedBy<Random>(),
+                Component.For<Random>().ImplementedBy<Random>(),
 
-                    Component.For<DateTimeProvider>().Instance(() => Helper.Now),
+                Component.For<DateTimeProvider>().Instance(() => Helper.Now),
 
-                    Component.For<IArrayRandomizer>()
-                        .ImplementedBy<StandardArrayRandomizer>()
-                        .DependsOn(
-                            ServiceOverride.ForKey<IValueGenerator>().Eq(PopulatorFactory.StandardValueGenerator)),
+                Component.For<IArrayRandomizer>()
+                    .ImplementedBy<StandardArrayRandomizer>()
+                    .DependsOn(
+                        ServiceOverride.ForKey<IValueGenerator>().Eq(PopulatorFactory.StandardValueGenerator)),
 
-                    Component.For<LetterEncoder>(),
+                Component.For<LetterEncoder>(),
 
-                    Component.For<IPropertyValueAccumulator>()
-                        .ImplementedBy<StandardPropertyValueAccumulator>(),
+                Component.For<IPropertyValueAccumulator>()
+                    .ImplementedBy<StandardPropertyValueAccumulator>(),
 
-                    Component.For<IDeferredValueGenerator<LargeInteger>>()
-                        .ImplementedBy<StandardDeferredValueGenerator<LargeInteger>>(),
+                Component.For<IDeferredValueGenerator<LargeInteger>>()
+                    .ImplementedBy<StandardDeferredValueGenerator<LargeInteger>>(),
 
-                    Component.For<IValueProvider>().ImplementedBy<StandardRandomizer>()
-                        .DependsOn(
-                            new
-                            {
-                                dateTimeMinValue = SqlDateTime.MinValue.Value.Ticks,
-                                dateTimeMaxValue = SqlDateTime.MaxValue.Value.Ticks
-                            })
-                        .Named(PopulatorFactory.StandardValueProvider),
+                Component.For<IValueProvider>().ImplementedBy<StandardRandomizer>()
+                    .DependsOn(
+                        new
+                        {
+                            dateTimeMinValue = SqlDateTime.MinValue.Value.Ticks,
+                            dateTimeMaxValue = SqlDateTime.MaxValue.Value.Ticks
+                        })
+                    .Named(PopulatorFactory.StandardValueProvider),
 
-                    Component.For<IRandomSymbolStringGenerator>().ImplementedBy<RandomSymbolStringGenerator>(),
+                Component.For<IRandomSymbolStringGenerator>().ImplementedBy<RandomSymbolStringGenerator>(),
 
-                    Component.For<TableTypeCache>().ImplementedBy<TableTypeCache>(),
+                Component.For<TableTypeCache>().ImplementedBy<TableTypeCache>(),
 
-                #endregion Common Region
 
-                #region Handled Type Generator
+            #endregion Common Region
 
-                    Component.For<IHandledTypeGenerator>()
-                        .ImplementedBy<StandardHandledTypeGenerator>()
-                        .DependsOn(
-                            ServiceOverride.ForKey<IValueGenerator>().Eq(PopulatorFactory.StandardValueGenerator))
-                        .Named(standardHandledTypeGenerator),
+            #region Handled Type Generator
 
-                    Component.For<IHandledTypeGenerator>()
-                        .ImplementedBy<StandardHandledTypeGenerator>()
-                        .DependsOn(
-                            ServiceOverride.ForKey<IValueGenerator>().Eq(PopulatorFactory.AccumulatorValueGenerator))
-                        .Named(accumulatorValueGenerator_StandardHandledTypeGenerator),
+                Component.For<IHandledTypeGenerator>()
+                    .ImplementedBy<StandardHandledTypeGenerator>()
+                    .DependsOn(
+                        ServiceOverride.ForKey<IValueGenerator>().Eq(PopulatorFactory.StandardValueGenerator))
+                    .Named(standardHandledTypeGenerator),
 
-                    Component.For<StandardHandledTypeGenerator.CreateAccumulatorValueGeneratorDelegate>()
-                        .Instance(
-                            () => commonContainer.Resolve<IValueGenerator>(PopulatorFactory.AccumulatorValueGenerator)),
+                Component.For<IHandledTypeGenerator>()
+                    .ImplementedBy<StandardHandledTypeGenerator>()
+                    .DependsOn(
+                        ServiceOverride.ForKey<IValueGenerator>().Eq(PopulatorFactory.AccumulatorValueGenerator))
+                    .Named(accumulatorValueGenerator_StandardHandledTypeGenerator),
 
-                    Component.For<IValueProvider>()
-                        .ImplementedBy<AccumulatorValueProvider>()
-                        .Named(PopulatorFactory.ValueAccumulator)
-                        .LifestyleTransient(),
+                Component.For<StandardHandledTypeGenerator.CreateAccumulatorValueGeneratorDelegate>()
+                    .Instance(
+                        () => commonContainer.Resolve<IValueGenerator>(PopulatorFactory.AccumulatorValueGenerator)),
 
-                    Component.For<BaseValueGenerator.GetTypeGeneratorDelegate>()
-                        .Instance(() => commonContainer.Resolve<ITypeGenerator>(uniqueValueTypeGenerator))
-                        .Named(PopulatorFactory.GetUniqueValueTypeGenerator),
+                Component.For<IValueProvider>()
+                    .ImplementedBy<AccumulatorValueProvider>()
+                    .Named(PopulatorFactory.ValueAccumulator)
+                    .LifestyleTransient(),
 
-                    Component.For<ITypeGenerator>()
-                        .ImplementedBy<UniqueValueTypeGenerator>()
-                        .DependsOn(
-                            ServiceOverride.ForKey<IHandledTypeGenerator>()
-                                .Eq(accumulatorValueGenerator_StandardHandledTypeGenerator))
-                        .Named(uniqueValueTypeGenerator),
+                Component.For<BaseValueGenerator.GetTypeGeneratorDelegate>()
+                    .Instance(() => commonContainer.Resolve<ITypeGenerator>(uniqueValueTypeGenerator))
+                    .Named(PopulatorFactory.GetUniqueValueTypeGenerator),
 
-                    Component.For<UniqueValueTypeGenerator.GetAccumulatorValueGenerator>()
-                        .Instance(
-                            typeGenerator =>
-                                commonContainer.Resolve<IValueGenerator>(PopulatorFactory.AccumulatorValueGenerator))
+                Component.For<ITypeGenerator>()
+                    .ImplementedBy<UniqueValueTypeGenerator>()
+                    .DependsOn(
+                        ServiceOverride.ForKey<IHandledTypeGenerator>()
+                            .Eq(accumulatorValueGenerator_StandardHandledTypeGenerator))
+                    .Named(uniqueValueTypeGenerator),
+
+                Component.For<UniqueValueTypeGenerator.GetAccumulatorValueGenerator>()
+                    .Instance(
+                        typeGenerator =>
+                            commonContainer.Resolve<IValueGenerator>(PopulatorFactory.AccumulatorValueGenerator))
 
                 #endregion Handled Type Generator
 
-                    );
+                );
 
-                return commonContainer;
+            if (defaultSchema != null)
+            {
+                commonContainer.Register(
+                    Component.For<IAttributeDecorator>().ImplementedBy<StandardAttributeDecorator>()
+                        .DependsOn(Dependency.OnValue("defaultSchema", defaultSchema))
+                        .DependsOn(Dependency.OnValue("callingAssembly", callingAssembly))
+                        );
             }
+            else
+            {
+                commonContainer.Register(
+                    Component.For<IAttributeDecorator>().ImplementedBy<StandardAttributeDecorator>()
+                        .DependsOn(Dependency.OnValue("callingAssembly", callingAssembly))
+                        );
+            }
+
+            return commonContainer;
         }
 
         private class DisposableContainer : IDisposable

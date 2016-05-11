@@ -21,8 +21,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
-using IntegrationTests;
-using IntegrationTests.TestModels;
+using CommonIntegrationTests;
+using CommonIntegrationTests.TestModels;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.Factories;
@@ -31,7 +31,7 @@ using TestDataFramework.Populator.Interfaces;
 
 namespace PocoIntegrationTests.Tests
 {
-    [Ignore]
+    //[Ignore]
     [TestClass]
     public class SqlClientAndMemoryTests
     {
@@ -55,7 +55,7 @@ namespace PocoIntegrationTests.Tests
         [TestMethod]
         public void Memory_POCO_Test()
         {
-            IPopulator populator = this.factory.CreateMemoryPopulator();
+            IPopulator populator = this.factory.CreateMemoryPopulator(defaultSchema: "dbo");
             SqlClientAndMemoryTests.PrimaryKeyForeignKeyTest(populator, new PocoGeneratorIntegrationTest());
         }
 

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using CommonIntegrationTests;
+using CommonIntegrationTests.TestModels;
 using DeclarativeIntegrationTests.TestModels;
-using IntegrationTests;
-using IntegrationTests.TestModels;
 using TestDataFramework.Populator.Concrete;
 using TestDataFramework.Populator.Interfaces;
 

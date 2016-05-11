@@ -1,9 +1,9 @@
-using System;
-using PocoIntegrationTests.TestModels;
+using NameSpace1;
+using NameSpace2;
 using TestDataFramework;
 using TestDataFramework.Populator.Interfaces;
 
-namespace IntegrationTests.TestModels.Generated.POCO
+namespace PocoIntegrationTests.TestModels
 {
 	public class Decorator
 	{
@@ -12,8 +12,8 @@ namespace IntegrationTests.TestModels.Generated.POCO
 
 			populator.DecorateType<ForeignToAutoPrimaryTable>()
 			.AddAttributeToType(new TableAttribute("TestDataFramework", "dbo", "ForeignToAutoPrimaryTable"))
-				.AddAttributeToMember(m => m.ForeignKey, new ForeignKeyAttribute("dbo", "TertiaryManualKeyForeignTable", "Pk"))
-				.AddAttributeToMember(m => m.ForeignKey, new PrimaryKeyAttribute(PrimaryKeyAttribute.KeyTypeEnum.Manual));
+				.AddAttributeToMember(m => m.ForignKey, new ForeignKeyAttribute("dbo", "TertiaryManualKeyForeignTable", "Pk"))
+				.AddAttributeToMember(m => m.ForignKey, new PrimaryKeyAttribute(PrimaryKeyAttribute.KeyTypeEnum.Manual));
 
 			populator.DecorateType<TertiaryManualKeyForeignTable>()
 			.AddAttributeToType(new TableAttribute("TestDataFramework", "dbo", "TertiaryManualKeyForeignTable"))

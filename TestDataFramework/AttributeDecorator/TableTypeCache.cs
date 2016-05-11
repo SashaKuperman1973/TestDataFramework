@@ -59,7 +59,8 @@ namespace TestDataFramework.AttributeDecorator
 
             TableAttribute tableAttribute = getTableAttibute(foreignType);
 
-            Type result = this.GetCachedTableType(foreignKeyAttribute, tableAttribute, assemblyLookupContext);
+            Type result = this.GetCachedTableType(foreignKeyAttribute, tableAttribute, assemblyLookupContext) ??
+                          this.GetCachedTableTypeUsingAllAssemblies(foreignKeyAttribute, tableAttribute);
 
             return result;
         }
@@ -105,6 +106,21 @@ namespace TestDataFramework.AttributeDecorator
             });
 
             AppDomain.Unload(domain);
+        }
+
+        private Type GetCachedTableTypeUsingAllAssemblies(ForeignKeyAttribute foreignKeyAttribute, TableAttribute tableAttribute)
+        {
+            foreach (KeyValuePair<Assembly, AssemblyLookupContext> tableTypeKvp in this.tableTypeDictionary)
+            {
+                Type result = this.GetCachedTableType(foreignKeyAttribute, tableAttribute, tableTypeKvp.Value);
+
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+
+            return null;
         }
 
         private void TryAdd(Table table, Type definedType, AssemblyLookupContext assemblyLookupContext)

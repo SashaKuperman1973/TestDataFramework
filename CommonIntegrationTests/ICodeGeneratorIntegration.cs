@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using IntegrationTests.TestModels;
+using CommonIntegrationTests.TestModels;
 using TestDataFramework.Populator.Concrete;
 using TestDataFramework.Populator.Interfaces;
 
-namespace IntegrationTests
+namespace CommonIntegrationTests
 {
     public interface ICodeGeneratorIntegration
     {

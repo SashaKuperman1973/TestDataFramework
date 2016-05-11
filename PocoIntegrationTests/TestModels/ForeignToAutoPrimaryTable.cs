@@ -1,11 +1,11 @@
 using System;
 using TestDataFramework;
 
-namespace IntegrationTests.TestModels.Generated.POCO
+namespace NameSpace1
 {
   public class ForeignToAutoPrimaryTable
   {
-    public int ForeignKey { get; set; }
+    public int ForignKey { get; set; }
 	
   }
 }

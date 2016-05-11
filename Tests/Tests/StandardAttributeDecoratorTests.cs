@@ -426,7 +426,7 @@ namespace Tests.Tests
 
             const string defaultSchema = "defaultSchema123";
 
-            var attributeDecorator = new StandardAttributeDecorator(x => null, defaultSchema);
+            var attributeDecorator = new StandardAttributeDecorator(x => null, null, defaultSchema);
 
             // Act
 
@@ -447,7 +447,7 @@ namespace Tests.Tests
 
             const string defaultSchema = "defaultSchema123";
 
-            var attributeDecorator = new StandardAttributeDecorator(x => null, defaultSchema);
+            var attributeDecorator = new StandardAttributeDecorator(x => null, null, defaultSchema);
 
             // Act
 
@@ -468,7 +468,7 @@ namespace Tests.Tests
 
             const string defaultSchema = "defaultSchema123";
 
-            var attributeDecorator = new StandardAttributeDecorator(x => null, defaultSchema);
+            var attributeDecorator = new StandardAttributeDecorator(x => null, null, defaultSchema);
 
             // Act
 
@@ -490,7 +490,7 @@ namespace Tests.Tests
 
             const string defaultSchema = "defaultSchema123";
 
-            var attributeDecorator = new StandardAttributeDecorator(x => null, defaultSchema);
+            var attributeDecorator = new StandardAttributeDecorator(x => null, null, defaultSchema);
 
             // Act
 

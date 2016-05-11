@@ -39,16 +39,19 @@ namespace TestDataFramework.AttributeDecorator
 
         private readonly TableTypeCache tableTypeCache;
         private readonly string defaultSchema;
-
-        public StandardAttributeDecorator(Func<ITableTypeCacheService, TableTypeCache> createTableTypeCache) : this(createTableTypeCache, null)
+        private readonly Assembly callingAssembly;
+        
+        public StandardAttributeDecorator(Func<ITableTypeCacheService, TableTypeCache> createTableTypeCache,
+            Assembly callingAssembly) : this(createTableTypeCache, callingAssembly, null)
         {
-            
         }
 
-        public StandardAttributeDecorator(Func<ITableTypeCacheService, TableTypeCache> createTableTypeCache, string defaultSchema)
+        public StandardAttributeDecorator(Func<ITableTypeCacheService, TableTypeCache> createTableTypeCache,
+            Assembly callingAssembly, string defaultSchema)
         {
             this.tableTypeCache = createTableTypeCache(this);
             this.defaultSchema = defaultSchema;
+            this.callingAssembly = callingAssembly;
         }
 
         public virtual void DecorateMember<T, TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression, Attribute attribute)
@@ -220,6 +223,23 @@ namespace TestDataFramework.AttributeDecorator
             }
 
             Type cachedType = this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType, this.GetSingleAttribute<TableAttribute>);
+
+            if (cachedType != null)
+            {
+                return cachedType;
+            }
+
+            if (this.tableTypeCache.IsAssemblyCachePopulated(this.callingAssembly))
+            {
+                throw new AttributeDecoratorException(Messages.CannotResolveForeignKey, foreignAttribute,
+                    foreignType);
+            }
+
+            this.tableTypeCache.PopulateAssemblyCache(this.callingAssembly, this.GetSingleAttribute<TableAttribute>,
+                this.defaultSchema);
+
+            cachedType = this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType,
+                this.GetSingleAttribute<TableAttribute>);
 
             if (cachedType != null)
             {

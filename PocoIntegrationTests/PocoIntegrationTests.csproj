@@ -55,7 +55,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="TestModels\Decorator2.cs" />
+    <Compile Include="TestModels\Decorator.cs" />
     <Compile Include="TestModels\ForeignToAutoPrimaryTable.cs" />
     <Compile Include="TestModels\TertiaryManualKeyForeignTable.cs" />
     <Compile Include="Tests\PocoGeneratorIntegrationTest.cs" />

@@ -217,29 +217,30 @@ namespace TestDataFramework.AttributeDecorator
                 return foreignAttribute.PrimaryTableType;
             }
 
-            if (!this.tableTypeCache.IsAssemblyCachePopulated(foreignType.Assembly))
+            if (!this.tableTypeCache.IsAssemblyCachePopulated(this.callingAssembly))
             {
-                this.tableTypeCache.PopulateAssemblyCache(foreignType.Assembly, this.GetSingleAttribute<TableAttribute>, this.defaultSchema);
+                this.tableTypeCache.PopulateAssemblyCache(this.callingAssembly, this.GetSingleAttribute<TableAttribute>, this.defaultSchema);
             }
 
-            Type cachedType = this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType, this.GetSingleAttribute<TableAttribute>);
+            Type cachedType = this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType, this.callingAssembly,
+                this.GetSingleAttribute<TableAttribute>, canScanAllCachedAssemblies: true);
 
             if (cachedType != null)
             {
                 return cachedType;
             }
 
-            if (this.tableTypeCache.IsAssemblyCachePopulated(this.callingAssembly))
+            if (this.tableTypeCache.IsAssemblyCachePopulated(foreignType.Assembly))
             {
                 throw new AttributeDecoratorException(Messages.CannotResolveForeignKey, foreignAttribute,
                     foreignType);
             }
 
-            this.tableTypeCache.PopulateAssemblyCache(this.callingAssembly, this.GetSingleAttribute<TableAttribute>,
+            this.tableTypeCache.PopulateAssemblyCache(foreignType.Assembly, this.GetSingleAttribute<TableAttribute>,
                 this.defaultSchema);
 
-            cachedType = this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType,
-                this.GetSingleAttribute<TableAttribute>);
+            cachedType = this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType, foreignType.Assembly,
+                this.GetSingleAttribute<TableAttribute>, canScanAllCachedAssemblies: false);
 
             if (cachedType != null)
             {

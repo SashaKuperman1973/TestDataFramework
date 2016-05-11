@@ -48,7 +48,7 @@ namespace Tests.Tests
         public void TestInitialize()
         {
             this.tableTypeCacheMock = new Mock<TableTypeCache>((Func<TableTypeCache, ITableTypeCacheService>)(x => null));
-            this.attributeDecorator = new StandardAttributeDecorator(x => this.tableTypeCacheMock.Object, null);
+            this.attributeDecorator = new StandardAttributeDecorator(x => this.tableTypeCacheMock.Object, this.GetType().Assembly, null);
             this.populator = new Populator(this.attributeDecorator);
         }
 
@@ -355,8 +355,9 @@ namespace Tests.Tests
 
             Type returnedType = typeof (PrimaryClass);
 
-            this.tableTypeCacheMock.Setup(m => m.IsAssemblyCachePopulated(foreignType.Assembly)).Returns(false);
-            this.tableTypeCacheMock.Setup(m => m.GetCachedTableType(foreignKeyAtribute, foreignType, this.attributeDecorator.GetSingleAttribute<TableAttribute>))
+            this.tableTypeCacheMock.Setup(m => m.IsAssemblyCachePopulated(this.GetType().Assembly)).Returns(false);
+
+            this.tableTypeCacheMock.Setup(m => m.GetCachedTableType(foreignKeyAtribute, foreignType, this.GetType().Assembly, this.attributeDecorator.GetSingleAttribute<TableAttribute>, true))
                 .Returns(returnedType);
 
             // Act
@@ -380,7 +381,7 @@ namespace Tests.Tests
             Type returnedType = typeof(PrimaryClass);
 
             this.tableTypeCacheMock.Setup(m => m.IsAssemblyCachePopulated(foreignType.Assembly)).Returns(true);
-            this.tableTypeCacheMock.Setup(m => m.GetCachedTableType(foreignKeyAtribute, foreignType, this.attributeDecorator.GetSingleAttribute<TableAttribute>))
+            this.tableTypeCacheMock.Setup(m => m.GetCachedTableType(foreignKeyAtribute, foreignType, this.GetType().Assembly, this.attributeDecorator.GetSingleAttribute<TableAttribute>, true))
                 .Returns(returnedType);
 
             // Act
@@ -403,7 +404,7 @@ namespace Tests.Tests
 
             Type expected = typeof(PrimaryClass);
 
-            this.tableTypeCacheMock.Setup(m => m.GetCachedTableType(foreignKeyAtribute, foreignType, this.attributeDecorator.GetSingleAttribute<TableAttribute>))
+            this.tableTypeCacheMock.Setup(m => m.GetCachedTableType(foreignKeyAtribute, foreignType, this.GetType().Assembly, this.attributeDecorator.GetSingleAttribute<TableAttribute>, true))
                 .Returns(expected);
 
             // Act

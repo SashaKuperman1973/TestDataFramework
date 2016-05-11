@@ -50,17 +50,22 @@ namespace TestDataFramework.AttributeDecorator
             return result;
         }
 
-        public virtual Type GetCachedTableType(ForeignKeyAttribute foreignKeyAttribute, Type foreignType, Func<Type, TableAttribute> getTableAttibute)
+        public virtual Type GetCachedTableType(ForeignKeyAttribute foreignKeyAttribute, Type foreignType,
+            Assembly initialAssemblyToScan, Func<Type, TableAttribute> getTableAttibute,
+            bool canScanAllCachedAssemblies = true)
         {
-            AssemblyLookupContext assemblyLookupContext = this.tableTypeDictionary.GetOrAdd(foreignType.Assembly, a =>
+            AssemblyLookupContext assemblyLookupContext = this.tableTypeDictionary.GetOrAdd(initialAssemblyToScan, a =>
             {
-                throw new TableTypeLookupException(Messages.AssemblyCacheNotPopulated, foreignType.Assembly);
+                throw new TableTypeLookupException(Messages.AssemblyCacheNotPopulated, initialAssemblyToScan);
             });
 
             TableAttribute tableAttribute = getTableAttibute(foreignType);
 
             Type result = this.GetCachedTableType(foreignKeyAttribute, tableAttribute, assemblyLookupContext) ??
-                          this.GetCachedTableTypeUsingAllAssemblies(foreignKeyAttribute, tableAttribute);
+
+                          (canScanAllCachedAssemblies
+                              ? this.GetCachedTableTypeUsingAllAssemblies(foreignKeyAttribute, tableAttribute)
+                              : null);
 
             return result;
         }

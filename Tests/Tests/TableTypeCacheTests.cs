@@ -77,7 +77,7 @@ namespace Tests.Tests
         {
             // Act
 
-            Helpers.ExceptionTest(() => this.tableTypeCache.GetCachedTableType(null, this.GetType(), CustomAttributeExtensions.GetCustomAttribute<TableAttribute>),
+            Helpers.ExceptionTest(() => this.tableTypeCache.GetCachedTableType(null, this.GetType(), this.GetType().Assembly, CustomAttributeExtensions.GetCustomAttribute<TableAttribute>),
                 typeof (TableTypeLookupException),
                 string.Format(Messages.AssemblyCacheNotPopulated, this.GetType().Assembly));
         }
@@ -96,7 +96,7 @@ namespace Tests.Tests
 
             // Act
 
-            Type result = this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType, CustomAttributeExtensions.GetCustomAttribute<TableAttribute>);
+            Type result = this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType, this.GetType().Assembly, CustomAttributeExtensions.GetCustomAttribute<TableAttribute>);
 
             // Assert
 
@@ -117,7 +117,7 @@ namespace Tests.Tests
 
             // Act
 
-            Type result = this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType, CustomAttributeExtensions.GetCustomAttribute<TableAttribute>);
+            Type result = this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType, this.GetType().Assembly, CustomAttributeExtensions.GetCustomAttribute<TableAttribute>);
 
             // Assert
 
@@ -138,8 +138,8 @@ namespace Tests.Tests
 
             // Act
 
-            Type result1 = this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType, CustomAttributeExtensions.GetCustomAttribute<TableAttribute>);
-            Type result2 = this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType, CustomAttributeExtensions.GetCustomAttribute<TableAttribute>);
+            Type result1 = this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType, this.GetType().Assembly, CustomAttributeExtensions.GetCustomAttribute<TableAttribute>);
+            Type result2 = this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType, this.GetType().Assembly, CustomAttributeExtensions.GetCustomAttribute<TableAttribute>);
 
             // Assert
 
@@ -165,7 +165,7 @@ namespace Tests.Tests
 
             // Act
 
-            Helpers.ExceptionTest(() => this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType, CustomAttributeExtensions.GetCustomAttribute<TableAttribute>),
+            Helpers.ExceptionTest(() => this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType, this.GetType().Assembly, CustomAttributeExtensions.GetCustomAttribute<TableAttribute>),
                 typeof (TableTypeCacheException), string.Format(Messages.DuplicateTableName, 
                 string.Join(", ", new object[] {
                     typeof (TestModels.DecoratedCollision.B.DecoratedCollisionClass),
@@ -187,7 +187,7 @@ namespace Tests.Tests
 
             // Act
 
-            Helpers.ExceptionTest(() => this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType, CustomAttributeExtensions.GetCustomAttribute<TableAttribute>),
+            Helpers.ExceptionTest(() => this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType, this.GetType().Assembly, CustomAttributeExtensions.GetCustomAttribute<TableAttribute>),
                 typeof (TableTypeCacheException), string.Format(Messages.DuplicateTableName,
                     string.Join(", ", new object[]
                     {
@@ -212,7 +212,7 @@ namespace Tests.Tests
 
             // Act
 
-            Helpers.ExceptionTest(() => this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType, CustomAttributeExtensions.GetCustomAttribute<TableAttribute>),
+            Helpers.ExceptionTest(() => this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType, this.GetType().Assembly, CustomAttributeExtensions.GetCustomAttribute<TableAttribute>),
                 typeof (TableTypeCacheException), string.Format(Messages.DuplicateTableName,
                     string.Join(", ", new object[]
                     {
@@ -240,7 +240,7 @@ namespace Tests.Tests
 
             // Act
 
-            Helpers.ExceptionTest(() => this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType, CustomAttributeExtensions.GetCustomAttribute<TableAttribute>),
+            Helpers.ExceptionTest(() => this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType, this.GetType().Assembly, CustomAttributeExtensions.GetCustomAttribute<TableAttribute>),
                 typeof(TableTypeCacheException), string.Format(Messages.DuplicateTableName,
                     string.Join(", ", new object[]
                     {

@@ -93,7 +93,7 @@ namespace TestDataFramework.AttributeDecorator
             string message =
                 memberInfo.MemberType == MemberTypes.Property
                     ? Messages.AmbigousPropertyAttributeMatch
-                    : memberInfo.MemberType == (MemberTypes.TypeInfo | MemberTypes.NestedType)
+                    : memberInfo.MemberType == MemberTypes.TypeInfo || memberInfo.MemberType == MemberTypes.NestedType
                         ? Messages.AmbigousTypeAttributeMatch
                         : Messages.AmbigousAttributeMatch;
 

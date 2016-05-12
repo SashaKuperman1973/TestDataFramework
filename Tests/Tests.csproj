@@ -109,6 +109,7 @@
     <Compile Include="Tests\TableAttributeTests.cs" />
     <Compile Include="Tests\SqlWriterCommandTextGeneratorTests.cs" />
     <Compile Include="Tests\ForeignKeyAttributeTest.cs" />
+    <Compile Include="Tests\SqlWriterCommandTextGeneratorTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TestDataFramework\TestDataFramework.csproj">

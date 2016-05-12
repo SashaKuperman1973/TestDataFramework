@@ -25,6 +25,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework;
 using TestDataFramework.AttributeDecorator;
+using TestDataFramework.Exceptions;
 using TestDataFramework.Populator;
 using Tests.TestModels;
 using Tests.TestModels.Simple;
@@ -112,13 +113,60 @@ namespace Tests.Tests
             Assert.AreEqual(20, stringLengthAttribute.Length);
         }
 
+        #endregion GetCustomAttribute Tests (Returns single value)
+
+        #region GetSingleAttribute
+
         [TestMethod]
-        public void GetSingleAttribute_Test()
+        public void GetSingleAttribute_FindAnAttribute_Test()
         {
-            throw new NotImplementedException();
+            PrimaryKeyAttribute result = this.attributeDecorator.GetSingleAttribute<PrimaryKeyAttribute>(typeof (PrimaryTable).GetProperty("Key"));
+
+            Assert.AreEqual(PrimaryKeyAttribute.KeyTypeEnum.Auto, result.KeyType);
         }
 
-        #endregion GetCustomAttribute Tests (Returns single value)
+        [TestMethod]
+        public void GetSingleAttribute_DoNotFindAnAttribute_Test()
+        {
+            StringLengthAttribute result = this.attributeDecorator.GetSingleAttribute<StringLengthAttribute>(typeof(PrimaryTable).GetProperty("Key"));
+
+            Assert.IsNull(result);
+        }
+
+        [TestMethod]
+        public void GetSingleAttribute_DuplicatePropertyAttributesThrow_Test()
+        {
+            this.GetSingleAttribute_DuplicateAttributesThrow_Test(Messages.AmbigousPropertyAttributeMatch,
+                typeof (AmbiguousAttributeClass).GetProperty("A"));
+        }
+
+        [TestMethod]
+        public void GetSingleAttribute_DuplicateClassAttributesThrow_Test()
+        {
+            this.GetSingleAttribute_DuplicateAttributesThrow_Test(Messages.AmbigousTypeAttributeMatch,
+                typeof(AmbiguousAttributeClass));
+        }
+
+        [TestMethod]
+        public void GetSingleAttribute_DuplicateFieldAttributesThrow_Test()
+        {
+            this.GetSingleAttribute_DuplicateAttributesThrow_Test(Messages.AmbigousAttributeMatch,
+                typeof(AmbiguousAttributeClass).GetField("B"));
+        }
+
+        private void GetSingleAttribute_DuplicateAttributesThrow_Test(string message, MemberInfo memberInfo)
+        {
+            Func<MemberInfo, MultiAllowedAttribute> func = this.attributeDecorator.GetSingleAttribute<MultiAllowedAttribute>;
+            string funcMessage = string.Format(message, typeof (MultiAllowedAttribute), memberInfo.Name, memberInfo.DeclaringType);
+
+            Helpers.ExceptionTest(
+                () => func(memberInfo),
+                typeof(AmbiguousMatchException),
+                funcMessage
+                );
+        }
+
+        #endregion GetSingleAttribute
 
         #region GetCustomAttributes<T> Tests (Returns many values)
 

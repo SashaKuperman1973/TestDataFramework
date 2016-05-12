@@ -23,6 +23,7 @@ using System.Text;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers.Interfaces;
 using TestDataFramework.ValueFormatter.Interfaces;
 using TestDataFramework.WritePrimitives.Concrete;
@@ -109,6 +110,57 @@ namespace Tests.Tests
                     .ToString();
 
             this.insertCommandMock.VerifySet(m => m.CommandText = expectedText);
+        }
+
+        private const string CatalogueName = "CatalogueName";
+        private const string Schema = "Schema";
+        private const string TableName = "TableName";
+
+        [TestMethod]
+        public void BuildFullTableName_Test()
+        {
+            string result = SqlClientWritePrimitives.BuildFullTableName(SqlClientWritePrimitivesTests.CatalogueName,
+                SqlClientWritePrimitivesTests.Schema, SqlClientWritePrimitivesTests.TableName);
+
+            string expected =
+                $"[{SqlClientWritePrimitivesTests.CatalogueName}].[{SqlClientWritePrimitivesTests.Schema}].[{SqlClientWritePrimitivesTests.TableName}]";
+
+            Assert.AreEqual(expected, result);
+        }
+
+        [TestMethod]
+        public void BuildFullTableName_Schema_and_TableName_Test()
+        {
+            string result = SqlClientWritePrimitives.BuildFullTableName(null, SqlClientWritePrimitivesTests.Schema,
+                SqlClientWritePrimitivesTests.TableName);
+
+            string expected = $"[{SqlClientWritePrimitivesTests.Schema}].[{SqlClientWritePrimitivesTests.TableName}]";
+
+            Assert.AreEqual(expected, result);
+        }
+
+        [TestMethod]
+        public void BuildFullTableName_TableName_Test()
+        {
+            string result = SqlClientWritePrimitives.BuildFullTableName(null, null, SqlClientWritePrimitivesTests.TableName);
+
+            string expected = $"[{SqlClientWritePrimitivesTests.TableName}]";
+
+            Assert.AreEqual(expected, result);
+        }
+
+        [TestMethod]
+        public void BuildFullTableName_CatalogueAndNoSchema_Throws()
+        {
+            Helpers.ExceptionTest(() =>
+                SqlClientWritePrimitives.BuildFullTableName(SqlClientWritePrimitivesTests.CatalogueName, null,
+                    SqlClientWritePrimitivesTests.TableName),
+
+                typeof (WritePrimitivesException),
+
+                string.Format(Messages.CatalogueAndNoSchema, SqlClientWritePrimitivesTests.CatalogueName,
+                    SqlClientWritePrimitivesTests.TableName)
+                );
         }
     }
 }

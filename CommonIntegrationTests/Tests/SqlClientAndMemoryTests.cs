@@ -28,7 +28,7 @@ using TestDataFramework.Populator.Interfaces;
 
 namespace CommonIntegrationTests.Tests
 {
-    //[Ignore]
+    [Ignore]
     [TestClass]
     public class SqlClientAndMemoryTests
     {

@@ -215,7 +215,7 @@ namespace Tests.TestModels
         
     }
 
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property | AttributeTargets.Class, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.All, AllowMultiple = true)]
     public class MultiAllowedAttribute : Attribute
     {
         public int I { get; set; }
@@ -246,5 +246,18 @@ namespace Tests.TestModels
 
         [ForeignKey(ClassWithSchemaInForeignKey.Schema, "PrimaryClass", "Key")]
         public int ForeignKey { get; set; }
+    }
+
+    [MultiAllowed]
+    [MultiAllowed]
+    public class AmbiguousAttributeClass
+    {
+        [MultiAllowed]
+        [MultiAllowed]
+        public int A { get; set; }
+
+        [MultiAllowed]
+        [MultiAllowed]
+        public int B;
     }
 }

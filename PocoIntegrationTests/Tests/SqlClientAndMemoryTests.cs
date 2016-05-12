@@ -31,7 +31,7 @@ using TestDataFramework.Populator.Interfaces;
 
 namespace PocoIntegrationTests.Tests
 {
-    //[Ignore]
+    [Ignore]
     [TestClass]
     public class SqlClientAndMemoryTests
     {

@@ -21,7 +21,6 @@ using System.Reflection;
 using log4net;
 using TestDataFramework.AttributeDecorator;
 using TestDataFramework.Helpers;
-using TestDataFramework.WritePrimitives;
 using TestDataFramework.WritePrimitives.Concrete;
 
 namespace TestDataFramework.DeferredValueGenerator.Concrete
@@ -82,12 +81,9 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
             return result;
         }
 
-        private delegate string GetSelectDelegate(
-            string catalogueName, string schema, string tableName, string columnName);
-
         private string Write(PropertyInfo propertyInfo, GetSelectDelegate getSelectDelegate)
         {
-            SqlWriterCommandTextGenerator.Logger.Debug("Entering Write. propertyInfo:" + propertyInfo.GetExtendedMemberInfoString());
+            SqlWriterCommandTextGenerator.Logger.Debug("Entering Write. propertyInfo: " + propertyInfo.GetExtendedMemberInfoString());
 
             TableName tableName = Helper.GetTableName(propertyInfo.DeclaringType, this.attributeDecorator);
             string columnName = Helper.GetColumnName(propertyInfo, this.attributeDecorator);
@@ -99,5 +95,8 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
             SqlWriterCommandTextGenerator.Logger.Debug("Exiting Write");
             return result;
         }
+
+        private delegate string GetSelectDelegate(
+            string catalogueName, string schema, string tableName, string columnName);
     }
 }

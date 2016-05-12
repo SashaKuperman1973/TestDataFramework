@@ -56,6 +56,8 @@ namespace TestDataFramework.AttributeDecorator
 
         public virtual void DecorateMember<T, TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression, Attribute attribute)
         {
+            StandardAttributeDecorator.Logger.Debug($"Entering DecorateMember. Attribute: {attribute}");
+
             MemberInfo memberInfo = Helper.ValidateFieldExpression(fieldExpression);
 
             this.memberAttributeDicitonary.AddOrUpdate(memberInfo, new List<Attribute> { attribute },
@@ -64,10 +66,14 @@ namespace TestDataFramework.AttributeDecorator
                     list.Add(attribute);
                     return list;
                 });
+
+            StandardAttributeDecorator.Logger.Debug("Exiting DecorateMember");
         }
 
         public virtual void DecorateType(Type type, Attribute attribute)
         {
+            StandardAttributeDecorator.Logger.Debug($"Entering DecorateType. Type: {type}. Attribute: {attribute}");
+
             this.memberAttributeDicitonary.AddOrUpdate(type, new List<Attribute> {attribute}, (t, list) =>
             {
                 list.Add(attribute);
@@ -157,6 +163,9 @@ namespace TestDataFramework.AttributeDecorator
 
         public virtual IEnumerable<T> GetCustomAttributes<T>(MemberInfo memberInfo) where T : Attribute
         {
+            StandardAttributeDecorator.Logger.Debug(
+                $"Entering GetCustomAttributes<T>. T: {typeof (T)}. memberInfo: {memberInfo}");
+
             List<Attribute> programmaticAttributeList;
 
             List<Attribute> attributeResult = this.memberAttributeDicitonary.TryGetValue(memberInfo, out programmaticAttributeList)
@@ -169,11 +178,15 @@ namespace TestDataFramework.AttributeDecorator
 
             List<T> result = this.InsertDefaultSchema(attributeResult).Cast<T>().ToList();
 
+            StandardAttributeDecorator.Logger.Debug("Exiting GetCustomAttributes<T>");
             return result;
         }
 
         public virtual IEnumerable<Attribute> GetCustomAttributes(MemberInfo memberInfo)
         {
+            StandardAttributeDecorator.Logger.Debug(
+                $"Entering GetCustomAttributes. MemberInfo: {memberInfo}");
+
             List<Attribute> result;
 
             if (!this.memberAttributeDicitonary.TryGetValue(memberInfo, out result))
@@ -184,12 +197,21 @@ namespace TestDataFramework.AttributeDecorator
             result.AddRange(memberInfo.GetCustomAttributes());
 
             result = this.InsertDefaultSchema(result);
+
+            StandardAttributeDecorator.Logger.Debug("Exiting GetCustomAttributes.");
             return result;
         }
 
         private List<Attribute> InsertDefaultSchema(IEnumerable<Attribute> attributes)
         {
-            List<Attribute> result = attributes.Select(a =>
+            StandardAttributeDecorator.Logger.Debug("Entering InsertDefaultSchema");
+
+            attributes = attributes.ToList();
+
+            StandardAttributeDecorator.Logger.Debug(
+                $"Attributes: {string.Join(",", attributes)}");
+
+            List <Attribute> result = attributes.Select(a =>
             {
                 var canHaveDefaultSchema = a as ICanHaveDefaultSchema;
 
@@ -201,24 +223,36 @@ namespace TestDataFramework.AttributeDecorator
 
             }).ToList();
 
+            StandardAttributeDecorator.Logger.Debug("Exiting InsertDefaultSchema");
             return result;
         }
 
         public virtual T GetCustomAttribute<T>(MemberInfo memberInfo) where T : Attribute
         {
+            StandardAttributeDecorator.Logger.Debug($"Entering GetCustomAttribute<T>. T: {typeof(T)}. MemberInfo: {memberInfo}");
+
             T result = this.GetCustomAttributes<T>(memberInfo).FirstOrDefault();
+
+            StandardAttributeDecorator.Logger.Debug("Exiting GetCustomAttribute<T>.");
             return result;
         }
 
         public virtual Type GetTableType(ForeignKeyAttribute foreignAttribute, Type foreignType)
         {
+            StandardAttributeDecorator.Logger.Debug(
+                $"Entering GetTableType. ForeignAttribute : {foreignAttribute}. ForeignType: {foreignType}");
+
             if (foreignAttribute.PrimaryTableType != null)
             {
+                StandardAttributeDecorator.Logger.Debug(
+                    $"Returning PrimaryTableType: {foreignAttribute.PrimaryTableType}.");
+
                 return foreignAttribute.PrimaryTableType;
             }
 
             if (!this.tableTypeCache.IsAssemblyCachePopulated(this.callingAssembly))
             {
+                StandardAttributeDecorator.Logger.Debug("Populating table-type cache with calling assembly");
                 this.tableTypeCache.PopulateAssemblyCache(this.callingAssembly, this.GetSingleAttribute<TableAttribute>, this.defaultSchema);
             }
 
@@ -227,6 +261,8 @@ namespace TestDataFramework.AttributeDecorator
 
             if (cachedType != null)
             {
+                StandardAttributeDecorator.Logger.Debug(
+                    $"Cache hit based on call with calling assembly. Returning {cachedType}.");
                 return cachedType;
             }
 
@@ -236,6 +272,8 @@ namespace TestDataFramework.AttributeDecorator
                     foreignType);
             }
 
+            StandardAttributeDecorator.Logger.Debug("Populating table-type cache with foreign type's assembly.");
+
             this.tableTypeCache.PopulateAssemblyCache(foreignType.Assembly, this.GetSingleAttribute<TableAttribute>,
                 this.defaultSchema);
 
@@ -244,6 +282,8 @@ namespace TestDataFramework.AttributeDecorator
 
             if (cachedType != null)
             {
+                StandardAttributeDecorator.Logger.Debug(
+                    $"Cache hit based on call with foreign type's assembly. Returning {cachedType}.");
                 return cachedType;
             }
 

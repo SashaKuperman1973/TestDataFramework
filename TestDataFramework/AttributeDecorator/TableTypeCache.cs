@@ -22,6 +22,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using log4net;
 using log4net.Util;
 using TestDataFramework.Exceptions;
 
@@ -29,7 +30,7 @@ namespace TestDataFramework.AttributeDecorator
 {
     public class TableTypeCache
     {
-        // TODO: Logging
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(TableTypeCache));
 
         private readonly TypeDictionaryEqualityComparer typeDictionaryEqualityComparer =
             new TypeDictionaryEqualityComparer();
@@ -46,7 +47,11 @@ namespace TestDataFramework.AttributeDecorator
 
         public virtual bool IsAssemblyCachePopulated(Assembly assembly)
         {
+            TableTypeCache.Logger.Debug("Entering IsAssemblyCachePopulated");
+            
             bool result = this.tableTypeDictionary.ContainsKey(assembly);
+
+            TableTypeCache.Logger.Debug("Exiting IsAssemblyCachePopulated");
             return result;
         }
 
@@ -54,6 +59,8 @@ namespace TestDataFramework.AttributeDecorator
             Assembly initialAssemblyToScan, Func<Type, TableAttribute> getTableAttibute,
             bool canScanAllCachedAssemblies = true)
         {
+            TableTypeCache.Logger.Debug("Entering GetCachedTableType");
+
             AssemblyLookupContext assemblyLookupContext = this.tableTypeDictionary.GetOrAdd(initialAssemblyToScan, a =>
             {
                 throw new TableTypeLookupException(Messages.AssemblyCacheNotPopulated, initialAssemblyToScan);
@@ -67,6 +74,7 @@ namespace TestDataFramework.AttributeDecorator
                               ? this.GetCachedTableTypeUsingAllAssemblies(foreignKeyAttribute, tableAttribute)
                               : null);
 
+            TableTypeCache.Logger.Debug("Exiting GetCachedTableType");
             return result;
         }
 
@@ -78,6 +86,8 @@ namespace TestDataFramework.AttributeDecorator
 
         public virtual void PopulateAssemblyCache(Assembly assembly, Func<Type, TableAttribute> getTableAttibute, string defaultSchema)
         {
+            TableTypeCache.Logger.Debug("Entering PopulateAssemblyCache");
+
             AssemblyLookupContext assemblyLookupContext = this.tableTypeDictionary.AddOrUpdate(assembly,
                 new AssemblyLookupContext
                 {
@@ -111,10 +121,14 @@ namespace TestDataFramework.AttributeDecorator
             });
 
             AppDomain.Unload(domain);
+
+            TableTypeCache.Logger.Debug("Exiting PopulateAssemblyCache");
         }
 
         private Type GetCachedTableTypeUsingAllAssemblies(ForeignKeyAttribute foreignKeyAttribute, TableAttribute tableAttribute)
         {
+            TableTypeCache.Logger.Debug("Entering GetCachedTableTypeUsingAllAssemblies");
+
             foreach (KeyValuePair<Assembly, AssemblyLookupContext> tableTypeKvp in this.tableTypeDictionary)
             {
                 Type result = this.GetCachedTableType(foreignKeyAttribute, tableAttribute, tableTypeKvp.Value);
@@ -125,11 +139,14 @@ namespace TestDataFramework.AttributeDecorator
                 }
             }
 
+            TableTypeCache.Logger.Debug("Exiting GetCachedTableTypeUsingAllAssemblies");
             return null;
         }
 
         private void TryAdd(Table table, Type definedType, AssemblyLookupContext assemblyLookupContext)
         {
+            TableTypeCache.Logger.Debug("Entering TryAdd");
+
             // Note: If HasCatlogueName then HasTableAttribute
 
             TypeDictionaryEqualityComparer.EqualsCriteriaDelegate equalsCriteria =
@@ -144,22 +161,28 @@ namespace TestDataFramework.AttributeDecorator
 
             bool tryAddResult = assemblyLookupContext.TypeDictionary.TryAdd(table, definedType);
 
-            if (!tryAddResult)
+            if (tryAddResult)
             {
-                assemblyLookupContext.CollisionDictionary.AddOrUpdate(table, new List<Type>
-                {
-                    // first item of collision to add to list
+                TableTypeCache.Logger.Debug("Exiting TryAdd");
+                return;
+            }
 
-                    assemblyLookupContext.TypeDictionary.GetOrAdd(table,
-                        t =>
-                        {
-                            throw new TableTypeCacheException(Messages.ErrorGettingDefinedType, table);
-                        }),
+            TableTypeCache.Logger.Debug($"Table class collision detected. Table object: {table}");
 
-                    // second item of collision to add to list
+            assemblyLookupContext.CollisionDictionary.AddOrUpdate(table, new List<Type>
+            {
+                // first item of collision to add to list
 
-                    definedType
-                },
+                assemblyLookupContext.TypeDictionary.GetOrAdd(table,
+                    t =>
+                    {
+                        throw new TableTypeCacheException(Messages.ErrorGettingDefinedType, table);
+                    }),
+
+                // second item of collision to add to list
+
+                definedType
+            },
 
                 // collision key already exists. update collision list with newly attempted type.
                         
@@ -168,11 +191,14 @@ namespace TestDataFramework.AttributeDecorator
                     list.Add(definedType);
                     return list;
                 });
-            }
+
+            TableTypeCache.Logger.Debug("Exiting TryAdd");
         }
 
         private Type GetCachedTableType(ForeignKeyAttribute foreignAttribute, TableAttribute tableAttribute, AssemblyLookupContext assemblyLookupContext)
         {
+            TableTypeCache.Logger.Debug("Entering GetCachedTableType");
+
             var table = new Table(foreignAttribute, tableAttribute);
 
             // Note: If HasCatlogueName then HasTableAttribute
@@ -200,6 +226,7 @@ namespace TestDataFramework.AttributeDecorator
             // Test for a complete match
             if ((result = this.GetTableTypeByCriteria(table, completeMatchCriteria, assemblyLookupContext)) != null)
             {
+                TableTypeCache.Logger.Debug("Complete match found. Exiting GetCachedTableType.");
                 return result;
             }
 
@@ -207,6 +234,7 @@ namespace TestDataFramework.AttributeDecorator
             // !input.HasCataloguName && fromSet.HasCatalogueName
             if ((result = this.GetTableTypeWithCatalogue(table, assemblyLookupContext)) != null)
             {
+                TableTypeCache.Logger.Debug("!input.HasCataloguName && fromSet.HasCatalogueName matche found. Exiting GetCachedTableType.");
                 return result;
             }
 
@@ -214,6 +242,7 @@ namespace TestDataFramework.AttributeDecorator
             // Match on what's decorated
             if ((result = this.GetTableTypeByCriteria(table, matchOnWhatIsDecorated, assemblyLookupContext)) != null)
             {
+                TableTypeCache.Logger.Debug("Match on what's decorated found. Exiting GetCachedTableType.");
                 return result;
             }
 
@@ -221,14 +250,18 @@ namespace TestDataFramework.AttributeDecorator
             // Match on everything not already tried
             if ((result = this.GetTableTypeByCriteria(table, matchOnEverythingNotAlreadyTried, assemblyLookupContext)) != null)
             {
+                TableTypeCache.Logger.Debug("Match on everything not already tried found. Exiting GetCachedTableType.");
                 return result;
             }
 
+            TableTypeCache.Logger.Debug("No matches found. Exiting GetCachedTableType.");
             return null;
         }
 
         private Type GetTableTypeByCriteria(Table table, TypeDictionaryEqualityComparer.EqualsCriteriaDelegate matchCriteria, AssemblyLookupContext assemblyLookupContext)
         {
+            TableTypeCache.Logger.Debug("Entering GetTableTypeByCriteria.");
+
             Type result;
             List<Type> collisionTypes;
 
@@ -239,12 +272,19 @@ namespace TestDataFramework.AttributeDecorator
                 throw new TableTypeCacheException(Messages.DuplicateTableName, collisionTypes);
             }
 
+            TableTypeCache.Logger.Debug("Exiting GetTableTypeByCriteria.");
             return assemblyLookupContext.TypeDictionary.TryGetValue(table, out result) ? result : null;
         }
 
         private Type GetTableTypeWithCatalogue(Table table, AssemblyLookupContext assemblyLookupContext)
         {
-            if (table.HasCatalogueName) return null;
+            TableTypeCache.Logger.Debug("Entering GetTableTypeWithCatalogue.");
+
+            if (table.HasCatalogueName)
+            {
+                TableTypeCache.Logger.Debug("Table has no catalogue name. Exiting GetTableTypeWithCatalogue.");
+                return null;                
+            }
 
             Type result;
 
@@ -271,6 +311,7 @@ namespace TestDataFramework.AttributeDecorator
                     abmigousConditionType);
             }
 
+            TableTypeCache.Logger.Debug("Exiting GetTableTypeWithCatalogue.");
             return result;
         }
 

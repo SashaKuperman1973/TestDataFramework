@@ -280,15 +280,15 @@ namespace TestDataFramework.AttributeDecorator
             cachedType = this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType, foreignType.Assembly,
                 this.GetSingleAttribute<TableAttribute>, canScanAllCachedAssemblies: false);
 
-            if (cachedType != null)
+            if (cachedType == null)
             {
-                StandardAttributeDecorator.Logger.Debug(
-                    $"Cache hit based on call with foreign type's assembly. Returning {cachedType}.");
-                return cachedType;
+                throw new AttributeDecoratorException(Messages.CannotResolveForeignKey, foreignAttribute,
+                    foreignType);
             }
 
-            throw new AttributeDecoratorException(Messages.CannotResolveForeignKey, foreignAttribute,
-                foreignType);
+            StandardAttributeDecorator.Logger.Debug(
+                $"Cache hit based on call with foreign type's assembly. Returning {cachedType}.");
+            return cachedType;
         }
     }
 }

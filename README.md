@@ -2,10 +2,19 @@
 This is a unit testing tool. It randomizes values in your classes automatically so you don't need to do data entry.
 It is currently in beta.
 
-It includes the ability to write out objects to a database to populate it for tests which involve data access. 
-Using an uncommitted transaction scope makes it possible for the data to be temporary only. 
-Foreign/primary key relationships can be specified and are respected. Currently only SQL Server is supported.
-New implementations of the persistence layer can be created to support additional database systems or any other persistence medium.
+NEW FEATURES in this release:
+
+- POCO classes.
+- GUI code generation tool
+
+This tool includes the ability to write out objects to a database for tests which involve data access. 
+
+Foreign/primary key relationships can be specified and are respected. Currently only SQL Server is supported, 
+plus the option to generate in-memory objects only. 
+
+Using an uncommitted transaction scope makes it possible for data written to a database to be temporary only. 
+New implementations of the persistence layer can be created to support additional database systems or any 
+other persistence medium.
 
 The entry point is the IPopulator factory. For in-memory object population the usage of the factory is:
 
@@ -26,22 +35,22 @@ For the database population it's:
       ...{populate/test}
     }
 
-NOTE: root namespace is TestDataFramework. The PopulatorFactory is in namespace TestDataFramework.Factories.
+NOTE: Root namespace is TestDataFramework. The PopulatorFactory is in namespace TestDataFramework.Factories.
 
-Of course replace all values with what you need. Currently you need to specify the default catalogue. 
-For the next iteration I plan to associate specification of the catalogue with the individual class/type being populated, 
-which would override this value. For now, if you need multiple databases in play at the same time you should nest the
-factory.CreateSqlClientPopulator using statements.
+Replace all values with what you need. Note that you need to specify the default catalogue in the connection 
+string if there are any classes involved in an Sql Server population session that don't have a TableAttribute with a catalogue given.
 
-Right now only properties, not field members are populated. This tool is mostly designed to be used to populate DTOs for your tests
-when the in-memory option is used. For database population you would create a class that mirrors the database table schema, if 
-you don't already have such a class. Values written to the database are also populated into the related classes, like with the 
-in-memory populator.
+Right now only properties, not field members are populated. This tool is designed to be used to populate DTOs for your tests
+when the in-memory option is used and/or to run tests that include the persistence layer when the Sql Server option is used.
 
-While in-memory testing can be done right on your DTO, primay/foreign key relationship and other items such as maximum string length
+For database population you would create a class that mirrors the database table schema, if you don't already have such a class.
+You can use the included GUI tool to generate classes from Sql Server tables. See the New Features section below. 
+Values written to the database are also populated into the related classes, as with the in-memory populator.
+
+While in-memory testing can be done right on your DTO, primary/foreign key relationships and other items such as maximum string length
 are specified with attributes on properties.
 
-NOTE: For properties to be picked up, they must be public with a getter and a setter.
+NOTE: For properties to be picked up, they must be public with a public getter and setter.
 
 Here is an example of how to specify the objects to be generated. The usage is identical for both populators.
 
@@ -49,21 +58,26 @@ Here is an example of how to specify the objects to be generated. The usage is i
         {
           IPopulator testDataPopulator = factory.Create...
           
-          // a list 2 record references
-          IList<RecordReference<ManualKeyPrimaryTable>> primaries = populator.Add<ManualKeyPrimaryTable>(2);
+          // a list of 2 record references
+          
+		  IList<RecordReference<ManualKeyPrimaryTable>> primaries = populator.Add<ManualKeyPrimaryTable>(2);
           
           // a single record reference
-          RecordReference<ManualKeyPrimaryTable> aPrimary = populator.Add<ManualKeyPrimaryTable>();
+          
+		  RecordReference<ManualKeyPrimaryTable> aPrimary = populator.Add<ManualKeyPrimaryTable>();
           
           // a list of 2 foreign key record references:
-          IList<RecordReference<ManualKeyForeignTable>> foreignSet1 = populator.Add<ManualKeyForeignTable>(2);
+          
+		  IList<RecordReference<ManualKeyForeignTable>> foreignSet1 = populator.Add<ManualKeyForeignTable>(2);
           
           // specify which primary key records are associated with the foreign key records. 
-          // (Usage of primary/foreign key relationship property attributes is enforced)
+          // (Usage of primary/foreign key relationship property attributes is enforced by default)
+		  
           foreignSet1.ToList().ForEach(f => f.AddPrimaryRecordReference(primaries[0]));
         
           // another primary/foreign key record relationship created
-          IList<RecordReference<ManualKeyForeignTable>> foreignSet2 = populator.Add<ManualKeyForeignTable>(2);
+          
+		  IList<RecordReference<ManualKeyForeignTable>> foreignSet2 = populator.Add<ManualKeyForeignTable>(2);
           foreignSet2.ToList().ForEach(f => f.AddPrimaryRecordReference(primaries[1]));
           
           // an example of specifying explicit values to be used on properties instead of random ones.
@@ -94,10 +108,23 @@ The transaction scope semantics can be completely omitted for the in-memory popu
 All classes involved will be populated after the call to IPopulator.Bind.
 
 Either way, you can completely swap one populator for the other and the client code can stay the same.
-Properties need to be decorated with foreign/primary key attributes, if there are any such constrainsts
-in the target database. This is so that random values don't break referential integrity.
-Note that such attributes will maintain the referential integrity rules with the in-memory populator,
-if they are specified and RecordReference.AddPrimaryRecordReference statements are made.
+Be aware when you use the Sql Server populator in a context without a transaction scope since that
+can cause DB write commits.
+
+IMPORTANT:
+Primary/foreign relationships must be made with calls to RecordReference<SubjectClass>.AddPrimaryRecordReference method, if there are any such constrainsts
+in the target database. This is so the randomization algorithm can generate corresponding values and not break referential integrity.
+
+In order for calls to AddPrimaryRecordReference to succeed, properties need to be decorated with related foreign/primary key attributes.
+All properties in a class marked with a PrimaryKeyAttribute must have a corresponding ForeignKeyAttribute property in the SubjectClass (generic argument above).
+Otherwise the call will throw.
+
+Note that such attributes will maintain the referential integrity rules with the in-memory populator 
+as well as the Sql Server populator, if they are specified and RecordReference.AddPrimaryRecordReference 
+statements are made.
+
+UPDATE: In this version of the tool, you can have POCO classes that are decorated programatically.
+The new features are described in the last section.
   
 Here is the ManualKeyPrimaryTable class used above:
 
@@ -160,6 +187,9 @@ See this example of a class with an auto-increment primary key:
 
 NOTE: Don't put a composite primary key in a class with an auto-increment key.
 
+Also table/column names that have spaces in them (eg: [First Name]) have not 
+been tested and shouold probably be avoided.
+
 Note that string length is a maximum length for primary keys, and a full length for normal properties.
 
 Currently the primitive types are supported (including nullables), plus strings, DateTimes and Guids. 
@@ -174,7 +204,7 @@ IEnumerable, List, IList
 
 Obviously, this doesn't make sense for database population and won't work with it since the related handlers are not written.
 
-Here are usages of the other attributes:
+Here are usages of the other attributes, along with some example scenarios for properties:
 
     public class SubjectClass
     {
@@ -185,7 +215,7 @@ Here are usages of the other attributes:
         public int Getter { get { throw new NotImplementedException();} }
         public int Setter { set { throw new NotImplementedException();} }
 
-        [PrimaryKey(KeyType = PrimaryKeyAttribute.KeyTypeEnum.Auto)]
+        [PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Auto)]
         public int Key { get; set; }
 
         public int Integer { get; set; }
@@ -262,15 +292,207 @@ Here are usages of the other attributes:
         public int[][,,][] JaggedMultiDimensionalArray { get; set; }
     }
 
-My next step is to have a SQL script that will generate a C# type from a database table. 
-I saw an implementation of this on stackoverflow that I can enhance.
 
-I am also considering making all attributes assignable programmatically to their properties 
-in addition to being able to decorate properties directly.
+NEW FEATURES in this release:
 
-This document will be updated as I determine areas that are omitted or need clarification.
+1. POCO classes.
+
+2. GUI generation tool:
+
+	Generates C# types from an SQL Server database, 
+	with your option of declarative or programmatic auto-generation of attributes.
+
+Your entities can now be POCOs using programmatic assignment of "virtual" attributes to your classes and properties.
+
+Attributes that are assigned programmatically are treated by this framework as if they were actually decorated on classes and properties.
+You can also mix and match programmatic attributes and declarative attributes (though I don't know why you would want to, this is a consequence of the design).
+
+I am also bundling a GUI tool that I derived from an SQL script I found online to generate code from database tables.
+I'm putting the executable in the nuget package folder for this project.
+
+Here is a comparison of the Declarative mode output and the POCO mode output of the GUI tool.
+The POCO mode output also serves as an example of how to manually code programmatic attribute assignments:
+
+DECLARATIVE
+
+ManualKeyPrimaryTable.cs:
+
+	using System;
+	using TestDataFramework;
+
+	namespace Ding
+	{
+	  [Table("TestDataFramework", "dbo", "ManualKeyPrimaryTable")]
+	  public class ManualKeyPrimaryTable
+	  {
+		[StringLength(20)]
+		[PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Manual)]
+		public string Key1 { get; set; }
+		
+		[PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Manual)]
+		public int Key2 { get; set; }
+		
+		[StringLength(50)]
+		public string AString { get; set; }
+		
+		[Precision(2)]
+		public decimal ADecimal { get; set; }
+		
+		[Precision(3)]
+		public decimal AFloat { get; set; }
+		
+	  }
+	}
+
+ManualKeyForeignTable.cs
+
+	using System;
+	using TestDataFramework;
+
+	namespace Dong
+	{
+	  [Table("TestDataFramework", "dbo", "ManualKeyForeignTable")]
+	  public class ManualKeyForeignTable
+	  {
+		[PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Manual)]
+		public Guid UserId { get; set; }
+		
+		[StringLength(20)]
+		[ForeignKey("dbo", "ManualKeyPrimaryTable", "Key1")]
+		[PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Manual)]
+		public string ForeignKey1 { get; set; }
+		
+		[ForeignKey("dbo", "ManualKeyPrimaryTable", "Key2")]
+		public int ForeignKey2 { get; set; }
+		
+		public short AShort { get; set; }
+		
+		public long ALong { get; set; }
+		
+	  }
+	}
+	
+PROGRAMMATIC (POCO)
+
+ManualKeyPrimaryTable.cs
+
+	using System;
+	using TestDataFramework;
+
+	namespace Ding
+	{
+	  public class ManualKeyPrimaryTable
+	  {
+		public string Key1 { get; set; }
+		
+		public int Key2 { get; set; }
+		
+		public string AString { get; set; }
+		
+		public decimal ADecimal { get; set; }
+		
+		public decimal AFloat { get; set; }
+		
+	  }
+	}
+
+ManualKeyForeignTable.cs
+
+	using System;
+	using TestDataFramework;
+
+	namespace Dong
+	{
+	  public class ManualKeyForeignTable
+	  {
+		public Guid UserId { get; set; }
+		
+		public string ForeignKey1 { get; set; }
+		
+		public int ForeignKey2 { get; set; }
+		
+		public short AShort { get; set; }
+		
+		public long ALong { get; set; }
+		
+	  }
+	}
+
+Decorator.cs
+	
+	using System;
+	using TestDataFramework;
+	using TestDataFramework.Populator.Interfaces;
+	using Ding;
+	using Dong;
+
+	namespace TestModel
+	{
+		public class Decorator
+		{
+			public static void Decorate(IPopulator populator)
+			{
+
+				populator.DecorateType<ManualKeyPrimaryTable>()
+				.AddAttributeToType(new TableAttribute("TestDataFramework", "dbo", "ManualKeyPrimaryTable"))
+					.AddAttributeToMember(m => m.Key1, new StringLengthAttribute(20))
+					.AddAttributeToMember(m => m.Key1, new PrimaryKeyAttribute(PrimaryKeyAttribute.KeyTypeEnum.Manual))
+					.AddAttributeToMember(m => m.Key2, new PrimaryKeyAttribute(PrimaryKeyAttribute.KeyTypeEnum.Manual))
+					.AddAttributeToMember(m => m.AString, new StringLengthAttribute(50))
+					.AddAttributeToMember(m => m.ADecimal, new PrecisionAttribute(2))
+					.AddAttributeToMember(m => m.AFloat, new PrecisionAttribute(3));
+
+				populator.DecorateType<ManualKeyForeignTable>()
+				.AddAttributeToType(new TableAttribute("TestDataFramework", "dbo", "ManualKeyForeignTable"))
+					.AddAttributeToMember(m => m.UserId, new PrimaryKeyAttribute(PrimaryKeyAttribute.KeyTypeEnum.Manual))
+					.AddAttributeToMember(m => m.ForeignKey1, new StringLengthAttribute(20))
+					.AddAttributeToMember(m => m.ForeignKey1, new ForeignKeyAttribute("dbo", "ManualKeyPrimaryTable", "Key1"))
+					.AddAttributeToMember(m => m.ForeignKey1, new PrimaryKeyAttribute(PrimaryKeyAttribute.KeyTypeEnum.Manual))
+					.AddAttributeToMember(m => m.ForeignKey2, new ForeignKeyAttribute("dbo", "ManualKeyPrimaryTable", "Key2"));
+			}
+		}
+	}
+	
+It doesn't matter what the name of the Decorator file/class/method is. The important part is to call IPopulator.DecorateType<T> and fluently define the attributes you want.
+
+Note that the arguments to the TableAttribute constructor are catalogue (database name), schema and table name. There are overloads with fewer parameters.
+Also note that adding a TableAttribute is optional. If omitted the table name will be the name of the class and a default schema may be in effect. 
+The default schema is "dbo" for the Sql Server populator. It can be changed.
+
+To be clear, the programmatic population code of which the above is an example is generated by the GUI tool when choosing the POCO option, along with the target classes as well.
+
+Since the generator only has database schema information with which to decorate the target classes, generated Foreign Key attributes won't specify Primary Key classes via strong typing.
+That means that the primary/foreign class matching routine does its best with what it has. 
+
+For example, a class with a TableAttribute takes precedence over a class with the same name but no TableAttribute, when searching for a matching primary key class.
+Here the idea is that something explicitly decorated is considered to be more likely intended to be used with this software.
+
+Note that it is possible to specify primary key classes in a strongly typed manner with the typeof operator when manually using the ForeignKeyAttribute with the appropriate constructor overload.
+	
+See the source code for the details of the matching alogrithm.
+	
+Side note: The GUI tool was written very quickly and doesn't have good style, it was just made as a bonus to support the project. 
+I would rather not pushish the code, but people might want to extend it for themselves, so I am putting the source on GitHub. 
+Please don't judge the GUI tool code too harshly, my intent was for this framework to be the actual product.
+
+Minor breaking change from last version: all attribute initialization is given via the constructor. Direct write access to the properties has been removed.
+
+So,
+
+	[PrimaryKey(KeyType = PrimaryKeyAttribute.KeyTypeEnum.Auto)]
+	public int Key { get; set; }
+
+won't work (note the assignment operator). You need to use one of the constructor overloads:
+
+	[PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Auto)]
+	public int Key { get; set; }
+	
+
+Lastly, I don't want this tool to be in beta forever; if you try it but find bugs and are still interested, please drop me a line with the details of the error.
+
 
 Cheers,
 
 Sasha Kuperman
-February 9, 2016
+alexander.kuperman@gmail.com
+May 13, 2016

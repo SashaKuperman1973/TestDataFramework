@@ -86,6 +86,8 @@ namespace TestDataFramework.WritePrimitives.Concrete
 
         public static string BuildFullTableName(string catalogueName, string schema, string tableName)
         {
+            SqlClientWritePrimitives.Logger.Debug("Entering BuildFullTableName");
+
             string result = $"[{tableName}]";
 
             if (schema != null)
@@ -102,12 +104,17 @@ namespace TestDataFramework.WritePrimitives.Concrete
                 throw new WritePrimitivesException(Messages.CatalogueAndNoSchema, catalogueName, tableName);
             }
 
+            SqlClientWritePrimitives.Logger.Debug("Exiting BuildFullTableName");
             return result;
         }
 
         public static string BuildParameterListText(IEnumerable<Column> columns)
         {
+            SqlClientWritePrimitives.Logger.Debug("Entering BuildParameterListText");
+
             string result = "(" + string.Join(", ", columns.Select(c => "[" + c.Name + "]")) + ")";
+
+            SqlClientWritePrimitives.Logger.Debug("Exiting BuildParameterListText");
             return result;
         }
     }  

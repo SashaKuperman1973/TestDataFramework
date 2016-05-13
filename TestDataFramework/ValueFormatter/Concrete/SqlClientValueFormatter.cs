@@ -17,23 +17,31 @@
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using log4net;
 using TestDataFramework.RepositoryOperations.Model;
 
 namespace TestDataFramework.ValueFormatter.Concrete
 {
     public class SqlClientValueFormatter : DbValueFormatter
     {
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(SqlClientValueFormatter));
+
         public override string Format(object value)
         {
+            SqlClientValueFormatter.Logger.Debug("Entering Format.");
+
             var variable = value as Variable;
 
             if (variable != null)
             {
+                SqlClientValueFormatter.Logger.Debug("Value is a Variable. Exiting Format.");
                 return "@" + variable.Symbol;
             }
 
+            SqlClientValueFormatter.Logger.Debug("Value is not a Variable. Calling base.Format.");
             string result = base.Format(value);
 
+            SqlClientValueFormatter.Logger.Debug($"Exiting Format. Result: {result ?? "<Null>"}");
             return result ?? "null";
         }
     }

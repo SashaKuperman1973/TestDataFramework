@@ -67,6 +67,7 @@ namespace TestDataFramework.UniqueValueGenerator.Concrete
                     typeof (uint), typeof (ushort), typeof (ulong),
                 }.Contains(propertyInfo.PropertyType))
             {
+                KeyTypeUniqueValueGenerator.Logger.Debug("Not deferring value. Exiting GetValue.");
                 return Helper.GetDefaultValue(propertyInfo.PropertyType);                
             }
 
@@ -74,6 +75,7 @@ namespace TestDataFramework.UniqueValueGenerator.Concrete
 
             this.DeferValue(propertyInfo);
 
+            KeyTypeUniqueValueGenerator.Logger.Debug("Exiting GetValue");
             return Helper.GetDefaultValue(propertyInfo.PropertyType);
         }
     }

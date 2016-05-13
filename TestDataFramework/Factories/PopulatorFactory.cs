@@ -74,7 +74,12 @@ namespace TestDataFramework.Factories
             bool enforceKeyReferenceCheck = true, bool throwIfUnhandledPrimaryKeyType = true)
         {
             PopulatorFactory.Logger.Debug(
-                $"Entering CreateSqlClientPopulator. mustBeInATransaction: {mustBeInATransaction}, throwIfUnhandledPrimaryKeyType: {throwIfUnhandledPrimaryKeyType}");
+                "Entering CreateSqlClientPopulator."+
+                $" mustBeInATransaction: {mustBeInATransaction}," +
+                $" defaultSchema: {defaultSchema}," +
+                $" enforceKeyReferenceCheck: {enforceKeyReferenceCheck}," +
+                $" throwIfUnhandledPrimaryKeyType: {throwIfUnhandledPrimaryKeyType}"
+                );
 
             IWindsorContainer iocContainer = this.GetSqlClientPopulatorContainer(connectionStringWithDefaultCatalogue,
                 mustBeInATransaction, defaultSchema, enforceKeyReferenceCheck, throwIfUnhandledPrimaryKeyType, Assembly.GetCallingAssembly());
@@ -87,7 +92,7 @@ namespace TestDataFramework.Factories
 
         public IPopulator CreateMemoryPopulator(bool throwIfUnhandledPrimaryKeyType = false, string defaultSchema = null)
         {
-            PopulatorFactory.Logger.Debug($"Entering CreateMemoryPopulator. throwIfUnhandledPrimaryKeyType: {throwIfUnhandledPrimaryKeyType}");
+            PopulatorFactory.Logger.Debug($"Entering CreateMemoryPopulator. throwIfUnhandledPrimaryKeyType: {throwIfUnhandledPrimaryKeyType}, defaultSchema: {defaultSchema}");
 
             IWindsorContainer iocContainer = this.GetMemoryPopulatorContainer(Assembly.GetCallingAssembly(), throwIfUnhandledPrimaryKeyType, defaultSchema);
 

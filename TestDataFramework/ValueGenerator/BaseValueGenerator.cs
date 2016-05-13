@@ -290,7 +290,11 @@ namespace TestDataFramework.ValueGenerator
 
         private object GetPrimaryKey(PropertyInfo propertyInfo)
         {
+            BaseValueGenerator.Logger.Debug("Entering GetPrimaryKey");
+
             object result = this.UniqueValueGenerator.GetValue(propertyInfo);
+
+            BaseValueGenerator.Logger.Debug("Exiting GetPrimaryKey");
             return result;
         }
 

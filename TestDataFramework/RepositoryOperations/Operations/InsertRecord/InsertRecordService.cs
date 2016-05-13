@@ -200,7 +200,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                             PropertyAttribute = fk.FkPropertyAttribute,
                         }).ToList();
 
-            InsertRecordService.Logger.Debug($"result: {Helper.ToCompositeString(result)}");
+            InsertRecordService.Logger.Debug($"Entering GetForeignKeyVariables. Result: {Helper.ToCompositeString(result)}");
             return result;
         }
 

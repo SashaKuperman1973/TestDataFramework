@@ -71,6 +71,7 @@ namespace TestDataFramework.UniqueValueGenerator.Concrete
                 this.DeferValue(propertyInfo);
             }
 
+            MemoryUniqueValueGenerator.Logger.Debug("Exiting GetValue.");
             return Helper.GetDefaultValue(propertyInfo.PropertyType);
         }
     }

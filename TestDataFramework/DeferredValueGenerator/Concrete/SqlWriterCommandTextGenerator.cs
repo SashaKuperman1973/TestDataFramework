@@ -27,23 +27,33 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
 {
     public class SqlWriterCommandText
     {
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(SqlWriterCommandText));
+
         public virtual string GetStringSelect(string catalogueName, string schema, string tableName, string columnName)
         {
+            SqlWriterCommandText.Logger.Debug(
+                $"Entering GetStringSelect. catalogueName: {catalogueName}, schema: {schema}, tableName: {tableName}, columnName: {columnName}");
+
             string fullTableName = SqlClientWritePrimitives.BuildFullTableName(catalogueName, schema, tableName);
             columnName = "[" + columnName + "]";
 
             string result =
                 $"Select Max({columnName}) from {fullTableName} where {columnName} not like '%[^A-Z]%' And LEN({columnName}) = (Select Max(Len({columnName})) From {fullTableName} where {columnName} not like '%[^A-Z]%' );";
 
+            SqlWriterCommandText.Logger.Debug("Exiting GetStringSelect");
             return result;
         }
 
         public virtual string GetNumberSelect(string catalogueName, string schema, string tableName, string columnName)
         {
+            SqlWriterCommandText.Logger.Debug(
+                $"Entering GetNumberSelect. catalogueName: {catalogueName}, schema: {schema}, tableName: {tableName}, columnName: {columnName}");
+
             string fullTableName = SqlClientWritePrimitives.BuildFullTableName(catalogueName, schema, tableName);
 
             string result = $"Select MAX([{columnName}]) From {fullTableName};";
 
+            SqlWriterCommandText.Logger.Debug("Exiting GetNumberSelect");
             return result;
         }
     }

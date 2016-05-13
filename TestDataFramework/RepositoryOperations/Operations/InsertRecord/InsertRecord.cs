@@ -214,6 +214,8 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
         private IEnumerable<PropertyInfo> GetPropertiesForRead(IEnumerable<PropertyAttributes> propertyAttributes)
         {
+            InsertRecord.Logger.Debug("Entering GetPropertiesForRead");
+
             IEnumerable<PropertyAttributes> result = propertyAttributes.Where(pa =>
 
                 !this.RecordReference.IsExplicitlySet(pa.PropertyInfo)
@@ -231,6 +233,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
                 );
 
+            InsertRecord.Logger.Debug("Exiting GetPropertiesForRead");
             return result.Select(pa => pa.PropertyInfo);
         }
 

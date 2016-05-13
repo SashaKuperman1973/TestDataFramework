@@ -31,7 +31,7 @@ using TestDataFramework.Populator.Interfaces;
 
 namespace PocoIntegrationTests.Tests
 {
-    [Ignore]
+    //[Ignore]
     [TestClass]
     public class SqlClientAndMemoryTests
     {
@@ -64,7 +64,7 @@ namespace PocoIntegrationTests.Tests
         public void SqlCient_POCO_Test()
         {
             IPopulator populator = this.factory.CreateSqlClientPopulator(
-                @"Data Source=.\SqlExpress;Initial Catalog=TestDataFramework;Integrated Security=SSPI;");
+                @"Data Source=.\SqlExpress;Integrated Security=SSPI;");
 
             SqlClientAndMemoryTests.PrimaryKeyForeignKeyTest(populator, new PocoGeneratorIntegrationTest());
         }

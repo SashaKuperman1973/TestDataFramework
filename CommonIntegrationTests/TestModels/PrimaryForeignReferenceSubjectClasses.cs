@@ -45,7 +45,7 @@ namespace CommonIntegrationTests.TestModels
         public int Integer { get; set; }
     }
     
-    [Table("ManualKeyPrimaryTable")]
+    [Table("TestDataFramework", "dbo", "ManualKeyPrimaryTable")]
     public class ManualKeyPrimaryTableClass
     {
         [PrimaryKey]
@@ -64,6 +64,7 @@ namespace CommonIntegrationTests.TestModels
         public float AFloat { get; set; }
     }
 
+    [Table("TestDataFramework", "dbo", "ManualKeyForeignTable")]
     public class ManualKeyForeignTable
     {
         [PrimaryKey]

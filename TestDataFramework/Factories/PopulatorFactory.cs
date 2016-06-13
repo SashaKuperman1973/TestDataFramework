@@ -55,6 +55,23 @@ using TestDataFramework.WritePrimitives.Interfaces;
 
 namespace TestDataFramework.Factories
 {
+    public static class StaticPopulatorFactory
+    {
+        public static IPopulator CreateSqlClientPopulator(string connectionStringWithDefaultCatalogue,
+            bool mustBeInATransaction = true, string defaultSchema = "dbo",
+            bool enforceKeyReferenceCheck = true, bool throwIfUnhandledPrimaryKeyType = true)
+        {
+            return new PopulatorFactory().CreateSqlClientPopulator(connectionStringWithDefaultCatalogue,
+                mustBeInATransaction, defaultSchema,
+                enforceKeyReferenceCheck, throwIfUnhandledPrimaryKeyType);
+        }
+
+        public static IPopulator CreateMemoryPopulator(bool throwIfUnhandledPrimaryKeyType = false, string defaultSchema = null)
+        {
+            return new PopulatorFactory().CreateMemoryPopulator(throwIfUnhandledPrimaryKeyType, defaultSchema);
+        }
+    }
+
     public class PopulatorFactory : IDisposable
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(PopulatorFactory));

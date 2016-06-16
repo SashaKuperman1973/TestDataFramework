@@ -61,14 +61,20 @@ namespace TestDataFramework.Factories
             bool mustBeInATransaction = true, string defaultSchema = "dbo",
             bool enforceKeyReferenceCheck = true, bool throwIfUnhandledPrimaryKeyType = true)
         {
-            return new PopulatorFactory().CreateSqlClientPopulator(connectionStringWithDefaultCatalogue,
-                mustBeInATransaction, defaultSchema,
-                enforceKeyReferenceCheck, throwIfUnhandledPrimaryKeyType);
+            using (var factory = new PopulatorFactory())
+            {
+                return factory.CreateSqlClientPopulator(connectionStringWithDefaultCatalogue,
+                    mustBeInATransaction, defaultSchema,
+                    enforceKeyReferenceCheck, throwIfUnhandledPrimaryKeyType);
+            }
         }
 
         public static IPopulator CreateMemoryPopulator(bool throwIfUnhandledPrimaryKeyType = false, string defaultSchema = null)
         {
-            return new PopulatorFactory().CreateMemoryPopulator(throwIfUnhandledPrimaryKeyType, defaultSchema);
+            using (var factory = new PopulatorFactory())
+            {
+                return factory.CreateMemoryPopulator(throwIfUnhandledPrimaryKeyType, defaultSchema);
+            }
         }
     }
 

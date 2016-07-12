@@ -58,7 +58,7 @@ namespace Tests.Tests
 
         private class ValueGenerator : BaseValueGenerator
         {
-            public ValueGenerator(IValueProvider valueProvider, GetTypeGeneratorDelegate getTypeGenerator,
+            public ValueGenerator(IValueProvider valueProvider, Func<ITypeGenerator> getTypeGenerator,
                 Func<IArrayRandomizer> getArrayRandomizer, IUniqueValueGenerator uniqueValueGenerator, IAttributeDecorator attributeDecorator)
                 : base(valueProvider, getTypeGenerator, getArrayRandomizer, uniqueValueGenerator, attributeDecorator)
             {

@@ -17,8 +17,11 @@
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using System;
 using System.Collections.Generic;
+using TestDataFramework.HandledTypeGenerator;
 using TestDataFramework.Populator.Concrete;
+using TestDataFramework.ValueGenerator.Interfaces;
 
 namespace TestDataFramework.Populator.Interfaces
 {
@@ -31,5 +34,9 @@ namespace TestDataFramework.Populator.Interfaces
         RecordReference<T> Add<T>(RecordReference primaryRecordReference = null) where T : new();
 
         BasePopulator.Decorator<T> DecorateType<T>();
+
+        void Extend(Type type, HandledTypeValueGetter valueGetter);
+
+        IValueGenerator ValueGenerator { get; }
     }
 }

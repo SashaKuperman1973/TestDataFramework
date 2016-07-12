@@ -20,6 +20,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Reflection;
+using TestDataFramework.HandledTypeGenerator;
 
 namespace TestDataFramework.TypeGenerator.Interfaces
 {

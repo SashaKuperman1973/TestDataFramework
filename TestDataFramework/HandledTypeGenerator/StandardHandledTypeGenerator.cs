@@ -26,17 +26,18 @@ using TestDataFramework.ValueGenerator.Interfaces;
 
 namespace TestDataFramework.HandledTypeGenerator
 {
+    public delegate object HandledTypeValueGetter(Type forType);
+
     public class StandardHandledTypeGenerator : IHandledTypeGenerator
     {
         #region Fields
-
-        private delegate object HandledTypeValueGetter(Type forType);
 
         private static readonly ILog Logger = LogManager.GetLogger(typeof(StandardHandledTypeGenerator));
 
         public delegate IValueGenerator CreateAccumulatorValueGeneratorDelegate();
 
-        private readonly Dictionary<Type, HandledTypeValueGetter> handledTypeValueGetterDictionary;
+        public IDictionary<Type, HandledTypeValueGetter> HandledTypeValueGetterDictionary { get; }
+
         private readonly IValueGenerator valueGenerator;
         private readonly CreateAccumulatorValueGeneratorDelegate getAccumulatorValueGenerator;
         private readonly Random random;
@@ -55,7 +56,7 @@ namespace TestDataFramework.HandledTypeGenerator
             this.getAccumulatorValueGenerator = getAccumulatorValueGenerator;
             this.maxCollectionElementCount = maxCollectionElementCount;
 
-            this.handledTypeValueGetterDictionary = new Dictionary<Type, HandledTypeValueGetter>
+            this.HandledTypeValueGetterDictionary = new Dictionary<Type, HandledTypeValueGetter>
             {
                 {typeof (KeyValuePair<,>), this.GetKeyValuePair},
                 {typeof (IDictionary<,>), this.GetDictionary},
@@ -76,7 +77,7 @@ namespace TestDataFramework.HandledTypeGenerator
 
             HandledTypeValueGetter getter;
 
-            if (!this.handledTypeValueGetterDictionary.TryGetValue(typeToCheck, out getter))
+            if (!this.HandledTypeValueGetterDictionary.TryGetValue(typeToCheck, out getter))
             {
                 StandardHandledTypeGenerator.Logger.Debug($"No handler found for type {forType}. Returning null.");
                 return null;

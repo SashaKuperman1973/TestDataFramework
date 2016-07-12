@@ -38,18 +38,16 @@ namespace TestDataFramework.ValueGenerator
         private static readonly ILog Logger = LogManager.GetLogger(typeof(BaseValueGenerator));
 
         protected readonly IValueProvider ValueProvider;
-        protected readonly GetTypeGeneratorDelegate GetTypeGenerator;
+        protected readonly Func<ITypeGenerator> GetTypeGenerator;
         protected readonly Func<IArrayRandomizer> GetArrayRandomizer;
         protected readonly IUniqueValueGenerator UniqueValueGenerator;
         protected readonly IAttributeDecorator AttributeDecorator;
-
-        public delegate ITypeGenerator GetTypeGeneratorDelegate();
 
         private delegate object GetValueForTypeDelegate(PropertyInfo propertyInfo);
 
         private readonly Dictionary<Type, GetValueForTypeDelegate> typeValueGetterDictionary;
 
-        protected BaseValueGenerator(IValueProvider valueProvider, GetTypeGeneratorDelegate getTypeGenerator,
+        protected BaseValueGenerator(IValueProvider valueProvider, Func<ITypeGenerator> getTypeGenerator,
             Func<IArrayRandomizer> getArrayRandomizer, IUniqueValueGenerator uniqueValueGenerator, IAttributeDecorator attributeDecorator)
         {
             BaseValueGenerator.Logger.Debug("Entering constructor");

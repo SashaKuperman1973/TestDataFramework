@@ -91,6 +91,7 @@ namespace TestDataFramework.Factories
         private const string ValueAccumulator = "ValueAccumulator";
         private const string AccumulatorValueGenerator = "AccumulatorValueGenerator";
         private const string GetUniqueValueTypeGenerator = "GetUniqueValueTypeGenerator";
+        private const string StandardTypeGenerator = "StandardTypeGenerator";
 
         public IPopulator CreateSqlClientPopulator(string connectionStringWithDefaultCatalogue, 
             bool mustBeInATransaction = true, string defaultSchema = "dbo",
@@ -123,6 +124,17 @@ namespace TestDataFramework.Factories
 
             PopulatorFactory.Logger.Debug("Exiting CreateMemoryPopulator");
             return result;
+        }
+
+        private static void InstanceBugWorkAround<TService>(IWindsorContainer container, string serviceKey, string delegateKey) where TService : class
+        {
+            var lazyStandardTypeGenerator =
+                new Lazy<TService>(() => container.Resolve<TService>(serviceKey));
+
+            container.Register(
+                Component.For<Func<TService>>().Instance(() => lazyStandardTypeGenerator.Value).Named(delegateKey));
+
+            var q = lazyStandardTypeGenerator.Value;
         }
 
         private IWindsorContainer GetSqlClientPopulatorContainer(string connectionStringWithDefaultCatalogue, bool mustBeInATransaction, string defaultSchema,
@@ -161,7 +173,7 @@ namespace TestDataFramework.Factories
                     .ImplementedBy<SqlClientValueGenerator>()
                     .DependsOn(ServiceOverride.ForKey<IValueProvider>().Eq(PopulatorFactory.ValueAccumulator))
                     .DependsOn(
-                        ServiceOverride.ForKey<BaseValueGenerator.GetTypeGeneratorDelegate>()
+                        ServiceOverride.ForKey<Func<ITypeGenerator>>()
                             .Eq(PopulatorFactory.GetUniqueValueTypeGenerator))
                     .Named(PopulatorFactory.AccumulatorValueGenerator)
                     .LifestyleTransient(),
@@ -170,7 +182,7 @@ namespace TestDataFramework.Factories
                     .ImplementedBy<SqlClientValueGenerator>()
                     .DependsOn(ServiceOverride.ForKey<IValueProvider>().Eq(PopulatorFactory.StandardValueProvider))
                     .DependsOn(
-                        ServiceOverride.ForKey<BaseValueGenerator.GetTypeGeneratorDelegate>()
+                        ServiceOverride.ForKey<Func<ITypeGenerator>>()
                             .Eq(PopulatorFactory.GetStandardTypeGenerator))
                     .Named(PopulatorFactory.StandardValueGenerator),
 
@@ -180,6 +192,9 @@ namespace TestDataFramework.Factories
                     .Instance(tableTypeCache => new StandardAttributeDecorator(x => tableTypeCache, callingAssembly, defaultSchema))
 
                 );
+
+            PopulatorFactory.InstanceBugWorkAround<ITypeGenerator>(this.memoryPopulatorContainer.Container,
+                PopulatorFactory.StandardTypeGenerator, PopulatorFactory.GetStandardTypeGenerator);
 
             PopulatorFactory.Logger.Debug("Exiting GetSqlClientPopulatorContainer");
             return this.sqlClientPopulatorContainer.Container;
@@ -209,7 +224,7 @@ namespace TestDataFramework.Factories
                     .ImplementedBy<MemoryValueGenerator>()
                     .DependsOn(ServiceOverride.ForKey<IValueProvider>().Eq(PopulatorFactory.ValueAccumulator))
                     .DependsOn(
-                        ServiceOverride.ForKey<BaseValueGenerator.GetTypeGeneratorDelegate>()
+                        ServiceOverride.ForKey<Func<ITypeGenerator>>()
                             .Eq(PopulatorFactory.GetUniqueValueTypeGenerator))
                     .Named(PopulatorFactory.AccumulatorValueGenerator)
                     .LifestyleTransient(),
@@ -218,7 +233,7 @@ namespace TestDataFramework.Factories
                     .ImplementedBy<MemoryValueGenerator>()
                     .DependsOn(ServiceOverride.ForKey<IValueProvider>().Eq(PopulatorFactory.StandardValueProvider))
                     .DependsOn(
-                        ServiceOverride.ForKey<BaseValueGenerator.GetTypeGeneratorDelegate>()
+                        ServiceOverride.ForKey<Func<ITypeGenerator>>()
                             .Eq(PopulatorFactory.GetStandardTypeGenerator))
                     .Named(PopulatorFactory.StandardValueGenerator),
 
@@ -226,6 +241,9 @@ namespace TestDataFramework.Factories
                     .Instance(tableTypeCache => new StandardAttributeDecorator(x => tableTypeCache, callingAssembly, null))
 
                 );
+
+            PopulatorFactory.InstanceBugWorkAround<ITypeGenerator>(this.memoryPopulatorContainer.Container,
+                PopulatorFactory.StandardTypeGenerator, PopulatorFactory.GetStandardTypeGenerator);
 
             PopulatorFactory.Logger.Debug("Exiting GetMemoryPopulatorContainer");
 
@@ -235,7 +253,6 @@ namespace TestDataFramework.Factories
         private static IWindsorContainer GetCommonContainer(Assembly callingAssembly, string defaultSchema)
         {
             const string uniqueValueTypeGenerator = "UniqueValueTypeGenerator";
-            const string standardTypeGenerator = "StandardTypeGenerator";
             const string standardHandledTypeGenerator = "StandardHandledTypeGenerator";
             const string accumulatorValueGenerator_StandardHandledTypeGenerator = "AccumulatorValueGenerator_StandardHandledTypeGenerator ";                
 
@@ -253,17 +270,14 @@ namespace TestDataFramework.Factories
             #endregion Delegates
 
                 Component.For<IPopulator>().ImplementedBy<StandardPopulator>()
-                    .DependsOn(ServiceOverride.ForKey<ITypeGenerator>().Eq(standardTypeGenerator)),
+                    .DependsOn(ServiceOverride.ForKey<ITypeGenerator>().Eq(StandardTypeGenerator))
+                    .DependsOn(ServiceOverride.ForKey<IHandledTypeGenerator>().Eq(standardHandledTypeGenerator)),
 
                 Component.For<ITypeGenerator>()
                     .ImplementedBy<StandardTypeGenerator>()
                     .DependsOn(ServiceOverride.ForKey<IValueGenerator>().Eq(PopulatorFactory.StandardValueGenerator))
                     .DependsOn(ServiceOverride.ForKey<IHandledTypeGenerator>().Eq(standardHandledTypeGenerator))
-                    .Named(standardTypeGenerator),
-
-                Component.For<BaseValueGenerator.GetTypeGeneratorDelegate>()
-                    .Instance(() => commonContainer.Resolve<ITypeGenerator>(standardTypeGenerator))
-                    .Named(PopulatorFactory.GetStandardTypeGenerator),
+                    .Named(PopulatorFactory.StandardTypeGenerator),
 
                 Component.For<Func<IArrayRandomizer>>()
                     .Instance(
@@ -325,7 +339,7 @@ namespace TestDataFramework.Factories
                     .Named(PopulatorFactory.ValueAccumulator)
                     .LifestyleTransient(),
 
-                Component.For<BaseValueGenerator.GetTypeGeneratorDelegate>()
+                Component.For<Func<ITypeGenerator>>()
                     .Instance(() => commonContainer.Resolve<ITypeGenerator>(uniqueValueTypeGenerator))
                     .Named(PopulatorFactory.GetUniqueValueTypeGenerator),
 

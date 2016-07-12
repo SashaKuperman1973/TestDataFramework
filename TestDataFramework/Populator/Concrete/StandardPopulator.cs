@@ -17,12 +17,15 @@
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using System;
 using System.Collections.Generic;
 using log4net;
 using TestDataFramework.AttributeDecorator;
+using TestDataFramework.HandledTypeGenerator;
 using TestDataFramework.Persistence.Interfaces;
 using TestDataFramework.Populator.Interfaces;
 using TestDataFramework.TypeGenerator.Interfaces;
+using TestDataFramework.ValueGenerator.Interfaces;
 
 namespace TestDataFramework.Populator.Concrete
 {
@@ -32,20 +35,32 @@ namespace TestDataFramework.Populator.Concrete
 
         private readonly ITypeGenerator typeGenerator;
         private readonly IPersistence persistence;
+        private readonly IHandledTypeGenerator handledTypeGenerator;
+
+        public IValueGenerator ValueGenerator { get; }
 
         private readonly List<RecordReference> recordReferences = new List<RecordReference>();
 
-        public StandardPopulator(ITypeGenerator typeGenerator, IPersistence persistence, IAttributeDecorator attributeDecorator) : base(attributeDecorator)
+        public StandardPopulator(ITypeGenerator typeGenerator, IPersistence persistence,
+            IAttributeDecorator attributeDecorator, IHandledTypeGenerator handledTypeGenerator, IValueGenerator valueGenerator)
+            : base(attributeDecorator)
         {
             StandardPopulator.Logger.Debug("Entering constructor");
 
             this.typeGenerator = typeGenerator;
             this.persistence = persistence;
+            this.handledTypeGenerator = handledTypeGenerator;
+            this.ValueGenerator = valueGenerator;
 
             StandardPopulator.Logger.Debug("Entering constructor");
         }
 
         #region Public Methods
+
+        public virtual void Extend(Type type, HandledTypeValueGetter valueGetter)
+        {
+            this.handledTypeGenerator.HandledTypeValueGetterDictionary.Add(type, valueGetter);
+        }
 
         public virtual IList<RecordReference<T>> Add<T>(int copies, RecordReference primaryRecordReference = null) where T : new()
         {

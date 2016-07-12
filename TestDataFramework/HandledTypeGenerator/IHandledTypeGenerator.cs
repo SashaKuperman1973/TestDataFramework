@@ -18,11 +18,15 @@
 */
 
 using System;
+using System.Collections.Generic;
+using TestDataFramework.ValueGenerator.Interfaces;
 
 namespace TestDataFramework.HandledTypeGenerator
 {
     public interface IHandledTypeGenerator
     {
         object GetObject(Type forType);
+
+        IDictionary<Type, HandledTypeValueGetter> HandledTypeValueGetterDictionary { get; }
     }
 }

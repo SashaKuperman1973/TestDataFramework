@@ -22,6 +22,7 @@ using System.Reflection;
 using log4net;
 using TestDataFramework.ArrayRandomizer;
 using TestDataFramework.AttributeDecorator;
+using TestDataFramework.TypeGenerator.Interfaces;
 using TestDataFramework.UniqueValueGenerator.Interfaces;
 using TestDataFramework.ValueProvider.Interfaces;
 
@@ -31,7 +32,7 @@ namespace TestDataFramework.ValueGenerator.Concrete
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof (MemoryValueGenerator));
 
-        public MemoryValueGenerator(IValueProvider valueProvider, GetTypeGeneratorDelegate getTypeGenerator,
+        public MemoryValueGenerator(IValueProvider valueProvider, Func<ITypeGenerator> getTypeGenerator,
             Func<IArrayRandomizer> getArrayRandomizer, IUniqueValueGenerator uniqueValueGenerator, IAttributeDecorator attributeDecorator)
             : base(valueProvider, getTypeGenerator, getArrayRandomizer, uniqueValueGenerator, attributeDecorator)
         {

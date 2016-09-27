@@ -62,6 +62,7 @@ namespace TestDataFramework.HandledTypeGenerator
                 {typeof (IDictionary<,>), this.GetDictionary},
                 {typeof (Dictionary<,>), this.GetDictionary},
                 {typeof (IEnumerable<>), this.GetList},
+                {typeof (ICollection<>), this.GetList},
                 {typeof (List<>), this.GetList},
                 {typeof (IList<>), this.GetList},
             };

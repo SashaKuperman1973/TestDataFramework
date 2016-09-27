@@ -19,6 +19,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using CommonIntegrationTests.TestModels;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -60,6 +61,22 @@ namespace CommonIntegrationTests.Tests
             Helpers.Dump(subjectReference[0].RecordObject);
             Helpers.Dump(subjectReference[1].RecordObject);
             Helpers.Dump(foreignReference.RecordObject);
+        }
+
+        // This is a test of value types in general.
+        [TestMethod]
+        public void Multiple_KeyValuePair_Test()
+        {
+            IPopulator populator = this.factory.CreateMemoryPopulator();
+
+            IList<RecordReference<KeyValuePair<SubjectClass, ForeignSubjectClass>>> kvpRefs =
+                populator.Add<KeyValuePair<SubjectClass, ForeignSubjectClass>>(10);
+
+            populator.Bind();
+
+            Helpers.Dump(kvpRefs.First().RecordObject.Key);
+            Helpers.Dump(kvpRefs.First().RecordObject.Value);
+            kvpRefs.ToList().ForEach(r => Helpers.Dump(r.RecordObject));
         }
 
         [TestMethod]

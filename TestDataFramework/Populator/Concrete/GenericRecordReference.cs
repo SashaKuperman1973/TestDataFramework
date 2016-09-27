@@ -45,7 +45,7 @@ namespace TestDataFramework.Populator.Concrete
             RecordReference<T>.Logger.Debug("Exiting constructor");
         }
 
-        public new T RecordObject => (T) base.RecordObject;
+        public new T RecordObject => (T) (base.RecordObject ?? default(T));
 
         public override bool IsExplicitlySet(PropertyInfo propertyInfo)
         {
@@ -66,10 +66,22 @@ namespace TestDataFramework.Populator.Concrete
             RecordReference<T>.Logger.Debug("Exiting Populate");
         }
 
-        public virtual RecordReference<T> Set<TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression, TPropertyType value)
+        public virtual RecordReference<T> Set<TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression,
+            TPropertyType value)
         {
             RecordReference<T>.Logger.Debug(
-                $"Entering Set. TPropertyType: {typeof (TPropertyType)}, fieldExpression: {fieldExpression}, value: {value}");
+                $"Entering Set(fieldExpression, value). TPropertyType: {typeof(TPropertyType)}, fieldExpression: {fieldExpression}, value: {value}");
+
+            RecordReference<T> result = this.Set(fieldExpression, () => value);
+
+            RecordReference<T>.Logger.Debug("Exiting Set(fieldExpression, value)");
+            return result;
+        }
+
+        public virtual RecordReference<T> Set<TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression, Func<TPropertyType> valueFactory)
+        {
+            RecordReference<T>.Logger.Debug(
+                $"Entering Set(fieldExpression, valueFactory). TPropertyType: {typeof(TPropertyType)}, fieldExpression: {fieldExpression}, valueFactory: {valueFactory}");
 
             var propertyInfo = Helper.ValidateFieldExpression(fieldExpression) as PropertyInfo;
 
@@ -78,7 +90,7 @@ namespace TestDataFramework.Populator.Concrete
                 throw new SetExpressionException(Messages.MustBePropertyAccess);
             }
 
-            Action<T> setter = @object => propertyInfo.SetValue(@object, value);
+            Action<T> setter = @object => propertyInfo.SetValue(@object, valueFactory());
 
             this.explicitProperySetters.AddOrUpdate(propertyInfo, setter, (pi, lambda) =>
             {
@@ -86,7 +98,7 @@ namespace TestDataFramework.Populator.Concrete
                 return setter;
             });
 
-            RecordReference<T>.Logger.Debug("Exiting Set");
+            RecordReference<T>.Logger.Debug("Exiting Set(fieldExpression, valueFactory)");
             return this;
         }
     }

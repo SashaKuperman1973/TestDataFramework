@@ -156,7 +156,7 @@ namespace TestDataFramework.ValueProvider.Concrete
             return result;
         }
 
-        public virtual DateTime GetDateTime(PastOrFuture? pastOrFuture, Func<long?, long> longIntegerGetter)
+        public virtual DateTime GetDateTime(PastOrFuture? pastOrFuture, Func<long?, long> longIntegerGetter, long? min, long? max)
         {
             StandardRandomizer.Logger.Debug($"Entering GetDateTime. pastOrFuture: {pastOrFuture}");
 
@@ -169,13 +169,13 @@ namespace TestDataFramework.ValueProvider.Concrete
             switch (pastOrFuture.Value)
             {
                 case PastOrFuture.Future:
-                    maxLong = this.dateTimeMaxValue - dateTime.Ticks;
+                    maxLong = (max ?? this.dateTimeMaxValue) - dateTime.Ticks;
                     randomLong = longIntegerGetter(maxLong);
                     result = dateTime.AddTicks(randomLong);
                     break;
 
                 case PastOrFuture.Past:
-                    maxLong = dateTime.Ticks - this.dateTimeMinValue;
+                    maxLong = dateTime.Ticks - (min ?? this.dateTimeMinValue);
                     randomLong = longIntegerGetter(maxLong);
                     result = dateTime.AddTicks(-randomLong);
                     break;

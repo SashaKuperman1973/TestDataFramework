@@ -280,7 +280,19 @@ namespace TestDataFramework.ValueGenerator
 
             PastOrFuture? pastOrFuture = pastOrFutureAttribute?.PastOrFuture;
 
-            DateTime result = this.ValueProvider.GetDateTime((PastOrFuture?)pastOrFuture, this.ValueProvider.GetLongInteger);
+            MaxAttribute maxAttribute = propertyInfo != null
+                ? this.AttributeDecorator.GetCustomAttribute<MaxAttribute>(propertyInfo)
+                : null;
+
+            long? max = maxAttribute?.Max;
+
+            MinAttribute minAttribute = propertyInfo != null
+                ? this.AttributeDecorator.GetCustomAttribute<MinAttribute>(propertyInfo)
+                : null;
+
+            long? min = minAttribute?.Min;
+
+            DateTime result = this.ValueProvider.GetDateTime((PastOrFuture?)pastOrFuture, this.ValueProvider.GetLongInteger, min, max);
 
             BaseValueGenerator.Logger.Debug("Exiting GetDateTime");
             return result;

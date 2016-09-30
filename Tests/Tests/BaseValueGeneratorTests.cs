@@ -90,7 +90,7 @@ namespace Tests.Tests
             this.randomizerMock.Setup(
                 m =>
                     m.GetDateTime(It.Is<PastOrFuture?>(pastOrFuture => pastOrFuture == null),
-                        It.Is<Func<long?, long>>(lir => lir == this.randomizerMock.Object.GetLongInteger)))
+                        It.Is<Func<long?, long>>(lir => lir == this.randomizerMock.Object.GetLongInteger), null, null))
                 .Returns(BaseValueGeneratorTests.DateTimeResult);
 
             this.randomizerMock.Setup(m => m.GetByte()).Returns(BaseValueGeneratorTests.ByteResult);
@@ -199,22 +199,22 @@ namespace Tests.Tests
                 new Tuple<string, Action>(
                     "LongIntegerWithMax",
                     () =>
-                        this.randomizerMock.Verify((
-                            m => m.GetLongInteger(It.Is<long?>(max => max == SubjectClass.Max))),
+                        this.randomizerMock.Verify(
+                            m => m.GetLongInteger(It.Is<long?>(max => max == SubjectClass.Max)),
                             Times.Once())
                     ),
                 new Tuple<string, Action>(
                     "ShortIntegerWithMax",
                     () =>
-                        this.randomizerMock.Verify((
-                            m => m.GetShortInteger(It.Is<short?>(max => max == SubjectClass.Max))),
+                        this.randomizerMock.Verify(
+                            m => m.GetShortInteger(It.Is<short?>(max => max == SubjectClass.Max)),
                             Times.Once())
                     ),
                 new Tuple<string, Action>(
                     "DateTimeWithTense",
                     () =>
-                        this.randomizerMock.Verify((
-                            m => m.GetDateTime(It.Is<PastOrFuture?>(pastOrFuture => pastOrFuture == PastOrFuture.Future), It.IsAny<Func<long?, long>>())),
+                        this.randomizerMock.Verify(
+                            m => m.GetDateTime(It.Is<PastOrFuture?>(pastOrFuture => pastOrFuture == PastOrFuture.Future), It.IsAny<Func<long?, long>>(), null, null),
                             Times.Once())
                     ),
             };

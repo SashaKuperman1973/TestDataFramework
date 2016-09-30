@@ -123,7 +123,7 @@ namespace TestDataFramework.ValueProvider.Concrete
             return result;
         }
 
-        public DateTime GetDateTime(PastOrFuture? pastOrFuture, Func<long?, long> longIntegerGetter)
+        public DateTime GetDateTime(PastOrFuture? pastOrFuture, Func<long?, long> longIntegerGetter, long? min = null, long? max = null)
         {
             AccumulatorValueProvider.Logger.Debug("Entering GetDateTime");
             DateTime result = DateTime.Now.AddDays(this.Count++);

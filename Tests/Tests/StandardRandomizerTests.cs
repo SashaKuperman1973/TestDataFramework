@@ -371,8 +371,8 @@ namespace Tests.Tests
 
             // Act
 
-            DateTime explicitPastResult = this.randomizer.GetDateTime(PastOrFuture.Past, x => ticks);
-            DateTime implicitPastResult = this.randomizer.GetDateTime(null, x => ticks);
+            DateTime explicitPastResult = this.randomizer.GetDateTime(PastOrFuture.Past, x => ticks, null, null);
+            DateTime implicitPastResult = this.randomizer.GetDateTime(null, x => ticks, null, null);
 
             // Assert
 
@@ -391,7 +391,7 @@ namespace Tests.Tests
 
             // Act
 
-            DateTime result = this.randomizer.GetDateTime(PastOrFuture.Future, x => ticks);
+            DateTime result = this.randomizer.GetDateTime(PastOrFuture.Future, x => ticks, null, null);
 
             // Assert
 

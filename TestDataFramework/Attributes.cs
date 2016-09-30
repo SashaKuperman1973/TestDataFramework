@@ -71,7 +71,27 @@ namespace TestDataFramework
             this.Max = max;
         }
 
+        public MaxAttribute(DateTime max)
+        {
+            this.Max = max.Ticks;
+        }
+
         public long Max { get; }
+    }
+
+    public class MinAttribute : Attribute
+    {
+        public MinAttribute(long min)
+        {
+            this.Min = min;
+        }
+
+        public MinAttribute(DateTime min)
+        {
+            this.Min = min.Ticks;
+        }
+
+        public long Min { get; }
     }
 
     public class PastOrFutureAttribute : Attribute

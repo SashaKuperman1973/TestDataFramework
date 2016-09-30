@@ -43,7 +43,7 @@ namespace TestDataFramework.ValueProvider.Interfaces
 
         bool GetBoolean();
 
-        DateTime GetDateTime(PastOrFuture? pastOrFuture, Func<long?, long> longIntegerGetter);
+        DateTime GetDateTime(PastOrFuture? pastOrFuture, Func<long?, long> longIntegerGetter, long? min, long? max);
 
         byte GetByte();
 

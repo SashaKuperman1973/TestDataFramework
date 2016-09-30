@@ -82,7 +82,7 @@ namespace TestDataFramework.TypeGenerator.Concrete
 
                 StandardTypeGenerator.Logger.Debug("Type has no public default constructor. Type: " + forType);
 
-                return Helper.GetDefaultValue(forType);
+                return this.valueGenerator.GetValue(null, forType);
             }
 
             object objectToFill = defaultConstructor.Invoke(null);

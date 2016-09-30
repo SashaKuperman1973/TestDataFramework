@@ -193,7 +193,7 @@ namespace TestDataFramework.Factories
 
                 );
 
-            PopulatorFactory.InstanceBugWorkAround<ITypeGenerator>(this.memoryPopulatorContainer.Container,
+            PopulatorFactory.InstanceBugWorkAround<ITypeGenerator>(this.sqlClientPopulatorContainer.Container,
                 PopulatorFactory.StandardTypeGenerator, PopulatorFactory.GetStandardTypeGenerator);
 
             PopulatorFactory.Logger.Debug("Exiting GetSqlClientPopulatorContainer");

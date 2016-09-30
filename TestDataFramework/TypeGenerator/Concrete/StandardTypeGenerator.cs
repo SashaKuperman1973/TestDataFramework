@@ -78,11 +78,11 @@ namespace TestDataFramework.TypeGenerator.Concrete
 
             if (defaultConstructor == null)
             {
-                this.complexTypeProcessingRecursionGuard.Pop();
-
                 StandardTypeGenerator.Logger.Debug("Type has no public default constructor. Type: " + forType);
 
-                return this.valueGenerator.GetValue(null, forType);
+                object value = this.valueGenerator.GetValue(null, forType);
+                this.complexTypeProcessingRecursionGuard.Pop();
+                return value;
             }
 
             object objectToFill = defaultConstructor.Invoke(null);

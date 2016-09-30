@@ -65,6 +65,9 @@ namespace TestDataFramework.HandledTypeGenerator
                 {typeof (ICollection<>), this.GetList},
                 {typeof (List<>), this.GetList},
                 {typeof (IList<>), this.GetList},
+                {typeof (Tuple<>), this.GetTuple },
+                {typeof (Tuple<,>), this.GetTuple },
+                {typeof (Tuple<,,>), this.GetTuple },
             };
 
             StandardHandledTypeGenerator.Logger.Debug("Exiting constructor");
@@ -166,7 +169,7 @@ namespace TestDataFramework.HandledTypeGenerator
 
         private object GetList(Type forType)
         {
-            StandardHandledTypeGenerator.Logger.Debug($"Entering GetDictionary. forType: {forType}");
+            StandardHandledTypeGenerator.Logger.Debug($"Entering GetList. forType: {forType}");
 
             Func<Type[], object[]> genericCollectionValueGenerator = typeArray =>
             {
@@ -178,7 +181,27 @@ namespace TestDataFramework.HandledTypeGenerator
 
             object result = this.GetGenericCollection(forType, typeof (List<>), genericCollectionValueGenerator);
 
-            StandardHandledTypeGenerator.Logger.Debug($"Exiting GetDictionary. result: {result}");
+            StandardHandledTypeGenerator.Logger.Debug($"Exiting GetList. result: {result}");
+            return result;
+        }
+
+        private object GetTuple(Type forType)
+        {
+            StandardHandledTypeGenerator.Logger.Debug($"Entering GetTuple. forType: {forType}");
+
+            Type[] genericArgumentTypes = forType.GetGenericArguments();
+            ConstructorInfo constructor = forType.GetConstructor(genericArgumentTypes);
+
+            var argumentValues = new object[genericArgumentTypes.Length];
+
+            for (int i = 0; i < argumentValues.Length; i++)
+            {
+                argumentValues[i] = this.valueGenerator.GetValue(null, genericArgumentTypes[i]);
+            }
+
+            object result = constructor.Invoke(argumentValues);
+
+            StandardHandledTypeGenerator.Logger.Debug($"Exiting GetTuple. result: {result}");
             return result;
         }
 

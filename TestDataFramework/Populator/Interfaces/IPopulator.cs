@@ -29,9 +29,9 @@ namespace TestDataFramework.Populator.Interfaces
     {
         void Bind();
 
-        IList<RecordReference<T>> Add<T>(int copies, RecordReference primaryRecordReference = null) where T : new();
+        IList<RecordReference<T>> Add<T>(int copies, RecordReference primaryRecordReference = null);
 
-        RecordReference<T> Add<T>(RecordReference primaryRecordReference = null) where T : new();
+        RecordReference<T> Add<T>(RecordReference primaryRecordReference = null);
 
         BasePopulator.Decorator<T> DecorateType<T>();
 

@@ -62,7 +62,7 @@ namespace TestDataFramework.Populator.Concrete
             this.handledTypeGenerator.HandledTypeValueGetterDictionary.Add(type, valueGetter);
         }
 
-        public virtual IList<RecordReference<T>> Add<T>(int copies, RecordReference primaryRecordReference = null) where T : new()
+        public virtual IList<RecordReference<T>> Add<T>(int copies, RecordReference primaryRecordReference = null)
         {
             StandardPopulator.Logger.Debug($"Entering Add. T: {typeof(T)}, copies: {copies}, primaryRecordReference: {primaryRecordReference}");
 
@@ -77,7 +77,7 @@ namespace TestDataFramework.Populator.Concrete
             return result;
         }
 
-        public virtual RecordReference<T> Add<T>(RecordReference primaryRecordReference = null) where T : new()
+        public virtual RecordReference<T> Add<T>(RecordReference primaryRecordReference = null)
         {
             StandardPopulator.Logger.Debug($"Entering Add. T: {typeof(T)}, primaryRecordReference: {primaryRecordReference}");
 

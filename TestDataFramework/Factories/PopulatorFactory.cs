@@ -270,7 +270,7 @@ namespace TestDataFramework.Factories
             #endregion Delegates
 
                 Component.For<IPopulator>().ImplementedBy<StandardPopulator>()
-                    .DependsOn(ServiceOverride.ForKey<ITypeGenerator>().Eq(StandardTypeGenerator))
+                    .DependsOn(ServiceOverride.ForKey<ITypeGenerator>().Eq(PopulatorFactory.StandardTypeGenerator))
                     .DependsOn(ServiceOverride.ForKey<IHandledTypeGenerator>().Eq(standardHandledTypeGenerator)),
 
                 Component.For<ITypeGenerator>()
@@ -281,7 +281,7 @@ namespace TestDataFramework.Factories
 
                 Component.For<Func<IArrayRandomizer>>()
                     .Instance(
-                        () => commonContainer.Resolve<IArrayRandomizer>(PopulatorFactory.StandardValueGenerator)),
+                        () => commonContainer.Resolve<IArrayRandomizer>()),
 
                 Component.For<Random>().ImplementedBy<Random>(),
 

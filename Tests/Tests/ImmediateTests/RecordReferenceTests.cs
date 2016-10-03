@@ -100,6 +100,7 @@ namespace Tests.Tests.ImmediateTests
 
             const int expectedInt = 5;
             const string expectedString = "ABCD";
+            int[] expectedArray = new[] {1, 2};
 
             var typeGeneratorMock = new Mock<ITypeGenerator>();
 
@@ -114,16 +115,21 @@ namespace Tests.Tests.ImmediateTests
                     {
                         d[typeof (PrimaryTable).GetProperty("Integer")](testRecord);
                         d[typeof (PrimaryTable).GetProperty("Text")](testRecord);
+                        d[typeof(PrimaryTable).GetProperty("Array")](testRecord);
                     });
             // Act
 
-            recordReference.Set(r => r.Integer, expectedInt).Set(r => r.Text, expectedString);
+            recordReference.Set(r => r.Integer, expectedInt)
+                .Set(r => r.Text, expectedString)
+                .Set(r => r.Array, () => expectedArray);
+
             recordReference.Populate();
 
             // Assert
 
             Assert.AreEqual(expectedInt, testRecord.Integer);
             Assert.AreEqual(expectedString, testRecord.Text);
+            Assert.AreEqual(expectedArray, testRecord.Array);
         }
 
         [TestMethod]

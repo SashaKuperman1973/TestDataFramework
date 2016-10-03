@@ -29,6 +29,8 @@ namespace Tests.TestModels
         public string Text { get; set; }
 
         public int Integer { get; set; }
+
+        public int[] Array { get; set; }
     }
 
     public class ForeignTable

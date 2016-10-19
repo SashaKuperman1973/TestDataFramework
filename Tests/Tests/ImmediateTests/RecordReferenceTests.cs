@@ -132,6 +132,47 @@ namespace Tests.Tests.ImmediateTests
             Assert.AreEqual(expectedArray, testRecord.Array);
         }
 
+        // SetRange returns random results so there is no deterministic way to test results.
+        // This test is for manual inspection.
+        [TestMethod]
+        public void SetRange_Test()
+        {
+            // Arrange
+
+            var guids = new Guid[5];
+            for (int j = 0; j < guids.Length; j++)
+            {
+                guids[j] = Guid.NewGuid();
+            }
+
+            for (int i = 0; i < 10; i++)
+            {
+
+                var typeGeneratorMock = new Mock<ITypeGenerator>();
+
+                var recordReference = new RecordReference<PrimaryTable>(typeGeneratorMock.Object,
+                    this.attributeDecorator);
+
+                var testRecord1 = new PrimaryTable();
+                var testRecord2 = new PrimaryTable();
+
+                typeGeneratorMock.Setup(
+                    m => m.GetObject<PrimaryTable>(It.IsAny<ConcurrentDictionary<PropertyInfo, Action<PrimaryTable>>>()))
+                    .Callback<ConcurrentDictionary<PropertyInfo, Action<PrimaryTable>>>(
+                        d =>
+                        {
+                            d[typeof(PrimaryTable).GetProperty("Guid")](testRecord1);
+                            d[typeof(PrimaryTable).GetProperty("Guid")](testRecord2);
+                        });
+
+                // Act
+
+                recordReference.SetRange(r => r.Guid, guids);
+
+                recordReference.Populate();
+            }
+        }
+
         [TestMethod]
         public void Populate_Test()
         {

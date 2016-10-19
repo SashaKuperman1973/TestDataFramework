@@ -17,6 +17,7 @@
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using System;
 using TestDataFramework;
 
 namespace Tests.TestModels
@@ -31,6 +32,8 @@ namespace Tests.TestModels
         public int Integer { get; set; }
 
         public int[] Array { get; set; }
+
+        public Guid Guid { get; set; }
     }
 
     public class ForeignTable

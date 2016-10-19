@@ -19,6 +19,8 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using log4net;
@@ -100,6 +102,51 @@ namespace TestDataFramework.Populator.Concrete
 
             RecordReference<T>.Logger.Debug("Exiting Set(fieldExpression, valueFactory)");
             return this;
+        }
+
+        public virtual RecordReference<T> SetRange<TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression,
+            IEnumerable<TPropertyType> range)
+        {
+            RecordReference<T>.Logger.Debug(
+                $"Entering SetRange(fieldExpression, range). TPropertyType: {typeof(TPropertyType)}, fieldExpression: {fieldExpression}, valueFactory: {range}");
+
+            RecordReference<T> result = this.SetRange(fieldExpression, () => range);
+
+            RecordReference<T>.Logger.Debug("Exiting Set(fieldExpression, value)");
+            return result;
+        }
+
+        public virtual RecordReference<T> SetRange<TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression,
+            Func<IEnumerable<TPropertyType>> rangeFactory)
+        {
+            RecordReference<T>.Logger.Debug(
+                $"Entering SetRange(fieldExpression, rangeFactory). TPropertyType: {typeof(TPropertyType)}, fieldExpression: {fieldExpression}, valueFactory: {rangeFactory}");
+
+            var propertyInfo = Helper.ValidateFieldExpression(fieldExpression) as PropertyInfo;
+
+            if (propertyInfo == null)
+            {
+                throw new SetExpressionException(Messages.MustBePropertyAccess);
+            }
+
+            Action<T> setter = @object => propertyInfo.SetValue(@object, RecordReference<T>.ChooseElementInRange(rangeFactory()));
+
+            this.explicitProperySetters.AddOrUpdate(propertyInfo, setter, (pi, lambda) =>
+            {
+                RecordReference<T>.Logger.Debug("Updatng explicitProperySetters dictionary");
+                return setter;
+            });
+
+            RecordReference<T>.Logger.Debug("Exiting SetRange(fieldExpression, rangeFactory)");
+            return this;
+        }
+
+        private static TPropertyType ChooseElementInRange<TPropertyType>(IEnumerable<TPropertyType> elements)
+        {
+            elements = elements.ToList();
+            int index = new Random().Next(elements.Count());
+            TPropertyType result = elements.ElementAt(index);
+            return result;
         }
     }
 }

@@ -29,7 +29,7 @@ using TestDataFramework.Populator.Interfaces;
 
 namespace CommonIntegrationTests.Tests
 {
-    [Ignore]
+    //[Ignore]
     [TestClass]
     public class MemoryTest
     {
@@ -93,6 +93,26 @@ namespace CommonIntegrationTests.Tests
             {
                 Console.WriteLine(item.Key);
             }
+        }
+
+        [TestMethod]
+        public void GauranteedValueTest()
+        {
+            IPopulator populator = this.factory.CreateMemoryPopulator();
+
+            IList<RecordReference<SubjectClass>> subjectReference = populator.Add<SubjectClass>(2);
+            OperableList<ForeignSubjectClass> foreignReference =
+                populator.Add<ForeignSubjectClass>(20, subjectReference[1]).Guarantee(new[]
+                {
+                    new ForeignSubjectClass {SecondInteger = 777},
+                    new ForeignSubjectClass {SecondInteger = 888},
+                    new ForeignSubjectClass {SecondInteger = 999},
+                }, 50);
+
+            populator.Bind();
+
+            int i = 1;
+            foreignReference.ToList().ForEach(r => Console.WriteLine(i++ + ".\r\n" + r.RecordObject.ToString()));
         }
     }
 }

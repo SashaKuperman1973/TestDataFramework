@@ -178,4 +178,11 @@ namespace TestDataFramework.Exceptions
         {            
         }
     }
+
+    public class TooFewReferencesForValueGuaranteeException : ApplicationException
+    {
+        public TooFewReferencesForValueGuaranteeException() : base(Messages.TooFewReferencesForValueGuarantee)
+        {
+        }
+    }
 }

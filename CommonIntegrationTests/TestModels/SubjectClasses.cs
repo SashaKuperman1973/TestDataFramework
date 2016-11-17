@@ -108,6 +108,17 @@ namespace CommonIntegrationTests.TestModels
         public Guid ForeignGuidKey { get; set; }
 
         public int SecondInteger { get; set; }
+
+        public override string ToString()
+        {
+            string result =
+                $"Key \t\t\t{this.Key}\r\n" +
+                $"ForeignIntKey \t{this.ForeignIntKey}\r\n" +
+                $"ForeignGuidKey \t{this.ForeignGuidKey}\r\n" +
+                $"SecondInteger \t{this.SecondInteger}\r\n";
+
+            return result;
+        }
     }
 
     public class InfiniteRecursiveClass1

@@ -113,5 +113,8 @@ namespace TestDataFramework.Exceptions
 
         public const string ForeignKeyRecordWithNoPrimaryKeyRecord =
             "Foreign key in record found without corresponding record/primary key assigned. Foreign type: {0}, Property name: {1}";
+
+        public const string TooFewReferencesForValueGuarantee =
+            "Number of guaranteed vlaues would exceed number of given refereneces";
     }
 }

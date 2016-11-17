@@ -19,6 +19,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Castle.Components.DictionaryAdapter;
 using log4net;
 using TestDataFramework.AttributeDecorator;
 using TestDataFramework.HandledTypeGenerator;
@@ -40,6 +42,7 @@ namespace TestDataFramework.Populator.Concrete
         public IValueGenerator ValueGenerator { get; }
 
         private readonly List<RecordReference> recordReferences = new List<RecordReference>();
+        private readonly List<OperableList> setOfLists = new List<OperableList>();
 
         public StandardPopulator(ITypeGenerator typeGenerator, IPersistence persistence,
             IAttributeDecorator attributeDecorator, IHandledTypeGenerator handledTypeGenerator, IValueGenerator valueGenerator)
@@ -62,11 +65,12 @@ namespace TestDataFramework.Populator.Concrete
             this.handledTypeGenerator.HandledTypeValueGetterDictionary.Add(type, valueGetter);
         }
 
-        public virtual IList<RecordReference<T>> Add<T>(int copies, RecordReference primaryRecordReference = null)
+        public virtual OperableList<T> Add<T>(int copies, RecordReference primaryRecordReference = null)
         {
             StandardPopulator.Logger.Debug($"Entering Add. T: {typeof(T)}, copies: {copies}, primaryRecordReference: {primaryRecordReference}");
 
-            var result = new List<RecordReference<T>>();
+            var result = new OperableList<T>();
+            this.setOfLists.Add(result);
 
             for (int i = 0; i < copies; i++)
             {
@@ -100,8 +104,18 @@ namespace TestDataFramework.Populator.Concrete
         {
             StandardPopulator.Logger.Debug("Entering Populate");
 
+            foreach (OperableList list in this.setOfLists)
+            {
+                list.Bind();
+            }
+
             foreach (RecordReference recordReference in this.recordReferences)
             {
+                if (recordReference.IsAPrePopulatedValue)
+                {
+                    continue;
+                }
+
                 recordReference.Populate();
             }
 

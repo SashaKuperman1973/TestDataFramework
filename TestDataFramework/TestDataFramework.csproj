@@ -88,10 +88,12 @@
     <Compile Include="Helpers\Interfaces\IRandomSymbolStringGenerator.cs" />
     <Compile Include="Helpers\LargeInteger.cs" />
     <Compile Include="Helpers\TableName.cs" />
+    <Compile Include="ListOperations\ValueGuaranteePopulator.cs" />
     <Compile Include="Persistence\Interfaces\IPersistence.cs" />
     <Compile Include="Persistence\Concrete\MemoryPersistence.cs" />
     <Compile Include="Persistence\Concrete\SqlClientPersistence.cs" />
     <Compile Include="Populator\BasePopulator.cs" />
+    <Compile Include="Populator\Concrete\OperableList.cs" />
     <Compile Include="Populator\Interfaces\IPopulator.cs" />
     <Compile Include="Populator\RecordReference.cs" />
     <Compile Include="Populator\Concrete\GenericRecordReference.cs" />

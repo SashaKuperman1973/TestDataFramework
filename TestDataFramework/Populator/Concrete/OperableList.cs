@@ -1,23 +1,115 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TestDataFramework.ListOperations;
 
 namespace TestDataFramework.Populator.Concrete
 {
-    public class OperableList<T> : List<T>
+    public abstract class OperableList
     {
-        private IEnumerable<T> guaranteed;
+        public abstract void Bind();
+    }
 
-        public virtual OperableList<T> Guarantee(IEnumerable<T> guaranteed)
+    public class OperableList<T> : OperableList, IList<RecordReference<T>>
+    {
+        private readonly List<RecordReference<T>> internalList;
+        private IEnumerable<T> guaranteedValues;
+        private readonly ValueGuaranteePopulator valueGuaranteePopulator;
+        private int frequencyPercentage;
+
+        public OperableList(ValueGuaranteePopulator valueGuaranteePopulator = null)
         {
-            this.guaranteed = guaranteed;
+            this.internalList = new List<RecordReference<T>>();
+            this.valueGuaranteePopulator = valueGuaranteePopulator ?? new ValueGuaranteePopulator();
+        }
+
+        public OperableList(IEnumerable<RecordReference<T>> input, ValueGuaranteePopulator valueGuaranteePopulator = null)
+        {            
+            this.internalList = new List<RecordReference<T>>(input);
+            this.valueGuaranteePopulator = valueGuaranteePopulator ?? new ValueGuaranteePopulator();
+        }
+
+        public virtual OperableList<T> Guarantee(IEnumerable<T> guaranteedValues, int frequencyPercentage = 10)
+        {
+            this.guaranteedValues = guaranteedValues;
+            this.frequencyPercentage = frequencyPercentage;
             return this;
         }
 
-        public virtual IEnumerable<T> Bind()
+        public override void Bind()
         {
+            if (this.guaranteedValues == null)
+            {
+                return;
+            }
+
+            this.valueGuaranteePopulator.Bind(this, this.guaranteedValues, this.frequencyPercentage);
         }
+
+        #region IList<> members
+
+        public IEnumerator<RecordReference<T>> GetEnumerator()
+        {
+            return this.internalList.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
+
+        public void Add(RecordReference<T> item)
+        {
+            this.internalList.Add(item);
+
+        }
+
+        public void Clear()
+        {
+            this.internalList.Clear();
+        }
+
+        public bool Contains(RecordReference<T> item)
+        {
+            return this.internalList.Contains(item);
+        }
+
+        public void CopyTo(RecordReference<T>[] array, int arrayIndex)
+        {
+            this.internalList.CopyTo(array, arrayIndex);
+        }
+
+        public bool Remove(RecordReference<T> item)
+        {
+            return this.internalList.Remove(item);
+        }
+
+        public int Count => this.internalList.Count;
+        public bool IsReadOnly => ((IList) this.internalList).IsReadOnly;
+        public int IndexOf(RecordReference<T> item)
+        {
+            return this.internalList.IndexOf(item);
+        }
+
+        public void Insert(int index, RecordReference<T> item)
+        {
+            this.internalList.Insert(index, item);
+        }
+
+        public void RemoveAt(int index)
+        {
+            this.internalList.RemoveAt(index);
+        }
+
+        public RecordReference<T> this[int index]
+        {
+            get { return this.internalList[index]; }
+            set { this.internalList[index] = value; }
+        }
+
+        #endregion IList<> members
     }
 }

@@ -116,5 +116,8 @@ namespace TestDataFramework.Exceptions
 
         public const string TooFewReferencesForValueGuarantee =
             "Number of guaranteed vlaues would exceed number of given refereneces";
+
+        public const string NeitherPercentageNorTotalGiven =
+            "Internal error: Neither a percentage or a fix value give for gauranteed value quantity";
     }
 }

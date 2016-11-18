@@ -11,24 +11,42 @@ namespace TestDataFramework.ListOperations
 {
     public class ValueGuaranteePopulator
     {
-        public virtual void Bind<T>(OperableList<T> references, IEnumerable<T> guaranteedValues,
-            int frequencyPercentage)
+        public virtual void Bind<T>(OperableList<T> references, List<GuaranteedValues<T>> guaranteedValuesList)
         {
-            guaranteedValues = guaranteedValues.ToList();
-
-            int referencesPerValueQuantity =
-                (int) ((float) references.Count*frequencyPercentage/guaranteedValues.Count()/100f);
-
-            if (referencesPerValueQuantity == 0)
+            if (
+                guaranteedValuesList.Any(
+                    valueSet => !valueSet.FrequencyPercentage.HasValue && !valueSet.TotalFrequency.HasValue))
             {
-                referencesPerValueQuantity = 1;
+                throw new ValueGuaranteeException(Messages.NeitherPercentageNorTotalGiven);
             }
 
-            int totalReferencesQuantity = referencesPerValueQuantity*guaranteedValues.Count();
+            List<Tuple<IEnumerable<T>, int>> valuesPerPercentageSet =
+                guaranteedValuesList.Where(valueSet => valueSet.FrequencyPercentage.HasValue)
+                    .Select(
+                        valueSet =>
+                        {
+                            int quantity = (int)
+                                ((float) references.Count*valueSet.FrequencyPercentage.Value/valueSet.Values.Count()/
+                                 100f);
 
-            if (totalReferencesQuantity > references.Count)
+                            quantity = quantity >= 1 ? quantity : 1;
+
+                            var percentageValuesResult = new Tuple<IEnumerable<T>, int>(valueSet.Values, quantity);
+
+                            return percentageValuesResult;
+                        }).ToList();
+
+            List<Tuple<IEnumerable<T>, int>> valuesPerTotalSet =
+                guaranteedValuesList.Where(valueSet => valueSet.TotalFrequency.HasValue)
+                    .Select(valueSet => new Tuple<IEnumerable<T>, int>(valueSet.Values, valueSet.TotalFrequency.Value))
+                    .ToList();
+
+            int totalQuantityOfGuaranteedValues =
+                valuesPerPercentageSet.Concat(valuesPerTotalSet).Sum(tuple => tuple.Item2);
+
+            if (totalQuantityOfGuaranteedValues > references.Count)
             {
-                throw new TooFewReferencesForValueGuaranteeException();
+                throw new ValueGuaranteeException(Messages.TooFewReferencesForValueGuarantee);
             }
 
             var workingList = new OperableList<T>(references);

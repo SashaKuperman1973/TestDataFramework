@@ -102,7 +102,7 @@ namespace CommonIntegrationTests.Tests
 
             IList<RecordReference<SubjectClass>> subjectReference = populator.Add<SubjectClass>(2);
             OperableList<ForeignSubjectClass> foreignReference =
-                populator.Add<ForeignSubjectClass>(20, subjectReference[1]).Guarantee(new[]
+                populator.Add<ForeignSubjectClass>(20, subjectReference[1]).GuaranteeByPercentageOfTotal(new[]
                 {
                     new ForeignSubjectClass {SecondInteger = 777},
                     new ForeignSubjectClass {SecondInteger = 888},

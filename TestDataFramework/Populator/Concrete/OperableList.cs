@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Castle.Components.DictionaryAdapter;
 using TestDataFramework.ListOperations;
 
 namespace TestDataFramework.Populator.Concrete
@@ -13,12 +14,19 @@ namespace TestDataFramework.Populator.Concrete
         public abstract void Bind();
     }
 
+    public class GuaranteedValues<T>
+    {
+        public IEnumerable<T> Values { get; set; }
+        public int? FrequencyPercentage { get; set; }
+        public int? TotalFrequency { get; set; }
+    }
+
     public class OperableList<T> : OperableList, IList<RecordReference<T>>
     {
+        private readonly List<GuaranteedValues<T>> guaranteedValues = new List<GuaranteedValues<T>>();
+
         private readonly List<RecordReference<T>> internalList;
-        private IEnumerable<T> guaranteedValues;
         private readonly ValueGuaranteePopulator valueGuaranteePopulator;
-        private int frequencyPercentage;
 
         public OperableList(ValueGuaranteePopulator valueGuaranteePopulator = null)
         {
@@ -32,10 +40,14 @@ namespace TestDataFramework.Populator.Concrete
             this.valueGuaranteePopulator = valueGuaranteePopulator ?? new ValueGuaranteePopulator();
         }
 
-        public virtual OperableList<T> Guarantee(IEnumerable<T> guaranteedValues, int frequencyPercentage = 10)
+        public virtual OperableList<T> GuaranteeByPercentageOfTotal(IEnumerable<T> guaranteedValues, int frequencyPercentage = 10)
         {
-            this.guaranteedValues = guaranteedValues;
-            this.frequencyPercentage = frequencyPercentage;
+            this.guaranteedValues.Add(new GuaranteedValues<T>
+            {
+               FrequencyPercentage = frequencyPercentage,
+               Values = guaranteedValues,
+            });
+
             return this;
         }
 
@@ -46,7 +58,7 @@ namespace TestDataFramework.Populator.Concrete
                 return;
             }
 
-            this.valueGuaranteePopulator.Bind(this, this.guaranteedValues, this.frequencyPercentage);
+            this.valueGuaranteePopulator.Bind(this, this.guaranteedValues);
         }
 
         #region IList<> members

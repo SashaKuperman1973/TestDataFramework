@@ -34,6 +34,7 @@ using TestDataFramework.HandledTypeGenerator;
 using TestDataFramework.Helpers;
 using TestDataFramework.Helpers.Concrete;
 using TestDataFramework.Helpers.Interfaces;
+using TestDataFramework.ListOperations;
 using TestDataFramework.Persistence.Concrete;
 using TestDataFramework.Persistence.Interfaces;
 using TestDataFramework.Populator.Concrete;
@@ -312,6 +313,8 @@ namespace TestDataFramework.Factories
                 Component.For<IRandomSymbolStringGenerator>().ImplementedBy<RandomSymbolStringGenerator>(),
 
                 Component.For<TableTypeCache>().ImplementedBy<TableTypeCache>(),
+
+                Component.For<ValueGuaranteePopulator>().ImplementedBy<ValueGuaranteePopulator>(),
 
 
             #endregion Common Region

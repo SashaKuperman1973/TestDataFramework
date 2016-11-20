@@ -39,7 +39,7 @@ namespace Tests
             return columnsSymbol.Select(fkc => new Column {Name = fkc.ColumnName, Value = fkc.Value});
         }
 
-        public static void ExceptionTest(Action getValue, Type exceptionType, string message)
+        public static void ExceptionTest(Action action, Type exceptionType, string message)
         {
             // Act
 
@@ -47,7 +47,7 @@ namespace Tests
 
             try
             {
-                getValue();
+                action();
             }
             catch (Exception ex)
             {

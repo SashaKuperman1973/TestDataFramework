@@ -229,7 +229,7 @@ namespace Tests.Tests.ImmediateTests
 
             const int expected = 8;
 
-            var returnValue = new object[] { "Key", expected };
+            var returnValue = new object[] { "Key", expected, "Guid", Guid.NewGuid() };
 
             // Act
 
@@ -239,7 +239,7 @@ namespace Tests.Tests.ImmediateTests
             // Assert
 
             Assert.AreEqual(expected, record.Key);
-            Assert.AreEqual(2, streamReadPointer.Value);
+            Assert.AreEqual(4, streamReadPointer.Value);
         }
 
         [TestMethod]

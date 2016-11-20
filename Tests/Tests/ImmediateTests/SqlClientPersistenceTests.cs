@@ -17,6 +17,7 @@
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using log4net.Config;
@@ -72,7 +73,7 @@ namespace Tests.Tests.ImmediateTests
             this.writePrimitivesMock.Setup(m => m.Insert(null, It.IsAny<string>(), tableName, It.IsAny<IEnumerable<Column>>()))
                 .Callback<string, string, string, IEnumerable<Column>>((cat, s, t, col) => primaryTableColumns = col.ToList());
 
-            this.writePrimitivesMock.Setup(m => m.Execute()).Returns(new object[] {"Key", 0});
+            this.writePrimitivesMock.Setup(m => m.Execute()).Returns(new object[] {"Key", 0, "Guid", Guid.NewGuid()});
 
             // Act
 
@@ -89,7 +90,7 @@ namespace Tests.Tests.ImmediateTests
                 Times.Once);
 
             Assert.IsNotNull(primaryTableColumns);
-            Assert.AreEqual(2, primaryTableColumns.Count);
+            Assert.AreEqual(4, primaryTableColumns.Count);
 
             Assert.AreEqual("Text", primaryTableColumns[0].Name);
             Assert.AreEqual(primaryTable.Text, primaryTableColumns[0].Value);
@@ -120,7 +121,7 @@ namespace Tests.Tests.ImmediateTests
 
             this.writePrimitivesMock.Setup(m => m.SelectIdentity(It.IsAny<string>())).Returns(new Variable(null));
 
-            this.writePrimitivesMock.Setup(m => m.Execute()).Returns(new object[] {"Key", 0, "Key", 0});
+            this.writePrimitivesMock.Setup(m => m.Execute()).Returns(new object[] {"Key", 0, "Guid", Guid.NewGuid(), "Key", 0});
 
             // Act
 
@@ -185,7 +186,7 @@ namespace Tests.Tests.ImmediateTests
 
             foreignRecordReference.AddPrimaryRecordReference(primaryRecordReference);
 
-            var expected = new object[] {"Key", 1, "Key", 2};
+            var expected = new object[] {"Key", 1, "Guid",  Guid.NewGuid(), "Key", 2};
 
             this.writePrimitivesMock.Setup(m => m.Execute()).Returns(expected);
             
@@ -200,7 +201,7 @@ namespace Tests.Tests.ImmediateTests
             // Assert
 
             Assert.AreEqual(expected[1], primaryTable.Key);
-            Assert.AreEqual(expected[3], foreignTable.Key);
+            Assert.AreEqual(expected[5], foreignTable.Key);
         }
     }
 }

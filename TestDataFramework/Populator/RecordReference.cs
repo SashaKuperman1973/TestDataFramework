@@ -47,11 +47,11 @@ namespace TestDataFramework.Populator
 
         public virtual object RecordObject { get; protected internal set; }
 
+        public virtual Func<object> PreBoundObject { get; protected internal set; }
+
         public virtual Type RecordType { get; protected set; }
 
         public readonly IEnumerable<RecordReference> PrimaryKeyReferences = new List<RecordReference>();
-
-        public virtual bool IsAPrePopulatedValue { get; protected internal set; }
 
         #endregion Public fields/properties
 

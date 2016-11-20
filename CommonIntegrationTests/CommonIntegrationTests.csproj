@@ -59,6 +59,10 @@
       <Project>{ad19d50d-adec-40be-8142-256e3a24d8f8}</Project>
       <Name>TestDataFramework</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Tests\Tests.csproj">
+      <Project>{fe195f47-2bb4-4fcc-99c6-21fa3b33e196}</Project>
+      <Name>Tests</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />

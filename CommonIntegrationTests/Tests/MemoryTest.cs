@@ -23,6 +23,7 @@ using System.Linq;
 using CommonIntegrationTests.TestModels;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestDataFramework.Exceptions;
 using TestDataFramework.Factories;
 using TestDataFramework.Populator.Concrete;
 using TestDataFramework.Populator.Interfaces;
@@ -102,17 +103,91 @@ namespace CommonIntegrationTests.Tests
 
             IList<RecordReference<SubjectClass>> subjectReference = populator.Add<SubjectClass>(2);
             OperableList<ForeignSubjectClass> foreignReference =
-                populator.Add<ForeignSubjectClass>(20, subjectReference[1]).GuaranteeByPercentageOfTotal(new[]
-                {
-                    new ForeignSubjectClass {SecondInteger = 777},
-                    new ForeignSubjectClass {SecondInteger = 888},
-                    new ForeignSubjectClass {SecondInteger = 999},
-                }, 50);
+                populator.Add<ForeignSubjectClass>(20, subjectReference[1])
+                    .GuaranteeByPercentageOfTotal(new object[]
+                    {
+                        new ForeignSubjectClass {SecondInteger = 777},
+                        (Func<ForeignSubjectClass>)
+                        (() => new ForeignSubjectClass {SecondInteger = subjectReference[1].RecordObject.IntegerWithMax}),
+                        new ForeignSubjectClass {SecondInteger = 999},
+                    }, 50)
+                    .GuaranteeByFixedQuantity(new object[]
+                    {
+                        new ForeignSubjectClass {SecondInteger = 111},
+                        (Func<ForeignSubjectClass>)
+                        (() => new ForeignSubjectClass {SecondInteger = subjectReference[0].RecordObject.IntegerWithMax}),
+                        new ForeignSubjectClass {SecondInteger = 222},
+                    }, 5);
 
             populator.Bind();
 
+            Console.WriteLine("SubjectClass[1].IntegerWithMax: " + subjectReference[1].RecordObject.IntegerWithMax);
+            Console.WriteLine("SubjectClass[0].IntegerWithMax: " + subjectReference[0].RecordObject.IntegerWithMax);
             int i = 1;
             foreignReference.ToList().ForEach(r => Console.WriteLine(i++ + ".\r\n" + r.RecordObject.ToString()));
+        }
+
+        [TestMethod]
+        public void GauranteedValue_FixedQuantity_Too_Large()
+        {
+            IPopulator populator = this.factory.CreateMemoryPopulator();
+
+            OperableList<ForeignSubjectClass> foreignReference =
+                populator.Add<ForeignSubjectClass>(20)
+                    .GuaranteeByFixedQuantity(new object[]
+                    {
+                        new ForeignSubjectClass {SecondInteger = 111},
+                        (Func<ForeignSubjectClass>)
+                        (() => new ForeignSubjectClass {SecondInteger = 222}),
+                        new ForeignSubjectClass {SecondInteger = 333},
+                    }, 21);
+
+            global::Tests.Helpers.ExceptionTest(() => populator.Bind(), typeof(ValueGuaranteeException),
+                Messages.TooFewReferencesForValueGuarantee);
+        }
+
+        [TestMethod]
+        public void GauranteedValue_Percentage_Too_Large()
+        {
+            IPopulator populator = this.factory.CreateMemoryPopulator();
+
+            OperableList<ForeignSubjectClass> foreignReference =
+                populator.Add<ForeignSubjectClass>(20)
+                    .GuaranteeByPercentageOfTotal(new object[]
+                    {
+                        new ForeignSubjectClass {SecondInteger = 111},
+                        (Func<ForeignSubjectClass>)
+                        (() => new ForeignSubjectClass {SecondInteger = 222}),
+                        new ForeignSubjectClass {SecondInteger = 333},
+                    }, 105);
+
+            global::Tests.Helpers.ExceptionTest(() => populator.Bind(), typeof(ValueGuaranteeException),
+                Messages.TooFewReferencesForValueGuarantee);
+        }
+
+        [TestMethod]
+        public void GauranteedValue_FixedQuantity_Plus_Percentage_Too_Large()
+        {
+            IPopulator populator = this.factory.CreateMemoryPopulator();
+
+                populator.Add<ForeignSubjectClass>(20)
+                    .GuaranteeByPercentageOfTotal(new object[]
+                    {
+                        new ForeignSubjectClass {SecondInteger = 777},
+                        (Func<ForeignSubjectClass>)
+                        (() => new ForeignSubjectClass {SecondInteger = 888}),
+                        new ForeignSubjectClass {SecondInteger = 999},
+                    }, 80)
+                    .GuaranteeByFixedQuantity(new object[]
+                    {
+                        new ForeignSubjectClass {SecondInteger = 111},
+                        (Func<ForeignSubjectClass>)
+                        (() => new ForeignSubjectClass {SecondInteger = 222}),
+                        new ForeignSubjectClass {SecondInteger = 333},
+                    }, 5);
+
+            global::Tests.Helpers.ExceptionTest(() => populator.Bind(), typeof(ValueGuaranteeException),
+                Messages.TooFewReferencesForValueGuarantee);
         }
     }
 }

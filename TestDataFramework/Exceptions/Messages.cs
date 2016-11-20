@@ -115,9 +115,12 @@ namespace TestDataFramework.Exceptions
             "Foreign key in record found without corresponding record/primary key assigned. Foreign type: {0}, Property name: {1}";
 
         public const string TooFewReferencesForValueGuarantee =
-            "Number of guaranteed vlaues would exceed number of given refereneces";
+            "Number of guaranteed values would exceed number of given refereneces";
 
         public const string NeitherPercentageNorTotalGiven =
-            "Internal error: Neither a percentage or a fix value give for gauranteed value quantity";
+            "Internal error: Neither a percentage or a fix value given for gauranteed value quantity";
+
+        public const string GuaranteedTypeNotOfListType =
+            "Guaranteed input type not of collection type. Expected type: {0}, Actual type: {1}, Value: {2}";
     }
 }

@@ -16,7 +16,7 @@ namespace TestDataFramework.Populator.Concrete
 
     public class GuaranteedValues<T>
     {
-        public IEnumerable<T> Values { get; set; }
+        public IEnumerable<object> Values { get; set; }
         public int? FrequencyPercentage { get; set; }
         public int? TotalFrequency { get; set; }
     }
@@ -28,24 +28,40 @@ namespace TestDataFramework.Populator.Concrete
         private readonly List<RecordReference<T>> internalList;
         private readonly ValueGuaranteePopulator valueGuaranteePopulator;
 
-        public OperableList(ValueGuaranteePopulator valueGuaranteePopulator = null)
+        public OperableList(ValueGuaranteePopulator valueGuaranteePopulator)
         {
             this.internalList = new List<RecordReference<T>>();
-            this.valueGuaranteePopulator = valueGuaranteePopulator ?? new ValueGuaranteePopulator();
+            this.valueGuaranteePopulator = valueGuaranteePopulator;
         }
 
-        public OperableList(IEnumerable<RecordReference<T>> input, ValueGuaranteePopulator valueGuaranteePopulator = null)
+        public OperableList(IEnumerable<RecordReference<T>> input, ValueGuaranteePopulator valueGuaranteePopulator)
         {            
             this.internalList = new List<RecordReference<T>>(input);
-            this.valueGuaranteePopulator = valueGuaranteePopulator ?? new ValueGuaranteePopulator();
+            this.valueGuaranteePopulator = valueGuaranteePopulator;
         }
 
-        public virtual OperableList<T> GuaranteeByPercentageOfTotal(IEnumerable<T> guaranteedValues, int frequencyPercentage = 10)
+        public virtual OperableList<T> GuaranteeByPercentageOfTotal(IEnumerable<object> guaranteedValues, int frequencyPercentage = 10)
         {
             this.guaranteedValues.Add(new GuaranteedValues<T>
             {
-               FrequencyPercentage = frequencyPercentage,
-               Values = guaranteedValues,
+                FrequencyPercentage = frequencyPercentage,
+                Values = guaranteedValues,
+            });
+
+            return this;
+        }
+
+        public virtual OperableList<T> GuaranteeByFixedQuantity(IEnumerable<object> guaranteedValues, int fixedQuantity = 0)
+        {
+            if (fixedQuantity == 0)
+            {
+                fixedQuantity = guaranteedValues.Count();
+            }
+
+            this.guaranteedValues.Add(new GuaranteedValues<T>
+            {
+                TotalFrequency = fixedQuantity,
+                Values = guaranteedValues,
             });
 
             return this;
@@ -53,7 +69,7 @@ namespace TestDataFramework.Populator.Concrete
 
         public override void Bind()
         {
-            if (this.guaranteedValues == null)
+            if (!this.guaranteedValues.Any())
             {
                 return;
             }

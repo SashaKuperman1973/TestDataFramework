@@ -24,6 +24,7 @@ using Castle.Components.DictionaryAdapter;
 using log4net;
 using TestDataFramework.AttributeDecorator;
 using TestDataFramework.HandledTypeGenerator;
+using TestDataFramework.ListOperations;
 using TestDataFramework.Persistence.Interfaces;
 using TestDataFramework.Populator.Interfaces;
 using TestDataFramework.TypeGenerator.Interfaces;
@@ -38,6 +39,7 @@ namespace TestDataFramework.Populator.Concrete
         private readonly ITypeGenerator typeGenerator;
         private readonly IPersistence persistence;
         private readonly IHandledTypeGenerator handledTypeGenerator;
+        private readonly ValueGuaranteePopulator valueGuaranteePopulator;
 
         public IValueGenerator ValueGenerator { get; }
 
@@ -45,7 +47,8 @@ namespace TestDataFramework.Populator.Concrete
         private readonly List<OperableList> setOfLists = new List<OperableList>();
 
         public StandardPopulator(ITypeGenerator typeGenerator, IPersistence persistence,
-            IAttributeDecorator attributeDecorator, IHandledTypeGenerator handledTypeGenerator, IValueGenerator valueGenerator)
+            IAttributeDecorator attributeDecorator, IHandledTypeGenerator handledTypeGenerator, 
+            IValueGenerator valueGenerator, ValueGuaranteePopulator valueGuaranteePopulator)
             : base(attributeDecorator)
         {
             StandardPopulator.Logger.Debug("Entering constructor");
@@ -54,6 +57,7 @@ namespace TestDataFramework.Populator.Concrete
             this.persistence = persistence;
             this.handledTypeGenerator = handledTypeGenerator;
             this.ValueGenerator = valueGenerator;
+            this.valueGuaranteePopulator = valueGuaranteePopulator;
 
             StandardPopulator.Logger.Debug("Entering constructor");
         }
@@ -69,7 +73,7 @@ namespace TestDataFramework.Populator.Concrete
         {
             StandardPopulator.Logger.Debug($"Entering Add. T: {typeof(T)}, copies: {copies}, primaryRecordReference: {primaryRecordReference}");
 
-            var result = new OperableList<T>();
+            var result = new OperableList<T>(this.valueGuaranteePopulator);
             this.setOfLists.Add(result);
 
             for (int i = 0; i < copies; i++)
@@ -111,8 +115,9 @@ namespace TestDataFramework.Populator.Concrete
 
             foreach (RecordReference recordReference in this.recordReferences)
             {
-                if (recordReference.IsAPrePopulatedValue)
+                if (recordReference.PreBoundObject != null)
                 {
+                    recordReference.RecordObject = recordReference.PreBoundObject();
                     continue;
                 }
 

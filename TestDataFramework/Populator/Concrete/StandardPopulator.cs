@@ -69,34 +69,30 @@ namespace TestDataFramework.Populator.Concrete
             this.handledTypeGenerator.HandledTypeValueGetterDictionary.Add(type, valueGetter);
         }
 
-        public virtual OperableList<T> Add<T>(int copies, RecordReference primaryRecordReference = null)
+        public virtual OperableList<T> Add<T>(int copies, params RecordReference[] primaryRecordReferences)
         {
-            StandardPopulator.Logger.Debug($"Entering Add. T: {typeof(T)}, copies: {copies}, primaryRecordReference: {primaryRecordReference}");
+            StandardPopulator.Logger.Debug($"Entering Add. T: {typeof(T)}, copies: {copies}, primaryRecordReference: {primaryRecordReferences}");
 
             var result = new OperableList<T>(this.valueGuaranteePopulator);
             this.setOfLists.Add(result);
 
             for (int i = 0; i < copies; i++)
             {
-                result.Add(this.Add<T>(primaryRecordReference));
+                result.Add(this.Add<T>(primaryRecordReferences));
             }
 
             StandardPopulator.Logger.Debug("Exiting Add");
             return result;
         }
 
-        public virtual RecordReference<T> Add<T>(RecordReference primaryRecordReference = null)
+        public virtual RecordReference<T> Add<T>(params RecordReference[] primaryRecordReferences)
         {
-            StandardPopulator.Logger.Debug($"Entering Add. T: {typeof(T)}, primaryRecordReference: {primaryRecordReference}");
+            StandardPopulator.Logger.Debug($"Entering Add. T: {typeof(T)}, primaryRecordReference: {primaryRecordReferences}");
 
             var recordReference = new RecordReference<T>(this.typeGenerator, this.AttributeDecorator);
 
             this.recordReferences.Add(recordReference);
-
-            if (primaryRecordReference != null)
-            {
-                recordReference.AddPrimaryRecordReference(primaryRecordReference);
-            }
+            recordReference.AddPrimaryRecordReference(primaryRecordReferences);
 
             StandardPopulator.Logger.Debug("Exiting Add<T>(primaryRecordReference, propertyExpressionDictionary)");
 

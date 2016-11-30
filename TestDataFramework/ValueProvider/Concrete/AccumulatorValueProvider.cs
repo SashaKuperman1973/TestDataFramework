@@ -28,18 +28,18 @@ namespace TestDataFramework.ValueProvider.Concrete
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof (AccumulatorValueProvider));
 
-        private short countField = (short)Helper.DefaultInitalCount;
+        private int countField = (int)Helper.DefaultInitalCount;
 
-        private short Count
+        private int Count
         {
             get
             {
-                if (this.countField != short.MaxValue)
+                if (this.countField != int.MaxValue)
                 {
                     return this.countField;
                 }
 
-                this.countField = (short)Helper.DefaultInitalCount;
+                this.countField = (int)Helper.DefaultInitalCount;
                 return this.countField;
             }
 
@@ -69,7 +69,7 @@ namespace TestDataFramework.ValueProvider.Concrete
         public short GetShortInteger(short? max)
         {
             AccumulatorValueProvider.Logger.Debug("Entering GetShortInteger");
-            short result = this.Count++;
+            short result = (short)(this.Count++%short.MaxValue);
 
             AccumulatorValueProvider.Logger.Debug($"Exiting GetShortInteger. result: {result}");
             return result;
@@ -169,7 +169,7 @@ namespace TestDataFramework.ValueProvider.Concrete
 
         public string GetEmailAddress()
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
     }
 }

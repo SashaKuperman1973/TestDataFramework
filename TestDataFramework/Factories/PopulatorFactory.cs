@@ -176,8 +176,7 @@ namespace TestDataFramework.Factories
                     .DependsOn(
                         ServiceOverride.ForKey<Func<ITypeGenerator>>()
                             .Eq(PopulatorFactory.GetUniqueValueTypeGenerator))
-                    .Named(PopulatorFactory.AccumulatorValueGenerator)
-                    .LifestyleTransient(),
+                    .Named(PopulatorFactory.AccumulatorValueGenerator),
 
                 Component.For<IValueGenerator>()
                     .ImplementedBy<SqlClientValueGenerator>()
@@ -227,8 +226,7 @@ namespace TestDataFramework.Factories
                     .DependsOn(
                         ServiceOverride.ForKey<Func<ITypeGenerator>>()
                             .Eq(PopulatorFactory.GetUniqueValueTypeGenerator))
-                    .Named(PopulatorFactory.AccumulatorValueGenerator)
-                    .LifestyleTransient(),
+                    .Named(PopulatorFactory.AccumulatorValueGenerator),
 
                 Component.For<IValueGenerator>()
                     .ImplementedBy<MemoryValueGenerator>()

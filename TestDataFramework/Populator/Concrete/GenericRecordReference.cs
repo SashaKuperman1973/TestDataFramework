@@ -36,7 +36,26 @@ namespace TestDataFramework.Populator.Concrete
         private static readonly ILog Logger = LogManager.GetLogger(typeof (RecordReference<T>));
 
         private readonly ConcurrentDictionary<PropertyInfo, Action<T>> explicitProperySetters =
-            new ConcurrentDictionary<PropertyInfo, Action<T>>();
+            new ConcurrentDictionary<PropertyInfo, Action<T>>(
+                RecordReference<T>.ExplicitPropertySetterEqualityComparerObject);
+
+        private static readonly ExplicitPropertySetterEqualityComparer ExplicitPropertySetterEqualityComparerObject =
+            new ExplicitPropertySetterEqualityComparer();
+
+        private class ExplicitPropertySetterEqualityComparer : IEqualityComparer<PropertyInfo>
+        {
+            public bool Equals(PropertyInfo x, PropertyInfo y)
+            {
+                bool result = x.DeclaringType == y.DeclaringType && x.Name.Equals(y.Name, StringComparison.Ordinal);
+                return result;
+            }
+
+            public int GetHashCode(PropertyInfo obj)
+            {
+                int result = obj.DeclaringType.GetHashCode() ^ obj.Name.GetHashCode();
+                return result;
+            }
+        }
 
         public RecordReference(ITypeGenerator typeGenerator, IAttributeDecorator attributeDecorator) : base(typeGenerator, attributeDecorator)
         {

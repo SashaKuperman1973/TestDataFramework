@@ -189,5 +189,18 @@ namespace CommonIntegrationTests.Tests
             global::Tests.Helpers.ExceptionTest(() => populator.Bind(), typeof(ValueGuaranteeException),
                 Messages.TooFewReferencesForValueGuarantee);
         }
+
+        private class ClassWithDictionary
+        {
+            public Dictionary<string, string> ADictionary { get; set; }
+        }
+
+        [TestMethod]
+        public void Dictionary_Test()
+        {
+            IPopulator populator = StaticPopulatorFactory.CreateMemoryPopulator();
+            populator.Add<ClassWithDictionary>();
+            populator.Bind();
+        }
     }
 }

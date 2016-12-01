@@ -39,6 +39,9 @@ namespace TestDataFramework.ListOperations
                 throw new ValueGuaranteeException(Messages.NeitherPercentageNorTotalGiven);
             }
 
+            List<RecordReference<T>> workingList  =
+                references.Where(reference => !reference.ExplicitProperySetters.Any()).ToList();
+
             List<Tuple<IEnumerable<object>, int>> valuesPerPercentageSet =
                 guaranteedValuesList.Where(valueSet => valueSet.FrequencyPercentage.HasValue)
                     .Select(
@@ -67,12 +70,10 @@ namespace TestDataFramework.ListOperations
             int totalQuantityOfGuaranteedValues =
                 allValues.Sum(tuple => tuple.Item2);
 
-            if (totalQuantityOfGuaranteedValues > references.Count)
+            if (totalQuantityOfGuaranteedValues > workingList.Count)
             {
                 throw new ValueGuaranteeException(Messages.TooFewReferencesForValueGuarantee);
             }
-
-            var workingList = new OperableList<T>(references, this);
 
             var random = new Random();
 

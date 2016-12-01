@@ -35,7 +35,7 @@ namespace TestDataFramework.Populator.Concrete
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof (RecordReference<T>));
 
-        private readonly ConcurrentDictionary<PropertyInfo, Action<T>> explicitProperySetters =
+        internal readonly ConcurrentDictionary<PropertyInfo, Action<T>> ExplicitProperySetters =
             new ConcurrentDictionary<PropertyInfo, Action<T>>(
                 RecordReference<T>.ExplicitPropertySetterEqualityComparerObject);
 
@@ -72,7 +72,7 @@ namespace TestDataFramework.Populator.Concrete
         {
             RecordReference<T>.Logger.Debug($"Entering IsExplicitlySet. propertyInfo: {propertyInfo}");
 
-            bool result = this.explicitProperySetters.ContainsKey(propertyInfo);
+            bool result = this.ExplicitProperySetters.ContainsKey(propertyInfo);
 
             RecordReference<T>.Logger.Debug("Exiting IsExplicitlySet");
             return result;
@@ -82,7 +82,7 @@ namespace TestDataFramework.Populator.Concrete
         {
             RecordReference<T>.Logger.Debug("Entering Populate");
 
-            base.RecordObject = this.TypeGenerator.GetObject<T>(this.explicitProperySetters);
+            base.RecordObject = this.TypeGenerator.GetObject<T>(this.ExplicitProperySetters);
 
             RecordReference<T>.Logger.Debug("Exiting Populate");
         }
@@ -113,7 +113,7 @@ namespace TestDataFramework.Populator.Concrete
 
             Action<T> setter = @object => propertyInfo.SetValue(@object, valueFactory());
 
-            this.explicitProperySetters.AddOrUpdate(propertyInfo, setter, (pi, lambda) =>
+            this.ExplicitProperySetters.AddOrUpdate(propertyInfo, setter, (pi, lambda) =>
             {
                 RecordReference<T>.Logger.Debug("Updatng explicitProperySetters dictionary");
                 return setter;
@@ -150,7 +150,7 @@ namespace TestDataFramework.Populator.Concrete
 
             Action<T> setter = @object => propertyInfo.SetValue(@object, RecordReference<T>.ChooseElementInRange(rangeFactory()));
 
-            this.explicitProperySetters.AddOrUpdate(propertyInfo, setter, (pi, lambda) =>
+            this.ExplicitProperySetters.AddOrUpdate(propertyInfo, setter, (pi, lambda) =>
             {
                 RecordReference<T>.Logger.Debug("Updatng explicitProperySetters dictionary");
                 return setter;

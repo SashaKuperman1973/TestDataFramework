@@ -202,5 +202,25 @@ namespace CommonIntegrationTests.Tests
             populator.Add<ClassWithDictionary>();
             populator.Bind();
         }
+
+        [TestMethod]
+        public void GuaranteedValueAndExplicitSetting_Test()
+        {
+            IPopulator populator = StaticPopulatorFactory.CreateMemoryPopulator();
+
+            OperableList<SubjectClass> subjectReferences = populator.Add<SubjectClass>(4)
+                .GuaranteeByPercentageOfTotal(
+                    new[] {new SubjectClass {AnEmailAddress = "myemailAddress@here.com", Text = "Guaranteed Text"}}, 100);
+
+            subjectReferences[1].Set(p => p.Text, "Hello");
+
+            populator.Bind();
+
+            subjectReferences.ToList()
+                .ForEach(
+                    reference =>
+                        Console.WriteLine(reference.RecordObject.AnEmailAddress + "\r\n" + reference.RecordObject.Text +
+                                          "\r\n"));
+        }
     }
 }

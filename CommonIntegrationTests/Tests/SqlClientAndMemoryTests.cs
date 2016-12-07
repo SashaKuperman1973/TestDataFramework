@@ -19,6 +19,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using CommonIntegrationTests.TestModels;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -46,6 +47,26 @@ namespace CommonIntegrationTests.Tests
         public void Cleanup()
         {
             this.factory.Dispose();
+        }
+
+        [TestMethod]
+        public void CompositeMultiple_Test()
+        {
+            IPopulator populator = this.factory.CreateMemoryPopulator();
+
+            OperableList<PrimaryTable> primaryA = populator.Add<PrimaryTable>(2);
+            OperableList<PrimaryTableB> primaryB = populator.Add<PrimaryTableB>(2);
+
+            OperableList<ForeignTable> foreignA = populator.Add<ForeignTable>(2, primaryA[0], primaryB[0]);
+
+            OperableList<ForeignTable> foreignB = populator.Add<ForeignTable>(2);
+            foreignB.ToList().ForEach(foreign => foreign.AddPrimaryRecordReference(primaryA[1], primaryB[1]));
+
+            RecordReference<ForeignTable> foreignC = populator.Add<ForeignTable>(primaryA[1], primaryB[0]);
+
+            populator.Bind();
+            
+            Console.WriteLine("Here");
         }
 
         //[Ignore]

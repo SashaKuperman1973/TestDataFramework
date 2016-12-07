@@ -101,7 +101,7 @@ namespace CommonIntegrationTests.TestModels
         [PrimaryKey]
         public int Key { get; set; }
 
-        [ForeignKey(typeof(SubjectClass), "Key")]
+        [ForeignKey(typeof(SubjectClass), nameof(SubjectClass.Key))]
         public int ForeignIntKey { get; set; }
 
         [ForeignKey(typeof(SubjectClass), "GuidKey")]

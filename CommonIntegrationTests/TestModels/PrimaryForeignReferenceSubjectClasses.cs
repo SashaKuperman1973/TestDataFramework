@@ -24,12 +24,21 @@ namespace CommonIntegrationTests.TestModels
 {
     public class PrimaryTable
     {
-        [PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Auto)]
-        public int Key { get; set; }
+        [PrimaryKey]
+        public int Key1 { get; set; }
+
+        [PrimaryKey]
+        public int Key2 { get; set; }
 
         public string Text { get; set; }
 
         public int Integer { get; set; }
+    }
+
+    public class PrimaryTableB
+    {
+        [PrimaryKey]
+        public int Key1 { get; set; }
     }
 
     public class ForeignTable
@@ -37,22 +46,35 @@ namespace CommonIntegrationTests.TestModels
         [PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Auto)]
         public int Key { get; set; }
 
-        [ForeignKey(primaryTableType: typeof (PrimaryTable), primaryKeyName: "Key")]
-        public int ForeignKey { get; set; }
+        [ForeignKey(primaryTableType: typeof(PrimaryTable), primaryKeyName: nameof(PrimaryTable.Key1))]
+        public int ForeignKeyA1 { get; set; }
+
+        [ForeignKey(primaryTableType: typeof(PrimaryTable), primaryKeyName: nameof(PrimaryTable.Key2))]
+        public int ForeignKeyA2 { get; set; }
+
+        [ForeignKey(primaryTableType: typeof(PrimaryTableB), primaryKeyName: nameof(PrimaryTableB.Key1))]
+        public int ForeignKeyB { get; set; }
 
         public string Text { get; set; }
 
         public int Integer { get; set; }
     }
-    
+
+    public class Tester
+    {
+    }
+
     [Table("TestDataFramework", "dbo", "ManualKeyPrimaryTable")]
     public class ManualKeyPrimaryTableClass
     {
-        [PrimaryKey]
+        [PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Auto)]
+        public int Tester { get; set; }
+
+        [PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Auto)]
         [StringLength(20)]
         public string Key1 { get; set; }
 
-        [PrimaryKey]
+        [PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.None)]
         public int Key2 { get; set; }
 
         public string AString { get; set; }

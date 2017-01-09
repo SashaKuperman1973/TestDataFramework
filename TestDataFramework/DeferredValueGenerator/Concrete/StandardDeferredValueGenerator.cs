@@ -66,7 +66,9 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
 
             this.dataSource.FillData(this.propertyDataDictionary);
 
-            targets.ToList().ForEach(targetRecordReference =>
+            IEnumerable<RecordReference> uniqueTargets = StandardDeferredValueGenerator<T>.GetUniqueTargets(targets);
+
+            uniqueTargets.ToList().ForEach(targetRecordReference =>
             {
                 StandardDeferredValueGenerator<T>.Logger.Debug("Target object type: " + targetRecordReference.RecordType);
 
@@ -105,5 +107,37 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
 
             StandardDeferredValueGenerator<T>.Logger.Debug("Exiting Execute");
         }
+
+        private static IEnumerable<RecordReference> GetUniqueTargets(IEnumerable<RecordReference> targets)
+        {
+            targets = targets.ToList();
+
+            IEnumerable<RecordReference> distinctReferenceTypes =
+                targets.Where(t => !t.RecordObject.GetType().IsValueType)
+                    .Distinct(StandardDeferredValueGenerator<T>.ReferenceRecordObjectEqualityComparerObject);
+
+            IEnumerable<RecordReference> valueTypes = targets.Where(t => t.GetType().IsValueType);
+
+            IEnumerable<RecordReference> result = distinctReferenceTypes.Concat(valueTypes);
+
+            return result;
+        }
+
+        private static readonly ReferenceRecordObjectEqualityComparer ReferenceRecordObjectEqualityComparerObject =
+            new ReferenceRecordObjectEqualityComparer();
+
+        private class ReferenceRecordObjectEqualityComparer : IEqualityComparer<RecordReference>
+        {
+            public bool Equals(RecordReference x, RecordReference y)
+            {
+                return x.RecordObject == y.RecordObject;
+            }
+
+            public int GetHashCode(RecordReference obj)
+            {
+                return obj.RecordObject.GetHashCode();
+            }
+        }
+
     }
 }

@@ -51,6 +51,28 @@ namespace TestDataFramework.Populator.Concrete
             return this;
         }
 
+        public virtual OperableList<T> GuaranteeByPercentageOfTotal(IEnumerable<Func<T>> guaranteedValues, int frequencyPercentage = 10)
+        {
+            this.guaranteedValues.Add(new GuaranteedValues<T>
+            {
+                FrequencyPercentage = frequencyPercentage,
+                Values = guaranteedValues,
+            });
+
+            return this;
+        }
+
+        public virtual OperableList<T> GuaranteeByPercentageOfTotal(IEnumerable<T> guaranteedValues, int frequencyPercentage = 10)
+        {
+            this.guaranteedValues.Add(new GuaranteedValues<T>
+            {
+                FrequencyPercentage = frequencyPercentage,
+                Values = guaranteedValues.Cast<object>(),
+            });
+
+            return this;
+        }
+
         public virtual OperableList<T> GuaranteeByFixedQuantity(IEnumerable<object> guaranteedValues, int fixedQuantity = 0)
         {
             if (fixedQuantity == 0)
@@ -62,6 +84,38 @@ namespace TestDataFramework.Populator.Concrete
             {
                 TotalFrequency = fixedQuantity,
                 Values = guaranteedValues,
+            });
+
+            return this;
+        }
+
+        public virtual OperableList<T> GuaranteeByFixedQuantity(IEnumerable<Func<T>> guaranteedValues, int fixedQuantity = 0)
+        {
+            if (fixedQuantity == 0)
+            {
+                fixedQuantity = guaranteedValues.Count();
+            }
+
+            this.guaranteedValues.Add(new GuaranteedValues<T>
+            {
+                TotalFrequency = fixedQuantity,
+                Values = guaranteedValues,
+            });
+
+            return this;
+        }
+
+        public virtual OperableList<T> GuaranteeByFixedQuantity(IEnumerable<T> guaranteedValues, int fixedQuantity = 0)
+        {
+            if (fixedQuantity == 0)
+            {
+                fixedQuantity = guaranteedValues.Count();
+            }
+
+            this.guaranteedValues.Add(new GuaranteedValues<T>
+            {
+                TotalFrequency = fixedQuantity,
+                Values = guaranteedValues.Cast<object>(),
             });
 
             return this;

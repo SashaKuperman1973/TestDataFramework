@@ -44,7 +44,7 @@ namespace TestDataFramework.WritePrimitives
 
         protected StringBuilder ExecutionStatements = new StringBuilder();
 
-        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(DbProviderWritePrimitives));
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(DbProviderWritePrimitives));        
 
         protected DbProviderWritePrimitives(string connectionStringWithDefaultCatalogue, DbProviderFactory dbProviderFactory,
             IValueFormatter formatter, bool mustBeInATransaction, NameValueCollection configuration)
@@ -111,7 +111,7 @@ namespace TestDataFramework.WritePrimitives
 
             if (dumpSqlInput)
             {
-                DbProviderWritePrimitives.Logger.Debug("\r\n" + commands);
+                LogManager.GetLogger(typeof(DbProviderWritePrimitives)).Debug("\r\n" + commands);
             }
 
             command.CommandText = commands;

@@ -31,7 +31,7 @@ using TestDataFramework.Populator.Interfaces;
 
 namespace DeclarativeIntegrationTests.Tests
 {
-    [Ignore]
+    //[Ignore]
     [TestClass]
     public class SqlClientAndMemoryTests
     {

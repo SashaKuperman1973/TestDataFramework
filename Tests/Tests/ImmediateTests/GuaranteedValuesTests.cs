@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2016 Alexander Kuperman
+    Copyright 2016, 2017 Alexander Kuperman
 
     This file is part of TestDataFramework.
 
@@ -35,9 +35,9 @@ namespace Tests.Tests.ImmediateTests
         {
             var valueGuaranteePopulator = new ValueGuaranteePopulator();
 
-            var values = new List<GuaranteedValues<object>> {new GuaranteedValues<object>()};
+            var values = new List<GuaranteedValues> {new GuaranteedValues()};
 
-            Helpers.ExceptionTest(() => valueGuaranteePopulator.Bind(null, values), typeof(ValueGuaranteeException),
+            Helpers.ExceptionTest(() => valueGuaranteePopulator.Bind<object>(null, values), typeof(ValueGuaranteeException),
                 Messages.NeitherPercentageNorTotalGiven);
         }
 
@@ -46,9 +46,9 @@ namespace Tests.Tests.ImmediateTests
         {
             var valueGuaranteePopulator = new ValueGuaranteePopulator();
 
-            var values = new List<GuaranteedValues<int>>
+            var values = new List<GuaranteedValues>
             {
-                new GuaranteedValues<int>
+                new GuaranteedValues
                 {
                     TotalFrequency = 5,
                     Values = new object[] {1, 2, "Hello", 4}
@@ -74,9 +74,9 @@ namespace Tests.Tests.ImmediateTests
         {
             var valueGuaranteePopulator = new ValueGuaranteePopulator();
 
-            var values = new List<GuaranteedValues<int>>
+            var values = new List<GuaranteedValues>
             {
-                new GuaranteedValues<int>
+                new GuaranteedValues
                 {
                     TotalFrequency = 5,
                     Values = new object[] {1, 2, (Func<string>)(() => "Hello"), 4}

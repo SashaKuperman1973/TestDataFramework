@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2016 Alexander Kuperman
+    Copyright 2016, 2017 Alexander Kuperman
 
     This file is part of TestDataFramework.
 
@@ -105,7 +105,17 @@ namespace TestDataFramework.AttributeDecorator
 
             assemblyNameList.ForEach(assemblyName =>
             {
-                Assembly loadedAssembly = domain.Load(assemblyName);
+                Assembly loadedAssembly;
+
+                try
+                {
+                    loadedAssembly = domain.Load(assemblyName);
+                }
+                catch (System.IO.FileNotFoundException exception)
+                {
+                    Logger.Warn($"TestDataFramework - PopulateAssemblyCache: {exception.Message}");
+                    return;
+                }
 
                 loadedAssembly.DefinedTypes.ToList().ForEach(definedType =>
                 {

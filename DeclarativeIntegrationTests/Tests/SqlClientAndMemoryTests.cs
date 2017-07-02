@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2016 Alexander Kuperman
+    Copyright 2016, 2017 Alexander Kuperman
 
     This file is part of TestDataFramework.
 
@@ -64,7 +64,7 @@ namespace DeclarativeIntegrationTests.Tests
         public void SqlCient_Declarative_Test()
         {
             IPopulator populator = this.factory.CreateSqlClientPopulator(
-                @"Data Source=.\SqlExpress;Initial Catalog=TestDataFramework;Integrated Security=SSPI;");
+                @"Data Source=localhost;Initial Catalog=TestDataFramework;Integrated Security=SSPI;");
 
             SqlClientAndMemoryTests.PrimaryKeyForeignKeyTest(populator, new DeclarativeGeneratorIntegrationTest());
         }
@@ -105,6 +105,24 @@ namespace DeclarativeIntegrationTests.Tests
             Console.WriteLine(foreignSet1[1].RecordObject.ForeignKey1);
             Console.WriteLine(foreignSet2[0].RecordObject.ForeignKey1);
             Console.WriteLine(foreignSet2[1].RecordObject.ForeignKey1);
+        }
+
+        //[Ignore]
+        [TestMethod]
+        public void EmptyForeignReference_Test()
+        {
+            IPopulator populator = this.factory.CreateSqlClientPopulator(
+                @"Data Source=localhost;Initial Catalog=TestDataFramework;Integrated Security=SSPI;");
+
+            var unresolvedKeyTableRecord = populator.Add<UnresolvedKeyTable>();
+            unresolvedKeyTableRecord.Set(p => p.DoesntExist, (int?) null);
+
+            using (var transaction = new TransactionScope(TransactionScopeOption.Required,
+                new TransactionOptions {IsolationLevel = IsolationLevel.ReadCommitted}))
+            {
+                populator.Bind();
+                //transaction.Complete();
+            }
         }
     }
 }

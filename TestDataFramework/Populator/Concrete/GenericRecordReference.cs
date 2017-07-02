@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2016 Alexander Kuperman
+    Copyright 2016, 2017 Alexander Kuperman
 
     This file is part of TestDataFramework.
 
@@ -66,9 +66,9 @@ namespace TestDataFramework.Populator.Concrete
             RecordReference<T>.Logger.Debug("Exiting constructor");
         }
 
-        public new T RecordObject => (T) (base.RecordObject ?? default(T));
+        public new virtual T RecordObject => (T) (base.RecordObject ?? default(T));
 
-        public override bool IsExplicitlySet(PropertyInfo propertyInfo)
+        protected internal override bool IsExplicitlySet(PropertyInfo propertyInfo)
         {
             RecordReference<T>.Logger.Debug($"Entering IsExplicitlySet. propertyInfo: {propertyInfo}");
 
@@ -78,7 +78,7 @@ namespace TestDataFramework.Populator.Concrete
             return result;
         }
 
-        public override void Populate()
+        protected internal override void Populate()
         {
             RecordReference<T>.Logger.Debug("Entering Populate");
 
@@ -148,12 +148,12 @@ namespace TestDataFramework.Populator.Concrete
                 throw new SetExpressionException(Messages.MustBePropertyAccess);
             }
 
-            Action<T> setter = @object => propertyInfo.SetValue(@object, RecordReference<T>.ChooseElementInRange(rangeFactory()));
+            void Setter(T @object) => propertyInfo.SetValue(@object, RecordReference<T>.ChooseElementInRange(rangeFactory()));
 
-            this.ExplicitProperySetters.AddOrUpdate(propertyInfo, setter, (pi, lambda) =>
+            this.ExplicitProperySetters.AddOrUpdate(propertyInfo, (Action<T>) Setter, (pi, lambda) =>
             {
                 RecordReference<T>.Logger.Debug("Updatng explicitProperySetters dictionary");
-                return setter;
+                return Setter;
             });
 
             RecordReference<T>.Logger.Debug("Exiting SetRange(fieldExpression, rangeFactory)");

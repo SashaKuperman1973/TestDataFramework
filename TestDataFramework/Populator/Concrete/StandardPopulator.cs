@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2016 Alexander Kuperman
+    Copyright 2016, 2017 Alexander Kuperman
 
     This file is part of TestDataFramework.
 
@@ -19,8 +19,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Castle.Components.DictionaryAdapter;
 using log4net;
 using TestDataFramework.AttributeDecorator;
 using TestDataFramework.HandledTypeGenerator;
@@ -28,7 +26,6 @@ using TestDataFramework.ListOperations;
 using TestDataFramework.Persistence.Interfaces;
 using TestDataFramework.Populator.Interfaces;
 using TestDataFramework.TypeGenerator.Interfaces;
-using TestDataFramework.ValueGenerator.Interfaces;
 
 namespace TestDataFramework.Populator.Concrete
 {
@@ -41,14 +38,12 @@ namespace TestDataFramework.Populator.Concrete
         private readonly IHandledTypeGenerator handledTypeGenerator;
         private readonly ValueGuaranteePopulator valueGuaranteePopulator;
 
-        public IValueGenerator ValueGenerator { get; }
-
         private readonly List<RecordReference> recordReferences = new List<RecordReference>();
         private readonly List<OperableList> setOfLists = new List<OperableList>();
 
         public StandardPopulator(ITypeGenerator typeGenerator, IPersistence persistence,
             IAttributeDecorator attributeDecorator, IHandledTypeGenerator handledTypeGenerator, 
-            IValueGenerator valueGenerator, ValueGuaranteePopulator valueGuaranteePopulator)
+            ValueGuaranteePopulator valueGuaranteePopulator)
             : base(attributeDecorator)
         {
             StandardPopulator.Logger.Debug("Entering constructor");
@@ -56,7 +51,6 @@ namespace TestDataFramework.Populator.Concrete
             this.typeGenerator = typeGenerator;
             this.persistence = persistence;
             this.handledTypeGenerator = handledTypeGenerator;
-            this.ValueGenerator = valueGenerator;
             this.valueGuaranteePopulator = valueGuaranteePopulator;
 
             StandardPopulator.Logger.Debug("Entering constructor");

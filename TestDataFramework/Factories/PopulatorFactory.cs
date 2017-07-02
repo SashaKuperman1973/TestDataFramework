@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2016 Alexander Kuperman
+    Copyright 2016, 2017 Alexander Kuperman
 
     This file is part of TestDataFramework.
 
@@ -46,7 +46,6 @@ using TestDataFramework.UniqueValueGenerator.Concrete;
 using TestDataFramework.UniqueValueGenerator.Interfaces;
 using TestDataFramework.ValueFormatter.Concrete;
 using TestDataFramework.ValueFormatter.Interfaces;
-using TestDataFramework.ValueGenerator;
 using TestDataFramework.ValueGenerator.Concrete;
 using TestDataFramework.ValueGenerator.Interfaces;
 using TestDataFramework.ValueProvider.Concrete;

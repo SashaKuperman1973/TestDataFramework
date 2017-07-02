@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2016 Alexander Kuperman
+    Copyright 2016, 2017 Alexander Kuperman
 
     This file is part of TestDataFramework.
 
@@ -94,6 +94,8 @@ namespace CommonIntegrationTests.TestModels
         public string AnotherEmailAddress { get; set; }
 
         public Guid? ANullableGuid { get; set; }
+
+        public Guid AGuid { get; set; }
     }
 
     public class ForeignSubjectClass

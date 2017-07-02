@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2016 Alexander Kuperman
+    Copyright 2016, 2017 Alexander Kuperman
 
     This file is part of TestDataFramework.
 
@@ -152,22 +152,29 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
                 ColumnSymbol pkColumnMatch = null;
 
+                
                 bool isForeignKeyPrimaryKeyMatch = keyTableList.Any(pkTable =>
 
                     pkTable.Any(pk =>
 
-                        this.attributeDecorator.GetTableType(fkpa.Attribute, this.recordReference.RecordType) == (pkColumnMatch = pk).TableType
+                        this.attributeDecorator.GetTableType(fkpa.Attribute, this.recordReference.RecordType) ==
+                        (pkColumnMatch = pk).TableType
                         && fkpa.Attribute.PrimaryKeyName.Equals(pk.ColumnName, StringComparison.Ordinal)
-                        )
-                    );
+                    )
+                );
 
-                if (this.enforceKeyReferenceCheck && !isForeignKeyPrimaryKeyMatch)
+                bool isExplicitlySet = this.recordReference.IsExplicitlySet(fkpa.PropertyInfo);
+
+                if (!isExplicitlySet)
                 {
-                    InsertRecordService.Logger.Debug(
-                        $"Key reference check branch taken. Referential integrity check failed. Foreign Key PropertyAttribute : {fkpa}");
+                    if (this.enforceKeyReferenceCheck && !isForeignKeyPrimaryKeyMatch)
+                    {
+                        InsertRecordService.Logger.Debug(
+                            $"Key reference check branch taken. Referential integrity check failed. Foreign Key PropertyAttribute : {fkpa}");
 
-                    throw new InserRecordServiceException(Messages.ForeignKeyRecordWithNoPrimaryKeyRecord,
-                        fkpa.PropertyInfo.DeclaringType.FullName, fkpa.PropertyInfo.Name);
+                        throw new InserRecordServiceException(Messages.ForeignKeyRecordWithNoPrimaryKeyRecord,
+                            fkpa.PropertyInfo.DeclaringType.FullName, fkpa.PropertyInfo.Name);
+                    }
                 }
 
                 return
@@ -175,7 +182,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                     {
                         PkColumnValue =
 
-                            this.recordReference.IsExplicitlySet(fkpa.PropertyInfo)
+                            isExplicitlySet
 
                                 ? fkpa.PropertyInfo.GetValue(this.recordReference.RecordObject)
 

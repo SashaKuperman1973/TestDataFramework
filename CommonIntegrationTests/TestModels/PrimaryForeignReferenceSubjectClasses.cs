@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2016 Alexander Kuperman
+    Copyright 2016, 2017 Alexander Kuperman
 
     This file is part of TestDataFramework.
 
@@ -70,11 +70,11 @@ namespace CommonIntegrationTests.TestModels
         [PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Auto)]
         public int Tester { get; set; }
 
-        [PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Auto)]
+        [PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Manual)]
         [StringLength(20)]
         public string Key1 { get; set; }
 
-        [PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.None)]
+        [PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Manual)]
         public int Key2 { get; set; }
 
         public string AString { get; set; }
@@ -92,17 +92,26 @@ namespace CommonIntegrationTests.TestModels
         [PrimaryKey]
         public Guid UserId { get; set; }
 
+        [ForeignKey(typeof(ManualKeyPrimaryTableClass), "Tester")]
+        public int? FirstForeignKey { get; set; }
+
         [StringLength(20)]
         [PrimaryKey]
         [ForeignKey("ManualKeyPrimaryTable", "Key1")]
         public string ForeignKey1 { get; set; }
 
         [ForeignKey(typeof(ManualKeyPrimaryTableClass), "Key2")]
-        public int ForeignKey2 { get; set; }
+        public int? ForeignKey2 { get; set; }
 
         public short AShort { get; set; }
 
         public long ALong { get; set; }
+    }
+
+    public class UnresolvedKeyTable
+    {
+        [ForeignKey("DoesntExist", "DoesntExistEither")]
+        public int? DoesntExist { get; set; }
     }
 
     public class KeyNoneTable

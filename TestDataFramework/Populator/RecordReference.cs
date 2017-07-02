@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2016 Alexander Kuperman
+    Copyright 2016, 2017 Alexander Kuperman
 
     This file is part of TestDataFramework.
 
@@ -47,11 +47,11 @@ namespace TestDataFramework.Populator
 
         public virtual object RecordObject { get; protected internal set; }
 
-        public virtual Func<object> PreBoundObject { get; protected internal set; }
+        protected internal virtual Func<object> PreBoundObject { get; set; }
 
-        public virtual Type RecordType { get; protected set; }
+        protected internal virtual Type RecordType { get; protected set; }
 
-        public readonly IEnumerable<RecordReference> PrimaryKeyReferences = new List<RecordReference>();
+        protected internal readonly IEnumerable<RecordReference> PrimaryKeyReferences = new List<RecordReference>();
 
         #endregion Public fields/properties
 
@@ -81,7 +81,7 @@ namespace TestDataFramework.Populator
             RecordReference.Logger.Debug("Exiting AddPrimaryRecordReference(RecordReference)");
         }
 
-        public abstract bool IsExplicitlySet(PropertyInfo propertyInfo);
+        protected internal abstract bool IsExplicitlySet(PropertyInfo propertyInfo);
 
         #endregion Public methods
 
@@ -92,19 +92,23 @@ namespace TestDataFramework.Populator
             IEnumerable<PropertyAttribute<ForeignKeyAttribute>> foreignKeyPropertyAttributes =
                 this.AttributeDecorator.GetPropertyAttributes<ForeignKeyAttribute>(this.RecordType).ToList();
 
-            bool result =                
-                    this.AttributeDecorator.GetPropertyAttributes<PrimaryKeyAttribute>(primaryRecordReference.RecordType)
+            bool result =
+                this.AttributeDecorator.GetPropertyAttributes<PrimaryKeyAttribute>(primaryRecordReference.RecordType)
                     .All(
                         pkPa =>
                             foreignKeyPropertyAttributes.Any(
                                 fkPa =>
-                                    pkPa.PropertyInfo.DeclaringType == this.AttributeDecorator.GetTableType(fkPa.Attribute, this.RecordType)
+                                    pkPa.PropertyInfo.DeclaringType ==
+                                    this.AttributeDecorator.GetTableType(fkPa.Attribute, this.RecordType)
                                     &&
                                     Helper.GetColumnName(pkPa.PropertyInfo, this.AttributeDecorator)
                                         .Equals(fkPa.Attribute.PrimaryKeyName, StringComparison.Ordinal)
                                     &&
-                                    pkPa.PropertyInfo.PropertyType == fkPa.PropertyInfo.PropertyType
-                                )
+                                    pkPa.PropertyInfo.PropertyType ==
+                                    (Nullable.GetUnderlyingType(fkPa.PropertyInfo.PropertyType) ??
+                                     fkPa.PropertyInfo.PropertyType
+                                    )
+                            )
                     );
 
             RecordReference.Logger.Debug("Exiting ValidateRelationship");
@@ -112,6 +116,6 @@ namespace TestDataFramework.Populator
             return result;
         }
 
-        public abstract void Populate();
+        protected internal abstract void Populate();
     }
 }

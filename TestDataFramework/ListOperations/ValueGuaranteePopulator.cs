@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2016 Alexander Kuperman
+    Copyright 2016, 2017 Alexander Kuperman
 
     This file is part of TestDataFramework.
 
@@ -30,7 +30,7 @@ namespace TestDataFramework.ListOperations
 {
     public class ValueGuaranteePopulator
     {
-        public virtual void Bind<T>(OperableList<T> references, List<GuaranteedValues<T>> guaranteedValuesList)
+        public virtual void Bind<T>(OperableList<T> references, List<GuaranteedValues> guaranteedValuesList)
         {
             if (
                 guaranteedValuesList.Any(

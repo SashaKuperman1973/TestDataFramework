@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2016 Alexander Kuperman
+    Copyright 2016, 2017 Alexander Kuperman
 
     This file is part of TestDataFramework.
 
@@ -210,7 +210,7 @@ namespace CommonIntegrationTests.Tests
 
             OperableList<SubjectClass> subjectReferences = populator.Add<SubjectClass>(4)
                 .GuaranteeByPercentageOfTotal(
-                    new[] {new SubjectClass {AnEmailAddress = "myemailAddress@here.com", Text = "Guaranteed Text"}}, 100);
+                    new[] {new SubjectClass {AnEmailAddress = "myemailAddress@here.com", Text = "Guaranteed Text"}}, 75);
 
             subjectReferences[1].Set(p => p.Text, "Hello");
 

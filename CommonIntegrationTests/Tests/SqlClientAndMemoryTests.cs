@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2016 Alexander Kuperman
+    Copyright 2016, 2017 Alexander Kuperman
 
     This file is part of TestDataFramework.
 
@@ -74,7 +74,7 @@ namespace CommonIntegrationTests.Tests
         public void ManualKeyPrimaryTable_Test()
         {
             IPopulator populator = this.factory.CreateSqlClientPopulator(
-                @"Data Source=.\SqlExpress;Initial Catalog=TestDataFramework;Integrated Security=SSPI;",
+                @"Data Source=localhost;Initial Catalog=TestDataFramework;Integrated Security=SSPI;",
                 mustBeInATransaction: false);
 
             IList<RecordReference<ManualKeyPrimaryTableClass>> result = populator.Add<ManualKeyPrimaryTableClass>(5);
@@ -93,7 +93,7 @@ namespace CommonIntegrationTests.Tests
         public void SubjectClass_Test()
         {
             IPopulator populator = this.factory.CreateSqlClientPopulator(
-                @"Data Source=.\SqlExpress;Initial Catalog=TestDataFramework;Integrated Security=SSPI;",
+                @"Data Source=localhost;Initial Catalog=TestDataFramework;Integrated Security=SSPI;",
                 mustBeInATransaction: false);
 
             IList<RecordReference<SubjectClass>> result = populator.Add<SubjectClass>(2);

@@ -11,10 +11,10 @@ namespace TestDataFramework.Populator.Concrete
 {
     public abstract class OperableList
     {
-        public abstract void Bind();
+        protected internal abstract void Bind();
     }
 
-    public class GuaranteedValues<T>
+    public class GuaranteedValues
     {
         public IEnumerable<object> Values { get; set; }
         public int? FrequencyPercentage { get; set; }
@@ -23,7 +23,7 @@ namespace TestDataFramework.Populator.Concrete
 
     public class OperableList<T> : OperableList, IList<RecordReference<T>>
     {
-        private readonly List<GuaranteedValues<T>> guaranteedValues = new List<GuaranteedValues<T>>();
+        private readonly List<GuaranteedValues> guaranteedValues = new List<GuaranteedValues>();
 
         private readonly List<RecordReference<T>> internalList;
         private readonly ValueGuaranteePopulator valueGuaranteePopulator;
@@ -42,7 +42,7 @@ namespace TestDataFramework.Populator.Concrete
 
         public virtual OperableList<T> GuaranteeByPercentageOfTotal(IEnumerable<object> guaranteedValues, int frequencyPercentage = 10)
         {
-            this.guaranteedValues.Add(new GuaranteedValues<T>
+            this.guaranteedValues.Add(new GuaranteedValues
             {
                 FrequencyPercentage = frequencyPercentage,
                 Values = guaranteedValues,
@@ -53,7 +53,7 @@ namespace TestDataFramework.Populator.Concrete
 
         public virtual OperableList<T> GuaranteeByPercentageOfTotal(IEnumerable<Func<T>> guaranteedValues, int frequencyPercentage = 10)
         {
-            this.guaranteedValues.Add(new GuaranteedValues<T>
+            this.guaranteedValues.Add(new GuaranteedValues
             {
                 FrequencyPercentage = frequencyPercentage,
                 Values = guaranteedValues,
@@ -64,7 +64,7 @@ namespace TestDataFramework.Populator.Concrete
 
         public virtual OperableList<T> GuaranteeByPercentageOfTotal(IEnumerable<T> guaranteedValues, int frequencyPercentage = 10)
         {
-            this.guaranteedValues.Add(new GuaranteedValues<T>
+            this.guaranteedValues.Add(new GuaranteedValues
             {
                 FrequencyPercentage = frequencyPercentage,
                 Values = guaranteedValues.Cast<object>(),
@@ -80,7 +80,7 @@ namespace TestDataFramework.Populator.Concrete
                 fixedQuantity = guaranteedValues.Count();
             }
 
-            this.guaranteedValues.Add(new GuaranteedValues<T>
+            this.guaranteedValues.Add(new GuaranteedValues
             {
                 TotalFrequency = fixedQuantity,
                 Values = guaranteedValues,
@@ -96,7 +96,7 @@ namespace TestDataFramework.Populator.Concrete
                 fixedQuantity = guaranteedValues.Count();
             }
 
-            this.guaranteedValues.Add(new GuaranteedValues<T>
+            this.guaranteedValues.Add(new GuaranteedValues
             {
                 TotalFrequency = fixedQuantity,
                 Values = guaranteedValues,
@@ -112,7 +112,7 @@ namespace TestDataFramework.Populator.Concrete
                 fixedQuantity = guaranteedValues.Count();
             }
 
-            this.guaranteedValues.Add(new GuaranteedValues<T>
+            this.guaranteedValues.Add(new GuaranteedValues
             {
                 TotalFrequency = fixedQuantity,
                 Values = guaranteedValues.Cast<object>(),
@@ -121,7 +121,7 @@ namespace TestDataFramework.Populator.Concrete
             return this;
         }
 
-        public override void Bind()
+        protected internal override void Bind()
         {
             if (!this.guaranteedValues.Any())
             {

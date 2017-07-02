@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2016 Alexander Kuperman
+    Copyright 2016, 2017 Alexander Kuperman
 
     This file is part of TestDataFramework.
 
@@ -31,7 +31,7 @@ using TestDataFramework.Populator.Interfaces;
 
 namespace PocoIntegrationTests.Tests
 {
-    [Ignore]
+    //[Ignore]
     [TestClass]
     public class SqlClientAndMemoryTests
     {
@@ -64,7 +64,7 @@ namespace PocoIntegrationTests.Tests
         public void SqlCient_POCO_Test()
         {
             IPopulator populator = this.factory.CreateSqlClientPopulator(
-                @"Data Source=.\SqlExpress;Integrated Security=SSPI;");
+                @"Data Source=localhost;Integrated Security=SSPI;");
 
             SqlClientAndMemoryTests.PrimaryKeyForeignKeyTest(populator, new PocoGeneratorIntegrationTest());
         }

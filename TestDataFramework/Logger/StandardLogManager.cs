@@ -6,7 +6,7 @@ namespace TestDataFramework.Logger
 {
     public class StandardLogManager
     {
-        private static Lazy<NullLogger> LazyNullLogger = new Lazy<NullLogger>(() => new NullLogger());
+        private static readonly Lazy<NullLogger> LazyNullLogger = new Lazy<NullLogger>(() => new NullLogger());
 
         public static ILog GetLogger(Type type)
         {

@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2016 Alexander Kuperman
+    Copyright 2016, 2017 Alexander Kuperman
 
     This file is part of TestDataFramework.
 
@@ -28,7 +28,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Alexander Kuperman")]
 [assembly: AssemblyProduct("Integration Tests")]
-[assembly: AssemblyCopyright("Copyright © Alexander Kuperman 2016")]
+[assembly: AssemblyCopyright("Copyright © Alexander Kuperman 2016, 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

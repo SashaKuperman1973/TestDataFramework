@@ -21,13 +21,14 @@ using System;
 using System.Collections.Concurrent;
 using System.Linq.Expressions;
 using log4net;
+using TestDataFramework.Logger;
 using TestDataFramework.AttributeDecorator;
 
 namespace TestDataFramework.Populator
 {
     public abstract class BasePopulator
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(BasePopulator));
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(BasePopulator));
 
         protected readonly IAttributeDecorator AttributeDecorator;
 
@@ -42,7 +43,7 @@ namespace TestDataFramework.Populator
 
         public class Decorator<T> : Decorator
         {
-            private static readonly ILog Logger = LogManager.GetLogger(typeof(Decorator<T>));
+            private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(Decorator<T>));
 
             private readonly IAttributeDecorator attributeDecorator;
 

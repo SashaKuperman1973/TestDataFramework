@@ -21,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using log4net;
+using TestDataFramework.Logger;
 using TestDataFramework.Exceptions;
 using TestDataFramework.ValueFormatter.Interfaces;
 
@@ -28,7 +29,7 @@ namespace TestDataFramework.ValueFormatter
 {
     public abstract class DbValueFormatter : IValueFormatter
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof (DbValueFormatter));
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof (DbValueFormatter));
 
         public virtual string Format(object value)
         {

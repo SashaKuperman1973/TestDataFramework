@@ -20,6 +20,7 @@
 using System;
 using System.Collections.Generic;
 using log4net;
+using TestDataFramework.Logger;
 
 namespace TestDataFramework.RepositoryOperations
 {
@@ -27,7 +28,7 @@ namespace TestDataFramework.RepositoryOperations
     {
         #region Private Fields
 
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(CircularReferenceBreaker));
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(CircularReferenceBreaker));
 
         private readonly Stack<Delegate> callStack = new Stack<Delegate>();
 

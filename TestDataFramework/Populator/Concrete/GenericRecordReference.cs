@@ -24,6 +24,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using log4net;
+using TestDataFramework.Logger;
 using TestDataFramework.AttributeDecorator;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
@@ -33,7 +34,7 @@ namespace TestDataFramework.Populator.Concrete
 {
     public class RecordReference<T> : RecordReference
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof (RecordReference<T>));
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof (RecordReference<T>));
 
         internal readonly ConcurrentDictionary<PropertyInfo, Action<T>> ExplicitProperySetters =
             new ConcurrentDictionary<PropertyInfo, Action<T>>(

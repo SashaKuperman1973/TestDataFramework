@@ -20,6 +20,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using log4net;
+using TestDataFramework.Logger;
 using TestDataFramework.AttributeDecorator;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Helpers;
@@ -34,7 +35,7 @@ namespace TestDataFramework.Persistence.Concrete
 {
     public class SqlClientPersistence : IPersistence
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof (SqlClientPersistence));
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof (SqlClientPersistence));
 
         private readonly IWritePrimitives writePrimitives;
         private readonly IDeferredValueGenerator<LargeInteger> deferredValueGenerator;

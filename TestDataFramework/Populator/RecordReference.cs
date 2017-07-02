@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using log4net;
+using TestDataFramework.Logger;
 using TestDataFramework.AttributeDecorator;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
@@ -32,7 +33,7 @@ namespace TestDataFramework.Populator
 {
     public abstract class RecordReference
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(RecordReference));
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(RecordReference));
 
         protected readonly ITypeGenerator TypeGenerator;
         protected readonly IAttributeDecorator AttributeDecorator;

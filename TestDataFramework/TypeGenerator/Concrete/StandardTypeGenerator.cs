@@ -22,6 +22,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 using log4net;
+using TestDataFramework.Logger;
 using TestDataFramework.HandledTypeGenerator;
 using TestDataFramework.Helpers;
 using TestDataFramework.TypeGenerator.Interfaces;
@@ -31,7 +32,7 @@ namespace TestDataFramework.TypeGenerator.Concrete
 {
     public class StandardTypeGenerator : ITypeGenerator
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(StandardTypeGenerator));
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(StandardTypeGenerator));
 
         #region Fields
 

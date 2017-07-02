@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using log4net;
+using TestDataFramework.Logger;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Helpers;
 using TestDataFramework.Populator;
@@ -29,7 +30,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
 {
     public class StandardDeferredValueGenerator<T> : IDeferredValueGenerator<T>
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof (StandardDeferredValueGenerator<T>));
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof (StandardDeferredValueGenerator<T>));
 
         private readonly IPropertyDataGenerator<T> dataSource;
         private readonly Dictionary<PropertyInfo, Data<T>> propertyDataDictionary = new Dictionary<PropertyInfo, Data<T>>();

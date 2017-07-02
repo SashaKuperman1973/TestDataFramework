@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using log4net;
+using TestDataFramework.Logger;
 using TestDataFramework.ArrayRandomizer;
 using TestDataFramework.AttributeDecorator;
 using TestDataFramework.Exceptions;
@@ -35,7 +36,7 @@ namespace TestDataFramework.ValueGenerator
 {
     public abstract class BaseValueGenerator : IValueGenerator
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(BaseValueGenerator));
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(BaseValueGenerator));
 
         protected readonly IValueProvider ValueProvider;
         protected readonly Func<ITypeGenerator> GetTypeGenerator;

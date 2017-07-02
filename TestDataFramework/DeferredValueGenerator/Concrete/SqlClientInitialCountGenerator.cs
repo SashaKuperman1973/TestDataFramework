@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using log4net;
+using TestDataFramework.Logger;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
@@ -29,7 +30,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
 {
     public class SqlClientInitialCountGenerator : IPropertyDataGenerator<LargeInteger>
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(SqlClientInitialCountGenerator));
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(SqlClientInitialCountGenerator));
 
         private readonly IWriterDictinary writerDictinary;
 

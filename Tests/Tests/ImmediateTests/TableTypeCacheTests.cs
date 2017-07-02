@@ -19,6 +19,7 @@
 
 using System;
 using System.Reflection;
+using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework;
 using TestDataFramework.AttributeDecorator;

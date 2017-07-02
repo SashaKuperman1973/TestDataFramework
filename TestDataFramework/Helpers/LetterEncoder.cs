@@ -20,13 +20,14 @@
 using System;
 using System.Text;
 using log4net;
+using TestDataFramework.Logger;
 using TestDataFramework.Exceptions;
 
 namespace TestDataFramework.Helpers
 {
     public class LetterEncoder
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(LetterEncoder));
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(LetterEncoder));
 
         public virtual string Encode(LargeInteger number, int maxStringLength)
         {

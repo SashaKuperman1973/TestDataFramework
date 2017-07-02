@@ -21,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using log4net;
+using TestDataFramework.Logger;
 using TestDataFramework.Helpers;
 using TestDataFramework.ValueGenerator.Interfaces;
 
@@ -32,7 +33,7 @@ namespace TestDataFramework.HandledTypeGenerator
     {
         #region Fields
 
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(StandardHandledTypeGenerator));
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(StandardHandledTypeGenerator));
 
         public delegate IValueGenerator CreateAccumulatorValueGeneratorDelegate();
 

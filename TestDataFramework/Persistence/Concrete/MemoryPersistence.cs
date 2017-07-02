@@ -20,6 +20,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using log4net;
+using TestDataFramework.Logger;
 using TestDataFramework.AttributeDecorator;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Helpers;
@@ -31,7 +32,7 @@ namespace TestDataFramework.Persistence.Concrete
 {
     public class MemoryPersistence : IPersistence
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof (MemoryPersistence));
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof (MemoryPersistence));
 
         private readonly IDeferredValueGenerator<LargeInteger> deferredValueGenerator;
         private readonly IAttributeDecorator attributeDecorator;

@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using log4net;
+using TestDataFramework.Logger;
 using log4net.Util;
 using TestDataFramework.Exceptions;
 
@@ -30,7 +31,7 @@ namespace TestDataFramework.AttributeDecorator
 {
     public class TableTypeCache
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(TableTypeCache));
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(TableTypeCache));
 
         private readonly TypeDictionaryEqualityComparer typeDictionaryEqualityComparer =
             new TypeDictionaryEqualityComparer();

@@ -22,6 +22,7 @@ using System.Collections.Specialized;
 using System.Data.Common;
 using System.Linq;
 using log4net;
+using TestDataFramework.Logger;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers.Interfaces;
 using TestDataFramework.RepositoryOperations.Model;
@@ -31,7 +32,7 @@ namespace TestDataFramework.WritePrimitives.Concrete
 {
     public class SqlClientWritePrimitives : DbProviderWritePrimitives
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof (SqlClientWritePrimitives));
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof (SqlClientWritePrimitives));
 
         private readonly IRandomSymbolStringGenerator symbolGenerator;
 

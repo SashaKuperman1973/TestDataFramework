@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using log4net;
+using TestDataFramework.Logger;
 using TestDataFramework.AttributeDecorator;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
@@ -33,7 +34,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 {
     public class InsertRecordService
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(InsertRecordService));
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(InsertRecordService));
 
         private readonly RecordReference recordReference;
         private readonly IAttributeDecorator attributeDecorator;

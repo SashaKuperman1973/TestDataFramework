@@ -26,6 +26,7 @@ using System.Reflection;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using log4net;
+using TestDataFramework.Logger;
 using TestDataFramework.ArrayRandomizer;
 using TestDataFramework.AttributeDecorator;
 using TestDataFramework.DeferredValueGenerator.Concrete;
@@ -80,7 +81,7 @@ namespace TestDataFramework.Factories
 
     public class PopulatorFactory : IDisposable
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(PopulatorFactory));
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(PopulatorFactory));
 
         private DisposableContainer sqlClientPopulatorContainer;
         private DisposableContainer memoryPopulatorContainer;

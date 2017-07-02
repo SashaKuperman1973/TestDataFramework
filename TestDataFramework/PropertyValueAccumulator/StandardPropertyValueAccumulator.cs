@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using log4net;
+using TestDataFramework.Logger;
 using TestDataFramework.AttributeDecorator;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
@@ -31,7 +32,7 @@ namespace TestDataFramework.PropertyValueAccumulator
 {
     public class StandardPropertyValueAccumulator : IPropertyValueAccumulator
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(StandardPropertyValueAccumulator));
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(StandardPropertyValueAccumulator));
 
         private readonly LetterEncoder stringGenerator;
         private readonly IAttributeDecorator attributeDecorator;

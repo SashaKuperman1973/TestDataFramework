@@ -24,6 +24,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using log4net;
+using TestDataFramework.Logger;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
 using TestDataFramework.RepositoryOperations.Model;
@@ -32,7 +33,7 @@ namespace TestDataFramework.AttributeDecorator
 {
     public class StandardAttributeDecorator : IAttributeDecorator, ITableTypeCacheService
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(StandardAttributeDecorator));
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(StandardAttributeDecorator));
 
         private readonly ConcurrentDictionary<MemberInfo, List<Attribute>> memberAttributeDicitonary =
             new ConcurrentDictionary<MemberInfo, List<Attribute>>();

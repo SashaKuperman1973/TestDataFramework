@@ -19,6 +19,7 @@
 
 using System;
 using log4net;
+using TestDataFramework.Logger;
 using TestDataFramework.Helpers;
 using TestDataFramework.ValueProvider.Interfaces;
 
@@ -26,7 +27,7 @@ namespace TestDataFramework.ValueProvider.Concrete
 {
     public class AccumulatorValueProvider : IValueProvider
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof (AccumulatorValueProvider));
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof (AccumulatorValueProvider));
 
         private int countField = (int)Helper.DefaultInitalCount;
 

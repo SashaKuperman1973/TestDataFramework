@@ -19,13 +19,14 @@
 
 using System;
 using log4net;
+using TestDataFramework.Logger;
 using TestDataFramework.Helpers.Interfaces;
 
 namespace TestDataFramework.Helpers.Concrete
 {
     public class RandomSymbolStringGenerator : IRandomSymbolStringGenerator
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(RandomSymbolStringGenerator));
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(RandomSymbolStringGenerator));
 
         public const int DefaultLength = 10;
         private readonly int constructorSetDefaultLength;

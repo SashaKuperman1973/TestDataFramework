@@ -20,6 +20,7 @@
 using System.Linq;
 using System.Reflection;
 using log4net;
+using TestDataFramework.Logger;
 using TestDataFramework.AttributeDecorator;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Helpers;
@@ -29,7 +30,7 @@ namespace TestDataFramework.UniqueValueGenerator.Concrete
 {
     public class KeyTypeUniqueValueGenerator : BaseUniqueValueGenerator
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof (KeyTypeUniqueValueGenerator));
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof (KeyTypeUniqueValueGenerator));
 
         private readonly IAttributeDecorator attributeDecorator;
 

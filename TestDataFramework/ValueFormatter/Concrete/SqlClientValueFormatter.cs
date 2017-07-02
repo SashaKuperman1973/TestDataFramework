@@ -18,13 +18,14 @@
 */
 
 using log4net;
+using TestDataFramework.Logger;
 using TestDataFramework.RepositoryOperations.Model;
 
 namespace TestDataFramework.ValueFormatter.Concrete
 {
     public class SqlClientValueFormatter : DbValueFormatter
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(SqlClientValueFormatter));
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(SqlClientValueFormatter));
 
         public override string Format(object value)
         {

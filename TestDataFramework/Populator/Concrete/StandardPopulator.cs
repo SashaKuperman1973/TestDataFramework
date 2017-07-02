@@ -20,6 +20,7 @@
 using System;
 using System.Collections.Generic;
 using log4net;
+using TestDataFramework.Logger;
 using TestDataFramework.AttributeDecorator;
 using TestDataFramework.HandledTypeGenerator;
 using TestDataFramework.ListOperations;
@@ -31,7 +32,7 @@ namespace TestDataFramework.Populator.Concrete
 {
     public class StandardPopulator : BasePopulator, IPopulator
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof (StandardPopulator));
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof (StandardPopulator));
 
         private readonly ITypeGenerator typeGenerator;
         private readonly IPersistence persistence;

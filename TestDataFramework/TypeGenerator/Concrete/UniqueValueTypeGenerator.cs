@@ -19,6 +19,7 @@
 
 using System.Reflection;
 using log4net;
+using TestDataFramework.Logger;
 using TestDataFramework.HandledTypeGenerator;
 using TestDataFramework.Helpers;
 using TestDataFramework.TypeGenerator.Interfaces;
@@ -28,7 +29,7 @@ namespace TestDataFramework.TypeGenerator.Concrete
 {
     public class UniqueValueTypeGenerator : StandardTypeGenerator
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(UniqueValueTypeGenerator));
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(UniqueValueTypeGenerator));
 
         public delegate IValueGenerator GetAccumulatorValueGenerator(ITypeGenerator typeGenerator);
 

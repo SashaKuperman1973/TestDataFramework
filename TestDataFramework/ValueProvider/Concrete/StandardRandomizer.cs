@@ -19,6 +19,7 @@
 
 using System;
 using log4net;
+using TestDataFramework.Logger;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
 using TestDataFramework.Helpers.Concrete;
@@ -29,7 +30,7 @@ namespace TestDataFramework.ValueProvider.Concrete
 {
     public class StandardRandomizer : IValueProvider
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(RandomSymbolStringGenerator));
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(RandomSymbolStringGenerator));
 
         private readonly Random random;
         private readonly IRandomSymbolStringGenerator stringRandomizer;

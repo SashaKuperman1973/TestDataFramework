@@ -21,6 +21,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using log4net;
+using TestDataFramework.Logger;
 using TestDataFramework.Helpers;
 using TestDataFramework.ValueGenerator.Interfaces;
 
@@ -28,7 +29,7 @@ namespace TestDataFramework.ArrayRandomizer
 {
     public class StandardArrayRandomizer : IArrayRandomizer
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(StandardArrayRandomizer));
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(StandardArrayRandomizer));
 
         private readonly Random random;
         private readonly IValueGenerator valueGenerator;

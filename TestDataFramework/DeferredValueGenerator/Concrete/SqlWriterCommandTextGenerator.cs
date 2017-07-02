@@ -19,6 +19,7 @@
 
 using System.Reflection;
 using log4net;
+using TestDataFramework.Logger;
 using TestDataFramework.AttributeDecorator;
 using TestDataFramework.Helpers;
 using TestDataFramework.WritePrimitives.Concrete;
@@ -27,7 +28,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
 {
     public class SqlWriterCommandText
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(SqlWriterCommandText));
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(SqlWriterCommandText));
 
         public virtual string GetStringSelect(string catalogueName, string schema, string tableName, string columnName)
         {
@@ -60,7 +61,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
 
     public class SqlWriterCommandTextGenerator
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(SqlWriterCommandTextGenerator));
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(SqlWriterCommandTextGenerator));
 
         private readonly IAttributeDecorator attributeDecorator;
         private readonly SqlWriterCommandText sqlWriterCommandText;

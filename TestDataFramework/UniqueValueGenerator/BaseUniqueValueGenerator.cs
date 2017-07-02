@@ -20,6 +20,7 @@
 using System;
 using System.Reflection;
 using log4net;
+using TestDataFramework.Logger;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
@@ -30,7 +31,7 @@ namespace TestDataFramework.UniqueValueGenerator
 {
     public abstract class BaseUniqueValueGenerator : IUniqueValueGenerator
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(BaseUniqueValueGenerator));
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(BaseUniqueValueGenerator));
 
         private readonly IPropertyValueAccumulator accumulator;
         private readonly IDeferredValueGenerator<LargeInteger> deferredValueGenerator;

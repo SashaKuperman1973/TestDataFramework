@@ -24,6 +24,7 @@ using System.Data.Common;
 using System.Linq;
 using System.Text;
 using log4net;
+using TestDataFramework.Logger;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
 using TestDataFramework.RepositoryOperations.Model;
@@ -43,7 +44,7 @@ namespace TestDataFramework.WritePrimitives
 
         protected StringBuilder ExecutionStatements = new StringBuilder();
 
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(DbProviderWritePrimitives));
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(DbProviderWritePrimitives));
 
         protected DbProviderWritePrimitives(string connectionStringWithDefaultCatalogue, DbProviderFactory dbProviderFactory,
             IValueFormatter formatter, bool mustBeInATransaction, NameValueCollection configuration)

@@ -27,6 +27,7 @@ using TestDataFramework.ListOperations;
 using TestDataFramework.Persistence.Interfaces;
 using TestDataFramework.Populator.Interfaces;
 using TestDataFramework.TypeGenerator.Interfaces;
+using TestDataFramework.ValueGenerator.Interfaces;
 
 namespace TestDataFramework.Populator.Concrete
 {
@@ -39,12 +40,14 @@ namespace TestDataFramework.Populator.Concrete
         private readonly IHandledTypeGenerator handledTypeGenerator;
         private readonly ValueGuaranteePopulator valueGuaranteePopulator;
 
+        public IValueGenerator ValueGenerator { get; }
+
         private readonly List<RecordReference> recordReferences = new List<RecordReference>();
         private readonly List<OperableList> setOfLists = new List<OperableList>();
 
         public StandardPopulator(ITypeGenerator typeGenerator, IPersistence persistence,
             IAttributeDecorator attributeDecorator, IHandledTypeGenerator handledTypeGenerator, 
-            ValueGuaranteePopulator valueGuaranteePopulator)
+            IValueGenerator valueGenerator, ValueGuaranteePopulator valueGuaranteePopulator)
             : base(attributeDecorator)
         {
             StandardPopulator.Logger.Debug("Entering constructor");
@@ -52,6 +55,7 @@ namespace TestDataFramework.Populator.Concrete
             this.typeGenerator = typeGenerator;
             this.persistence = persistence;
             this.handledTypeGenerator = handledTypeGenerator;
+            this.ValueGenerator = valueGenerator;
             this.valueGuaranteePopulator = valueGuaranteePopulator;
 
             StandardPopulator.Logger.Debug("Entering constructor");

@@ -20,6 +20,7 @@
 using System;
 using TestDataFramework.HandledTypeGenerator;
 using TestDataFramework.Populator.Concrete;
+using TestDataFramework.ValueGenerator.Interfaces;
 
 namespace TestDataFramework.Populator.Interfaces
 {
@@ -34,5 +35,7 @@ namespace TestDataFramework.Populator.Interfaces
         BasePopulator.Decorator<T> DecorateType<T>();
 
         void Extend(Type type, HandledTypeValueGetter valueGetter);
+
+        IValueGenerator ValueGenerator { get; }
     }
 }

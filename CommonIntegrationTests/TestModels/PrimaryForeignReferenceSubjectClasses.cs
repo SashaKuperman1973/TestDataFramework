@@ -106,6 +106,8 @@ namespace CommonIntegrationTests.TestModels
         public short AShort { get; set; }
 
         public long ALong { get; set; }
+
+        public Guid AGuid { get; set; }
     }
 
     public class UnresolvedKeyTable

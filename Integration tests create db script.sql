@@ -106,11 +106,15 @@ CREATE TABLE [dbo].[ForeignToAutoPrimaryTable](
 	[ForignKey] [int] NOT NULL
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[ManualKeyForeignTable]    Script Date: 7/2/2017 2:40:38 PM ******/
+USE [TestDataFramework]
+GO
+/****** Object:  Table [dbo].[ManualKeyForeignTable]    Script Date: 7/5/2017 9:18:25 PM ******/
 SET ANSI_NULLS ON
 GO
+
 SET QUOTED_IDENTIFIER ON
 GO
+
 CREATE TABLE [dbo].[ManualKeyForeignTable](
 	[UserId] [uniqueidentifier] NOT NULL,
 	[FirstForeignKey] [int] NULL,
@@ -118,11 +122,18 @@ CREATE TABLE [dbo].[ManualKeyForeignTable](
 	[ForeignKey2] [int] NULL,
 	[AShort] [smallint] NOT NULL,
 	[ALong] [bigint] NOT NULL,
+	[AGuid] [uniqueidentifier] NOT NULL,
  CONSTRAINT [PK_ManualKeyForeignTable] PRIMARY KEY CLUSTERED 
 (
 	[UserId] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[ManualKeyForeignTable]  WITH CHECK ADD  CONSTRAINT [FK_ManualKeyForeignTable_ManualKeyPrimaryTable] FOREIGN KEY([FirstForeignKey], [ForeignKey1], [ForeignKey2])
+REFERENCES [dbo].[ManualKeyPrimaryTable] ([Tester], [Key1], [Key2])
+GO
+
+ALTER TABLE [dbo].[ManualKeyForeignTable] CHECK CONSTRAINT [FK_ManualKeyForeignTable_ManualKeyPrimaryTable]
 GO
 /****** Object:  Table [dbo].[ManualKeyPrimaryTable]    Script Date: 7/2/2017 2:40:38 PM ******/
 SET ANSI_NULLS ON

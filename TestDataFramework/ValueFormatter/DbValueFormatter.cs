@@ -72,7 +72,8 @@ namespace TestDataFramework.ValueFormatter
             {typeof (float), DbValueFormatter.FloatFomatter},
             {typeof (bool), DbValueFormatter.BoolFormatter},
             {typeof (DateTime), DbValueFormatter.DateTimeFormatter},
-            {typeof (byte), DbValueFormatter.ByteFormatter}
+            {typeof (byte), DbValueFormatter.ByteFormatter},
+            {typeof (Guid), DbValueFormatter.GuidFormatter},
         };
 
         private static string IntFormatter(object value)
@@ -138,6 +139,12 @@ namespace TestDataFramework.ValueFormatter
         {
             DbValueFormatter.Logger.Debug("Executing ByteFormatter");
             return ((byte)value).ToString(NumberFormatInfo.InvariantInfo);
+        }
+
+        private static string GuidFormatter(object value)
+        {
+            DbValueFormatter.Logger.Debug("Executing GuidFormatter");
+            return $"'{value}'";
         }
 
         #endregion Formatters

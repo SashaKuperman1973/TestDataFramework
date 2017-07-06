@@ -36,7 +36,7 @@ namespace TestDataFramework.Populator.Concrete
     {
         private static readonly ILog Logger = StandardLogManager.GetLogger(typeof (RecordReference<T>));
 
-        internal readonly ConcurrentDictionary<PropertyInfo, Action<T>> ExplicitProperySetters =
+        protected internal readonly ConcurrentDictionary<PropertyInfo, Action<T>> ExplicitProperySetters =
             new ConcurrentDictionary<PropertyInfo, Action<T>>(
                 RecordReference<T>.ExplicitPropertySetterEqualityComparerObject);
 
@@ -112,12 +112,12 @@ namespace TestDataFramework.Populator.Concrete
                 throw new SetExpressionException(Messages.MustBePropertyAccess);
             }
 
-            Action<T> setter = @object => propertyInfo.SetValue(@object, valueFactory());
+            void Setter(T @object) => propertyInfo.SetValue(@object, valueFactory());
 
-            this.ExplicitProperySetters.AddOrUpdate(propertyInfo, setter, (pi, lambda) =>
+            this.ExplicitProperySetters.AddOrUpdate(propertyInfo, Setter, (pi, lambda) =>
             {
                 RecordReference<T>.Logger.Debug("Updatng explicitProperySetters dictionary");
-                return setter;
+                return Setter;
             });
 
             RecordReference<T>.Logger.Debug("Exiting Set(fieldExpression, valueFactory)");
@@ -151,7 +151,7 @@ namespace TestDataFramework.Populator.Concrete
 
             void Setter(T @object) => propertyInfo.SetValue(@object, RecordReference<T>.ChooseElementInRange(rangeFactory()));
 
-            this.ExplicitProperySetters.AddOrUpdate(propertyInfo, (Action<T>) Setter, (pi, lambda) =>
+            this.ExplicitProperySetters.AddOrUpdate(propertyInfo, Setter, (pi, lambda) =>
             {
                 RecordReference<T>.Logger.Debug("Updatng explicitProperySetters dictionary");
                 return Setter;

@@ -44,8 +44,6 @@ namespace TestDataFramework.Populator
             this.AttributeDecorator = attributeDecorator;
         }
 
-        #region Public fields/properties
-
         public virtual object RecordObject { get; protected internal set; }
 
         protected internal virtual Func<object> PreBoundObject { get; set; }
@@ -53,8 +51,6 @@ namespace TestDataFramework.Populator
         protected internal virtual Type RecordType { get; protected set; }
 
         protected internal readonly IEnumerable<RecordReference> PrimaryKeyReferences = new List<RecordReference>();
-
-        #endregion Public fields/properties
 
         #region Public methods
 

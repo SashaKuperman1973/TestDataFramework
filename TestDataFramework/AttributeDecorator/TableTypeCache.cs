@@ -118,7 +118,19 @@ namespace TestDataFramework.AttributeDecorator
                     return;
                 }
 
-                loadedAssembly.DefinedTypes.ToList().ForEach(definedType =>
+                List<TypeInfo> loadedAssemblyTypes;
+
+                try
+                {
+                    loadedAssemblyTypes = loadedAssembly.DefinedTypes.ToList();
+                }
+                catch (ReflectionTypeLoadException exception)
+                {
+                    Logger.Warn($"TestDataFramework - PopulateAssemblyCache: {exception.Message}");
+                    return;
+                }
+
+                loadedAssemblyTypes.ForEach(definedType =>
                 {
 
                     TableAttribute tableAttribute = getTableAttibute(definedType);

@@ -293,7 +293,7 @@ namespace TestDataFramework.ValueGenerator
 
             long? min = minAttribute?.Min;
 
-            DateTime result = this.ValueProvider.GetDateTime((PastOrFuture?)pastOrFuture, this.ValueProvider.GetLongInteger, min, max);
+            DateTime result = this.ValueProvider.GetDateTime(pastOrFuture, this.ValueProvider.GetLongInteger, min, max);
 
             BaseValueGenerator.Logger.Debug("Exiting GetDateTime");
             return result;

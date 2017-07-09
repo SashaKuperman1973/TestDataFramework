@@ -35,11 +35,14 @@ namespace CommonIntegrationTests.Tests
     {
         private PopulatorFactory factory;
 
+        public SqlClientAndMemoryTests()
+        {
+            XmlConfigurator.Configure();
+        }
+
         [TestInitialize]
         public void Initialize()
         {
-            XmlConfigurator.Configure();
-
             this.factory = new PopulatorFactory();
         }
 
@@ -105,6 +108,8 @@ namespace CommonIntegrationTests.Tests
 
             Console.WriteLine(result[1].RecordObject.Key);
             Console.WriteLine(result[1].RecordObject.GuidKey);
+
+            Console.WriteLine(result[1].RecordObject.DateTime.Millisecond);
         }
     }
 }

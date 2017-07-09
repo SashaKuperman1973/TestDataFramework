@@ -134,6 +134,34 @@ namespace TestDataFramework.ValueGenerator
 
         protected abstract object GetGuid(PropertyInfo propertyInfo);
 
+        protected virtual object GetDateTime(PropertyInfo propertyInfo)
+        {
+            BaseValueGenerator.Logger.Debug("Entering GetDateTime");
+
+            PastOrFutureAttribute pastOrFutureAttribute = propertyInfo != null
+                ? this.AttributeDecorator.GetCustomAttribute<PastOrFutureAttribute>(propertyInfo)
+                : null;
+
+            PastOrFuture? pastOrFuture = pastOrFutureAttribute?.PastOrFuture;
+
+            MaxAttribute maxAttribute = propertyInfo != null
+                ? this.AttributeDecorator.GetCustomAttribute<MaxAttribute>(propertyInfo)
+                : null;
+
+            long? max = maxAttribute?.Max;
+
+            MinAttribute minAttribute = propertyInfo != null
+                ? this.AttributeDecorator.GetCustomAttribute<MinAttribute>(propertyInfo)
+                : null;
+
+            long? min = minAttribute?.Min;
+
+            DateTime result = this.ValueProvider.GetDateTime(pastOrFuture, this.ValueProvider.GetLongInteger, min, max);
+
+            BaseValueGenerator.Logger.Debug("Exiting GetDateTime");
+            return result;
+        }
+
         private object GetString(PropertyInfo propertyInfo)
         {
             BaseValueGenerator.Logger.Debug("Entering GetString");
@@ -268,34 +296,6 @@ namespace TestDataFramework.ValueGenerator
             short result = this.ValueProvider.GetShortInteger((short?)max);
 
             BaseValueGenerator.Logger.Debug("Exiting GetShort");
-            return result;
-        }
-
-        private object GetDateTime(PropertyInfo propertyInfo)
-        {
-            BaseValueGenerator.Logger.Debug("Entering GetDateTime");
-
-            PastOrFutureAttribute pastOrFutureAttribute = propertyInfo != null
-                ? this.AttributeDecorator.GetCustomAttribute<PastOrFutureAttribute>(propertyInfo)
-                : null;
-
-            PastOrFuture? pastOrFuture = pastOrFutureAttribute?.PastOrFuture;
-
-            MaxAttribute maxAttribute = propertyInfo != null
-                ? this.AttributeDecorator.GetCustomAttribute<MaxAttribute>(propertyInfo)
-                : null;
-
-            long? max = maxAttribute?.Max;
-
-            MinAttribute minAttribute = propertyInfo != null
-                ? this.AttributeDecorator.GetCustomAttribute<MinAttribute>(propertyInfo)
-                : null;
-
-            long? min = minAttribute?.Min;
-
-            DateTime result = this.ValueProvider.GetDateTime(pastOrFuture, this.ValueProvider.GetLongInteger, min, max);
-
-            BaseValueGenerator.Logger.Debug("Exiting GetDateTime");
             return result;
         }
 

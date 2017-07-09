@@ -45,5 +45,15 @@ namespace TestDataFramework.ValueGenerator.Concrete
 
             return default(Guid); 
         }
+
+        protected override object GetDateTime(PropertyInfo propertyInfo)
+        {
+            var baseDateTime = (DateTime) base.GetDateTime(propertyInfo);
+
+            DateTime result = baseDateTime.Date.Add(new TimeSpan(baseDateTime.Hour, baseDateTime.Minute, baseDateTime.Second));
+            result = result.AddMilliseconds(baseDateTime.TimeOfDay.Milliseconds);
+
+            return result;
+        }
     }
 }

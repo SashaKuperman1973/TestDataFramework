@@ -130,7 +130,7 @@ namespace TestDataFramework.ValueFormatter
             DbValueFormatter.Logger.Debug("Executing DateTimeFormatter");
 
             var dateTime = (DateTime)value;
-            string result = "'" + dateTime.ToString("s") + "'";
+            string result = "'" + dateTime.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff") + "'";
 
             return result;
         }

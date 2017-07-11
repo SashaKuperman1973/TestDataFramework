@@ -47,13 +47,13 @@ namespace TestDataFramework.Populator.Concrete
         {
             public bool Equals(PropertyInfo x, PropertyInfo y)
             {
-                bool result = x.DeclaringType == y.DeclaringType && x.Name.Equals(y.Name, StringComparison.Ordinal);
+                bool result = x.Name.Equals(y.Name, StringComparison.Ordinal);
                 return result;
             }
 
             public int GetHashCode(PropertyInfo obj)
             {
-                int result = obj.DeclaringType.GetHashCode() ^ obj.Name.GetHashCode();
+                int result = obj.Name.GetHashCode();
                 return result;
             }
         }

@@ -99,17 +99,23 @@ namespace CommonIntegrationTests.Tests
                 @"Data Source=localhost;Initial Catalog=TestDataFramework;Integrated Security=SSPI;",
                 mustBeInATransaction: false);
 
+            Guid g = Guid.NewGuid();
+
             IList<RecordReference<SubjectClass>> result = populator.Add<SubjectClass>(2);
+
+            Go(result, g);
 
             populator.Bind();
 
-            Console.WriteLine(result[0].RecordObject.Key);
+            Console.WriteLine(g);
+
             Console.WriteLine(result[0].RecordObject.GuidKey);
-
-            Console.WriteLine(result[1].RecordObject.Key);
             Console.WriteLine(result[1].RecordObject.GuidKey);
+        }
 
-            Console.WriteLine(result[1].RecordObject.DateTime.Millisecond);
+        private static void Go<T>(IList<RecordReference<T>> x, Guid g) where T : IGuider
+        {
+            x.ToList().ForEach(y => y.Set(p => p.GuidKey, g));
         }
     }
 }

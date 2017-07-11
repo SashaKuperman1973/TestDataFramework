@@ -24,8 +24,13 @@ using TestDataFramework.ValueProvider.Interfaces;
 
 namespace CommonIntegrationTests.TestModels
 {
+    public interface IGuider
+    {
+        Guid GuidKey { get; set; }
+    }
+
     [Table("Subject")]
-    public class SubjectClass
+    public class SubjectClass : IGuider
     {
         public const int StringLength = 5;
         public const int Precision = 4;

@@ -18,6 +18,7 @@
 */
 
 using System;
+using System.Collections.Generic;
 using TestDataFramework.HandledTypeGenerator;
 using TestDataFramework.Populator.Concrete;
 using TestDataFramework.ValueGenerator.Interfaces;
@@ -37,5 +38,7 @@ namespace TestDataFramework.Populator.Interfaces
         void Extend(Type type, HandledTypeValueGetter valueGetter);
 
         IValueGenerator ValueGenerator { get; }
+
+        void Clear();
     }
 }

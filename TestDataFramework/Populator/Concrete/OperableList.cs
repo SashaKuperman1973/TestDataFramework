@@ -1,10 +1,26 @@
-﻿using System;
+﻿/*
+    Copyright 2016, 2017 Alexander Kuperman
+
+    This file is part of TestDataFramework.
+
+    TestDataFramework is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    TestDataFramework is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Castle.Components.DictionaryAdapter;
 using TestDataFramework.ListOperations;
 
 namespace TestDataFramework.Populator.Concrete
@@ -12,6 +28,7 @@ namespace TestDataFramework.Populator.Concrete
     public abstract class OperableList
     {
         protected internal abstract void Bind();
+        public bool IsProcessed { get; protected internal set; }
     }
 
     public class GuaranteedValues
@@ -28,24 +45,28 @@ namespace TestDataFramework.Populator.Concrete
         private readonly List<RecordReference<T>> internalList;
         private readonly ValueGuaranteePopulator valueGuaranteePopulator;
 
-        public OperableList(ValueGuaranteePopulator valueGuaranteePopulator)
+        protected BasePopulator Populator;
+
+        public OperableList(ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator)
         {
             this.internalList = new List<RecordReference<T>>();
             this.valueGuaranteePopulator = valueGuaranteePopulator;
+            this.Populator = populator;
         }
 
-        public OperableList(IEnumerable<RecordReference<T>> input, ValueGuaranteePopulator valueGuaranteePopulator)
+        public OperableList(IEnumerable<RecordReference<T>> input, ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator)
         {            
             this.internalList = new List<RecordReference<T>>(input);
             this.valueGuaranteePopulator = valueGuaranteePopulator;
+            this.Populator = populator;
         }
 
-        public virtual OperableList<T> GuaranteeByPercentageOfTotal(IEnumerable<object> guaranteedValues, int frequencyPercentage = 10)
+        public virtual OperableList<T> GuaranteeByPercentageOfTotal<TValue>(IEnumerable<TValue> guaranteedValues, int frequencyPercentage = 10)
         {
             this.guaranteedValues.Add(new GuaranteedValues
             {
                 FrequencyPercentage = frequencyPercentage,
-                Values = guaranteedValues,
+                Values = guaranteedValues.Cast<object>(),
             });
 
             return this;
@@ -73,8 +94,10 @@ namespace TestDataFramework.Populator.Concrete
             return this;
         }
 
-        public virtual OperableList<T> GuaranteeByFixedQuantity(IEnumerable<object> guaranteedValues, int fixedQuantity = 0)
+        public virtual OperableList<T> GuaranteeByFixedQuantity<TValue>(IEnumerable<TValue> guaranteedValues, int fixedQuantity = 0)
         {
+            guaranteedValues = guaranteedValues.ToList();
+
             if (fixedQuantity == 0)
             {
                 fixedQuantity = guaranteedValues.Count();
@@ -83,7 +106,7 @@ namespace TestDataFramework.Populator.Concrete
             this.guaranteedValues.Add(new GuaranteedValues
             {
                 TotalFrequency = fixedQuantity,
-                Values = guaranteedValues,
+                Values = guaranteedValues.Cast<object>(),
             });
 
             return this;
@@ -91,6 +114,8 @@ namespace TestDataFramework.Populator.Concrete
 
         public virtual OperableList<T> GuaranteeByFixedQuantity(IEnumerable<Func<T>> guaranteedValues, int fixedQuantity = 0)
         {
+            guaranteedValues = guaranteedValues.ToList();
+
             if (fixedQuantity == 0)
             {
                 fixedQuantity = guaranteedValues.Count();
@@ -107,6 +132,8 @@ namespace TestDataFramework.Populator.Concrete
 
         public virtual OperableList<T> GuaranteeByFixedQuantity(IEnumerable<T> guaranteedValues, int fixedQuantity = 0)
         {
+            guaranteedValues = guaranteedValues.ToList();
+
             if (fixedQuantity == 0)
             {
                 fixedQuantity = guaranteedValues.Count();
@@ -131,6 +158,26 @@ namespace TestDataFramework.Populator.Concrete
             this.valueGuaranteePopulator.Bind(this, this.guaranteedValues);
         }
 
+        public IEnumerable<T> BindAndMake()
+        {
+            this.Populator.Bind();
+            IEnumerable<T> result = OperableList<T>.GetRecordObjects(this.internalList);
+            return result;
+        }
+
+        public IEnumerable<T> Make()
+        {
+            this.Populator.Bind(this);
+            IEnumerable<T> result = OperableList<T>.GetRecordObjects(this.internalList);
+            return result;
+        }
+
+        private static IEnumerable<T> GetRecordObjects(List<RecordReference<T>> internalList)
+        {
+            List<T> result = internalList.Select(reference => reference.RecordObject).ToList();
+            return result;
+        }
+
         #region IList<> members
 
         public IEnumerator<RecordReference<T>> GetEnumerator()
@@ -149,9 +196,14 @@ namespace TestDataFramework.Populator.Concrete
 
         }
 
+        public int Count => this.internalList.Count;
+
+        public bool IsReadOnly => ((IList)this.internalList).IsReadOnly;
+
         public void Clear()
         {
             this.internalList.Clear();
+            this.guaranteedValues.Clear();
         }
 
         public bool Contains(RecordReference<T> item)
@@ -169,8 +221,6 @@ namespace TestDataFramework.Populator.Concrete
             return this.internalList.Remove(item);
         }
 
-        public int Count => this.internalList.Count;
-        public bool IsReadOnly => ((IList) this.internalList).IsReadOnly;
         public int IndexOf(RecordReference<T> item)
         {
             return this.internalList.IndexOf(item);

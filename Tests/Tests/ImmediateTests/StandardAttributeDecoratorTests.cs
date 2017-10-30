@@ -26,7 +26,10 @@ using Moq;
 using TestDataFramework;
 using TestDataFramework.AttributeDecorator;
 using TestDataFramework.Exceptions;
+using TestDataFramework.HandledTypeGenerator;
 using TestDataFramework.Populator;
+using TestDataFramework.Populator.Concrete;
+using TestDataFramework.ValueGenerator.Interfaces;
 using Tests.TestModels;
 using Tests.TestModels.Simple;
 
@@ -39,6 +42,42 @@ namespace Tests.Tests.ImmediateTests
         {
             public Populator(IAttributeDecorator attributeDecorator) : base(attributeDecorator)
             { }
+
+            public override void Bind()
+            {
+                throw new NotImplementedException();
+            }
+
+            protected internal override void Bind(RecordReference recordReference)
+            {
+                throw new NotImplementedException();
+            }
+
+            protected internal override void Bind<T>(OperableList<T> operableList)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override OperableList<T> Add<T>(int copies, params RecordReference[] primaryRecordReferences)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override RecordReference<T> Add<T>(params RecordReference[] primaryRecordReferences)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override void Extend(Type type, HandledTypeValueGetter valueGetter)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override IValueGenerator ValueGenerator { get; }
+            public override void Clear()
+            {
+                throw new NotImplementedException();
+            }
         }
 
         private Populator populator;

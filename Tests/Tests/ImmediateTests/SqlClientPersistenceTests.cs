@@ -63,7 +63,9 @@ namespace Tests.Tests.ImmediateTests
 
             var primaryTable = new PrimaryTable { Integer = 5, Text = "Text"};
 
-            var primaryRecordReference = new RecordReference<PrimaryTable>(Helpers.GetTypeGeneratorMock(primaryTable).Object, this.attributeDecorator);
+            var primaryRecordReference =
+                new RecordReference<PrimaryTable>(Helpers.GetTypeGeneratorMock(primaryTable).Object,
+                    this.attributeDecorator, null);
             primaryRecordReference.Populate();
 
             string tableName = typeof(PrimaryTable).Name;
@@ -105,11 +107,15 @@ namespace Tests.Tests.ImmediateTests
             // Arrange
 
             var primaryTable = new PrimaryTable { Integer = 1};
-            var primaryRecordReference = new RecordReference<PrimaryTable>(Helpers.GetTypeGeneratorMock(primaryTable).Object, this.attributeDecorator);
+            var primaryRecordReference =
+                new RecordReference<PrimaryTable>(Helpers.GetTypeGeneratorMock(primaryTable).Object,
+                    this.attributeDecorator, null);
             primaryRecordReference.Populate();
 
             var foreignTable = new ForeignTable {Integer = 1};
-            var foreignRecordReference = new RecordReference<ForeignTable>(Helpers.GetTypeGeneratorMock(foreignTable).Object, this.attributeDecorator);
+            var foreignRecordReference =
+                new RecordReference<ForeignTable>(Helpers.GetTypeGeneratorMock(foreignTable).Object,
+                    this.attributeDecorator, null);
             foreignRecordReference.Populate();
 
             foreignRecordReference.AddPrimaryRecordReference(primaryRecordReference);
@@ -145,10 +151,14 @@ namespace Tests.Tests.ImmediateTests
             var primaryTable = new ManualKeyPrimaryTable {Key1 = "A", Key2 = 7};
             var foreignTable = new ManualKeyForeignTable();
 
-            var primaryRecordReference = new RecordReference<ManualKeyPrimaryTable>(Helpers.GetTypeGeneratorMock(primaryTable).Object, this.attributeDecorator);
+            var primaryRecordReference =
+                new RecordReference<ManualKeyPrimaryTable>(Helpers.GetTypeGeneratorMock(primaryTable).Object,
+                    this.attributeDecorator, null);
             primaryRecordReference.Populate();
 
-            var foreignRecordReference = new RecordReference<ManualKeyForeignTable>(Helpers.GetTypeGeneratorMock(foreignTable).Object, this.attributeDecorator);
+            var foreignRecordReference =
+                new RecordReference<ManualKeyForeignTable>(Helpers.GetTypeGeneratorMock(foreignTable).Object,
+                    this.attributeDecorator, null);
             foreignRecordReference.Populate();
 
             foreignRecordReference.AddPrimaryRecordReference(primaryRecordReference);
@@ -177,11 +187,15 @@ namespace Tests.Tests.ImmediateTests
             // Arrange
 
             var primaryTable = new PrimaryTable();
-            var primaryRecordReference = new RecordReference<PrimaryTable>(Helpers.GetTypeGeneratorMock(primaryTable).Object, this.attributeDecorator);
+            var primaryRecordReference =
+                new RecordReference<PrimaryTable>(Helpers.GetTypeGeneratorMock(primaryTable).Object,
+                    this.attributeDecorator, null);
             primaryRecordReference.Populate();
 
             var foreignTable = new ForeignTable();
-            var foreignRecordReference = new RecordReference<ForeignTable>(Helpers.GetTypeGeneratorMock(foreignTable).Object, this.attributeDecorator);
+            var foreignRecordReference =
+                new RecordReference<ForeignTable>(Helpers.GetTypeGeneratorMock(foreignTable).Object,
+                    this.attributeDecorator, null);
             foreignRecordReference.Populate();
 
             foreignRecordReference.AddPrimaryRecordReference(primaryRecordReference);

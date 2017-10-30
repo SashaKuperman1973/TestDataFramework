@@ -28,6 +28,7 @@ using TestDataFramework.Logger;
 using TestDataFramework.AttributeDecorator;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
+using TestDataFramework.Populator.Interfaces;
 using TestDataFramework.TypeGenerator.Interfaces;
 
 namespace TestDataFramework.Populator.Concrete
@@ -36,7 +37,9 @@ namespace TestDataFramework.Populator.Concrete
     {
         private static readonly ILog Logger = StandardLogManager.GetLogger(typeof (RecordReference<T>));
 
-        protected internal readonly ConcurrentDictionary<PropertyInfo, Action<T>> ExplicitProperySetters =
+        protected BasePopulator Populator;
+
+        protected internal readonly ConcurrentDictionary<PropertyInfo, Action<T>> ExplicitPropertySetters =
             new ConcurrentDictionary<PropertyInfo, Action<T>>(
                 RecordReference<T>.ExplicitPropertySetterEqualityComparerObject);
 
@@ -58,11 +61,13 @@ namespace TestDataFramework.Populator.Concrete
             }
         }
 
-        public RecordReference(ITypeGenerator typeGenerator, IAttributeDecorator attributeDecorator) : base(typeGenerator, attributeDecorator)
+        public RecordReference(ITypeGenerator typeGenerator, IAttributeDecorator attributeDecorator,
+            BasePopulator populator) : base(typeGenerator, attributeDecorator)
         {
             RecordReference<T>.Logger.Debug($"Entering constructor. T: {typeof(T)}");
 
-            this.RecordType = typeof (T);
+            this.RecordType = typeof(T);
+            this.Populator = populator;
 
             RecordReference<T>.Logger.Debug("Exiting constructor");
         }
@@ -73,7 +78,7 @@ namespace TestDataFramework.Populator.Concrete
         {
             RecordReference<T>.Logger.Debug($"Entering IsExplicitlySet. propertyInfo: {propertyInfo}");
 
-            bool result = this.ExplicitProperySetters.ContainsKey(propertyInfo);
+            bool result = this.ExplicitPropertySetters.ContainsKey(propertyInfo);
 
             RecordReference<T>.Logger.Debug("Exiting IsExplicitlySet");
             return result;
@@ -83,7 +88,7 @@ namespace TestDataFramework.Populator.Concrete
         {
             RecordReference<T>.Logger.Debug("Entering Populate");
 
-            base.RecordObject = this.TypeGenerator.GetObject<T>(this.ExplicitProperySetters);
+            base.RecordObject = this.TypeGenerator.GetObject<T>(this.ExplicitPropertySetters);
 
             RecordReference<T>.Logger.Debug("Exiting Populate");
         }
@@ -114,7 +119,7 @@ namespace TestDataFramework.Populator.Concrete
 
             void Setter(T @object) => propertyInfo.SetValue(@object, valueFactory());
 
-            this.ExplicitProperySetters.AddOrUpdate(propertyInfo, Setter, (pi, lambda) =>
+            this.ExplicitPropertySetters.AddOrUpdate(propertyInfo, Setter, (pi, lambda) =>
             {
                 RecordReference<T>.Logger.Debug("Updatng explicitProperySetters dictionary");
                 return Setter;
@@ -151,7 +156,7 @@ namespace TestDataFramework.Populator.Concrete
 
             void Setter(T @object) => propertyInfo.SetValue(@object, RecordReference<T>.ChooseElementInRange(rangeFactory()));
 
-            this.ExplicitProperySetters.AddOrUpdate(propertyInfo, Setter, (pi, lambda) =>
+            this.ExplicitPropertySetters.AddOrUpdate(propertyInfo, Setter, (pi, lambda) =>
             {
                 RecordReference<T>.Logger.Debug("Updatng explicitProperySetters dictionary");
                 return Setter;
@@ -159,6 +164,18 @@ namespace TestDataFramework.Populator.Concrete
 
             RecordReference<T>.Logger.Debug("Exiting SetRange(fieldExpression, rangeFactory)");
             return this;
+        }
+
+        public virtual T BindAndMake()
+        {
+            this.Populator.Bind();
+            return this.RecordObject;
+        }
+
+        public virtual T Make()
+        {
+            this.Populator.Bind(this);
+            return this.RecordObject;
         }
 
         private static TPropertyType ChooseElementInRange<TPropertyType>(IEnumerable<TPropertyType> elements)

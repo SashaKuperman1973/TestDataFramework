@@ -19,24 +19,37 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using log4net;
 using TestDataFramework.Logger;
 using TestDataFramework.AttributeDecorator;
+using TestDataFramework.HandledTypeGenerator;
+using TestDataFramework.Populator.Concrete;
+using TestDataFramework.Populator.Interfaces;
+using TestDataFramework.ValueGenerator.Interfaces;
 
 namespace TestDataFramework.Populator
 {
-    public abstract class BasePopulator
+    public abstract class BasePopulator : IPopulator
     {
         private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(BasePopulator));
 
         protected readonly IAttributeDecorator AttributeDecorator;
 
-        private readonly ConcurrentDictionary<Type, Decorator> decoratorDictionary = new ConcurrentDictionary<Type, Decorator>();
+        protected readonly ConcurrentDictionary<Type, Decorator> DecoratorDictionary = new ConcurrentDictionary<Type, Decorator>();
 
         protected BasePopulator(IAttributeDecorator attributeDecorator)
         {
             this.AttributeDecorator = attributeDecorator;
+        }
+
+        internal void AddToDecoratorDictionary(IDictionary<Type, Decorator> decoratorDictionary)
+        {
+            foreach (KeyValuePair<Type, Decorator> kvp in decoratorDictionary)
+            {
+                this.DecoratorDictionary.TryAdd(kvp.Key, kvp.Value);
+            }
         }
 
         public class Decorator { }
@@ -73,14 +86,31 @@ namespace TestDataFramework.Populator
             }
         }
 
+
         public Decorator<T> DecorateType<T>()
         {
             BasePopulator.Logger.Debug("Entering DecorateType<T>");
 
-            Decorator result = this.decoratorDictionary.GetOrAdd(typeof (T), new Decorator<T>(this.AttributeDecorator));
+            Decorator result = this.DecoratorDictionary.GetOrAdd(typeof (T), new Decorator<T>(this.AttributeDecorator));
 
             BasePopulator.Logger.Debug("Exiting DecorateType<T>");
             return (Decorator<T>)result;
         }
+
+        public abstract void Bind();
+
+        protected internal abstract void Bind(RecordReference recordReference);
+
+        protected internal abstract void Bind<T>(OperableList<T> operableList);
+        
+        public abstract OperableList<T> Add<T>(int copies, params RecordReference[] primaryRecordReferences);
+
+        public abstract RecordReference<T> Add<T>(params RecordReference[] primaryRecordReferences);
+
+        public abstract void Extend(Type type, HandledTypeValueGetter valueGetter);
+
+        public abstract IValueGenerator ValueGenerator { get; }
+
+        public abstract void Clear();
     }
 }

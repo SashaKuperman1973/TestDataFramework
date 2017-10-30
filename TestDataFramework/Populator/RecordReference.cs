@@ -46,14 +46,6 @@ namespace TestDataFramework.Populator
 
         public virtual object RecordObject { get; protected internal set; }
 
-        protected internal virtual Func<object> PreBoundObject { get; set; }
-
-        protected internal virtual Type RecordType { get; protected set; }
-
-        protected internal readonly IEnumerable<RecordReference> PrimaryKeyReferences = new List<RecordReference>();
-
-        #region Public methods
-
         public virtual void AddPrimaryRecordReference(params RecordReference[] primaryRecordReferences)
         {
             RecordReference.Logger.Debug("Entering AddPrimaryRecordReference(RecordReference[])");
@@ -78,9 +70,15 @@ namespace TestDataFramework.Populator
             RecordReference.Logger.Debug("Exiting AddPrimaryRecordReference(RecordReference)");
         }
 
-        protected internal abstract bool IsExplicitlySet(PropertyInfo propertyInfo);
+        public virtual bool IsProcessed { get; protected internal set; }
 
-        #endregion Public methods
+        protected internal virtual Func<object> PreBoundObject { get; set; }
+
+        protected internal virtual Type RecordType { get; protected set; }
+
+        protected internal readonly IEnumerable<RecordReference> PrimaryKeyReferences = new List<RecordReference>();
+
+        protected internal abstract bool IsExplicitlySet(PropertyInfo propertyInfo);
 
         protected virtual bool ValidateRelationship(RecordReference primaryRecordReference)
         {

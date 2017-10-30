@@ -38,6 +38,7 @@ using TestDataFramework.Helpers.Interfaces;
 using TestDataFramework.ListOperations;
 using TestDataFramework.Persistence.Concrete;
 using TestDataFramework.Persistence.Interfaces;
+using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete;
 using TestDataFramework.Populator.Interfaces;
 using TestDataFramework.PropertyValueAccumulator;
@@ -259,14 +260,14 @@ namespace TestDataFramework.Factories
 
             commonContainer.Register(
 
-            #region Common Region
+                #region Common Region
 
-            #region Delegates
+                #region Delegates
 
                 Component.For<Func<ITableTypeCacheService, TableTypeCache>>()
                     .Instance(attributeDecorator => new TableTypeCache(x => attributeDecorator)),
 
-            #endregion Delegates
+                #endregion Delegates
 
                 Component.For<IPopulator>().ImplementedBy<StandardPopulator>()
                     .DependsOn(ServiceOverride.ForKey<ITypeGenerator>().Eq(PopulatorFactory.StandardTypeGenerator))
@@ -315,9 +316,9 @@ namespace TestDataFramework.Factories
                 Component.For<ValueGuaranteePopulator>().ImplementedBy<ValueGuaranteePopulator>(),
 
 
-            #endregion Common Region
+                #endregion Common Region
 
-            #region Handled Type Generator
+                #region Handled Type Generator
 
                 Component.For<IHandledTypeGenerator>()
                     .ImplementedBy<StandardHandledTypeGenerator>()
@@ -358,7 +359,7 @@ namespace TestDataFramework.Factories
 
                 #endregion Handled Type Generator
 
-                );
+            );
 
             if (defaultSchema != null)
             {

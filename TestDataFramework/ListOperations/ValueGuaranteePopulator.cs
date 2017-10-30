@@ -40,7 +40,7 @@ namespace TestDataFramework.ListOperations
             }
 
             List<RecordReference<T>> workingList  =
-                references.Where(reference => !reference.ExplicitProperySetters.Any()).ToList();
+                references.Where(reference => !reference.ExplicitPropertySetters.Any()).ToList();
 
             List<Tuple<IEnumerable<object>, int>> valuesPerPercentageSet =
                 guaranteedValuesList.Where(valueSet => valueSet.FrequencyPercentage.HasValue)
@@ -79,14 +79,13 @@ namespace TestDataFramework.ListOperations
 
             foreach (Tuple<List<object>, int> valueAndPopulationQuantity in allValues)
             {
-                int valueIndex = 0;
-                for (int i = 0; i < valueAndPopulationQuantity.Item2; i++)
+                for (int valueIndex = 0; valueIndex < valueAndPopulationQuantity.Item2; valueIndex++)
                 {
                     int referenceIndex = random.Next(workingList.Count);
                     RecordReference reference = workingList[referenceIndex];
 
                     object subject =
-                        valueAndPopulationQuantity.Item1[valueIndex++%valueAndPopulationQuantity.Item1.Count];
+                        valueAndPopulationQuantity.Item1[valueIndex%valueAndPopulationQuantity.Item1.Count];
 
                     Func<object> objectFunc;
 

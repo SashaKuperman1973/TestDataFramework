@@ -30,7 +30,6 @@ using TestDataFramework.Populator.Interfaces;
 
 namespace CommonIntegrationTests.Tests
 {
-    //[Ignore]
     [TestClass]
     public class MemoryTest
     {
@@ -107,8 +106,8 @@ namespace CommonIntegrationTests.Tests
                     .GuaranteeByPercentageOfTotal(new object[]
                     {
                         new ForeignSubjectClass {SecondInteger = 777},
-                        (Func<ForeignSubjectClass>)
-                        (() => new ForeignSubjectClass {SecondInteger = subjectReference[1].RecordObject.IntegerWithMax}),
+                        //(Func<ForeignSubjectClass>)
+                        //(() => new ForeignSubjectClass {SecondInteger = subjectReference[1].RecordObject.IntegerWithMax}),
                         new ForeignSubjectClass {SecondInteger = 999},
                     }, 50)
                     .GuaranteeByFixedQuantity(new object[]
@@ -221,6 +220,165 @@ namespace CommonIntegrationTests.Tests
                     reference =>
                         Console.WriteLine(reference.RecordObject.AnEmailAddress + "\r\n" + reference.RecordObject.Text +
                                           "\r\n"));
+        }
+
+        [TestMethod]
+        public void StandardPopulator_RecordReference_Make_Test()
+        {
+            // Arrange
+
+            IPopulator populator = StaticPopulatorFactory.CreateMemoryPopulator();
+
+            // Act
+
+            RecordReference<SubjectClass> reference = populator.Add<SubjectClass>();
+            RecordReference<SubjectClass> subjectReference = populator.Add<SubjectClass>();
+            SubjectClass subject = subjectReference.Make();
+
+            // Assert
+
+            Assert.IsNotNull(subject);
+            Assert.IsNull(reference.RecordObject);
+
+            // Act
+
+            populator.Bind();
+
+            // Assert
+
+            Assert.IsNotNull(reference.RecordObject);
+            Assert.IsNotNull(subject);
+            Assert.AreEqual(subject, subjectReference.RecordObject);
+        }
+
+        [TestMethod]
+        public void SingleResult_BindAndMake_Test()
+        {
+            MemoryTest.MemoryPopulator_BindAndMake_Test(
+                populator => populator.Add<SubjectClass>().BindAndMake(),
+                Assert.IsNotNull
+            );
+        }
+
+        [TestMethod]
+        public void ResultSet_BindAndMake_Test()
+        {
+            MemoryTest.MemoryPopulator_BindAndMake_Test(
+                populator => populator.Add<SubjectClass>(4).BindAndMake(),
+                resultSet => resultSet.ToList().ForEach(Assert.IsNotNull)
+            );
+        }
+
+        private static void MemoryPopulator_BindAndMake_Test<T>(Func<IPopulator, T> bindAndMake, Action<T> assertion)
+        {
+            // Arrange
+
+            IPopulator populator = StaticPopulatorFactory.CreateMemoryPopulator();
+
+            // Act
+
+            RecordReference<SubjectClass> singleSubjectReferenceBeforeBind = populator.Add<SubjectClass>();
+            OperableList<SubjectClass> subjectReferenceSetBeforeBind = populator.Add<SubjectClass>(4);
+
+            T result = bindAndMake(populator);
+
+            SubjectClass singleSubjectBeforeBind = singleSubjectReferenceBeforeBind.RecordObject;
+
+            IEnumerable<SubjectClass> subjectSetBeforeBind =
+                subjectReferenceSetBeforeBind.Select(reference => reference.RecordObject).ToList();
+
+            RecordReference<SubjectClass> singleSubjectAfterBind = populator.Add<SubjectClass>();
+            OperableList<SubjectClass> subjectSetAfterBind = populator.Add<SubjectClass>(4);
+
+            // Assert
+
+            assertion(result);
+
+            // Assert that BindAndMake() results in previously added objects being populated.
+            Assert.IsNotNull(singleSubjectReferenceBeforeBind.RecordObject);
+            subjectReferenceSetBeforeBind.ToList().ForEach(reference => Assert.IsNotNull(reference.RecordObject));
+
+            // Assert that RecordReferences added after BindAndMake() are not populated.
+            Assert.IsNull(singleSubjectAfterBind.RecordObject);
+            subjectSetAfterBind.ToList().ForEach(subject => Assert.IsNull(subject.RecordObject));
+
+            // Act
+
+            populator.Bind();
+
+            // Assert
+
+            // Assert that objects populated by BindAndMake are not repopulated/reprocessed during Bind().
+            Assert.AreEqual(singleSubjectBeforeBind, singleSubjectReferenceBeforeBind.RecordObject);
+            for (int i = 0; i < subjectSetBeforeBind.Count(); i++)
+            {
+                Assert.AreEqual(subjectSetBeforeBind.ElementAt(i), subjectReferenceSetBeforeBind[i].RecordObject);
+            }
+
+            // Assert that RecordRefernces that are not populated after BindAndMake() are populated after Bind().
+            Assert.IsNotNull(singleSubjectAfterBind.RecordObject);
+            subjectSetAfterBind.ToList().ForEach(subject => Assert.IsNotNull(subject.RecordObject));
+        }
+
+        [TestMethod]
+        public void SingleResult_Make_Test()
+        {
+            MemoryTest.MemoryPopulator_Make_Test(
+                populator => populator.Add<SubjectClass>().Make(),
+                Assert.IsNotNull
+            );
+        }
+
+        [TestMethod]
+        public void ResultSet_Make_Test()
+        {
+            MemoryTest.MemoryPopulator_Make_Test(
+                populator => populator.Add<SubjectClass>(4).Make(),
+                resultSet => resultSet.ToList().ForEach(Assert.IsNotNull)
+            );
+        }
+
+        private static void MemoryPopulator_Make_Test<T>(Func<IPopulator, T> make, Action<T> assertion)
+        {
+            // Arrange
+
+            IPopulator populator = StaticPopulatorFactory.CreateMemoryPopulator();
+
+            // Act
+
+            RecordReference<SubjectClass> singleSubjectReferenceBeforeBind = populator.Add<SubjectClass>();
+            OperableList<SubjectClass> subjectReferenceSetBeforeBind = populator.Add<SubjectClass>(4);
+
+            T result = make(populator);
+
+            RecordReference<SubjectClass> singleSubjectAfterBind = populator.Add<SubjectClass>();
+            OperableList<SubjectClass> subjectSetAfterBind = populator.Add<SubjectClass>(4);
+
+            // Assert
+
+            assertion(result);
+
+            // Assert that Make() results in previously added objects not being populated.
+            Assert.IsNull(singleSubjectReferenceBeforeBind.RecordObject);
+            subjectReferenceSetBeforeBind.ToList().ForEach(reference => Assert.IsNull(reference.RecordObject));
+
+            // Assert that RecordReferences added after Make() are not populated.
+            Assert.IsNull(singleSubjectAfterBind.RecordObject);
+            subjectSetAfterBind.ToList().ForEach(subject => Assert.IsNull(subject.RecordObject));
+
+            // Act
+
+            populator.Bind();
+
+            // Assert
+
+            // Assert that objects not populated by Make() are populated during Bind().
+            Assert.IsNotNull(singleSubjectReferenceBeforeBind.RecordObject);
+            subjectReferenceSetBeforeBind.ToList().ForEach(reference => Assert.IsNotNull(reference.RecordObject));
+
+            // Assert that RecordRefernces that are not populated after Make() are populated after Bind().
+            Assert.IsNotNull(singleSubjectAfterBind.RecordObject);
+            subjectSetAfterBind.ToList().ForEach(subject => Assert.IsNotNull(subject.RecordObject));
         }
     }
 }

@@ -29,7 +29,6 @@ using TestDataFramework.Populator.Interfaces;
 
 namespace CommonIntegrationTests.Tests
 {
-    //[Ignore]
     [TestClass]
     public class SqlClientAndMemoryTests
     {
@@ -72,7 +71,36 @@ namespace CommonIntegrationTests.Tests
             Console.WriteLine("Here");
         }
 
-        //[Ignore]
+        [TestMethod]
+        public void Make_With_Reference_Test()
+        {
+            IPopulator populator = this.factory.CreateMemoryPopulator();
+
+            OperableList<PrimaryTable> primary = populator.Add<PrimaryTable>(2);
+
+            populator.Bind();
+
+            List<ForeignTable> foreignA = populator.Add<ForeignTable>(2, primary[0]).Make().ToList();
+            List<ForeignTable> foreignB = populator.Add<ForeignTable>(2, primary[1]).Make().ToList();
+
+            primary.ToList().ForEach(element =>
+            {
+                Console.WriteLine(element.RecordObject.Key1);
+                Console.WriteLine(element.RecordObject.Key2);
+            });
+
+            Console.WriteLine(foreignA[0].ForeignKeyA1);
+            Console.WriteLine(foreignA[0].ForeignKeyA2);
+            Console.WriteLine(foreignA[1].ForeignKeyA1);
+            Console.WriteLine(foreignA[1].ForeignKeyA2);
+
+            Console.WriteLine(foreignB[0].ForeignKeyA1);
+            Console.WriteLine(foreignB[0].ForeignKeyA2);
+            Console.WriteLine(foreignB[1].ForeignKeyA1);
+            Console.WriteLine(foreignB[1].ForeignKeyA2);
+        }
+
+        [Ignore]
         [TestMethod]
         public void ManualKeyPrimaryTable_Test()
         {
@@ -91,7 +119,7 @@ namespace CommonIntegrationTests.Tests
             Console.WriteLine(result[1].RecordObject.Key2);
         }
 
-        //[Ignore]
+        [Ignore]
         [TestMethod]
         public void SubjectClass_Test()
         {

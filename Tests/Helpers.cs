@@ -39,7 +39,7 @@ namespace Tests
             return columnsSymbol.Select(fkc => new Column {Name = fkc.ColumnName, Value = fkc.Value});
         }
 
-        public static void ExceptionTest(Action action, Type exceptionType, string message)
+        public static void ExceptionTest(Action action, Type exceptionType, string message = null)
         {
             // Act
 
@@ -58,7 +58,11 @@ namespace Tests
 
             Assert.IsNotNull(exception);
             Assert.AreEqual(exceptionType, exception.GetType());
-            Assert.AreEqual(message, exception.Message);
+
+            if (message != null)
+            {
+                Assert.AreEqual(message, exception.Message);
+            }
         }
 
         public static Mock<ITypeGenerator> GetTypeGeneratorMock<T>(T returnObject)

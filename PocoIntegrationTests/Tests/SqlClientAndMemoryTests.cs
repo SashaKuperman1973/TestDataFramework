@@ -31,7 +31,6 @@ using TestDataFramework.Populator.Interfaces;
 
 namespace PocoIntegrationTests.Tests
 {
-    //[Ignore]
     [TestClass]
     public class SqlClientAndMemoryTests
     {
@@ -51,7 +50,6 @@ namespace PocoIntegrationTests.Tests
             this.factory.Dispose();
         }
 
-        //[Ignore]
         [TestMethod]
         public void Memory_POCO_Test()
         {
@@ -59,7 +57,7 @@ namespace PocoIntegrationTests.Tests
             SqlClientAndMemoryTests.PrimaryKeyForeignKeyTest(populator, new PocoGeneratorIntegrationTest());
         }
 
-        //[Ignore]
+        [Ignore]
         [TestMethod]
         public void SqlCient_POCO_Test()
         {

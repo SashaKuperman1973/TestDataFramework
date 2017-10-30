@@ -61,8 +61,8 @@ namespace Tests.Tests.ImmediateTests
             var primaryTable = new T1();
             var foreignTable = new T2();
 
-            var primaryRecordReference = new RecordReference<T1>(Helpers.GetTypeGeneratorMock(primaryTable).Object, this.attributeDecorator);
-            var foreignRecordReference = new RecordReference<T2>(Helpers.GetTypeGeneratorMock(foreignTable).Object, this.attributeDecorator);
+            var primaryRecordReference = new RecordReference<T1>(Helpers.GetTypeGeneratorMock(primaryTable).Object, this.attributeDecorator, null);
+            var foreignRecordReference = new RecordReference<T2>(Helpers.GetTypeGeneratorMock(foreignTable).Object, this.attributeDecorator, null);
 
             // Act
 
@@ -81,8 +81,12 @@ namespace Tests.Tests.ImmediateTests
             var primaryTable = new PrimaryTable();
             var foreignTable = new ForeignTable();
 
-            var primaryRecordReference = new RecordReference<PrimaryTable>(Helpers.GetTypeGeneratorMock(primaryTable).Object, this.attributeDecorator);
-            var foreignRecordReference = new RecordReference<ForeignTable>(Helpers.GetTypeGeneratorMock(foreignTable).Object, this.attributeDecorator);
+            var primaryRecordReference =
+                new RecordReference<PrimaryTable>(Helpers.GetTypeGeneratorMock(primaryTable).Object,
+                    this.attributeDecorator, null);
+            var foreignRecordReference =
+                new RecordReference<ForeignTable>(Helpers.GetTypeGeneratorMock(foreignTable).Object,
+                    this.attributeDecorator, null);
 
             // Act
 
@@ -104,7 +108,7 @@ namespace Tests.Tests.ImmediateTests
 
             var typeGeneratorMock = new Mock<ITypeGenerator>();
 
-            var recordReference = new RecordReference<PrimaryTable>(typeGeneratorMock.Object, this.attributeDecorator);
+            var recordReference = new RecordReference<PrimaryTable>(typeGeneratorMock.Object, this.attributeDecorator, null);
 
             var testRecord = new PrimaryTable();
 
@@ -151,7 +155,7 @@ namespace Tests.Tests.ImmediateTests
                 var typeGeneratorMock = new Mock<ITypeGenerator>();
 
                 var recordReference = new RecordReference<PrimaryTable>(typeGeneratorMock.Object,
-                    this.attributeDecorator);
+                    this.attributeDecorator, null);
 
                 var testRecord1 = new PrimaryTable();
                 var testRecord2 = new PrimaryTable();
@@ -180,7 +184,7 @@ namespace Tests.Tests.ImmediateTests
 
             Mock<ITypeGenerator> typeGeneratorMock = Helpers.GetTypeGeneratorMock(record);
 
-            var recordReference = new RecordReference<PrimaryTable>(typeGeneratorMock.Object, this.attributeDecorator);
+            var recordReference = new RecordReference<PrimaryTable>(typeGeneratorMock.Object, this.attributeDecorator, null);
 
             // Act
 

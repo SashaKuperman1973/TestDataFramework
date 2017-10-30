@@ -31,7 +31,6 @@ using TestDataFramework.Populator.Interfaces;
 
 namespace DeclarativeIntegrationTests.Tests
 {
-    //[Ignore]
     [TestClass]
     public class SqlClientAndMemoryTests
     {
@@ -51,7 +50,6 @@ namespace DeclarativeIntegrationTests.Tests
             this.factory.Dispose();
         }
 
-        //[Ignore]
         [TestMethod]
         public void Memory_Declarative_Test()
         {
@@ -59,7 +57,7 @@ namespace DeclarativeIntegrationTests.Tests
             SqlClientAndMemoryTests.PrimaryKeyForeignKeyTest(populator, new DeclarativeGeneratorIntegrationTest());
         }
 
-        //[Ignore]
+        [Ignore]
         [TestMethod]
         public void SqlCient_Declarative_Test()
         {
@@ -107,7 +105,7 @@ namespace DeclarativeIntegrationTests.Tests
             Console.WriteLine(foreignSet2[1].RecordObject.ForeignKey1);
         }
 
-        //[Ignore]
+        [Ignore]
         [TestMethod]
         public void EmptyForeignReference_Test()
         {

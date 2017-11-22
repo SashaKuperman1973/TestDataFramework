@@ -131,7 +131,7 @@ namespace CommonIntegrationTests.Tests
 
             IList<RecordReference<SubjectClass>> result = populator.Add<SubjectClass>(2);
 
-            Go(result, g);
+            SqlClientAndMemoryTests.Go(result, g);
 
             populator.Bind();
 

@@ -68,6 +68,10 @@
     <Compile Include="AttributeDecorator\Table.cs" />
     <Compile Include="AttributeDecorator\TableTypeCache.cs" />
     <Compile Include="Attributes.cs" />
+    <Compile Include="DeepSetting\Concrete\ObjectGraphService.cs" />
+    <Compile Include="DeepSetting\ExplicitPropertySetters.cs" />
+    <Compile Include="DeepSetting\Interfaces\IObjectGraphService.cs" />
+    <Compile Include="DeepSetting\ObjectGraphNode.cs" />
     <Compile Include="DeferredValueGenerator\Concrete\DefaultInitialCountGenerator.cs" />
     <Compile Include="DeferredValueGenerator\Concrete\SqlWriterCommandTextGenerator.cs" />
     <Compile Include="DeferredValueGenerator\Concrete\SqlWriterDictionary.cs" />

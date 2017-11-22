@@ -34,7 +34,6 @@ namespace Tests.Tests.ImmediateTests
         private StandardHandledTypeGenerator handledTypeGenerator;
         private Mock<IValueGenerator> valueGeneratorMock;
         private Mock<IValueGenerator> accumulatorValueGeneratorMock;
-        private Mock<Random> randomMock;
 
         [TestInitialize]
         public void Initialize()
@@ -43,10 +42,9 @@ namespace Tests.Tests.ImmediateTests
 
             this.valueGeneratorMock = new Mock<IValueGenerator>();
             this.accumulatorValueGeneratorMock = new Mock<IValueGenerator>();
-            this.randomMock = new Mock<Random>();
 
             this.handledTypeGenerator = new StandardHandledTypeGenerator(this.valueGeneratorMock.Object,
-                () => this.accumulatorValueGeneratorMock.Object, this.randomMock.Object);
+                () => this.accumulatorValueGeneratorMock.Object, collectionElementCount: 4);
         }
 
         [TestMethod]
@@ -56,8 +54,6 @@ namespace Tests.Tests.ImmediateTests
 
             this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(int))).Returns(5);
             this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(string))).Returns("ABCD");
-
-            this.randomMock.Setup(m => m.Next(It.IsAny<int>())).Returns(2);
 
             // Act
 
@@ -90,8 +86,6 @@ namespace Tests.Tests.ImmediateTests
 
             this.accumulatorValueGeneratorMock.Setup(m => m.GetValue(null, typeof(int))).Returns(() => ++i);
             this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(string))).Returns(() => s[i - 1]);
-
-            this.randomMock.Setup(m => m.Next(It.IsAny<int>())).Returns(3);
 
             // Act
 
@@ -131,10 +125,12 @@ namespace Tests.Tests.ImmediateTests
             object[] o = new[] {new object(), new object(), new object(), new object(),};
             string[] s = new[] { "AA", "BB", "CC", "DD" };
 
-            this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(object))).Returns(() => o[i++]);
-            this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(string))).Returns(() => s[i - 1]);
-
-            this.randomMock.Setup(m => m.Next(It.IsAny<int>())).Returns(3);
+            this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(object))).Returns(
+                () =>
+                o[i++]);
+            this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(string))).Returns(
+                () =>
+                s[i - 1]);
 
             // Act
 
@@ -177,8 +173,6 @@ namespace Tests.Tests.ImmediateTests
             int i = 0;
 
             this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof (SubjectClass))).Returns(() => sc[i++]);
-
-            this.randomMock.Setup(m => m.Next(It.IsAny<int>())).Returns(3);
 
             // Act
 

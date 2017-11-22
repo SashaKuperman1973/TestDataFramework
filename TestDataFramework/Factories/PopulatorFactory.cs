@@ -29,6 +29,8 @@ using log4net;
 using TestDataFramework.Logger;
 using TestDataFramework.ArrayRandomizer;
 using TestDataFramework.AttributeDecorator;
+using TestDataFramework.DeepSetting.Concrete;
+using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.DeferredValueGenerator.Concrete;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.HandledTypeGenerator;
@@ -315,6 +317,7 @@ namespace TestDataFramework.Factories
 
                 Component.For<ValueGuaranteePopulator>().ImplementedBy<ValueGuaranteePopulator>(),
 
+                Component.For<IObjectGraphService>().ImplementedBy<ObjectGraphService>(),
 
                 #endregion Common Region
 

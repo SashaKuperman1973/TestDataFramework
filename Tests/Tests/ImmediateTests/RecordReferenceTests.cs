@@ -25,6 +25,8 @@ using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.AttributeDecorator;
+using TestDataFramework.DeepSetting;
+using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
 using TestDataFramework.Populator.Concrete;
@@ -61,8 +63,8 @@ namespace Tests.Tests.ImmediateTests
             var primaryTable = new T1();
             var foreignTable = new T2();
 
-            var primaryRecordReference = new RecordReference<T1>(Helpers.GetTypeGeneratorMock(primaryTable).Object, this.attributeDecorator, null);
-            var foreignRecordReference = new RecordReference<T2>(Helpers.GetTypeGeneratorMock(foreignTable).Object, this.attributeDecorator, null);
+            var primaryRecordReference = new RecordReference<T1>(Helpers.GetTypeGeneratorMock(primaryTable).Object, this.attributeDecorator, null, null);
+            var foreignRecordReference = new RecordReference<T2>(Helpers.GetTypeGeneratorMock(foreignTable).Object, this.attributeDecorator, null, null);
 
             // Act
 
@@ -83,10 +85,10 @@ namespace Tests.Tests.ImmediateTests
 
             var primaryRecordReference =
                 new RecordReference<PrimaryTable>(Helpers.GetTypeGeneratorMock(primaryTable).Object,
-                    this.attributeDecorator, null);
+                    this.attributeDecorator, null, null);
             var foreignRecordReference =
                 new RecordReference<ForeignTable>(Helpers.GetTypeGeneratorMock(foreignTable).Object,
-                    this.attributeDecorator, null);
+                    this.attributeDecorator, null, null);
 
             // Act
 
@@ -108,19 +110,16 @@ namespace Tests.Tests.ImmediateTests
 
             var typeGeneratorMock = new Mock<ITypeGenerator>();
 
-            var recordReference = new RecordReference<PrimaryTable>(typeGeneratorMock.Object, this.attributeDecorator, null);
+            var recordReference = new RecordReference<PrimaryTable>(typeGeneratorMock.Object, this.attributeDecorator, null, null);
 
             var testRecord = new PrimaryTable();
 
-            typeGeneratorMock.Setup(
-                m => m.GetObject<PrimaryTable>(It.IsAny<ConcurrentDictionary<PropertyInfo, Action<PrimaryTable>>>()))
-                .Callback<ConcurrentDictionary<PropertyInfo, Action<PrimaryTable>>>(
-                    d =>
-                    {
-                        d[typeof (PrimaryTable).GetProperty("Integer")](testRecord);
-                        d[typeof (PrimaryTable).GetProperty("Text")](testRecord);
-                        d[typeof(PrimaryTable).GetProperty("Array")](testRecord);
-                    });
+            Helpers.SetTypeGeneratorMock(typeGeneratorMock, testRecord,
+                nameof(PrimaryTable.Integer),
+                nameof(PrimaryTable.Text),
+                nameof(PrimaryTable.Array)
+            );
+
             // Act
 
             recordReference.Set(r => r.Integer, expectedInt)
@@ -155,13 +154,13 @@ namespace Tests.Tests.ImmediateTests
                 var typeGeneratorMock = new Mock<ITypeGenerator>();
 
                 var recordReference = new RecordReference<PrimaryTable>(typeGeneratorMock.Object,
-                    this.attributeDecorator, null);
+                    this.attributeDecorator, null, null);
 
                 var testRecord1 = new PrimaryTable();
                 var testRecord2 = new PrimaryTable();
 
                 typeGeneratorMock.Setup(
-                    m => m.GetObject<PrimaryTable>(It.IsAny<ConcurrentDictionary<PropertyInfo, Action<PrimaryTable>>>()))
+                    m => m.GetObject<PrimaryTable>(It.IsAny<IOrderedEnumerable<ExplicitPropertySetters>>()))
                     .Callback<ConcurrentDictionary<PropertyInfo, Action<PrimaryTable>>>(
                         d =>
                         {
@@ -184,7 +183,7 @@ namespace Tests.Tests.ImmediateTests
 
             Mock<ITypeGenerator> typeGeneratorMock = Helpers.GetTypeGeneratorMock(record);
 
-            var recordReference = new RecordReference<PrimaryTable>(typeGeneratorMock.Object, this.attributeDecorator, null);
+            var recordReference = new RecordReference<PrimaryTable>(typeGeneratorMock.Object, this.attributeDecorator, null, null);
 
             // Act
 
@@ -193,6 +192,34 @@ namespace Tests.Tests.ImmediateTests
             // Assert
 
             Assert.AreEqual(record, recordReference.RecordObject);
+        }
+
+        [TestMethod]
+        public void DeepSet_Test()
+        {
+            // Arrange
+
+            const string expected = "Abra Cadabra";
+
+            var typeGeneratorMock = new Mock<ITypeGenerator>();
+
+            Helpers.SetupTypeGeneratorMock(typeGeneratorMock, new ThirdDeepPropertyTable());
+            Helpers.SetupTypeGeneratorMock(typeGeneratorMock, new SecondDeepPropertyTable());
+            Helpers.SetupTypeGeneratorMock(typeGeneratorMock, new FirstDeepPropertyTable());
+
+            var objectGraphService = new Mock<IObjectGraphService>();
+
+            var recordReference = new RecordReference<ThirdDeepPropertyTable>(typeGeneratorMock.Object,
+                this.attributeDecorator, null, objectGraphService.Object);
+
+            // Act
+
+            recordReference.Set(r => r.Deep2.Deep1.Value, expected);
+            recordReference.Populate();
+
+            // Assert
+
+            Assert.AreEqual(expected, recordReference.RecordObject.Deep2.Deep1.Value);
         }
     }
 }

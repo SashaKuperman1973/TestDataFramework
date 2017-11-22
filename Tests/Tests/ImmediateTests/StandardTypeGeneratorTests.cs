@@ -24,6 +24,7 @@ using System.Reflection;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using TestDataFramework.DeepSetting;
 using TestDataFramework.HandledTypeGenerator;
 using TestDataFramework.TypeGenerator.Concrete;
 using TestDataFramework.ValueGenerator.Interfaces;
@@ -61,7 +62,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Act
 
-            object result = this.typeGenerator.GetObject(typeof (SecondClass));
+            object result = this.typeGenerator.GetObject(typeof (SecondClass), null);
 
             // Assert
 
@@ -84,9 +85,9 @@ namespace Tests.Tests.ImmediateTests
             int i = 0;
             this.valueGeneratorMock.Setup(m => m.GetValue(It.IsAny<PropertyInfo>()))
                 .Returns<PropertyInfo>(pi =>
-                    this.typeGenerator.GetObject(types[i++]));
+                    this.typeGenerator.GetObject(types[i++], null));
 
-            var result = this.typeGenerator.GetObject(typeof (InfiniteRecursiveClass1)) as InfiniteRecursiveClass1;
+            var result = this.typeGenerator.GetObject(typeof (InfiniteRecursiveClass1), null) as InfiniteRecursiveClass1;
 
             Assert.IsNull(result.InfinietRecursiveClassA.InfiniteRecursiveClassB);
         }
@@ -98,13 +99,12 @@ namespace Tests.Tests.ImmediateTests
 
             const int expected = 7;
 
-            ConcurrentDictionary<PropertyInfo, Action<SecondClass>> explicitProperySetters =
-                        new ConcurrentDictionary<PropertyInfo, Action<SecondClass>>();
+            var explicitProperySetters = new List<ExplicitPropertySetters>();
 
             PropertyInfo propertyInfo = typeof (SecondClass).GetProperty("SecondInteger");
 
-            Action<SecondClass> setter = @object => propertyInfo.SetValue(@object, expected);
-            explicitProperySetters.AddOrUpdate(propertyInfo, setter, (pi, lambda) => setter);
+            Action<object> setter = @object => propertyInfo.SetValue(@object, expected);
+            explicitProperySetters.Add(new ExplicitPropertySetters { Action = setter, PropertyChain = null});
 
             // Act
 
@@ -118,7 +118,7 @@ namespace Tests.Tests.ImmediateTests
         [TestMethod]
         public void GetObject_NoDefaultConstructor_ReturnsNull_Test()
         {
-            object result = this.typeGenerator.GetObject(typeof(ClassWithoutADefaultConstructor));
+            object result = this.typeGenerator.GetObject(typeof(ClassWithoutADefaultConstructor), null);
 
             Assert.IsNull(result);
         }
@@ -132,7 +132,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Act
 
-            var result = (KeyValuePair<int, string>)this.typeGenerator.GetObject(typeof (KeyValuePair<int, string>));
+            var result = (KeyValuePair<int, string>)this.typeGenerator.GetObject(typeof (KeyValuePair<int, string>), null);
 
             // Assert
 

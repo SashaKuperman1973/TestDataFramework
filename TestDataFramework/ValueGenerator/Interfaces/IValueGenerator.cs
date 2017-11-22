@@ -19,11 +19,16 @@
 
 using System;
 using System.Reflection;
+using TestDataFramework.DeepSetting;
 
 namespace TestDataFramework.ValueGenerator.Interfaces
 {
     public interface IValueGenerator
     {
+        object GetValue(PropertyInfo propertyInfo, ObjectGraphNode objectGraphNode);
+
+        object GetValue(PropertyInfo propertyInfo, Type type, ObjectGraphNode objectGraphNode);
+
         object GetValue(PropertyInfo propertyInfo);
 
         object GetValue(PropertyInfo propertyInfo, Type type);

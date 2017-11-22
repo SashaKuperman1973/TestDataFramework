@@ -236,7 +236,7 @@ namespace Tests.Tests.ImmediateTests
 
             var secondClass = new SecondClass();
 
-            this.typeGeneratorMock.Setup(m => m.GetObject(It.Is<Type>(t => t == typeof (SecondClass)))).Returns(secondClass);
+            this.typeGeneratorMock.Setup(m => m.GetObject(It.Is<Type>(t => t == typeof (SecondClass)), null)).Returns(secondClass);
             PropertyInfo propertyInfo = typeof (SubjectClass).GetProperty("SecondObject");
 
             // Act

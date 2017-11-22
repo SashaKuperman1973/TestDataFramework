@@ -19,6 +19,7 @@
 
 using System.Reflection;
 using log4net;
+using TestDataFramework.DeepSetting;
 using TestDataFramework.Logger;
 using TestDataFramework.HandledTypeGenerator;
 using TestDataFramework.Helpers;
@@ -41,7 +42,7 @@ namespace TestDataFramework.TypeGenerator.Concrete
             this.accumulatorValueGenerator = getAccumulatorValueGenerator(this);
         }
 
-        protected override void SetProperty(object objectToFill, PropertyInfo targetPropertyInfo)
+        protected override void SetProperty(object objectToFill, PropertyInfo targetPropertyInfo, ObjectGraphNode objectGraphNode)
         {
             UniqueValueTypeGenerator.Logger.Debug("Entering SetProperty. targetPropertyInfo: " +
                                                   targetPropertyInfo.GetExtendedMemberInfoString());
@@ -50,7 +51,7 @@ namespace TestDataFramework.TypeGenerator.Concrete
             {
                 UniqueValueTypeGenerator.Logger.Debug("Property type is value like. Calling base.");
 
-                base.SetProperty(objectToFill, targetPropertyInfo);
+                base.SetProperty(objectToFill, targetPropertyInfo, objectGraphNode);
                 return;
             }
 

@@ -41,21 +41,19 @@ namespace TestDataFramework.HandledTypeGenerator
 
         private readonly IValueGenerator valueGenerator;
         private readonly CreateAccumulatorValueGeneratorDelegate getAccumulatorValueGenerator;
-        private readonly Random random;
-        private readonly int maxCollectionElementCount;
+        private readonly int collectionElementCount;
 
         #endregion Fields
 
         public StandardHandledTypeGenerator(IValueGenerator valueGenerator,
-            CreateAccumulatorValueGeneratorDelegate getAccumulatorValueGenerator, Random random,
-            int maxCollectionElementCount = 5)
+            CreateAccumulatorValueGeneratorDelegate getAccumulatorValueGenerator,
+            int collectionElementCount = 5)
         {
             StandardHandledTypeGenerator.Logger.Debug("Entering constructor");
 
             this.valueGenerator = valueGenerator;
-            this.random = random;
             this.getAccumulatorValueGenerator = getAccumulatorValueGenerator;
-            this.maxCollectionElementCount = maxCollectionElementCount;
+            this.collectionElementCount = collectionElementCount;
 
             this.HandledTypeValueGetterDictionary = new Dictionary<Type, HandledTypeValueGetter>
             {
@@ -104,11 +102,9 @@ namespace TestDataFramework.HandledTypeGenerator
             ConstructorInfo constructor = targetType.GetConstructor(Type.EmptyTypes);
             object collection = constructor.Invoke(null);
 
-            int elementCount = this.random.Next(this.maxCollectionElementCount) + 1;
-
             MethodInfo add = targetType.GetMethod("Add");
 
-            for (int i = 0; i < elementCount; i++)
+            for (int i = 0; i < this.collectionElementCount; i++)
             {
                 object[] parameters = genericCollectionValueGenerator(genericArgumentTypes);
                 add.Invoke(collection, parameters);

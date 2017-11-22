@@ -23,6 +23,7 @@ using System.Linq;
 using log4net;
 using TestDataFramework.Logger;
 using TestDataFramework.AttributeDecorator;
+using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.HandledTypeGenerator;
 using TestDataFramework.ListOperations;
 using TestDataFramework.Persistence.Interfaces;
@@ -39,6 +40,7 @@ namespace TestDataFramework.Populator.Concrete
         private readonly IPersistence persistence;
         private readonly IHandledTypeGenerator handledTypeGenerator;
         private readonly ValueGuaranteePopulator valueGuaranteePopulator;
+        private readonly IObjectGraphService objectGraphService;
 
         public override IValueGenerator ValueGenerator { get; }
         private readonly List<RecordReference> recordReferences = new List<RecordReference>();
@@ -46,7 +48,8 @@ namespace TestDataFramework.Populator.Concrete
 
         public StandardPopulator(ITypeGenerator typeGenerator, IPersistence persistence,
             IAttributeDecorator attributeDecorator, IHandledTypeGenerator handledTypeGenerator, 
-            IValueGenerator valueGenerator, ValueGuaranteePopulator valueGuaranteePopulator)
+            IValueGenerator valueGenerator, ValueGuaranteePopulator valueGuaranteePopulator,
+            IObjectGraphService objectGraphService)
             : base(attributeDecorator)
         {
             StandardPopulator.Logger.Debug("Entering constructor");
@@ -56,6 +59,7 @@ namespace TestDataFramework.Populator.Concrete
             this.handledTypeGenerator = handledTypeGenerator;
             this.ValueGenerator = valueGenerator;
             this.valueGuaranteePopulator = valueGuaranteePopulator;
+            this.objectGraphService = objectGraphService;
 
             StandardPopulator.Logger.Debug("Entering constructor");
         }
@@ -93,7 +97,7 @@ namespace TestDataFramework.Populator.Concrete
         {
             StandardPopulator.Logger.Debug($"Entering Add. T: {typeof(T)}, primaryRecordReference: {primaryRecordReferences}");
 
-            var recordReference = new RecordReference<T>(this.typeGenerator, this.AttributeDecorator, this);
+            var recordReference = new RecordReference<T>(this.typeGenerator, this.AttributeDecorator, this, this.objectGraphService);
 
             this.recordReferences.Add(recordReference);
             recordReference.AddPrimaryRecordReference(primaryRecordReferences);

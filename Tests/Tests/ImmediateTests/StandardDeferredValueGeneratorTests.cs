@@ -19,11 +19,13 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Reflection;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.AttributeDecorator;
+using TestDataFramework.DeepSetting;
 using TestDataFramework.DeferredValueGenerator.Concrete;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Helpers;
@@ -55,15 +57,15 @@ namespace Tests.Tests.ImmediateTests
             var typeGeneratorMock = new Mock<ITypeGenerator>();
 
             typeGeneratorMock.Setup(
-                m => m.GetObject<PrimaryTable>(It.IsAny<ConcurrentDictionary<PropertyInfo, Action<PrimaryTable>>>()))
+                m => m.GetObject<PrimaryTable>(It.IsAny<IEnumerable<ExplicitPropertySetters>>()))
                 .Returns(new PrimaryTable());
 
             typeGeneratorMock.Setup(
-                m => m.GetObject<ForeignTable>(It.IsAny<ConcurrentDictionary<PropertyInfo, Action<ForeignTable>>>()))
+                    m => m.GetObject<ForeignTable>(It.IsAny<IEnumerable<ExplicitPropertySetters>>()))
                 .Returns(new ForeignTable());
 
-            var recordObject1 = new RecordReference<PrimaryTable>(typeGeneratorMock.Object, this.attributeDecorator, null);
-            var recordObject2 = new RecordReference<ForeignTable>(typeGeneratorMock.Object, this.attributeDecorator, null);
+            var recordObject1 = new RecordReference<PrimaryTable>(typeGeneratorMock.Object, this.attributeDecorator, null, null);
+            var recordObject2 = new RecordReference<ForeignTable>(typeGeneratorMock.Object, this.attributeDecorator, null, null);
 
             var dataSource = new Mock<IPropertyDataGenerator<LargeInteger>>();
             var generator = new StandardDeferredValueGenerator<LargeInteger>(dataSource.Object);

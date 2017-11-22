@@ -18,16 +18,15 @@
 */
 
 using System;
-using System.Collections.Concurrent;
-using System.Reflection;
-using TestDataFramework.HandledTypeGenerator;
+using System.Collections.Generic;
+using TestDataFramework.DeepSetting;
 
 namespace TestDataFramework.TypeGenerator.Interfaces
 {
     public interface ITypeGenerator
     {
-        object GetObject<T>(ConcurrentDictionary<PropertyInfo, Action<T>> propertyExpressionDictionary);
+        object GetObject<T>(IEnumerable<ExplicitPropertySetters> explicitProperySetters);
 
-        object GetObject(Type forType);
+        object GetObject(Type forType, ObjectGraphNode objectGraphNode);
     }
 }

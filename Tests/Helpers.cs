@@ -21,11 +21,14 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework;
 using TestDataFramework.AttributeDecorator;
+using TestDataFramework.DeepSetting;
+using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.Helpers;
 using TestDataFramework.RepositoryOperations.Model;
 using TestDataFramework.TypeGenerator.Interfaces;
@@ -77,7 +80,7 @@ namespace Tests
         public static void SetupTypeGeneratorMock<T>(Mock<ITypeGenerator> typeGeneratorMock, T returnObject)
         {
             typeGeneratorMock.Setup(
-                m => m.GetObject<T>(It.IsAny<ConcurrentDictionary<PropertyInfo, Action<T>>>()))
+                m => m.GetObject<T>(It.IsAny<IEnumerable<ExplicitPropertySetters>>()))
                 .Returns(returnObject);
         }
 
@@ -95,6 +98,39 @@ namespace Tests
                 .Select(p => new Column {Name = Helper.GetColumnName(p, attributeDecorator), Value = p.GetValue(record)}).ToList();
 
             return result;
+        }
+
+        public static void SetTypeGeneratorMock<T>(Mock<ITypeGenerator> typeGeneratorMock, T objectToSet,
+            params string[] propertyNamesToSet)
+        {
+            typeGeneratorMock.Setup(
+                    m => m.GetObject<T>(It.IsAny<IEnumerable<ExplicitPropertySetters>>()))
+                .Callback<IEnumerable<ExplicitPropertySetters>>(
+                    setters =>
+                    {
+                        propertyNamesToSet.ToList().ForEach(propertyName =>
+                            setters.FirstOrDefault(
+                                    setter => setter.PropertyChain?.SingleOrDefault()?.Name == propertyName)
+                                ?.Action(objectToSet));
+                    });
+        }
+
+        public class ObjectGraphMockSetup<T>
+        {
+            private readonly Mock<IObjectGraphService> service;
+
+            public ObjectGraphMockSetup(Mock<IObjectGraphService> service)
+            {
+                this.service = service;
+            }
+
+            public ObjectGraphMockSetup<T> Setup<TPropertyType>(string propertyName)
+            {
+                this.service.Setup(m => m.GetObjectGraph(It.IsAny<Expression<Func<T, TPropertyType>>>()))
+                    .Returns(new List<PropertyInfo>(new[] {typeof(T).GetProperty(propertyName)}));
+
+                return this;
+            }
         }
     }
 }

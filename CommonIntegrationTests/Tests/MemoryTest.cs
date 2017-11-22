@@ -380,5 +380,28 @@ namespace CommonIntegrationTests.Tests
             Assert.IsNotNull(singleSubjectAfterBind.RecordObject);
             subjectSetAfterBind.ToList().ForEach(subject => Assert.IsNotNull(subject.RecordObject));
         }
+
+        [TestMethod]
+        public void DeepSet_Test()
+        {
+            IPopulator populator = this.factory.CreateMemoryPopulator();
+
+            DeepA deep = populator.Add<DeepA>()
+                .Set(m => m.DeepB.DeepC.DeepString, "ABCDEFG")
+                .Set(m => m.DeepB.String, "QWERTY")
+                .Set(m => m.DeepB.DeepC.IntList, () =>
+                {
+                    List<int> l = populator.Add<int>(5).Make().ToList();
+                    l[2] = 22;
+                    return l;
+                })
+                .BindAndMake();
+
+            Console.WriteLine(deep.DeepB.DeepC.DeepString);
+            Console.WriteLine(deep.DeepB.String);
+            Console.WriteLine(deep.Integer);
+            deep.DeepB.DeepC.IntList.ForEach(Console.WriteLine);
+            Console.WriteLine(deep.DeepB.DeepC.IntList.Count);
+        }
     }
 }

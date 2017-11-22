@@ -60,7 +60,7 @@ namespace Tests.Tests.ImmediateTests
 
             var expected = new SubjectClass();
             var populator = new StandardPopulator(Helpers.GetTypeGeneratorMock(expected).Object, new MockPersistence(),
-                this.attributeDecorator, null, null, null);
+                this.attributeDecorator, null, null, null, null);
 
             // Act
 
@@ -82,7 +82,7 @@ namespace Tests.Tests.ImmediateTests
             var expected = new SubjectClass { AnEmailAddress = "email"};
             var mockPersistence = new MockPersistence();
             var populator = new StandardPopulator(Helpers.GetTypeGeneratorMock(expected).Object, mockPersistence,
-                this.attributeDecorator, null, null, null);
+                this.attributeDecorator, null, null, null, null);
 
             // Act
 
@@ -115,7 +115,7 @@ namespace Tests.Tests.ImmediateTests
 
             Mock<ITypeGenerator> typeGeneratorMock = Helpers.GetTypeGeneratorMock(inputRecord);
 
-            var populator = new StandardPopulator(typeGeneratorMock.Object, persistence, this.attributeDecorator, null, null, null);
+            var populator = new StandardPopulator(typeGeneratorMock.Object, persistence, this.attributeDecorator, null, null, null, null);
 
             // Act
 
@@ -137,7 +137,7 @@ namespace Tests.Tests.ImmediateTests
         {
             // Arrange
 
-            var populator = new StandardPopulator(null, this.persistenceMock.Object, null, null, null, null);
+            var populator = new StandardPopulator(null, this.persistenceMock.Object, null, null, null, null, null);
 
             var referenceMock = new Mock<RecordReference<SubjectClass>>(null, null, null);
 
@@ -159,7 +159,7 @@ namespace Tests.Tests.ImmediateTests
         {
             // Arrange
 
-            var populator = new StandardPopulator(null, this.persistenceMock.Object, null, null, null, null);
+            var populator = new StandardPopulator(null, this.persistenceMock.Object, null, null, null, null, null);
 
             var referenceMock1 = new Mock<RecordReference<SubjectClass>>(null, null, null);
             var referenceMock2 = new Mock<RecordReference<SubjectClass>>(null, null, null);
@@ -197,7 +197,7 @@ namespace Tests.Tests.ImmediateTests
             Mock<ITypeGenerator> typeGeneratorMock = Helpers.GetTypeGeneratorMock(new SubjectClass());
             Helpers.SetupTypeGeneratorMock(typeGeneratorMock, new SecondClass());
 
-            var populator = new StandardPopulator(typeGeneratorMock.Object, persistence, this.attributeDecorator, null, null, null);
+            var populator = new StandardPopulator(typeGeneratorMock.Object, persistence, this.attributeDecorator, null, null, null, null);
 
             // Act
 
@@ -218,7 +218,7 @@ namespace Tests.Tests.ImmediateTests
             var handledTypeGeneratorMock = new Mock<IHandledTypeGenerator>();
             var valueGetterDictionary = new Dictionary<Type, HandledTypeValueGetter>();
             handledTypeGeneratorMock.SetupGet(m => m.HandledTypeValueGetterDictionary).Returns(valueGetterDictionary);
-            var populator = new StandardPopulator(null, null, null, handledTypeGeneratorMock.Object, null, null);
+            var populator = new StandardPopulator(null, null, null, handledTypeGeneratorMock.Object, null, null, null);
 
             var subject = new SubjectClass();
 

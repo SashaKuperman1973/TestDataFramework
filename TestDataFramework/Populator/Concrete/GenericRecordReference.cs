@@ -18,6 +18,7 @@
 */
 
 using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,8 @@ using System.Reflection;
 using log4net;
 using TestDataFramework.Logger;
 using TestDataFramework.AttributeDecorator;
+using TestDataFramework.DeepSetting;
+using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
 using TestDataFramework.Populator.Interfaces;
@@ -39,46 +42,34 @@ namespace TestDataFramework.Populator.Concrete
 
         protected BasePopulator Populator;
 
-        protected internal readonly ConcurrentDictionary<PropertyInfo, Action<T>> ExplicitPropertySetters =
-            new ConcurrentDictionary<PropertyInfo, Action<T>>(
-                RecordReference<T>.ExplicitPropertySetterEqualityComparerObject);
+        private readonly IObjectGraphService objectGraphService;
 
-        private static readonly ExplicitPropertySetterEqualityComparer ExplicitPropertySetterEqualityComparerObject =
-            new ExplicitPropertySetterEqualityComparer();
-
-        private class ExplicitPropertySetterEqualityComparer : IEqualityComparer<PropertyInfo>
-        {
-            public bool Equals(PropertyInfo x, PropertyInfo y)
-            {
-                bool result = x.Name.Equals(y.Name, StringComparison.Ordinal);
-                return result;
-            }
-
-            public int GetHashCode(PropertyInfo obj)
-            {
-                int result = obj.Name.GetHashCode();
-                return result;
-            }
-        }
+        protected internal readonly List<ExplicitPropertySetters> ExplicitPropertySetters =
+            new List<ExplicitPropertySetters>();
 
         public RecordReference(ITypeGenerator typeGenerator, IAttributeDecorator attributeDecorator,
-            BasePopulator populator) : base(typeGenerator, attributeDecorator)
+            BasePopulator populator, IObjectGraphService objectGraphService) : base(typeGenerator, attributeDecorator)
         {
             RecordReference<T>.Logger.Debug($"Entering constructor. T: {typeof(T)}");
 
             this.RecordType = typeof(T);
             this.Populator = populator;
+            this.objectGraphService = objectGraphService;
 
             RecordReference<T>.Logger.Debug("Exiting constructor");
         }
 
         public new virtual T RecordObject => (T) (base.RecordObject ?? default(T));
 
+        // Caller is responsible for ensuring Declaring Type is a type of the property being set.
+        // This method only checks if the given property on the record reference object is set, 
+        // not sub-properties.
         protected internal override bool IsExplicitlySet(PropertyInfo propertyInfo)
         {
             RecordReference<T>.Logger.Debug($"Entering IsExplicitlySet. propertyInfo: {propertyInfo}");
 
-            bool result = this.ExplicitPropertySetters.ContainsKey(propertyInfo);
+            bool result = this.ExplicitPropertySetters.Any(setter =>
+                setter.PropertyChain.FirstOrDefault()?.Name.Equals(propertyInfo.Name) ?? false);
 
             RecordReference<T>.Logger.Debug("Exiting IsExplicitlySet");
             return result;
@@ -110,20 +101,7 @@ namespace TestDataFramework.Populator.Concrete
             RecordReference<T>.Logger.Debug(
                 $"Entering Set(fieldExpression, valueFactory). TPropertyType: {typeof(TPropertyType)}, fieldExpression: {fieldExpression}, valueFactory: {valueFactory}");
 
-            var propertyInfo = Helper.ValidateFieldExpression(fieldExpression) as PropertyInfo;
-
-            if (propertyInfo == null)
-            {
-                throw new SetExpressionException(Messages.MustBePropertyAccess);
-            }
-
-            void Setter(T @object) => propertyInfo.SetValue(@object, valueFactory());
-
-            this.ExplicitPropertySetters.AddOrUpdate(propertyInfo, Setter, (pi, lambda) =>
-            {
-                RecordReference<T>.Logger.Debug("Updatng explicitProperySetters dictionary");
-                return Setter;
-            });
+            this.AddToExplicitPropertySetters(fieldExpression, valueFactory);
 
             RecordReference<T>.Logger.Debug("Exiting Set(fieldExpression, valueFactory)");
             return this;
@@ -147,20 +125,7 @@ namespace TestDataFramework.Populator.Concrete
             RecordReference<T>.Logger.Debug(
                 $"Entering SetRange(fieldExpression, rangeFactory). TPropertyType: {typeof(TPropertyType)}, fieldExpression: {fieldExpression}, valueFactory: {rangeFactory}");
 
-            var propertyInfo = Helper.ValidateFieldExpression(fieldExpression) as PropertyInfo;
-
-            if (propertyInfo == null)
-            {
-                throw new SetExpressionException(Messages.MustBePropertyAccess);
-            }
-
-            void Setter(T @object) => propertyInfo.SetValue(@object, RecordReference<T>.ChooseElementInRange(rangeFactory()));
-
-            this.ExplicitPropertySetters.AddOrUpdate(propertyInfo, Setter, (pi, lambda) =>
-            {
-                RecordReference<T>.Logger.Debug("Updatng explicitProperySetters dictionary");
-                return Setter;
-            });
+            this.AddToExplicitPropertySetters(fieldExpression, () => RecordReference<T>.ChooseElementInRange(rangeFactory()));
 
             RecordReference<T>.Logger.Debug("Exiting SetRange(fieldExpression, rangeFactory)");
             return this;
@@ -184,6 +149,15 @@ namespace TestDataFramework.Populator.Concrete
             int index = new Random().Next(elements.Count());
             TPropertyType result = elements.ElementAt(index);
             return result;
+        }
+
+        private void AddToExplicitPropertySetters<TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression, Func<TPropertyType> valueFactory)
+        {
+            List<PropertyInfo> setterObjectGraph = this.objectGraphService.GetObjectGraph(fieldExpression);
+
+            void Setter(object @object) => setterObjectGraph.Last().SetValue(@object, valueFactory());
+
+            this.ExplicitPropertySetters.Add(new ExplicitPropertySetters { PropertyChain = setterObjectGraph, Action = Setter });
         }
     }
 }

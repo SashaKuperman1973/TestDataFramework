@@ -18,10 +18,11 @@
 */
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using log4net;
+using TestDataFramework.DeepSetting;
 using TestDataFramework.Logger;
 using TestDataFramework.HandledTypeGenerator;
 using TestDataFramework.Helpers;
@@ -40,6 +41,8 @@ namespace TestDataFramework.TypeGenerator.Concrete
         private readonly IHandledTypeGenerator handledTypeGenerator;
 
         private readonly Stack<Type> complexTypeProcessingRecursionGuard = new Stack<Type>();
+
+        private List<ExplicitPropertySetters> explicitProperySetters;
 
         #endregion Fields
 
@@ -101,60 +104,7 @@ namespace TestDataFramework.TypeGenerator.Concrete
             return targetProperties;
         }
 
-        protected virtual void SetProperty(object objectToFill, PropertyInfo targetPropertyInfo)
-        {
-            StandardTypeGenerator.Logger.Debug("Entering SetProperty. PropertyInfo: " + targetPropertyInfo.GetExtendedMemberInfoString());
-
-            object targetPropertyValue = this.valueGenerator.GetValue(targetPropertyInfo);
-            StandardTypeGenerator.Logger.Debug($"targetPropertyValue: {targetPropertyValue}");
-            targetPropertyInfo.SetValue(objectToFill, targetPropertyValue);
-
-            StandardTypeGenerator.Logger.Debug("Exiting SetProperty");
-        }
-
-        #endregion Private methods
-
-        #region Public methods
-
-        public virtual object GetObject<T>(ConcurrentDictionary<PropertyInfo, Action<T>> explicitProperySetters)
-        {
-            StandardTypeGenerator.Logger.Debug($"Entering GetObject. T: {typeof(T)}");
-
-            object result = this.ConstructObject(typeof (T), objectToFill => this.FillObject((T)objectToFill, explicitProperySetters));
-
-            StandardTypeGenerator.Logger.Debug($"Exiting GetObject. result: {result}");
-            return result;
-        }
-
-        public virtual object GetObject(Type forType)
-        {
-            StandardTypeGenerator.Logger.Debug($"Entering GetObject. forType: {forType}");
-
-            object result = this.ConstructObject(forType, this.FillObject);
-
-            StandardTypeGenerator.Logger.Debug($"Exiting GetObject. result: {result}");
-            return result;
-        }
-
-        #endregion Public methods
-
-        #region Protected methods
-
-        protected virtual void FillObject(object objectToFill)
-        {
-            StandardTypeGenerator.Logger.Debug("Entering FillObject");
-
-            PropertyInfo[] targetProperties = StandardTypeGenerator.GetProperties(objectToFill);
-
-            foreach (PropertyInfo targetPropertyInfo in targetProperties)
-            {
-                this.SetProperty(objectToFill, targetPropertyInfo);
-            }
-
-            StandardTypeGenerator.Logger.Debug("Exiting FillObject");
-        }
-
-        protected virtual void FillObject<T>(T objectToFill, ConcurrentDictionary<PropertyInfo, Action<T>> explicitProperySetters)
+        private void FillObject(object objectToFill, ObjectGraphNode objectGraphNode)
         {
             StandardTypeGenerator.Logger.Debug("Entering FillObject<T>");
 
@@ -162,23 +112,108 @@ namespace TestDataFramework.TypeGenerator.Concrete
 
             foreach (PropertyInfo targetPropertyInfo in targetProperties)
             {
-                Action<T> setter;
+                var propertyObjectGraphNode = new ObjectGraphNode(targetPropertyInfo, objectGraphNode);
 
-                if (explicitProperySetters.TryGetValue(targetPropertyInfo, out setter))
+                ExplicitPropertySetters setter =
+                    StandardTypeGenerator.IsPropertyExplicitlySet(this.explicitProperySetters, propertyObjectGraphNode);
+
+                if (setter != null)
                 {
-                    StandardTypeGenerator.Logger.Debug($"explicit property setter found: {setter}");
-                    setter(objectToFill);
+                    StandardTypeGenerator.Logger.Debug($"explicit property setter found");
+                    setter.Action(objectToFill);
                 }
                 else
                 {
                     StandardTypeGenerator.Logger.Debug("no explicit property setter found");
-                    this.SetProperty(objectToFill, targetPropertyInfo);
+                    this.SetProperty(objectToFill, targetPropertyInfo, propertyObjectGraphNode);
                 }
             }
 
             StandardTypeGenerator.Logger.Debug("Exiting FillObject<T>");
         }
 
-        #endregion Protected methods
+        private static ExplicitPropertySetters IsPropertyExplicitlySet(IEnumerable<ExplicitPropertySetters> explicitPropertySetters,
+            ObjectGraphNode objectGraphNode)
+        {
+            if (objectGraphNode == null)
+            {
+                return null;
+            }
+
+            ExplicitPropertySetters result =
+                explicitPropertySetters.FirstOrDefault(
+                    setters => StandardTypeGenerator.IsPropertyExplicitlySet(setters, objectGraphNode));
+            return result;
+        }
+
+        private static bool IsPropertyExplicitlySet(ExplicitPropertySetters explicitPropertySetters, ObjectGraphNode objectGraphNode)
+        {
+            var stack = new Stack<PropertyInfo>(explicitPropertySetters.PropertyChain);
+
+            while (objectGraphNode.PropertyInfo != null)
+            {
+                if (!stack.Any())
+                {
+                    return false;
+                }
+
+                PropertyInfo setters = stack.Pop();
+
+                if (objectGraphNode.PropertyInfo.DeclaringType != setters.DeclaringType
+                    || !objectGraphNode.PropertyInfo.Name.Equals(setters.Name, StringComparison.Ordinal))
+                {
+                    return false;
+                }
+
+                objectGraphNode = objectGraphNode.Parent;
+            }
+
+            return !stack.Any();
+        }
+
+        #endregion Private methods
+
+        #region Protected Methods
+
+        protected virtual void SetProperty(object objectToFill, PropertyInfo targetPropertyInfo, ObjectGraphNode objectGraphNode)
+        {
+            StandardTypeGenerator.Logger.Debug("Entering SetProperty. PropertyInfo: " + targetPropertyInfo.GetExtendedMemberInfoString());
+
+            object targetPropertyValue = this.valueGenerator.GetValue(targetPropertyInfo, objectGraphNode);
+            StandardTypeGenerator.Logger.Debug($"targetPropertyValue: {targetPropertyValue}");
+            targetPropertyInfo.SetValue(objectToFill, targetPropertyValue);
+
+            StandardTypeGenerator.Logger.Debug("Exiting SetProperty");
+        }
+
+        #endregion Protected Methods
+
+        #region Public methods
+
+        public virtual object GetObject<T>(IEnumerable<ExplicitPropertySetters> explicitProperySetters)
+        {
+            StandardTypeGenerator.Logger.Debug($"Entering GetObject. T: {typeof(T)}");
+
+            this.explicitProperySetters = explicitProperySetters.ToList();
+
+            var parentObjectGraphNode = new ObjectGraphNode(null, null);
+
+            object result = this.ConstructObject(typeof (T), objectToFill => this.FillObject(objectToFill, parentObjectGraphNode));
+
+            StandardTypeGenerator.Logger.Debug($"Exiting GetObject. result: {result}");
+            return result;
+        }
+
+        public virtual object GetObject(Type forType, ObjectGraphNode objectGraphNode)
+        {
+            StandardTypeGenerator.Logger.Debug($"Entering GetObject. forType: {forType}");
+
+            object result = this.ConstructObject(forType, objectToFill => this.FillObject(objectToFill, objectGraphNode));
+
+            StandardTypeGenerator.Logger.Debug($"Exiting GetObject. result: {result}");
+            return result;
+        }
+
+        #endregion Public methods
     }
 }

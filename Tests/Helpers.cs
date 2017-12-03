@@ -80,7 +80,7 @@ namespace Tests
         public static void SetupTypeGeneratorMock<T>(Mock<ITypeGenerator> typeGeneratorMock, T returnObject)
         {
             typeGeneratorMock.Setup(
-                m => m.GetObject<T>(It.IsAny<IEnumerable<ExplicitPropertySetters>>()))
+                    m => m.GetObject<T>(It.IsAny<IEnumerable<ExplicitPropertySetters>>()))
                 .Returns(returnObject);
         }
 
@@ -95,7 +95,11 @@ namespace Tests
                         (primaryKeyAttribute = attributeDecorator.GetSingleAttribute<PrimaryKeyAttribute>(p)) == null ||
                         primaryKeyAttribute.KeyType != PrimaryKeyAttribute.KeyTypeEnum.Auto)
 
-                .Select(p => new Column {Name = Helper.GetColumnName(p, attributeDecorator), Value = p.GetValue(record)}).ToList();
+                .Select(p => new Column
+                {
+                    Name = Helper.GetColumnName(p, attributeDecorator),
+                    Value = p.GetValue(record)
+                }).ToList();
 
             return result;
         }
@@ -126,10 +130,65 @@ namespace Tests
 
             public ObjectGraphMockSetup<T> Setup<TPropertyType>(string propertyName)
             {
-                this.service.Setup(m => m.GetObjectGraph(It.IsAny<Expression<Func<T, TPropertyType>>>()))
+                Func<Expression<Func<T, TPropertyType>>, string, bool> evaluatePropertyInfo =
+                    (expression, propertyNameToEvaluate) => ObjectGraphMockSetup<T>.ValidateMemberAccessExpression(expression).Member
+                        .Name
+                        .Equals(propertyNameToEvaluate, StringComparison.Ordinal);
+
+                this.service
+                    .Setup(m => m.GetObjectGraph(
+                        It.Is<Expression<Func<T, TPropertyType>>>(
+                            expression => evaluatePropertyInfo(expression, propertyName))))
                     .Returns(new List<PropertyInfo>(new[] {typeof(T).GetProperty(propertyName)}));
 
                 return this;
+            }
+
+            private static MemberExpression ValidateMemberAccessExpression(Expression expression)
+            {
+                var lambdaExpression = expression as LambdaExpression;
+
+                expression = lambdaExpression?.Body ?? expression;
+
+                if (expression.NodeType != ExpressionType.MemberAccess)
+                {
+                    throw new MemberAccessException();
+                }
+
+                var memberExpression = expression as MemberExpression;
+
+                if (memberExpression != null) return ObjectGraphMockSetup<T>.ValidatePropertyInfo(memberExpression);
+
+                var unaryExpression = expression as UnaryExpression;
+
+                if (unaryExpression == null)
+                {
+                    throw new MemberAccessException();
+                }
+
+                memberExpression = unaryExpression.Operand as MemberExpression;
+
+                if (memberExpression == null)
+                {
+                    throw new MemberAccessException();
+                }
+
+                return ObjectGraphMockSetup<T>.ValidatePropertyInfo(memberExpression);
+            }
+
+            private static MemberExpression ValidatePropertyInfo(MemberExpression memberExpression)
+            {
+                if (!(memberExpression.Member is PropertyInfo))
+                {
+                    throw new MemberAccessException();
+                }
+
+                return memberExpression;
+            }
+
+            internal class MemberAccessException : Exception
+            {
+
             }
         }
     }

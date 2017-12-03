@@ -42,7 +42,7 @@ namespace TestDataFramework.TypeGenerator.Concrete
 
         private readonly Stack<Type> complexTypeProcessingRecursionGuard = new Stack<Type>();
 
-        private List<ExplicitPropertySetters> explicitProperySetters;
+        private List<ExplicitPropertySetters> explicitPropertySetters;
 
         #endregion Fields
 
@@ -115,7 +115,7 @@ namespace TestDataFramework.TypeGenerator.Concrete
                 var propertyObjectGraphNode = new ObjectGraphNode(targetPropertyInfo, objectGraphNode);
 
                 ExplicitPropertySetters setter =
-                    StandardTypeGenerator.IsPropertyExplicitlySet(this.explicitProperySetters, propertyObjectGraphNode);
+                    StandardTypeGenerator.IsPropertyExplicitlySet(this.explicitPropertySetters, propertyObjectGraphNode);
 
                 if (setter != null)
                 {
@@ -159,8 +159,7 @@ namespace TestDataFramework.TypeGenerator.Concrete
 
                 PropertyInfo setters = stack.Pop();
 
-                if (objectGraphNode.PropertyInfo.DeclaringType != setters.DeclaringType
-                    || !objectGraphNode.PropertyInfo.Name.Equals(setters.Name, StringComparison.Ordinal))
+                if (!objectGraphNode.PropertyInfo.Name.Equals(setters.Name, StringComparison.Ordinal))
                 {
                     return false;
                 }
@@ -194,7 +193,7 @@ namespace TestDataFramework.TypeGenerator.Concrete
         {
             StandardTypeGenerator.Logger.Debug($"Entering GetObject. T: {typeof(T)}");
 
-            this.explicitProperySetters = explicitProperySetters.ToList();
+            this.explicitPropertySetters = explicitProperySetters.ToList();
 
             var parentObjectGraphNode = new ObjectGraphNode(null, null);
 

@@ -205,6 +205,8 @@ namespace Tests.TestModels
 
         [PrimaryKey]
         public Guid? Key3 { get; set; }
+
+        public Guid? Key4 { get; set; }
     }
 
     [Table("DbTable")]

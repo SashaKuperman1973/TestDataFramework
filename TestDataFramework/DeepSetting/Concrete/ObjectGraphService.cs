@@ -19,9 +19,9 @@ namespace TestDataFramework.DeepSetting.Concrete
             return propertyChain;
         }
 
-        private static void GetMemberInfo(List<PropertyInfo> list, Expression expression)
+        private static void GetMemberInfo(ICollection<PropertyInfo> list, Expression expression)
         {
-            if (expression is ParameterExpression)
+            if (expression.NodeType == ExpressionType.Parameter || expression.NodeType == ExpressionType.Convert)
             {
                 return;
             }
@@ -34,6 +34,10 @@ namespace TestDataFramework.DeepSetting.Concrete
 
         private static MemberExpression ValidateMemberAccessExpression(Expression expression)
         {
+            var lambdaExpression = expression as LambdaExpression;
+
+            expression = lambdaExpression?.Body ?? expression;
+
             if (expression.NodeType != ExpressionType.MemberAccess)
             {
                 throw new SetExpressionException(Messages.MustBePropertyAccess);

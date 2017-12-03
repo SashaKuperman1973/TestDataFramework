@@ -397,22 +397,11 @@ namespace Tests.Tests.ImmediateTests
         }
 
         [TestMethod]
-        public void GetRegularColumns_ExplicitlySetGuid_Null_Test()
-        {
-            this.GetRegularColumns_ExplicitlySetGuid_Test(null);
-        }
-
-        [TestMethod]
-        public void GetRegularColumns_ExplicitlySetGuid_NoNull_Test()
-        {
-            this.GetRegularColumns_ExplicitlySetGuid_Test(Guid.NewGuid());
-        }
-
-        private void GetRegularColumns_ExplicitlySetGuid_Test(Guid? key3Value)
+        public void GetRegularColumns_ExplicitlySetGuid_Test()
         {
             // Arrange
 
-            var table = new ClassWithGuidKeys {Key1 = Guid.NewGuid(), Key3 = key3Value};
+            var table = new ClassWithGuidKeys { Key1 = Guid.NewGuid(), Key3 = Guid.NewGuid(), Key4 = null };
 
             Mock<ITypeGenerator> typeGeneratorMock = Helpers.GetTypeGeneratorMock(table);
             var recordReference = new RecordReference<ClassWithGuidKeys>(typeGeneratorMock.Object,
@@ -420,9 +409,10 @@ namespace Tests.Tests.ImmediateTests
 
             new Helpers.ObjectGraphMockSetup<ClassWithGuidKeys>(this.objectGraphServiceMock)
                 .Setup<Guid>(nameof(ClassWithGuidKeys.Key1))
-                .Setup<Guid?>(nameof(ClassWithGuidKeys.Key3));
+                .Setup<Guid?>(nameof(ClassWithGuidKeys.Key3))
+                .Setup<Guid?>(nameof(ClassWithGuidKeys.Key4));
 
-            recordReference.Set(r => r.Key1, Guid.Empty).Set(r => r.Key3, Guid.Empty);
+            recordReference.Set(r => r.Key1, Guid.Empty).Set(r => r.Key3, Guid.Empty).Set(r => r.Key4, Guid.Empty);
             recordReference.Populate();
 
             var insertRecordService = new InsertRecordService(recordReference, this.attributeDecorator, InsertRecordServiceTest.IsKeyReferenceCheckEnforced);

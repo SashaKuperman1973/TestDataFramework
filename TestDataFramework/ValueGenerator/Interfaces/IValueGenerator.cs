@@ -29,8 +29,6 @@ namespace TestDataFramework.ValueGenerator.Interfaces
 
         object GetValue(PropertyInfo propertyInfo, Type type, ObjectGraphNode objectGraphNode);
 
-        object GetValue(PropertyInfo propertyInfo);
-
         object GetValue(PropertyInfo propertyInfo, Type type);
     }
 }

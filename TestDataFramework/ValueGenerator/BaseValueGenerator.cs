@@ -87,7 +87,7 @@ namespace TestDataFramework.ValueGenerator
         // This is the general entry point.
         public virtual object GetValue(PropertyInfo propertyInfo, ObjectGraphNode objectGraphNode)
         {
-            BaseValueGenerator.Logger.Debug($"Entering GetValue(PropertyInfo). propertyInfo: {propertyInfo}");
+            BaseValueGenerator.Logger.Debug($"Entering GetValue(PropertyInfo, ObjectGraphNode). propertyInfo: {propertyInfo}");
 
             propertyInfo.IsNotNull(nameof(propertyInfo));
 
@@ -100,13 +100,8 @@ namespace TestDataFramework.ValueGenerator
 
             object result = getter != null ? getter(propertyInfo) : this.GetValue(propertyInfo, propertyInfo.PropertyType, objectGraphNode);
 
-            BaseValueGenerator.Logger.Debug($"Exiting GetValue(PropertyInfo). result: {result}");
+            BaseValueGenerator.Logger.Debug($"Exiting GetValue(PropertyInfo, ObjectGraphNode). result: {result}");
             return result;
-        }
-
-        public virtual object GetValue(PropertyInfo propertyInfo)
-        {
-            return this.GetValue(propertyInfo, (ObjectGraphNode)null);
         }
 
         // This entry point is used when a different type is requested for a particular 
@@ -114,7 +109,7 @@ namespace TestDataFramework.ValueGenerator
         public virtual object GetValue(PropertyInfo propertyInfo, Type type, ObjectGraphNode objectGraphNode)
         {
             BaseValueGenerator.Logger.Debug(
-                $"Entering GetValue(PropertyInfo, Type). propertyInfo: {propertyInfo}, type: {type}");
+                $"Entering GetValue(PropertyInfo, Type, ObjectGraphNode). propertyInfo: {propertyInfo}, type: {type}");
 
             type.IsNotNull(nameof(type));
 

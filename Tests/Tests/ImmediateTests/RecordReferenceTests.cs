@@ -19,7 +19,9 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -63,16 +65,18 @@ namespace Tests.Tests.ImmediateTests
             var primaryTable = new T1();
             var foreignTable = new T2();
 
-            var primaryRecordReference = new RecordReference<T1>(Helpers.GetTypeGeneratorMock(primaryTable).Object, this.attributeDecorator, null, null);
-            var foreignRecordReference = new RecordReference<T2>(Helpers.GetTypeGeneratorMock(foreignTable).Object, this.attributeDecorator, null, null);
+            var primaryRecordReference = new RecordReference<T1>(Helpers.GetTypeGeneratorMock(primaryTable).Object,
+                this.attributeDecorator, null, null);
+            var foreignRecordReference = new RecordReference<T2>(Helpers.GetTypeGeneratorMock(foreignTable).Object,
+                this.attributeDecorator, null, null);
 
             // Act
 
             Helpers.ExceptionTest(() => foreignRecordReference.AddPrimaryRecordReference(primaryRecordReference),
-                typeof (NoReferentialIntegrityException),
+                typeof(NoReferentialIntegrityException),
                 string.Format(Messages.NoReferentialIntegrity,
-                    Helper.PrintType(typeof (T1)),
-                    Helper.PrintType(typeof (T2))));
+                    Helper.PrintType(typeof(T1)),
+                    Helper.PrintType(typeof(T2))));
         }
 
         [TestMethod]
@@ -108,17 +112,23 @@ namespace Tests.Tests.ImmediateTests
             const string expectedString = "ABCD";
             int[] expectedArray = new[] {1, 2};
 
-            var typeGeneratorMock = new Mock<ITypeGenerator>();
+            var objectGraphServiceMock = new Mock<IObjectGraphService>();
 
-            var recordReference = new RecordReference<PrimaryTable>(typeGeneratorMock.Object, this.attributeDecorator, null, null);
+            PropertyInfo intPropertyInfo = typeof(PrimaryTable).GetProperty(nameof(PrimaryTable.Integer));
+            PropertyInfo stringPropertyInfo = typeof(PrimaryTable).GetProperty(nameof(PrimaryTable.Text));
+            PropertyInfo arrayPropertyInfo = typeof(PrimaryTable).GetProperty(nameof(PrimaryTable.Array));
 
-            var testRecord = new PrimaryTable();
+            objectGraphServiceMock.Setup(m => m.GetObjectGraph(It.IsAny<Expression<Func<PrimaryTable, int>>>()))
+                .Returns(new List<PropertyInfo> {intPropertyInfo});
 
-            Helpers.SetTypeGeneratorMock(typeGeneratorMock, testRecord,
-                nameof(PrimaryTable.Integer),
-                nameof(PrimaryTable.Text),
-                nameof(PrimaryTable.Array)
-            );
+            objectGraphServiceMock.Setup(m => m.GetObjectGraph(It.IsAny<Expression<Func<PrimaryTable, string>>>()))
+                .Returns(new List<PropertyInfo> {stringPropertyInfo});
+
+            objectGraphServiceMock.Setup(m => m.GetObjectGraph(It.IsAny<Expression<Func<PrimaryTable, int[]>>>()))
+                .Returns(new List<PropertyInfo> {arrayPropertyInfo});
+
+            var recordReference =
+                new RecordReference<PrimaryTable>(null, null, null, objectGraphServiceMock.Object);
 
             // Act
 
@@ -126,54 +136,59 @@ namespace Tests.Tests.ImmediateTests
                 .Set(r => r.Text, expectedString)
                 .Set(r => r.Array, () => expectedArray);
 
-            recordReference.Populate();
-
             // Assert
 
+            List<ExplicitPropertySetters> setters = recordReference.ExplicitPropertySetters;
+            var testRecord = new PrimaryTable();
+
+            Assert.AreEqual(intPropertyInfo.Name, setters[0].PropertyChain[0].Name);
+            setters[0].Action(testRecord);
             Assert.AreEqual(expectedInt, testRecord.Integer);
+
+            Assert.AreEqual(stringPropertyInfo.Name, setters[1].PropertyChain[0].Name);
+            setters[1].Action(testRecord);
             Assert.AreEqual(expectedString, testRecord.Text);
+
+            Assert.AreEqual(arrayPropertyInfo.Name, setters[2].PropertyChain[0].Name);
+            setters[2].Action(testRecord);
             Assert.AreEqual(expectedArray, testRecord.Array);
         }
 
-        // SetRange returns random results so there is no deterministic way to test results.
-        // This test is for manual inspection.
         [TestMethod]
         public void SetRange_Test()
         {
             // Arrange
 
             var guids = new Guid[5];
-            for (int j = 0; j < guids.Length; j++)
+            for (int i = 0; i < guids.Length; i++)
             {
-                guids[j] = Guid.NewGuid();
+                guids[i] = Guid.NewGuid();
             }
 
-            for (int i = 0; i < 10; i++)
-            {
+            var objectGraphServiceMock = new Mock<IObjectGraphService>();
 
-                var typeGeneratorMock = new Mock<ITypeGenerator>();
+            var recordReference = new RecordReference<PrimaryTable>(null,
+                null, null, objectGraphServiceMock.Object);
 
-                var recordReference = new RecordReference<PrimaryTable>(typeGeneratorMock.Object,
-                    this.attributeDecorator, null, null);
+            var setterObjectGraph = new List<PropertyInfo> {typeof(PrimaryTable).GetProperty(nameof(PrimaryTable.Guid))};
 
-                var testRecord1 = new PrimaryTable();
-                var testRecord2 = new PrimaryTable();
+            objectGraphServiceMock.Setup(m => m.GetObjectGraph(It.IsAny<Expression<Func<PrimaryTable, Guid>>>()))
+                .Returns(setterObjectGraph);
 
-                typeGeneratorMock.Setup(
-                    m => m.GetObject<PrimaryTable>(It.IsAny<IOrderedEnumerable<ExplicitPropertySetters>>()))
-                    .Callback<ConcurrentDictionary<PropertyInfo, Action<PrimaryTable>>>(
-                        d =>
-                        {
-                            d[typeof(PrimaryTable).GetProperty("Guid")](testRecord1);
-                            d[typeof(PrimaryTable).GetProperty("Guid")](testRecord2);
-                        });
+            // Act
 
-                // Act
+            recordReference.SetRange(r => r.Guid, guids);
 
-                recordReference.SetRange(r => r.Guid, guids);
+            // Assert
 
-                recordReference.Populate();
-            }
+            ExplicitPropertySetters propertySetter = recordReference.ExplicitPropertySetters.First();
+
+            Assert.AreEqual(setterObjectGraph, propertySetter.PropertyChain);
+
+            var primaryTable = new PrimaryTable();
+            propertySetter.Action(primaryTable);
+
+            Assert.IsTrue(guids.Contains(primaryTable.Guid));
         }
 
         [TestMethod]
@@ -183,7 +198,8 @@ namespace Tests.Tests.ImmediateTests
 
             Mock<ITypeGenerator> typeGeneratorMock = Helpers.GetTypeGeneratorMock(record);
 
-            var recordReference = new RecordReference<PrimaryTable>(typeGeneratorMock.Object, this.attributeDecorator, null, null);
+            var recordReference =
+                new RecordReference<PrimaryTable>(typeGeneratorMock.Object, this.attributeDecorator, null, null);
 
             // Act
 
@@ -195,31 +211,48 @@ namespace Tests.Tests.ImmediateTests
         }
 
         [TestMethod]
-        public void DeepSet_Test()
+        public void RecordReference_DeepSet_Test()
         {
             // Arrange
 
-            const string expected = "Abra Cadabra";
+            var objectGraphServiceMock = new Mock<IObjectGraphService>();
 
-            var typeGeneratorMock = new Mock<ITypeGenerator>();
+            objectGraphServiceMock
+                .Setup(m => m.GetObjectGraph(It.IsAny<Expression<Func<ThirdDeepPropertyTable, string>>>()))
+                .Returns(new List<PropertyInfo>
+                {
+                    typeof(FirstDeepPropertyTable).GetProperty(nameof(FirstDeepPropertyTable.Value))
+                });
 
-            Helpers.SetupTypeGeneratorMock(typeGeneratorMock, new ThirdDeepPropertyTable());
-            Helpers.SetupTypeGeneratorMock(typeGeneratorMock, new SecondDeepPropertyTable());
-            Helpers.SetupTypeGeneratorMock(typeGeneratorMock, new FirstDeepPropertyTable());
+            objectGraphServiceMock
+                .Setup(m => m.GetObjectGraph(It.IsAny<Expression<Func<ThirdDeepPropertyTable, FirstDeepPropertyTable>>>()))
+                .Returns(new List<PropertyInfo>
+                {
+                    typeof(SecondDeepPropertyTable).GetProperty(nameof(SecondDeepPropertyTable.Deep1))
+                });
 
-            var objectGraphService = new Mock<IObjectGraphService>();
+            var recordReference = new RecordReference<ThirdDeepPropertyTable>(null,
+                null, null, objectGraphServiceMock.Object);
 
-            var recordReference = new RecordReference<ThirdDeepPropertyTable>(typeGeneratorMock.Object,
-                this.attributeDecorator, null, objectGraphService.Object);
+            const string expectedValue1 = "qwerty";
+            var expectedValue2 = new FirstDeepPropertyTable();
 
             // Act
 
-            recordReference.Set(r => r.Deep2.Deep1.Value, expected);
-            recordReference.Populate();
+            recordReference.Set(r => r.Deep2.Deep1.Value, expectedValue1);
+            recordReference.Set(r => r.Deep2.Deep1, expectedValue2);
 
             // Assert
 
-            Assert.AreEqual(expected, recordReference.RecordObject.Deep2.Deep1.Value);
+            PropertyInfo propertyChain = recordReference.ExplicitPropertySetters[0].PropertyChain.Single();
+
+            Assert.AreEqual(nameof(FirstDeepPropertyTable), propertyChain.DeclaringType.Name);
+            Assert.AreEqual(nameof(FirstDeepPropertyTable.Value), propertyChain.Name);
+
+            propertyChain = recordReference.ExplicitPropertySetters[1].PropertyChain.Single();
+
+            Assert.AreEqual(nameof(SecondDeepPropertyTable), propertyChain.DeclaringType.Name);
+            Assert.AreEqual(nameof(SecondDeepPropertyTable.Deep1), propertyChain.Name);
         }
     }
 }

@@ -25,6 +25,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.ArrayRandomizer;
 using TestDataFramework.AttributeDecorator;
+using TestDataFramework.DeepSetting;
 using TestDataFramework.Exceptions;
 using TestDataFramework.TypeGenerator.Interfaces;
 using TestDataFramework.UniqueValueGenerator.Interfaces;
@@ -143,7 +144,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Act
 
-            object result = this.valueGenerator.GetValue(propertyInfo);
+            object result = this.valueGenerator.GetValue(propertyInfo, (ObjectGraphNode) null);
 
             // Assert
 
@@ -161,7 +162,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Act
 
-            this.valueGenerator.GetValue(propertyInfo);
+            this.valueGenerator.GetValue(propertyInfo, (ObjectGraphNode)null);
 
             // Assert
 
@@ -224,7 +225,7 @@ namespace Tests.Tests.ImmediateTests
             propertyNameAnVerifierList.ForEach(propertyNameVerifier =>
             {
                 PropertyInfo propertyInfo = typeof (SubjectClass).GetProperty(propertyNameVerifier.Item1);
-                this.valueGenerator.GetValue(propertyInfo);
+                this.valueGenerator.GetValue(propertyInfo, (ObjectGraphNode)null);
                 propertyNameVerifier.Item2();
             });            
         }
@@ -241,7 +242,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Act
 
-            object result = this.valueGenerator.GetValue(propertyInfo);
+            object result = this.valueGenerator.GetValue(propertyInfo, (ObjectGraphNode)null);
             this.typeGeneratorMock.Verify();
 
             // Assert
@@ -291,7 +292,9 @@ namespace Tests.Tests.ImmediateTests
 
             foreach (var input in inputs)
             {
-                Action action = () => this.valueGenerator.GetValue(typeof(ClassWithMaxInvalidMaxRanges).GetProperty(input.Property));
+                Action action =
+                    () => this.valueGenerator.GetValue(typeof(ClassWithMaxInvalidMaxRanges).GetProperty(input.Property),
+                        (ObjectGraphNode) null);
 
                 Helpers.ExceptionTest(action, input.ExceptionType, input.Message);
             }
@@ -314,7 +317,7 @@ namespace Tests.Tests.ImmediateTests
             
             // Act
 
-            object result = this.valueGenerator.GetValue(simpleArrayPropertyInfo);
+            object result = this.valueGenerator.GetValue(simpleArrayPropertyInfo, (ObjectGraphNode)null);
 
             // Assert
 
@@ -329,8 +332,8 @@ namespace Tests.Tests.ImmediateTests
 
             this.uniqueValueGeneratorMock.Setup(m => m.GetValue(primaryKeyPropertyInfo)).Returns(default(int));
 
-            object result1 = this.valueGenerator.GetValue(primaryKeyPropertyInfo);
-            object result2 = this.valueGenerator.GetValue(primaryKeyPropertyInfo);
+            object result1 = this.valueGenerator.GetValue(primaryKeyPropertyInfo, (ObjectGraphNode)null);
+            object result2 = this.valueGenerator.GetValue(primaryKeyPropertyInfo, (ObjectGraphNode)null);
 
             this.uniqueValueGeneratorMock.Verify();
             Assert.AreEqual(expected, result1);
@@ -344,7 +347,7 @@ namespace Tests.Tests.ImmediateTests
 
             this.uniqueValueGeneratorMock.Setup(m => m.GetValue(primaryKeyPropertyInfo)).Returns(1).Verifiable();
 
-            object result = this.valueGenerator.GetValue(primaryKeyPropertyInfo);
+            object result = this.valueGenerator.GetValue(primaryKeyPropertyInfo, (ObjectGraphNode)null);
 
             this.uniqueValueGeneratorMock.Verify();
             Assert.AreEqual(1, result);

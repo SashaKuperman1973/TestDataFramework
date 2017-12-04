@@ -55,7 +55,7 @@ namespace TestDataFramework.TypeGenerator.Concrete
                 return;
             }
 
-            object targetPropertyValue = this.accumulatorValueGenerator.GetValue(targetPropertyInfo);
+            object targetPropertyValue = this.accumulatorValueGenerator.GetValue(targetPropertyInfo, objectGraphNode);
             UniqueValueTypeGenerator.Logger.Debug($"targetPropertyValue: {targetPropertyValue}");
             targetPropertyInfo.SetValue(objectToFill, targetPropertyValue);
 

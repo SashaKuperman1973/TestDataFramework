@@ -139,7 +139,7 @@ namespace Tests.Tests.ImmediateTests
 
             var populator = new StandardPopulator(null, this.persistenceMock.Object, null, null, null, null, null);
 
-            var referenceMock = new Mock<RecordReference<SubjectClass>>(null, null, null);
+            var referenceMock = new Mock<RecordReference<SubjectClass>>(null, null, null, null);
 
             // Act
 
@@ -161,8 +161,8 @@ namespace Tests.Tests.ImmediateTests
 
             var populator = new StandardPopulator(null, this.persistenceMock.Object, null, null, null, null, null);
 
-            var referenceMock1 = new Mock<RecordReference<SubjectClass>>(null, null, null);
-            var referenceMock2 = new Mock<RecordReference<SubjectClass>>(null, null, null);
+            var referenceMock1 = new Mock<RecordReference<SubjectClass>>(null, null, null, null);
+            var referenceMock2 = new Mock<RecordReference<SubjectClass>>(null, null, null, null);
             var set = new OperableList<SubjectClass>(new List<RecordReference<SubjectClass>> { referenceMock1.Object, referenceMock2.Object },
                 null, null) {IsProcessed = true};
 

@@ -57,12 +57,16 @@ namespace Tests.Tests.ImmediateTests
             // Arrange
 
             const int expected = 5;
-            this.valueGeneratorMock.Setup(m => m.GetValue(It.Is<PropertyInfo>(p => p.PropertyType == typeof (int))))
+
+            this.valueGeneratorMock.Setup(m => m.GetValue(It.Is<PropertyInfo>(p => p.PropertyType == typeof(int)),
+                    It.IsAny<ObjectGraphNode>()))
                 .Returns(expected);
+
+            var explicitPropertySetters = new List<ExplicitPropertySetters>();
 
             // Act
 
-            object result = this.typeGenerator.GetObject(typeof (SecondClass), null);
+            object result = this.typeGenerator.GetObject<SecondClass>(explicitPropertySetters);
 
             // Assert
 
@@ -70,7 +74,10 @@ namespace Tests.Tests.ImmediateTests
             Assert.IsNotNull(secondClassObject);
 
             Assert.AreEqual(expected, secondClassObject.SecondInteger);
-            this.valueGeneratorMock.Verify(m => m.GetValue(It.Is<PropertyInfo>(p => p.PropertyType == typeof (int))), Times.Once);
+
+            this.valueGeneratorMock.Verify(
+                m => m.GetValue(It.Is<PropertyInfo>(p => p.PropertyType == typeof(int)), It.IsAny<ObjectGraphNode>()),
+                Times.Once);
         }
 
         [TestMethod]
@@ -83,11 +90,13 @@ namespace Tests.Tests.ImmediateTests
             };
 
             int i = 0;
-            this.valueGeneratorMock.Setup(m => m.GetValue(It.IsAny<PropertyInfo>()))
-                .Returns<PropertyInfo>(pi =>
+            this.valueGeneratorMock.Setup(m => m.GetValue(It.IsAny<PropertyInfo>(), It.IsAny<ObjectGraphNode>()))
+                .Returns<PropertyInfo, ObjectGraphNode>((pi, objectGraphNode) =>
                     this.typeGenerator.GetObject(types[i++], null));
 
-            var result = this.typeGenerator.GetObject(typeof (InfiniteRecursiveClass1), null) as InfiniteRecursiveClass1;
+            var explicitPropertySetters = new List<ExplicitPropertySetters>();
+
+            var result = this.typeGenerator.GetObject<InfiniteRecursiveClass1>(explicitPropertySetters) as InfiniteRecursiveClass1;
 
             Assert.IsNull(result.InfinietRecursiveClassA.InfiniteRecursiveClassB);
         }
@@ -104,7 +113,12 @@ namespace Tests.Tests.ImmediateTests
             PropertyInfo propertyInfo = typeof (SecondClass).GetProperty("SecondInteger");
 
             Action<object> setter = @object => propertyInfo.SetValue(@object, expected);
-            explicitProperySetters.Add(new ExplicitPropertySetters { Action = setter, PropertyChain = null});
+
+            explicitProperySetters.Add(new ExplicitPropertySetters
+            {
+                Action = setter,
+                PropertyChain = new List<PropertyInfo> {propertyInfo}
+            });
 
             // Act
 

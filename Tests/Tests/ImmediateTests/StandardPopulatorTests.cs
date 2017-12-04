@@ -41,8 +41,12 @@ namespace Tests.Tests.ImmediateTests
     [TestClass]
     public class StandardPopulatorTests
     {
+        private StandardPopulator populator;
+
         private IAttributeDecorator attributeDecorator;
         private Mock<IPersistence> persistenceMock;
+        private Mock<ITypeGenerator> typeGeneratorMock;
+        private Mock<IHandledTypeGenerator> handledTypeGeneratorMock;
 
         [TestInitialize]
         public void Initialize()
@@ -51,6 +55,11 @@ namespace Tests.Tests.ImmediateTests
 
             this.attributeDecorator = new StandardAttributeDecorator(attributeDecorator => null, null);
             this.persistenceMock = new Mock<IPersistence>();
+            this.typeGeneratorMock = new Mock<ITypeGenerator>();
+            this.handledTypeGeneratorMock = new Mock<IHandledTypeGenerator>();
+
+            this.populator = new StandardPopulator(this.typeGeneratorMock.Object, this.persistenceMock.Object,
+                this.attributeDecorator, this.handledTypeGeneratorMock.Object, null, null, null);
         }
 
         [TestMethod]
@@ -109,13 +118,11 @@ namespace Tests.Tests.ImmediateTests
             const int integer = 5;
             const string text = "abcde";
 
-            var persistence = new MockPersistence();
-
             var inputRecord = new SubjectClass {Integer = integer, Text = text,};
+            Helpers.SetupTypeGeneratorMock(this.typeGeneratorMock, inputRecord);
 
-            Mock<ITypeGenerator> typeGeneratorMock = Helpers.GetTypeGeneratorMock(inputRecord);
-
-            var populator = new StandardPopulator(typeGeneratorMock.Object, persistence, this.attributeDecorator, null, null, null, null);
+            var mockPersistence = new MockPersistence();
+            var populator = new StandardPopulator(this.typeGeneratorMock.Object, mockPersistence, this.attributeDecorator, null, null, null, null);
 
             // Act
 
@@ -124,7 +131,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Assert
 
-            IDictionary<string, object> record = persistence.Storage.FirstOrDefault();
+            IDictionary<string, object> record = mockPersistence.Storage.FirstOrDefault();
 
             Assert.IsNotNull(record);
 
@@ -137,13 +144,11 @@ namespace Tests.Tests.ImmediateTests
         {
             // Arrange
 
-            var populator = new StandardPopulator(null, this.persistenceMock.Object, null, null, null, null, null);
-
             var referenceMock = new Mock<RecordReference<SubjectClass>>(null, null, null, null);
 
             // Act
 
-            populator.Bind(referenceMock.Object);
+            this.populator.Bind(referenceMock.Object);
 
             // Assert
 
@@ -159,8 +164,6 @@ namespace Tests.Tests.ImmediateTests
         {
             // Arrange
 
-            var populator = new StandardPopulator(null, this.persistenceMock.Object, null, null, null, null, null);
-
             var referenceMock1 = new Mock<RecordReference<SubjectClass>>(null, null, null, null);
             var referenceMock2 = new Mock<RecordReference<SubjectClass>>(null, null, null, null);
             var set = new OperableList<SubjectClass>(new List<RecordReference<SubjectClass>> { referenceMock1.Object, referenceMock2.Object },
@@ -168,7 +171,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Act
 
-            populator.Bind(set);
+            this.populator.Bind(set);
 
             // Assert
 
@@ -180,11 +183,33 @@ namespace Tests.Tests.ImmediateTests
             referenceMock2.VerifyGet(m => m.PreBoundObject);
             referenceMock2.Verify(m => m.Populate());
 
-            this.persistenceMock.Verify(m => m.Persist(
-                It.Is<IEnumerable<RecordReference>>(referenceSet => referenceSet.Single() == referenceMock1.Object)));
+            Func<IEnumerable<RecordReference>, bool> verifyPersistence = referenceSet =>
+            {
+                referenceSet = referenceSet.ToList();
+
+                return referenceSet.Count() == 2 &&
+                       referenceSet.Contains(referenceMock1.Object) &&
+                       referenceSet.Contains(referenceMock2.Object);
+            };
 
             this.persistenceMock.Verify(m => m.Persist(
-                It.Is<IEnumerable<RecordReference>>(referenceSet => referenceSet.Single() == referenceMock2.Object)));
+                It.Is<IEnumerable<RecordReference>>(referenceSet => verifyPersistence(referenceSet))));
+        }
+
+        [TestMethod]
+        public void Bind_RecordReference_Test()
+        {
+            // Arrange
+
+            var referenceMock = new Mock<RecordReference<SubjectClass>>(null, null, null, null);
+
+            // Act
+
+            this.populator.Bind(referenceMock.Object);
+
+            // Assert
+
+            referenceMock.Verify(m => m.Populate(), Times.Once);
         }
 
         [TestMethod]
@@ -192,12 +217,11 @@ namespace Tests.Tests.ImmediateTests
         {
             // Arrange
 
-            var persistence = new MockPersistence();
+            var mockPersistence = new MockPersistence();
+            var populator = new StandardPopulator(this.typeGeneratorMock.Object, mockPersistence, this.attributeDecorator, null, null, null, null);
 
-            Mock<ITypeGenerator> typeGeneratorMock = Helpers.GetTypeGeneratorMock(new SubjectClass());
-            Helpers.SetupTypeGeneratorMock(typeGeneratorMock, new SecondClass());
-
-            var populator = new StandardPopulator(typeGeneratorMock.Object, persistence, this.attributeDecorator, null, null, null, null);
+            Helpers.SetupTypeGeneratorMock(this.typeGeneratorMock, new SubjectClass());
+            Helpers.SetupTypeGeneratorMock(this.typeGeneratorMock, new SecondClass());
 
             // Act
 
@@ -207,7 +231,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Assert
 
-            Assert.AreEqual(2, persistence.Storage.Count);
+            Assert.AreEqual(2, mockPersistence.Storage.Count);
         }
 
         [TestMethod]
@@ -215,16 +239,14 @@ namespace Tests.Tests.ImmediateTests
         {
             // Arrange
 
-            var handledTypeGeneratorMock = new Mock<IHandledTypeGenerator>();
             var valueGetterDictionary = new Dictionary<Type, HandledTypeValueGetter>();
-            handledTypeGeneratorMock.SetupGet(m => m.HandledTypeValueGetterDictionary).Returns(valueGetterDictionary);
-            var populator = new StandardPopulator(null, null, null, handledTypeGeneratorMock.Object, null, null, null);
+            this.handledTypeGeneratorMock.SetupGet(m => m.HandledTypeValueGetterDictionary).Returns(valueGetterDictionary);
 
             var subject = new SubjectClass();
 
             // Act
 
-            populator.Extend(typeof(SubjectClass), type => subject);
+            this.populator.Extend(typeof(SubjectClass), type => subject);
 
             // Assert
 

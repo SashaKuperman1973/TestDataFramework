@@ -64,8 +64,6 @@ namespace TestDataFramework.Populator.Concrete
             StandardPopulator.Logger.Debug("Entering constructor");
         }
 
-        #region Public Methods
-
         public override void Clear()
         {
             this.recordReferences.Clear();
@@ -125,13 +123,7 @@ namespace TestDataFramework.Populator.Concrete
 
             foreach (RecordReference recordReference in unprocessedReferences)
             {
-                if (recordReference.PreBoundObject != null)
-                {
-                    recordReference.RecordObject = recordReference.PreBoundObject();
-                    continue;
-                }
-
-                recordReference.Populate();
+                StandardPopulator.Populate(recordReference);
             }
 
             this.persistence.Persist(unprocessedReferences);
@@ -145,9 +137,35 @@ namespace TestDataFramework.Populator.Concrete
         {
             if (recordReference.IsProcessed)
             {
+                StandardPopulator.Logger.Debug("RecordReference is already processed. Exiting.");
                 return;
             }
 
+            StandardPopulator.Populate(recordReference);
+
+            this.persistence.Persist(new[] { recordReference });
+            recordReference.IsProcessed = true;
+        }
+
+        protected internal override void Bind<T>(OperableList<T> operableList)
+        {
+            if (!operableList.IsProcessed)
+            {
+                operableList.Bind();
+                operableList.IsProcessed = true;
+            }
+
+            List<RecordReference<T>> unprocessedReferences = operableList.Where(reference => !reference.IsProcessed).ToList();
+
+            unprocessedReferences.ForEach(StandardPopulator.Populate);
+
+            this.persistence.Persist(unprocessedReferences);
+
+            unprocessedReferences.ForEach(reference => reference.IsProcessed = true);
+        }
+
+        private static void Populate(RecordReference recordReference)
+        {
             StandardPopulator.Logger.Debug("Entering Bind(RecordReference)");
 
             if (recordReference.PreBoundObject != null)
@@ -159,23 +177,7 @@ namespace TestDataFramework.Populator.Concrete
                 recordReference.Populate();
             }
 
-            this.persistence.Persist(new[] {recordReference});
-            recordReference.IsProcessed = true;
-
             StandardPopulator.Logger.Debug("Exiting Bind(RecordReference)");
         }
-
-        protected internal override void Bind<T>(OperableList<T> operableList)
-        {
-            if (!operableList.IsProcessed)
-            {
-                operableList.Bind();
-                operableList.IsProcessed = true;
-            }
-
-            operableList.ToList().ForEach(this.Bind);
-        }
-
-        #endregion Public Methods
     }
 }

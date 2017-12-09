@@ -395,7 +395,7 @@ namespace CommonIntegrationTests.Tests
                     l[2] = 22;
                     return l;
                 })
-                .BindAndMake();
+                .Make();
 
             Console.WriteLine(deep.DeepB.DeepC.DeepString);
             Console.WriteLine(deep.DeepB.String);

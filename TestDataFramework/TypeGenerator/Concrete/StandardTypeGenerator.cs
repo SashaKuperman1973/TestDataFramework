@@ -112,7 +112,9 @@ namespace TestDataFramework.TypeGenerator.Concrete
 
             foreach (PropertyInfo targetPropertyInfo in targetProperties)
             {
-                var propertyObjectGraphNode = new ObjectGraphNode(targetPropertyInfo, objectGraphNode);
+                ObjectGraphNode propertyObjectGraphNode = objectGraphNode != null
+                    ? new ObjectGraphNode(targetPropertyInfo, objectGraphNode)
+                    : null;
 
                 ExplicitPropertySetters setter =
                     StandardTypeGenerator.IsPropertyExplicitlySet(this.explicitPropertySetters, propertyObjectGraphNode);

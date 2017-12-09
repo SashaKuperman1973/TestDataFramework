@@ -14,6 +14,8 @@ namespace CommonIntegrationTests.TestModels
         public string String { get; set; }
 
         public DeepC DeepC { get; set; }
+
+        public List<DeepA> DeepAList { get; set; }
     }
 
     public class DeepC

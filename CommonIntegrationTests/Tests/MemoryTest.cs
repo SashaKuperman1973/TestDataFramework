@@ -402,6 +402,7 @@ namespace CommonIntegrationTests.Tests
             Console.WriteLine(deep.Integer);
             deep.DeepB.DeepC.IntList.ForEach(Console.WriteLine);
             Console.WriteLine(deep.DeepB.DeepC.IntList.Count);
+            Console.WriteLine(deep.DeepB.DeepAList[0]);
         }
     }
 }

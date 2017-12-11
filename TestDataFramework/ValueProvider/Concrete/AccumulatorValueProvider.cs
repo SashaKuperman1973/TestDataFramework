@@ -172,5 +172,10 @@ namespace TestDataFramework.ValueProvider.Concrete
         {
             throw new NotSupportedException();
         }
+
+        public Enum GetEnum(Type enumType)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

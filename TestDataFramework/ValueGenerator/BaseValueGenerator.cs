@@ -21,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Castle.MicroKernel.Registration;
 using log4net;
 using TestDataFramework.Logger;
 using TestDataFramework.ArrayRandomizer;
@@ -120,10 +121,16 @@ namespace TestDataFramework.ValueGenerator
 
             Type forType = Nullable.GetUnderlyingType(type) ?? type;
 
-            GetValueForTypeDelegate getter;
+            object result;
 
-            object result = 
-                this.typeValueGetterDictionary.TryGetValue(forType, out getter)
+            if (typeof(Enum).IsAssignableFrom(forType))
+            {
+                result = this.GetEnum(forType);
+                return result;
+            }
+
+            result =
+                this.typeValueGetterDictionary.TryGetValue(forType, out GetValueForTypeDelegate getter)
                 ? getter(propertyInfo)
                 : this.GetTypeGenerator().GetObject(forType, objectGraphNode);
 
@@ -312,6 +319,12 @@ namespace TestDataFramework.ValueGenerator
             object result = this.UniqueValueGenerator.GetValue(propertyInfo);
 
             BaseValueGenerator.Logger.Debug("Exiting GetPrimaryKey");
+            return result;
+        }
+
+        private object GetEnum(Type forType)
+        {
+            object result = this.ValueProvider.GetEnum(forType);
             return result;
         }
 

@@ -245,6 +245,14 @@ namespace TestDataFramework.ValueProvider.Concrete
             return result;
         }
 
+        public virtual Enum GetEnum(Type enumType)
+        {
+            Array enumValues = enumType.GetEnumValues();
+            int valueIndex = this.random.Next(enumValues.Length);
+            Enum result = (Enum)enumValues.GetValue(valueIndex);
+            return result;
+        }
+
         private double GetReal(int precision, int maxValue = int.MaxValue)
         {
             if (precision < 0)

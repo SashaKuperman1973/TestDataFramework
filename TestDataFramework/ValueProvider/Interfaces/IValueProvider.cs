@@ -52,5 +52,7 @@ namespace TestDataFramework.ValueProvider.Interfaces
         float GetFloat(int? precision);
 
         string GetEmailAddress();
+
+        Enum GetEnum(Type enumType);
     }
 }

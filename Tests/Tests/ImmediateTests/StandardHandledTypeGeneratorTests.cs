@@ -44,7 +44,8 @@ namespace Tests.Tests.ImmediateTests
             this.accumulatorValueGeneratorMock = new Mock<IValueGenerator>();
 
             this.handledTypeGenerator = new StandardHandledTypeGenerator(this.valueGeneratorMock.Object,
-                () => this.accumulatorValueGeneratorMock.Object, collectionElementCount: 4);
+                () => this.accumulatorValueGeneratorMock.Object,
+                collectionElementCount: 4);
         }
 
         [TestMethod]

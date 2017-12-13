@@ -116,13 +116,14 @@ namespace TestDataFramework.TypeGenerator.Concrete
                     ? new ObjectGraphNode(targetPropertyInfo, objectGraphNode)
                     : null;
 
-                ExplicitPropertySetters setter =
-                    StandardTypeGenerator.IsPropertyExplicitlySet(this.explicitPropertySetters, propertyObjectGraphNode);
+                IEnumerable<ExplicitPropertySetters> setters =
+                    StandardTypeGenerator.IsPropertyExplicitlySet(this.explicitPropertySetters, propertyObjectGraphNode)
+                    .ToList();
 
-                if (setter != null)
+                if (setters.Any())
                 {
                     StandardTypeGenerator.Logger.Debug($"explicit property setter found");
-                    setter.Action(objectToFill);
+                    setters.ToList().ForEach(setter => setter.Action(objectToFill));
                 }
                 else
                 {
@@ -134,16 +135,16 @@ namespace TestDataFramework.TypeGenerator.Concrete
             StandardTypeGenerator.Logger.Debug("Exiting FillObject<T>");
         }
 
-        private static ExplicitPropertySetters IsPropertyExplicitlySet(IEnumerable<ExplicitPropertySetters> explicitPropertySetters,
+        private static IEnumerable<ExplicitPropertySetters> IsPropertyExplicitlySet(IEnumerable<ExplicitPropertySetters> explicitPropertySetters,
             ObjectGraphNode objectGraphNode)
         {
             if (objectGraphNode == null)
             {
-                return null;
+                return Enumerable.Empty<ExplicitPropertySetters>();
             }
 
-            ExplicitPropertySetters result =
-                explicitPropertySetters.FirstOrDefault(
+            IEnumerable<ExplicitPropertySetters> result =
+                explicitPropertySetters.Where(
                     setters => StandardTypeGenerator.IsPropertyExplicitlySet(setters, objectGraphNode));
             return result;
         }

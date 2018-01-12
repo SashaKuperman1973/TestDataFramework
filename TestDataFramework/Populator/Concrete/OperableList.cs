@@ -168,21 +168,24 @@ namespace TestDataFramework.Populator.Concrete
         public IEnumerable<T> BindAndMake()
         {
             this.Populator.Bind();
-            IEnumerable<T> result = this.GetRecordObjects();
+            IEnumerable<T> result = this.RecordObjects;
             return result;
         }
 
         public IEnumerable<T> Make()
         {
             this.Populator.Bind(this);
-            IEnumerable<T> result = this.GetRecordObjects();
+            IEnumerable<T> result = this.RecordObjects;
             return result;
         }
 
-        public IEnumerable<T> GetRecordObjects()
+        public IEnumerable<T> RecordObjects
         {
-            IEnumerable<T> result = this.internalList.Select(reference => reference.RecordObject);
-            return result;
+            get
+            {
+                IEnumerable<T> result = this.internalList.Select(reference => reference.RecordObject);
+                return result;
+            }
         }
 
         #region IList<> members

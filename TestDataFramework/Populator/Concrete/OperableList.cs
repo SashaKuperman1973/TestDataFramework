@@ -21,6 +21,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using TestDataFramework.ListOperations;
 
 namespace TestDataFramework.Populator.Concrete
@@ -148,6 +149,12 @@ namespace TestDataFramework.Populator.Concrete
             return this;
         }
 
+        public virtual OperableList<T> Ignore<TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression)
+        {
+            this.internalList.ForEach(reference => reference.Ignore(fieldExpression));
+            return this;
+        }
+
         protected internal override void Bind()
         {
             if (!this.guaranteedValues.Any())
@@ -161,20 +168,20 @@ namespace TestDataFramework.Populator.Concrete
         public IEnumerable<T> BindAndMake()
         {
             this.Populator.Bind();
-            IEnumerable<T> result = OperableList<T>.GetRecordObjects(this.internalList);
+            IEnumerable<T> result = this.GetRecordObjects();
             return result;
         }
 
         public IEnumerable<T> Make()
         {
             this.Populator.Bind(this);
-            IEnumerable<T> result = OperableList<T>.GetRecordObjects(this.internalList);
+            IEnumerable<T> result = this.GetRecordObjects();
             return result;
         }
 
-        private static IEnumerable<T> GetRecordObjects(List<RecordReference<T>> internalList)
+        public IEnumerable<T> GetRecordObjects()
         {
-            List<T> result = internalList.Select(reference => reference.RecordObject).ToList();
+            IEnumerable<T> result = this.internalList.Select(reference => reference.RecordObject);
             return result;
         }
 

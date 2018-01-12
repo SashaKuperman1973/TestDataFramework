@@ -18,9 +18,8 @@
 */
 
 using System;
-using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -29,9 +28,6 @@ using TestDataFramework.Logger;
 using TestDataFramework.AttributeDecorator;
 using TestDataFramework.DeepSetting;
 using TestDataFramework.DeepSetting.Interfaces;
-using TestDataFramework.Exceptions;
-using TestDataFramework.Helpers;
-using TestDataFramework.Populator.Interfaces;
 using TestDataFramework.TypeGenerator.Interfaces;
 
 namespace TestDataFramework.Populator.Concrete
@@ -131,6 +127,17 @@ namespace TestDataFramework.Populator.Concrete
             return this;
         }
 
+        public virtual RecordReference<T> Ignore<TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression)
+        {
+            RecordReference<T>.Logger.Debug(
+                $"Entering Ignore(fieldExpression). TPropertyType: {typeof(TPropertyType)}, fieldExpression: {fieldExpression}");
+
+            this.AddToExplicitPropertySetters(fieldExpression, () => ExplicitlyIgnoredValue.Instance);
+
+            RecordReference<T>.Logger.Debug("Exiting Ignore(fieldExpression)");
+            return this;
+        }
+
         public virtual T BindAndMake()
         {
             this.Populator.Bind();
@@ -153,9 +160,30 @@ namespace TestDataFramework.Populator.Concrete
 
         private void AddToExplicitPropertySetters<TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression, Func<TPropertyType> valueFactory)
         {
+            object ObjectValueFactory()
+            {
+                var objectValueFactoryResult = valueFactory();
+                return objectValueFactoryResult;
+            }
+
+            this.AddToExplicitPropertySetters(fieldExpression, ObjectValueFactory);
+        }
+
+        private void AddToExplicitPropertySetters<TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression, Func<object> valueFactory)
+        {
             List<PropertyInfo> setterObjectGraph = this.objectGraphService.GetObjectGraph(fieldExpression);
 
-            void Setter(object @object) => setterObjectGraph.Last().SetValue(@object, valueFactory());
+            void Setter(object @object)
+            {
+                object value = valueFactory();
+
+                if (value is ExplicitlyIgnoredValue)
+                {
+                    return;
+                }
+
+                setterObjectGraph.Last().SetValue(@object, value);
+            }
 
             this.ExplicitPropertySetters.Add(new ExplicitPropertySetters { PropertyChain = setterObjectGraph, Action = Setter });
         }

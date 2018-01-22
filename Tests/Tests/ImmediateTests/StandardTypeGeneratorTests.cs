@@ -58,7 +58,8 @@ namespace Tests.Tests.ImmediateTests
 
             const int expected = 5;
 
-            this.valueGeneratorMock.Setup(m => m.GetValue(It.Is<PropertyInfo>(p => p.PropertyType == typeof(int)),
+            this.valueGeneratorMock.Setup(m => m.GetValue(
+                    It.Is<PropertyInfo>(p => p.PropertyType == typeof(int)),
                     It.IsAny<ObjectGraphNode>()))
                 .Returns(expected);
 
@@ -102,7 +103,7 @@ namespace Tests.Tests.ImmediateTests
         }
 
         [TestMethod]
-        public void GetObject_WithExplicitPropertySetters()
+        public void GetObject_WithExplicitPropertySetters_Test()
         {
             // Arrange
 
@@ -152,6 +153,49 @@ namespace Tests.Tests.ImmediateTests
 
             Assert.AreEqual(3, result.Key);
             Assert.AreEqual("ABCD", result.Value);
+        }
+
+        [TestMethod]
+        public void GetObject_WithExplicitConstructor_Test()
+        {
+            // Arrange
+
+            this.valueGeneratorMock.Setup(m => m.GetValue(
+                    It.Is<PropertyInfo>(pi => pi.PropertyType == typeof(DefaultConstructor)),
+                    It.IsAny<ObjectGraphNode>()))
+                .Returns(new DefaultConstructor());
+
+            // Act
+
+            object resultObject =
+                this.typeGenerator.GetObject<TwoParameterConstructor>(new List<ExplicitPropertySetters>());
+
+            var result = (TwoParameterConstructor) resultObject;
+
+            // Assert
+
+            Assert.IsNotNull(result.Subject);
+            Assert.IsNotNull(result.SubjectReference);
+            Assert.AreEqual(result.SubjectReference, result.Subject);
+
+            Assert.IsNotNull(result.OneParameterConstructor);
+
+            Assert.IsNotNull(result.OneParameterConstructor.DefaultConstructor);
+            Assert.IsNotNull(result.OneParameterConstructor.DefaultConstructorReference);
+            Assert.AreNotEqual(result.OneParameterConstructor.DefaultConstructorReference, result.OneParameterConstructor.DefaultConstructor);
+        }
+
+        [TestMethod]
+        public void GetObject_Uninstantiatable_Dependency_ResultsIn_NullRootObject()
+        {
+            // Act
+
+            object resultObject =
+                this.typeGenerator.GetObject<WithUninstantiatableDependency>(new List<ExplicitPropertySetters>());
+
+            // Assert
+
+            Assert.IsNull(resultObject);
         }
     }
 }

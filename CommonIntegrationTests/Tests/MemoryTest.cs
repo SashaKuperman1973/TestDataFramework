@@ -63,6 +63,15 @@ namespace CommonIntegrationTests.Tests
             Helpers.Dump(foreignReference.RecordObject);
         }
 
+        [TestMethod]
+        public void PropertyWith_No_Setter_Is_Ignored()
+        {
+            IPopulator populator = this.factory.CreateMemoryPopulator();
+
+            SubjectClass subjectClass = populator.Add<SubjectClass>().Make();
+            Assert.IsNull(subjectClass.GetterOnly);
+        }
+
         // This is a test of value types in general.
         [TestMethod]
         public void Multiple_KeyValuePair_Test()

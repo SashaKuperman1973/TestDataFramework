@@ -114,10 +114,10 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
             targets = targets.ToList();
 
             IEnumerable<RecordReference> distinctReferenceTypes =
-                targets.Where(t => !t.RecordObject.GetType().IsValueType)
+                targets.Where(t => !t.RecordObject?.GetType().IsValueType ?? false)
                     .Distinct(StandardDeferredValueGenerator<T>.ReferenceRecordObjectEqualityComparerObject);
 
-            IEnumerable<RecordReference> valueTypes = targets.Where(t => t.GetType().IsValueType);
+            IEnumerable<RecordReference> valueTypes = targets.Where(t => t.RecordObject?.GetType().IsValueType ?? false);
 
             IEnumerable<RecordReference> result = distinctReferenceTypes.Concat(valueTypes);
 

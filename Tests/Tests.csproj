@@ -75,6 +75,7 @@
     <Compile Include="Helpers.cs" />
     <Compile Include="Mocks\MockDbCommand.cs" />
     <Compile Include="Mocks\MockPersistence.cs" />
+    <Compile Include="TestModels\ConstructorTestClasses.cs" />
     <Compile Include="TestModels\DeepPropertyClasses.cs" />
     <Compile Include="TestModels\IntegralManualPrimarkKeyClasses.cs" />
     <Compile Include="TestModels\MultiNamespaceClasses.cs" />

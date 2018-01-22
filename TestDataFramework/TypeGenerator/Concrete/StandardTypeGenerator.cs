@@ -21,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Castle.MicroKernel.Registration;
 using log4net;
 using TestDataFramework.DeepSetting;
 using TestDataFramework.Logger;
@@ -78,30 +79,74 @@ namespace TestDataFramework.TypeGenerator.Concrete
 
             this.complexTypeProcessingRecursionGuard.Push(forType);
 
-            ConstructorInfo defaultConstructor = forType.GetConstructor(Type.EmptyTypes);
+            bool canBeConstructed = this.InvokeConstructor(forType, out object objectToFillResult);
 
-            if (defaultConstructor == null)
+            if (!canBeConstructed)
             {
-                StandardTypeGenerator.Logger.Debug("Type has no public default constructor. Type: " + forType);
-
-                object value = this.valueGenerator.GetValue(null, forType);
                 this.complexTypeProcessingRecursionGuard.Pop();
-                return value;
+                return objectToFillResult;
             }
 
-            object objectToFill = defaultConstructor.Invoke(null);
-
-            fillObject(objectToFill);
+            fillObject(objectToFillResult);
             this.complexTypeProcessingRecursionGuard.Pop();
 
             StandardTypeGenerator.Logger.Debug("Exiting ConstructObject");
-            return objectToFill;
+            return objectToFillResult;
         }
 
-        private static PropertyInfo[] GetProperties(object objectToFill)
+        private bool InvokeConstructor(Type forType, out object result)
         {
-            PropertyInfo[] targetProperties = objectToFill.GetType().GetPropertiesHelper();
-            return targetProperties;
+            StandardTypeGenerator.Logger.Debug("Entering StandardTypeGenerator.GetObjectToFill()");
+
+            if (forType.IsArray || forType.IsValueLikeType())
+            {
+                StandardTypeGenerator.Logger.Debug(
+                    $"Type is {forType}. Generating value and bypassing normal reference type population.");
+
+                result = this.valueGenerator.GetValue(null, forType);
+                return false;
+            }
+
+            IOrderedEnumerable<ConstructorInfo> constructors = forType.GetConstructors()
+                .OrderBy(constructorInfo => constructorInfo.GetParameters().Length);
+
+            List<object> constructorArguments = null;
+            ConstructorInfo resultConstructorInfo = null;
+            foreach (ConstructorInfo constructorInfo in constructors)
+            {
+                ParameterInfo[] parameterInfos = constructorInfo.GetParameters();
+
+                constructorArguments = new List<object>();
+
+                var parametersFound = true;
+                foreach (ParameterInfo parameterInfo in parameterInfos)
+                {
+                    object argument = this.GetObject(parameterInfo.ParameterType, new ObjectGraphNode(null, null));
+
+                    if (argument == null)
+                    {
+                        parametersFound = false;
+                        break;
+                    }
+
+                    constructorArguments.Add(argument);
+                }
+
+                if (!parametersFound) continue;
+
+                resultConstructorInfo = constructorInfo;
+                break;
+            }
+
+            if (resultConstructorInfo != null)
+            {
+                result = resultConstructorInfo.Invoke(constructorArguments.ToArray());
+                return true;
+            }
+
+            StandardTypeGenerator.Logger.Debug("Type has no public constructor. Type: " + forType);
+            result = this.valueGenerator.GetValue(null, forType);
+            return false;
         }
 
         private void FillObject(object objectToFill, ObjectGraphNode objectGraphNode)
@@ -171,6 +216,12 @@ namespace TestDataFramework.TypeGenerator.Concrete
             }
 
             return !stack.Any();
+        }
+
+        private static PropertyInfo[] GetProperties(object objectToFill)
+        {
+            PropertyInfo[] targetProperties = objectToFill.GetType().GetPropertiesHelper();
+            return targetProperties;
         }
 
         #endregion Private methods

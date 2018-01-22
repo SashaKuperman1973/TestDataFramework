@@ -101,6 +101,8 @@ namespace CommonIntegrationTests.TestModels
         public Guid? ANullableGuid { get; set; }
 
         public Guid AGuid { get; set; }
+
+        public string GetterOnly { get; }
     }
 
     public class ForeignSubjectClass

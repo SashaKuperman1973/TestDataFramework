@@ -68,11 +68,11 @@ namespace TestDataFramework.ValueGenerator
                 {typeof (string), this.GetString},
                 {typeof (decimal), this.GetDecimal},
                 {typeof (int), this.GetInteger},
-                {typeof (uint), this.GetInteger},
+                {typeof (uint), this.GetUnsignedInteger},
                 {typeof (long), this.GetLong},
-                {typeof (ulong), this.GetLong},
+                {typeof (ulong), this.GetUnsignedLong},
                 {typeof (short), this.GetShort},
-                {typeof (ushort), this.GetShort},
+                {typeof (ushort), this.GetUnsignedShort},
                 {typeof (bool), x => this.ValueProvider.GetBoolean()},
                 {typeof (char), x => this.ValueProvider.GetCharacter()},
                 {typeof (DateTime), this.GetDateTime},
@@ -99,7 +99,12 @@ namespace TestDataFramework.ValueGenerator
                     attribute =>
                         this.typeValueGetterDictionary.TryGetValue(attribute.GetType(), out getter));
 
-            object result = getter != null ? getter(propertyInfo) : this.GetValue(propertyInfo, propertyInfo.PropertyType, objectGraphNode);
+            object result = getter != null
+                ? getter(propertyInfo)
+                : this.GetValue(
+                    propertyInfo, 
+                    propertyInfo.PropertyType,
+                    forType => this.GetTypeGenerator().GetObject(forType, objectGraphNode));
 
             BaseValueGenerator.Logger.Debug($"Exiting GetValue(PropertyInfo, ObjectGraphNode). result: {result}");
             return result;
@@ -107,7 +112,19 @@ namespace TestDataFramework.ValueGenerator
 
         // This entry point is used when a different type is requested for a particular 
         // PropertyInfo or property info doesn't exist in the calling context.
-        public virtual object GetValue(PropertyInfo propertyInfo, Type type, ObjectGraphNode objectGraphNode)
+        public virtual object GetValue(PropertyInfo propertyInfo, Type type)
+        {
+            return this.GetValue(propertyInfo, type, forType => this.GetTypeGenerator().GetObject(forType, null));
+        }
+
+        public virtual object GetIntrinsicValue(PropertyInfo propertyInfo, Type type)
+        {
+            return this.GetValue(propertyInfo, type, forType => null);
+        }
+
+        #region Private Methods
+
+        private object GetValue(PropertyInfo propertyInfo, Type type, Func<Type, object> nonIntrinsicTypeGenerator)
         {
             BaseValueGenerator.Logger.Debug(
                 $"Entering GetValue(PropertyInfo, Type, ObjectGraphNode). propertyInfo: {propertyInfo}, type: {type}");
@@ -115,7 +132,7 @@ namespace TestDataFramework.ValueGenerator
             type.IsNotNull(nameof(type));
 
             if (type.IsArray)
-            {                
+            {
                 return this.GetArrayRandomizer().GetArray(propertyInfo, type);
             }
 
@@ -131,19 +148,12 @@ namespace TestDataFramework.ValueGenerator
 
             result =
                 this.typeValueGetterDictionary.TryGetValue(forType, out GetValueForTypeDelegate getter)
-                ? getter(propertyInfo)
-                : this.GetTypeGenerator().GetObject(forType, objectGraphNode);
+                    ? getter(propertyInfo)
+                    : nonIntrinsicTypeGenerator(forType);
 
             BaseValueGenerator.Logger.Debug($"Exiting GetValue(PropertyInfo, Type). result: {result}");
             return result;
         }
-
-        public virtual object GetValue(PropertyInfo propertyInfo, Type type)
-        {
-            return this.GetValue(propertyInfo, type, null);
-        }
-
-        #region Private Methods
 
         protected abstract object GetGuid(PropertyInfo propertyInfo);
 
@@ -265,6 +275,13 @@ namespace TestDataFramework.ValueGenerator
             return result;
         }
 
+        private object GetUnsignedInteger(PropertyInfo propertyInfo)
+        {
+            object integer = this.GetInteger(propertyInfo);
+            uint result = Convert.ToUInt32(integer);
+            return result;
+        }
+
         private object GetLong(PropertyInfo propertyInfo)
         {
             BaseValueGenerator.Logger.Debug("Entering GetLong");
@@ -283,6 +300,13 @@ namespace TestDataFramework.ValueGenerator
             long result = this.ValueProvider.GetLongInteger(max);
 
             BaseValueGenerator.Logger.Debug("Exiting GetLong");
+            return result;
+        }
+
+        private object GetUnsignedLong(PropertyInfo propertyInfo)
+        {
+            object integer = this.GetLong(propertyInfo);
+            ulong result = Convert.ToUInt64(integer);
             return result;
         }
 
@@ -309,6 +333,13 @@ namespace TestDataFramework.ValueGenerator
             short result = this.ValueProvider.GetShortInteger((short?)max);
 
             BaseValueGenerator.Logger.Debug("Exiting GetShort");
+            return result;
+        }
+
+        private object GetUnsignedShort(PropertyInfo propertyInfo)
+        {
+            object integer = this.GetShort(propertyInfo);
+            ushort result = Convert.ToUInt16(integer);
             return result;
         }
 

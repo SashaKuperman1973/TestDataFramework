@@ -2,17 +2,21 @@
 {
     // Normal classes for testing constructor
 
+    public class ConstructorTestSubjectClass
+    {
+    }
+
     public class TwoParameterConstructor
     {
-        public TwoParameterConstructor(SubjectClass subject, OneParameterConstructor oneParameterConstructor)
+        public TwoParameterConstructor(ConstructorTestSubjectClass subject, OneParameterConstructor oneParameterConstructor)
         {
             this.Subject = subject;
             this.SubjectReference = subject;
             this.OneParameterConstructor = oneParameterConstructor;
         }
 
-        public SubjectClass Subject { get; }
-        public SubjectClass SubjectReference;
+        public ConstructorTestSubjectClass Subject { get; }
+        public ConstructorTestSubjectClass SubjectReference;
 
         public OneParameterConstructor OneParameterConstructor { get; }
     }

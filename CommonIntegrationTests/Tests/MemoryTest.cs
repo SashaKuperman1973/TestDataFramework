@@ -20,13 +20,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime;
 using CommonIntegrationTests.TestModels;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestDataFramework.DeepSetting;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Factories;
 using TestDataFramework.Populator.Concrete;
 using TestDataFramework.Populator.Interfaces;
+using Tests.TestModels;
+using SubjectClass = CommonIntegrationTests.TestModels.SubjectClass;
 
 namespace CommonIntegrationTests.Tests
 {
@@ -47,6 +51,58 @@ namespace CommonIntegrationTests.Tests
         public void Cleanup()
         {
             this.factory.Dispose();
+        }
+
+        [TestMethod]
+        public void StructOnConstructor_Test()
+        {
+            IPopulator populator = this.factory.CreateMemoryPopulator();
+
+            var reference = populator.Add<AClassWithAStructOnConstructor>();
+            populator.Bind();
+
+            Assert.IsNotNull(reference.RecordObject.AStruct.AValue);
+        }
+
+        [TestMethod]
+        public void EnumOnConstructor_Test()
+        {
+            IPopulator populator = this.factory.CreateMemoryPopulator();
+
+            var reference = populator.Add<AClassWithAnEnumOnConstructor>();
+            populator.Bind();
+
+            Console.WriteLine(reference.RecordObject.AnEnum);
+        }
+
+        [TestMethod]
+        public void InstrinsicValueAsRoot_Test()
+        {
+            IPopulator populator = this.factory.CreateMemoryPopulator();
+
+            var aString = populator.Add<string>().Make();
+
+            Console.WriteLine(aString);
+        }
+
+        [TestMethod]
+        public void GetObject_WithExplicitConstructor_Test()
+        {
+            IPopulator populator = this.factory.CreateMemoryPopulator();
+            RecordReference<TwoParameterConstructor> reference = populator.Add<TwoParameterConstructor>();
+            populator.Bind();
+
+            TwoParameterConstructor result = reference.RecordObject;
+
+            Assert.IsNotNull(result.Subject);
+            Assert.IsNotNull(result.SubjectReference);
+            Assert.AreEqual(result.SubjectReference, result.Subject);
+
+            Assert.IsNotNull(result.OneParameterConstructor);
+
+            Assert.IsNotNull(result.OneParameterConstructor.DefaultConstructor);
+            Assert.IsNotNull(result.OneParameterConstructor.DefaultConstructorReference);
+            Assert.AreNotEqual(result.OneParameterConstructor.DefaultConstructorReference, result.OneParameterConstructor.DefaultConstructor);
         }
 
         [TestMethod]

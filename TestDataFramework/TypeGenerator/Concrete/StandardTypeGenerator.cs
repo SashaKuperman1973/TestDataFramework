@@ -98,15 +98,6 @@ namespace TestDataFramework.TypeGenerator.Concrete
         {
             StandardTypeGenerator.Logger.Debug("Entering StandardTypeGenerator.GetObjectToFill()");
 
-            if (forType.IsArray || forType.IsValueLikeType())
-            {
-                StandardTypeGenerator.Logger.Debug(
-                    $"Type is {forType}. Generating value and bypassing normal reference type population.");
-
-                result = this.valueGenerator.GetValue(null, forType);
-                return false;
-            }
-
             IOrderedEnumerable<ConstructorInfo> constructors = forType.GetConstructors()
                 .OrderBy(constructorInfo => constructorInfo.GetParameters().Length);
 
@@ -121,7 +112,7 @@ namespace TestDataFramework.TypeGenerator.Concrete
                 var parametersFound = true;
                 foreach (ParameterInfo parameterInfo in parameterInfos)
                 {
-                    object argument = this.GetObject(parameterInfo.ParameterType, new ObjectGraphNode(null, null));
+                    object argument = this.valueGenerator.GetValue(null, parameterInfo.ParameterType);
 
                     if (argument == null)
                     {
@@ -145,7 +136,14 @@ namespace TestDataFramework.TypeGenerator.Concrete
             }
 
             StandardTypeGenerator.Logger.Debug("Type has no public constructor. Type: " + forType);
-            result = this.valueGenerator.GetValue(null, forType);
+
+            if (forType.IsValueType)
+            {
+                result = Activator.CreateInstance(forType);
+                return true;
+            }
+
+            result = null;
             return false;
         }
 
@@ -246,6 +244,13 @@ namespace TestDataFramework.TypeGenerator.Concrete
         public virtual object GetObject<T>(IEnumerable<ExplicitPropertySetters> explicitProperySetters)
         {
             StandardTypeGenerator.Logger.Debug($"Entering GetObject. T: {typeof(T)}");
+
+            object intrinsicValue = this.valueGenerator.GetIntrinsicValue(null, typeof(T));
+
+            if (intrinsicValue != null)
+            {
+                return intrinsicValue;
+            }
 
             this.explicitPropertySetters = explicitProperySetters.ToList();
 

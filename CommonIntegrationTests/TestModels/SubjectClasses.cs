@@ -175,4 +175,35 @@ namespace CommonIntegrationTests.TestModels
     {
         public IDictionary<KeyValuePair<int, string>, object> ADictionary { get; set; }
     }
+
+    public struct AStruct
+    {
+        public string AValue { get; set; }
+    }
+
+    public class AClassWithAStructOnConstructor
+    {
+        public AClassWithAStructOnConstructor(AStruct aStruct)
+        {
+            this.AStruct = aStruct;
+        }
+
+        public AStruct AStruct { get; }
+    }
+
+    public enum AnEnum
+    {
+        Foo,
+        Bar
+    }
+
+    public class AClassWithAnEnumOnConstructor
+    {
+        public AClassWithAnEnumOnConstructor(AnEnum anEnum)
+        {
+            this.AnEnum = anEnum;
+        }
+
+        public AnEnum AnEnum { get; }
+    }
 }

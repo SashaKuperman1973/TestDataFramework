@@ -47,6 +47,9 @@ namespace Tests.Tests.ImmediateTests
         private const int IntegerResult = 5;
         private const long LongResult = 6;
         private const short ShortResult = 7;
+        private const uint UnsignedIntegerResult = BaseValueGeneratorTests.IntegerResult;
+        private const ulong UnsignedLongResult = BaseValueGeneratorTests.LongResult;
+        private const ushort UnsignedShortResult = (ushort)BaseValueGeneratorTests.ShortResult;
         private static readonly string StringResult = Guid.NewGuid().ToString("N");
         private const char CharacterResult = 'A';
         private const decimal DecimalResult = 48576.412587m;
@@ -109,11 +112,11 @@ namespace Tests.Tests.ImmediateTests
             var list = new List<Tuple<string, object>>
             {
                 new Tuple<string, object>("Integer", BaseValueGeneratorTests.IntegerResult),
-                new Tuple<string, object>("UnsignedInteger", BaseValueGeneratorTests.IntegerResult),
+                new Tuple<string, object>("UnsignedInteger", BaseValueGeneratorTests.UnsignedIntegerResult),
                 new Tuple<string, object>("LongInteger", BaseValueGeneratorTests.LongResult),
-                new Tuple<string, object>("UnsignedLongInteger", BaseValueGeneratorTests.LongResult),
+                new Tuple<string, object>("UnsignedLongInteger", BaseValueGeneratorTests.UnsignedLongResult),
                 new Tuple<string, object>("ShortInteger", BaseValueGeneratorTests.ShortResult),
-                new Tuple<string, object>("UnsignedShortInteger", BaseValueGeneratorTests.ShortResult),
+                new Tuple<string, object>("UnsignedShortInteger", BaseValueGeneratorTests.UnsignedShortResult),
                 new Tuple<string, object>("Text", BaseValueGeneratorTests.StringResult),
                 new Tuple<string, object>("Character", BaseValueGeneratorTests.CharacterResult),
                 new Tuple<string, object>("Decimal", BaseValueGeneratorTests.DecimalResult),
@@ -123,11 +126,11 @@ namespace Tests.Tests.ImmediateTests
                 new Tuple<string, object>("Double", BaseValueGeneratorTests.DoubleResult),
                 new Tuple<string, object>("Float", BaseValueGeneratorTests.FloatResult),
                 new Tuple<string, object>("NullableInteger", BaseValueGeneratorTests.IntegerResult),
-                new Tuple<string, object>("UnsignedNullableInteger", BaseValueGeneratorTests.IntegerResult),
+                new Tuple<string, object>("UnsignedNullableInteger", BaseValueGeneratorTests.UnsignedIntegerResult),
                 new Tuple<string, object>("NullableLong", BaseValueGeneratorTests.LongResult),
-                new Tuple<string, object>("UnsignedNullableLong", BaseValueGeneratorTests.LongResult),
+                new Tuple<string, object>("UnsignedNullableLong", BaseValueGeneratorTests.UnsignedLongResult),
                 new Tuple<string, object>("NullableShort", BaseValueGeneratorTests.ShortResult),
-                new Tuple<string, object>("UnsignedNullableShort", BaseValueGeneratorTests.ShortResult),
+                new Tuple<string, object>("UnsignedNullableShort", BaseValueGeneratorTests.UnsignedShortResult),
                 new Tuple<string, object>("AnEmailAddress", BaseValueGeneratorTests.EmailAddress),
             };
 

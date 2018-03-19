@@ -152,8 +152,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Assert
 
-            referenceMock.VerifyGet(m => m.IsProcessed);
-            referenceMock.VerifyGet(m => m.PreBoundObject);
+            referenceMock.VerifyGet(m => m.IsPopulated);
             referenceMock.Verify(m => m.Populate());
             this.persistenceMock.Verify(m => m.Persist(
                 It.Is<IEnumerable<RecordReference>>(referenceSet => referenceSet.Single() == referenceMock.Object)));
@@ -167,7 +166,7 @@ namespace Tests.Tests.ImmediateTests
             var referenceMock1 = new Mock<RecordReference<SubjectClass>>(null, null, null, null);
             var referenceMock2 = new Mock<RecordReference<SubjectClass>>(null, null, null, null);
             var set = new OperableList<SubjectClass>(new List<RecordReference<SubjectClass>> { referenceMock1.Object, referenceMock2.Object },
-                null, null) {IsProcessed = true};
+                null, null);
 
             // Act
 
@@ -175,12 +174,10 @@ namespace Tests.Tests.ImmediateTests
 
             // Assert
 
-            referenceMock1.VerifyGet(m => m.IsProcessed);
-            referenceMock1.VerifyGet(m => m.PreBoundObject);
+            referenceMock1.VerifyGet(m => m.IsPopulated);
             referenceMock1.Verify(m => m.Populate());
 
-            referenceMock2.VerifyGet(m => m.IsProcessed);
-            referenceMock2.VerifyGet(m => m.PreBoundObject);
+            referenceMock2.VerifyGet(m => m.IsPopulated);
             referenceMock2.Verify(m => m.Populate());
 
             Func<IEnumerable<RecordReference>, bool> verifyPersistence = referenceSet =>

@@ -179,7 +179,8 @@ namespace Tests.Tests.ImmediateTests
 
             // Assert
 
-            List<int?> subjectValues = operableList.Select(reference => (int?)reference.PreBoundObject?.Invoke()).ToList();
+            List<int?> subjectValues = operableList.Where(reference => reference.RecordObject != default(int))
+                .Select(reference => (int?) reference.RecordObject).ToList();
 
             int found = 0;
             int index;

@@ -100,6 +100,7 @@
     <Compile Include="Populator\BasePopulator.cs" />
     <Compile Include="Populator\Concrete\ExplicitlyIgnoredValue.cs" />
     <Compile Include="Populator\Concrete\OperableList.cs" />
+    <Compile Include="Populator\Populatable.cs" />
     <Compile Include="Populator\Interfaces\IPopulator.cs" />
     <Compile Include="Populator\RecordReference.cs" />
     <Compile Include="Populator\Concrete\GenericRecordReference.cs" />

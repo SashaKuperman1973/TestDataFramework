@@ -31,7 +31,7 @@ using TestDataFramework.TypeGenerator.Interfaces;
 
 namespace TestDataFramework.Populator
 {
-    public abstract class RecordReference
+    public abstract class RecordReference : Populatable
     {
         private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(RecordReference));
 
@@ -70,9 +70,7 @@ namespace TestDataFramework.Populator
             RecordReference.Logger.Debug("Exiting AddPrimaryRecordReference(RecordReference)");
         }
 
-        public virtual bool IsProcessed { get; protected internal set; }
-
-        protected internal virtual Func<object> PreBoundObject { get; set; }
+        public virtual bool IsPopulated { get; protected internal set; }
 
         protected internal virtual Type RecordType { get; protected set; }
 
@@ -110,7 +108,5 @@ namespace TestDataFramework.Populator
 
             return result;
         }
-
-        protected internal abstract void Populate();
     }
 }

@@ -28,6 +28,7 @@ using TestDataFramework.Logger;
 using TestDataFramework.AttributeDecorator;
 using TestDataFramework.DeepSetting;
 using TestDataFramework.DeepSetting.Interfaces;
+using TestDataFramework.Persistence.Interfaces;
 using TestDataFramework.TypeGenerator.Interfaces;
 
 namespace TestDataFramework.Populator.Concrete
@@ -75,13 +76,19 @@ namespace TestDataFramework.Populator.Concrete
         {
             RecordReference<T>.Logger.Debug("Entering Populate");
 
+            if (this.IsPopulated)
+            {
+                RecordReference<T>.Logger.Debug("Is Populated. Exiting.");
+                return;
+            }
+
             base.RecordObject = this.TypeGenerator.GetObject<T>(this.ExplicitPropertySetters);
+            this.IsPopulated = true;
 
             RecordReference<T>.Logger.Debug("Exiting Populate");
         }
 
-        public virtual RecordReference<T> Set<TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression,
-            TPropertyType value)
+        public virtual RecordReference<T> Set<TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression, TPropertyType value)
         {
             RecordReference<T>.Logger.Debug(
                 $"Entering Set(fieldExpression, value). TPropertyType: {typeof(TPropertyType)}, fieldExpression: {fieldExpression}, value: {value}");
@@ -101,6 +108,12 @@ namespace TestDataFramework.Populator.Concrete
 
             RecordReference<T>.Logger.Debug("Exiting Set(fieldExpression, valueFactory)");
             return this;
+        }
+
+        public virtual void Set<TPropertyType>(Expression<Func<T, IEnumerable<TPropertyType>>> fieldExpression,
+            Func<TPropertyType> valueFactory, int? position = null)
+        {
+            
         }
 
         public virtual RecordReference<T> SetRange<TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression,
@@ -186,6 +199,11 @@ namespace TestDataFramework.Populator.Concrete
             }
 
             this.ExplicitPropertySetters.Add(new ExplicitPropertySetters { PropertyChain = setterObjectGraph, Action = Setter });
+        }
+
+        protected internal override void AddToReferences(IList<RecordReference> collection)
+        {
+            collection.Add(this);
         }
     }
 }

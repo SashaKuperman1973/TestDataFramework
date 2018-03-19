@@ -26,10 +26,9 @@ using TestDataFramework.ListOperations;
 
 namespace TestDataFramework.Populator.Concrete
 {
-    public abstract class OperableList
+    public abstract class OperableList : Populatable
     {
-        protected internal abstract void Bind();
-        public bool IsProcessed { get; protected internal set; }
+        public bool IsPopulated { get; protected set; }
     }
 
     public class GuaranteedValues
@@ -155,14 +154,27 @@ namespace TestDataFramework.Populator.Concrete
             return this;
         }
 
-        protected internal override void Bind()
+        protected internal override void Populate()
         {
-            if (!this.guaranteedValues.Any())
+            if (this.IsPopulated)
             {
                 return;
             }
 
+            if (!this.guaranteedValues.Any())
+            {
+                this.internalList.ForEach(recordReference => recordReference.Populate());
+                return;
+            }
+
             this.valueGuaranteePopulator.Bind(this, this.guaranteedValues);
+            this.internalList.ForEach(recordReference => recordReference.Populate());
+            this.IsPopulated = true;
+        }
+
+        protected internal override void AddToReferences(IList<RecordReference> collection)
+        {
+            this.internalList.ForEach(collection.Add);
         }
 
         public IEnumerable<T> BindAndMake()

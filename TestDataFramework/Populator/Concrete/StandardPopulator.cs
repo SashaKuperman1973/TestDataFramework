@@ -20,6 +20,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web.UI.WebControls;
 using log4net;
 using TestDataFramework.Logger;
 using TestDataFramework.AttributeDecorator;
@@ -43,8 +44,7 @@ namespace TestDataFramework.Populator.Concrete
         private readonly IObjectGraphService objectGraphService;
 
         public override IValueGenerator ValueGenerator { get; }
-        private readonly List<RecordReference> recordReferences = new List<RecordReference>();
-        private readonly List<OperableList> setOfLists = new List<OperableList>();
+        private readonly List<Populatable> populatables = new List<Populatable>();
 
         public StandardPopulator(ITypeGenerator typeGenerator, IPersistence persistence,
             IAttributeDecorator attributeDecorator, IHandledTypeGenerator handledTypeGenerator, 
@@ -66,8 +66,7 @@ namespace TestDataFramework.Populator.Concrete
 
         public override void Clear()
         {
-            this.recordReferences.Clear();
-            this.setOfLists.Clear();
+            this.populatables.Clear();
         }
 
         public override void Extend(Type type, HandledTypeValueGetter valueGetter)
@@ -80,7 +79,7 @@ namespace TestDataFramework.Populator.Concrete
             StandardPopulator.Logger.Debug($"Entering Add. T: {typeof(T)}, copies: {copies}, primaryRecordReference: {primaryRecordReferences}");
 
             var result = new OperableList<T>(this.valueGuaranteePopulator, this);
-            this.setOfLists.Add(result);
+            this.populatables.Add(result);
 
             for (int i = 0; i < copies; i++)
             {
@@ -97,7 +96,7 @@ namespace TestDataFramework.Populator.Concrete
 
             var recordReference = new RecordReference<T>(this.typeGenerator, this.AttributeDecorator, this, this.objectGraphService);
 
-            this.recordReferences.Add(recordReference);
+            this.populatables.Add(recordReference);
             recordReference.AddPrimaryRecordReference(primaryRecordReferences);
 
             StandardPopulator.Logger.Debug("Exiting Add<T>(primaryRecordReference, propertyExpressionDictionary)");
@@ -110,74 +109,47 @@ namespace TestDataFramework.Populator.Concrete
         {
             StandardPopulator.Logger.Debug("Entering Bind()");
 
-            List<OperableList> unprocessedLists = this.setOfLists.Where(list => !list.IsProcessed).ToList();
-
-            foreach (OperableList list in unprocessedLists)
-            {
-                list.Bind();
-                list.IsProcessed = true;
-            }
-
-            IEnumerable<RecordReference> unprocessedReferences =
-                this.recordReferences.Where(reference => !reference.IsProcessed).ToList();
-
-            foreach (RecordReference recordReference in unprocessedReferences)
-            {
-                StandardPopulator.Populate(recordReference);
-            }
-
-            this.persistence.Persist(unprocessedReferences);
-
-            this.recordReferences.ForEach(reference => reference.IsProcessed = true);
+            this.populatables.ForEach(populatable => populatable.Populate());
+            this.Persist();
 
             StandardPopulator.Logger.Debug("Exiting Bind()");
         }
 
         protected internal override void Bind(RecordReference recordReference)
         {
-            if (recordReference.IsProcessed)
+            if (recordReference.IsPopulated)
             {
                 StandardPopulator.Logger.Debug("RecordReference is already processed. Exiting.");
                 return;
             }
 
-            StandardPopulator.Populate(recordReference);
+            recordReference.Populate();
 
             this.persistence.Persist(new[] { recordReference });
-            recordReference.IsProcessed = true;
+            recordReference.IsPopulated = true;
         }
 
         protected internal override void Bind<T>(OperableList<T> operableList)
         {
-            if (!operableList.IsProcessed)
+            if (!operableList.IsPopulated)
             {
-                operableList.Bind();
-                operableList.IsProcessed = true;
+                operableList.Populate();
             }
 
-            List<RecordReference<T>> unprocessedReferences = operableList.Where(reference => !reference.IsProcessed).ToList();
+            List<RecordReference<T>> unprocessedReferences = operableList.Where(reference => !reference.IsPopulated).ToList();
 
-            unprocessedReferences.ForEach(StandardPopulator.Populate);
+            unprocessedReferences.ForEach(recordReference => recordReference.Populate());
 
             this.persistence.Persist(unprocessedReferences);
 
-            unprocessedReferences.ForEach(reference => reference.IsProcessed = true);
+            unprocessedReferences.ForEach(reference => reference.IsPopulated = true);
         }
 
-        private static void Populate(RecordReference recordReference)
+        private void Persist()
         {
-            StandardPopulator.Logger.Debug("Entering Bind(RecordReference)");
-
-            if (recordReference.PreBoundObject != null)
-            {
-                recordReference.RecordObject = recordReference.PreBoundObject();
-            }
-            else
-            {
-                recordReference.Populate();
-            }
-
-            StandardPopulator.Logger.Debug("Exiting Bind(RecordReference)");
+            var recordReferences = new List<RecordReference>();
+            this.populatables.ForEach(populatable => populatable.AddToReferences(recordReferences));
+            this.persistence.Persist(recordReferences);
         }
     }
 }

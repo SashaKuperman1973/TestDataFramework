@@ -101,6 +101,8 @@ namespace TestDataFramework.ListOperations
                             throw new ValueGuaranteeException(string.Format(Messages.GuaranteedTypeNotOfListType,
                                 typeof(T), typeArgs[0], ValueGuaranteePopulator.GetValue(objectFunc)));
                         }
+
+                        reference.RecordObject = objectFunc();
                     }
                     else
                     {
@@ -110,11 +112,10 @@ namespace TestDataFramework.ListOperations
                                 typeof(T), subject.GetType(), subject));
                         }
 
-                        objectFunc = () => subject;
+                        reference.RecordObject = subject;
                     }
 
-                    reference.PreBoundObject = objectFunc;
-
+                    reference.IsPopulated = true;
                     workingList.RemoveAt(referenceIndex);
                 }
             }

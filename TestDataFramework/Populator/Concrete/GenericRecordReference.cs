@@ -18,11 +18,13 @@
 */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading;
 using log4net;
 using TestDataFramework.Logger;
 using TestDataFramework.AttributeDecorator;
@@ -110,7 +112,7 @@ namespace TestDataFramework.Populator.Concrete
             return this;
         }
 
-        public virtual void Set<TPropertyType>(Expression<Func<T, IEnumerable<TPropertyType>>> fieldExpression,
+        public virtual void Set<TPropertyType>(Expression<Func<T, IList<TPropertyType>>> fieldExpression,
             Func<TPropertyType> valueFactory, int? position = null)
         {
             
@@ -204,6 +206,43 @@ namespace TestDataFramework.Populator.Concrete
         protected internal override void AddToReferences(IList<RecordReference> collection)
         {
             collection.Add(this);
+        }
+
+        private void SetList<TPropertyType>(int copies, Range[] ranges, Func<object> valueFactory)
+        {
+            ranges = ranges.OrderBy(r => r.StartPosition).ToArray();
+
+            if (ranges.Last().EndPosition + 1 > copies)
+            {
+                throw new ArgumentOutOfRangeException("Setting a collection: Range is greater than copies requested.");
+            }
+
+            void Setter(object @object)
+            {
+                var setterResult = new List<TPropertyType>();
+
+                int lastEndPosition = 0;
+                IEnumerable<TPropertyType> autoPopulated;
+                foreach (Range range in ranges)
+                {
+                    if (lastEndPosition > range.StartPosition)
+                    {
+                        throw new ArgumentOutOfRangeException("Setting a collection: Ranges overlap.");
+                    }
+
+                    autoPopulated = this.Populator.Add<TPropertyType>(range.StartPosition - lastEndPosition).Make();
+                    lastEndPosition = range.EndPosition;
+                    setterResult.AddRange(autoPopulated);
+
+                    for (int i = range.StartPosition; i <= range.EndPosition; i++)
+                    {
+                        setterResult.Add((TPropertyType)valueFactory());
+                    }
+                }
+
+                autoPopulated = this.Populator.Add<TPropertyType>(copies - ranges.Last().EndPosition - 1).Make();
+                setterResult.AddRange(autoPopulated);
+            }
         }
     }
 }

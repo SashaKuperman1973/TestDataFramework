@@ -7,5 +7,7 @@ namespace TestDataFramework.Populator
         protected internal abstract void Populate();
 
         internal abstract void AddToReferences(IList<RecordReference> collection);
+
+        internal bool IsPopulated { get; set; }
     }
 }

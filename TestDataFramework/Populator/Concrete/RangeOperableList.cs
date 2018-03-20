@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using TestDataFramework.AttributeDecorator;
 using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.ListOperations;
@@ -11,33 +9,45 @@ using TestDataFramework.TypeGenerator.Interfaces;
 
 namespace TestDataFramework.Populator.Concrete
 {
-    public class RangeOperableList<T> : OperableList<T>
+    public class RangeOperableList<TListElement, TPropertyType> : OperableList<TListElement>
     {
         protected readonly IObjectGraphService ObjectGraphService;
+        protected readonly ITypeGenerator typeGenerator;
+        protected readonly IAttributeDecorator attributeDecorator;
+        private readonly int copies;
 
-        public RangeOperableList(ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator, ITypeGenerator typeGenerator, IAttributeDecorator attributeDecorator,
-            IObjectGraphService objectGraphService) : base(valueGuaranteePopulator, populator, typeGenerator, attributeDecorator, objectGraphService)
+        public RangeOperableList(int copies, ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator,
+            ITypeGenerator typeGenerator, IAttributeDecorator attributeDecorator, IObjectGraphService objectGraphService)
+            : base(valueGuaranteePopulator, populator)
         {
+            this.copies = copies;
+            this.typeGenerator = typeGenerator;
+            this.attributeDecorator = attributeDecorator;
             this.ObjectGraphService = objectGraphService;
         }
 
         private List<Range> Ranges { get; } = new List<Range>();
 
-        internal Func<List<T>> Set<TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression, Func<TPropertyType> valueFactory, int copies)
+        public virtual Func<IList<TListElement>> GetListSetter(Expression<Func<TListElement, TPropertyType>> fieldExpression, Func<TPropertyType> valueFactory)
         {
-            List<T> Setter()
+            List<TListElement> Setter()
             {
+                if (!this.Ranges.Any())
+                {
+                    return Enumerable.Empty<TListElement>().ToList();
+                }
+
                 Range[] ranges = this.Ranges.OrderBy(r => r.StartPosition).ToArray();
 
-                if (ranges.Last().EndPosition + 1 > copies)
+                if (ranges.Last().EndPosition + 1 > this.copies)
                 {
                     throw new ArgumentOutOfRangeException("Setting a collection: Range is greater than copies requested.");
                 }
 
-                var setterResult = new List<T>();
+                var setterResult = new List<TListElement>();
 
                 int lastEndPosition = 0;
-                IEnumerable<T> autoPopulated;
+                IEnumerable<TListElement> autoPopulated;
                 foreach (Range range in ranges)
                 {
                     if (lastEndPosition > range.StartPosition)
@@ -45,13 +55,13 @@ namespace TestDataFramework.Populator.Concrete
                         throw new ArgumentOutOfRangeException("Setting a collection: Ranges overlap.");
                     }
 
-                    autoPopulated = this.Populator.Add<T>(range.StartPosition - lastEndPosition).Make();
+                    autoPopulated = this.Populator.Add<TListElement>(range.StartPosition - lastEndPosition).Make();
                     lastEndPosition = range.EndPosition;
                     setterResult.AddRange(autoPopulated);
 
                     for (int i = range.StartPosition; i <= range.EndPosition; i++)
                     {
-                        var recordReference = new RecordReference<T>(this.TypeGenerator, this.AttributeDecorator,
+                        var recordReference = new RecordReference<TListElement>(this.typeGenerator, this.attributeDecorator,
                             this.Populator, this.ObjectGraphService, this.ValueGuaranteePopulator);
 
                         this.InternalList.Add(recordReference);
@@ -61,7 +71,7 @@ namespace TestDataFramework.Populator.Concrete
                     }
                 }
 
-                autoPopulated = this.Populator.Add<T>(copies - ranges.Last().EndPosition - 1).Make();
+                autoPopulated = this.Populator.Add<TListElement>(this.copies - ranges.Last().EndPosition - 1).Make();
                 setterResult.AddRange(autoPopulated);
 
                 return setterResult;

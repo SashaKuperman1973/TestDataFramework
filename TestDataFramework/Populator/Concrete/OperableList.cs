@@ -22,10 +22,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using TestDataFramework.AttributeDecorator;
-using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.ListOperations;
-using TestDataFramework.TypeGenerator.Interfaces;
 
 namespace TestDataFramework.Populator.Concrete
 {
@@ -36,28 +33,21 @@ namespace TestDataFramework.Populator.Concrete
         public int? TotalFrequency { get; set; }
     }
 
-    public class OperableList<T> : RecordReference<T>, IList<RecordReference<T>>
+    public class OperableList<T> : Populatable, IList<RecordReference<T>>
     {
         private readonly List<GuaranteedValues> guaranteedValues = new List<GuaranteedValues>();
-
         protected readonly List<RecordReference<T>> InternalList;
         protected readonly ValueGuaranteePopulator ValueGuaranteePopulator;
-
         protected BasePopulator Populator;
 
-        public OperableList(ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator, 
-            ITypeGenerator typeGenerator, IAttributeDecorator attributeDecorator,
-            IObjectGraphService objectGraphService)
-            : base(typeGenerator, attributeDecorator, populator, objectGraphService, valueGuaranteePopulator)
+        public OperableList(ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator)
         {
             this.InternalList = new List<RecordReference<T>>();
             this.ValueGuaranteePopulator = valueGuaranteePopulator;
             this.Populator = populator;
         }
 
-        public OperableList(IEnumerable<RecordReference<T>> input, ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator,
-            ITypeGenerator typeGenerator, IAttributeDecorator attributeDecorator, IObjectGraphService objectGraphService)
-            : base(typeGenerator, attributeDecorator, populator, objectGraphService, valueGuaranteePopulator)
+        public OperableList(IEnumerable<RecordReference<T>> input, ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator)
         {            
             this.InternalList = new List<RecordReference<T>>(input);
             this.ValueGuaranteePopulator = valueGuaranteePopulator;
@@ -151,7 +141,7 @@ namespace TestDataFramework.Populator.Concrete
             return this;
         }
 
-        public override void Ignore<TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression)
+        public virtual void Ignore<TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression)
         {
             this.InternalList.ForEach(reference => reference.Ignore(fieldExpression));
         }

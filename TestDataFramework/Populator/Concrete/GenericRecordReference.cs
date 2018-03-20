@@ -115,14 +115,16 @@ namespace TestDataFramework.Populator.Concrete
             return this;
         }
 
-        public virtual RangeOperableList<TPropertyType> Set<TPropertyType>(Expression<Func<T, IList<TPropertyType>>> fieldExpression, int size = 5, int position = 2)
+        public virtual RangeOperableListHolder<TPropertyType> Set<TPropertyType>(Expression<Func<T, IList<TPropertyType>>> fieldExpression, int size = 5)
         {
-            var range = new Range {StartPosition = position, EndPosition = position};
+            var holder = new RangeOperableListHolder<TPropertyType> {Size = size};
+            return holder;
 
-            var result = new RangeOperableList<TPropertyType>(this.valueGuaranteePopulator, this.Populator,
-                this.TypeGenerator, this.AttributeDecorator, this.objectGraphService);
 
-            result.Set(p => )
+            //var list = new RangeOperableList<TPropertyType>(size, this.valueGuaranteePopulator, this.Populator,
+            //    this.TypeGenerator, this.AttributeDecorator, this.objectGraphService);
+
+            //Func<IList<TPropertyType>> setter = list.GetListSetter();
         }
 
         public virtual RecordReference<T> SetRange<TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression,

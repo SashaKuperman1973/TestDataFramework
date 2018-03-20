@@ -1,6 +1,6 @@
-﻿namespace TestDataFramework.Populator
+﻿namespace TestDataFramework.Populator.Concrete
 {
-    internal class Range
+    public class Range
     {
         public int StartPosition { get; set; }
 

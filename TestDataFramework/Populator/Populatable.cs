@@ -6,6 +6,6 @@ namespace TestDataFramework.Populator
     {
         protected internal abstract void Populate();
 
-        protected internal abstract void AddToReferences(IList<RecordReference> collection);
+        internal abstract void AddToReferences(IList<RecordReference> collection);
     }
 }

@@ -30,6 +30,7 @@ using TestDataFramework.Logger;
 using TestDataFramework.AttributeDecorator;
 using TestDataFramework.DeepSetting;
 using TestDataFramework.DeepSetting.Interfaces;
+using TestDataFramework.ListOperations;
 using TestDataFramework.Persistence.Interfaces;
 using TestDataFramework.TypeGenerator.Interfaces;
 
@@ -42,18 +43,20 @@ namespace TestDataFramework.Populator.Concrete
         protected BasePopulator Populator;
 
         private readonly IObjectGraphService objectGraphService;
+        private readonly ValueGuaranteePopulator valueGuaranteePopulator;
 
         protected internal readonly List<ExplicitPropertySetters> ExplicitPropertySetters =
             new List<ExplicitPropertySetters>();
 
         public RecordReference(ITypeGenerator typeGenerator, IAttributeDecorator attributeDecorator,
-            BasePopulator populator, IObjectGraphService objectGraphService) : base(typeGenerator, attributeDecorator)
+            BasePopulator populator, IObjectGraphService objectGraphService, ValueGuaranteePopulator valueGuaranteePopulator) : base(typeGenerator, attributeDecorator)
         {
             RecordReference<T>.Logger.Debug($"Entering constructor. T: {typeof(T)}");
 
             this.RecordType = typeof(T);
             this.Populator = populator;
             this.objectGraphService = objectGraphService;
+            this.valueGuaranteePopulator = valueGuaranteePopulator;
 
             RecordReference<T>.Logger.Debug("Exiting constructor");
         }
@@ -112,10 +115,14 @@ namespace TestDataFramework.Populator.Concrete
             return this;
         }
 
-        public virtual void Set<TPropertyType>(Expression<Func<T, IList<TPropertyType>>> fieldExpression,
-            Func<TPropertyType> valueFactory, int? position = null)
+        public virtual RangeOperableList<TPropertyType> Set<TPropertyType>(Expression<Func<T, IList<TPropertyType>>> fieldExpression, int size = 5, int position = 2)
         {
-            
+            var range = new Range {StartPosition = position, EndPosition = position};
+
+            var result = new RangeOperableList<TPropertyType>(this.valueGuaranteePopulator, this.Populator,
+                this.TypeGenerator, this.AttributeDecorator, this.objectGraphService);
+
+            result.Set(p => )
         }
 
         public virtual RecordReference<T> SetRange<TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression,
@@ -142,7 +149,7 @@ namespace TestDataFramework.Populator.Concrete
             return this;
         }
 
-        public virtual RecordReference<T> Ignore<TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression)
+        public virtual void Ignore<TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression)
         {
             RecordReference<T>.Logger.Debug(
                 $"Entering Ignore(fieldExpression). TPropertyType: {typeof(TPropertyType)}, fieldExpression: {fieldExpression}");
@@ -150,7 +157,6 @@ namespace TestDataFramework.Populator.Concrete
             this.AddToExplicitPropertySetters(fieldExpression, () => ExplicitlyIgnoredValue.Instance);
 
             RecordReference<T>.Logger.Debug("Exiting Ignore(fieldExpression)");
-            return this;
         }
 
         public virtual T BindAndMake()
@@ -163,6 +169,11 @@ namespace TestDataFramework.Populator.Concrete
         {
             this.Populator.Bind(this);
             return this.RecordObject;
+        }
+
+        internal override void AddToReferences(IList<RecordReference> collection)
+        {
+            collection.Add(this);
         }
 
         private static TPropertyType ChooseElementInRange<TPropertyType>(IEnumerable<TPropertyType> elements)
@@ -201,48 +212,6 @@ namespace TestDataFramework.Populator.Concrete
             }
 
             this.ExplicitPropertySetters.Add(new ExplicitPropertySetters { PropertyChain = setterObjectGraph, Action = Setter });
-        }
-
-        protected internal override void AddToReferences(IList<RecordReference> collection)
-        {
-            collection.Add(this);
-        }
-
-        private void SetList<TPropertyType>(int copies, Range[] ranges, Func<object> valueFactory)
-        {
-            ranges = ranges.OrderBy(r => r.StartPosition).ToArray();
-
-            if (ranges.Last().EndPosition + 1 > copies)
-            {
-                throw new ArgumentOutOfRangeException("Setting a collection: Range is greater than copies requested.");
-            }
-
-            void Setter(object @object)
-            {
-                var setterResult = new List<TPropertyType>();
-
-                int lastEndPosition = 0;
-                IEnumerable<TPropertyType> autoPopulated;
-                foreach (Range range in ranges)
-                {
-                    if (lastEndPosition > range.StartPosition)
-                    {
-                        throw new ArgumentOutOfRangeException("Setting a collection: Ranges overlap.");
-                    }
-
-                    autoPopulated = this.Populator.Add<TPropertyType>(range.StartPosition - lastEndPosition).Make();
-                    lastEndPosition = range.EndPosition;
-                    setterResult.AddRange(autoPopulated);
-
-                    for (int i = range.StartPosition; i <= range.EndPosition; i++)
-                    {
-                        setterResult.Add((TPropertyType)valueFactory());
-                    }
-                }
-
-                autoPopulated = this.Populator.Add<TPropertyType>(copies - ranges.Last().EndPosition - 1).Make();
-                setterResult.AddRange(autoPopulated);
-            }
         }
     }
 }

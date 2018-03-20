@@ -22,15 +22,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using TestDataFramework.AttributeDecorator;
+using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.ListOperations;
+using TestDataFramework.TypeGenerator.Interfaces;
 
 namespace TestDataFramework.Populator.Concrete
 {
-    public abstract class OperableList : Populatable
-    {
-        public bool IsPopulated { get; protected set; }
-    }
-
     public class GuaranteedValues
     {
         public IEnumerable<object> Values { get; set; }
@@ -38,26 +36,31 @@ namespace TestDataFramework.Populator.Concrete
         public int? TotalFrequency { get; set; }
     }
 
-    public class OperableList<T> : OperableList, IList<RecordReference<T>>
+    public class OperableList<T> : RecordReference<T>, IList<RecordReference<T>>
     {
         private readonly List<GuaranteedValues> guaranteedValues = new List<GuaranteedValues>();
 
-        private readonly List<RecordReference<T>> internalList;
-        private readonly ValueGuaranteePopulator valueGuaranteePopulator;
+        protected readonly List<RecordReference<T>> InternalList;
+        protected readonly ValueGuaranteePopulator ValueGuaranteePopulator;
 
         protected BasePopulator Populator;
 
-        public OperableList(ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator)
+        public OperableList(ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator, 
+            ITypeGenerator typeGenerator, IAttributeDecorator attributeDecorator,
+            IObjectGraphService objectGraphService)
+            : base(typeGenerator, attributeDecorator, populator, objectGraphService, valueGuaranteePopulator)
         {
-            this.internalList = new List<RecordReference<T>>();
-            this.valueGuaranteePopulator = valueGuaranteePopulator;
+            this.InternalList = new List<RecordReference<T>>();
+            this.ValueGuaranteePopulator = valueGuaranteePopulator;
             this.Populator = populator;
         }
 
-        public OperableList(IEnumerable<RecordReference<T>> input, ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator)
+        public OperableList(IEnumerable<RecordReference<T>> input, ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator,
+            ITypeGenerator typeGenerator, IAttributeDecorator attributeDecorator, IObjectGraphService objectGraphService)
+            : base(typeGenerator, attributeDecorator, populator, objectGraphService, valueGuaranteePopulator)
         {            
-            this.internalList = new List<RecordReference<T>>(input);
-            this.valueGuaranteePopulator = valueGuaranteePopulator;
+            this.InternalList = new List<RecordReference<T>>(input);
+            this.ValueGuaranteePopulator = valueGuaranteePopulator;
             this.Populator = populator;
         }
 
@@ -148,10 +151,9 @@ namespace TestDataFramework.Populator.Concrete
             return this;
         }
 
-        public virtual OperableList<T> Ignore<TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression)
+        public override void Ignore<TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression)
         {
-            this.internalList.ForEach(reference => reference.Ignore(fieldExpression));
-            return this;
+            this.InternalList.ForEach(reference => reference.Ignore(fieldExpression));
         }
 
         protected internal override void Populate()
@@ -163,18 +165,18 @@ namespace TestDataFramework.Populator.Concrete
 
             if (!this.guaranteedValues.Any())
             {
-                this.internalList.ForEach(recordReference => recordReference.Populate());
+                this.InternalList.ForEach(recordReference => recordReference.Populate());
                 return;
             }
 
-            this.valueGuaranteePopulator.Bind(this, this.guaranteedValues);
-            this.internalList.ForEach(recordReference => recordReference.Populate());
+            this.ValueGuaranteePopulator.Bind(this, this.guaranteedValues);
+            this.InternalList.ForEach(recordReference => recordReference.Populate());
             this.IsPopulated = true;
         }
 
-        protected internal override void AddToReferences(IList<RecordReference> collection)
+        internal override void AddToReferences(IList<RecordReference> collection)
         {
-            this.internalList.ForEach(collection.Add);
+            this.InternalList.ForEach(collection.Add);
         }
 
         public IEnumerable<T> BindAndMake()
@@ -195,7 +197,7 @@ namespace TestDataFramework.Populator.Concrete
         {
             get
             {
-                IEnumerable<T> result = this.internalList.Select(reference => reference.RecordObject);
+                IEnumerable<T> result = this.InternalList.Select(reference => reference.RecordObject);
                 return result;
             }
         }
@@ -204,7 +206,7 @@ namespace TestDataFramework.Populator.Concrete
 
         public IEnumerator<RecordReference<T>> GetEnumerator()
         {
-            return this.internalList.GetEnumerator();
+            return this.InternalList.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -214,54 +216,54 @@ namespace TestDataFramework.Populator.Concrete
 
         public void Add(RecordReference<T> item)
         {
-            this.internalList.Add(item);
+            this.InternalList.Add(item);
 
         }
 
-        public int Count => this.internalList.Count;
+        public int Count => this.InternalList.Count;
 
-        public bool IsReadOnly => ((IList)this.internalList).IsReadOnly;
+        public bool IsReadOnly => ((IList)this.InternalList).IsReadOnly;
 
         public void Clear()
         {
-            this.internalList.Clear();
+            this.InternalList.Clear();
             this.guaranteedValues.Clear();
         }
 
         public bool Contains(RecordReference<T> item)
         {
-            return this.internalList.Contains(item);
+            return this.InternalList.Contains(item);
         }
 
         public void CopyTo(RecordReference<T>[] array, int arrayIndex)
         {
-            this.internalList.CopyTo(array, arrayIndex);
+            this.InternalList.CopyTo(array, arrayIndex);
         }
 
         public bool Remove(RecordReference<T> item)
         {
-            return this.internalList.Remove(item);
+            return this.InternalList.Remove(item);
         }
 
         public int IndexOf(RecordReference<T> item)
         {
-            return this.internalList.IndexOf(item);
+            return this.InternalList.IndexOf(item);
         }
 
         public void Insert(int index, RecordReference<T> item)
         {
-            this.internalList.Insert(index, item);
+            this.InternalList.Insert(index, item);
         }
 
         public void RemoveAt(int index)
         {
-            this.internalList.RemoveAt(index);
+            this.InternalList.RemoveAt(index);
         }
 
         public RecordReference<T> this[int index]
         {
-            get { return this.internalList[index]; }
-            set { this.internalList[index] = value; }
+            get { return this.InternalList[index]; }
+            set { this.InternalList[index] = value; }
         }
 
         #endregion IList<> members

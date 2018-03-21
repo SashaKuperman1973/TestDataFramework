@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using TestDataFramework.AttributeDecorator;
 using TestDataFramework.DeepSetting.Interfaces;
@@ -33,7 +34,7 @@ namespace TestDataFramework.Populator.Concrete
             var list = new RangeOperableList<TListElement, TPropertyType>(this.Size, this.valueGuaranteePopulator, this.populator,
                 this.typeGenerator, this.attributeDecorator, this.objectGraphService);
 
-
+            Func<IList<TListElement>> listSetter = list.GetListSetter(fieldExpression, valueFactory);
         }
     }
 }

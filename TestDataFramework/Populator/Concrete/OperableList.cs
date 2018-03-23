@@ -36,7 +36,7 @@ namespace TestDataFramework.Populator.Concrete
     public class OperableList<T> : Populatable, IList<RecordReference<T>>
     {
         private readonly List<GuaranteedValues> guaranteedValues = new List<GuaranteedValues>();
-        protected readonly List<RecordReference<T>> InternalList;
+        protected List<RecordReference<T>> InternalList;
         protected readonly ValueGuaranteePopulator ValueGuaranteePopulator;
         protected BasePopulator Populator;
 

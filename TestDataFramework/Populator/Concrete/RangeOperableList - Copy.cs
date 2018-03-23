@@ -14,16 +14,19 @@ namespace TestDataFramework.Populator.Concrete
         protected readonly IObjectGraphService ObjectGraphService;
         protected readonly ITypeGenerator TypeGenerator;
         protected readonly IAttributeDecorator AttributeDecorator;
+        private readonly int copies;
 
-        public RangeOperableList(int size, ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator,
+        public RangeOperableList(int copies, ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator,
             ITypeGenerator typeGenerator, IAttributeDecorator attributeDecorator, IObjectGraphService objectGraphService)
             : base(valueGuaranteePopulator, populator)
         {
+            this.copies = copies;
             this.TypeGenerator = typeGenerator;
             this.AttributeDecorator = attributeDecorator;
             this.ObjectGraphService = objectGraphService;
-            this.InternalList = new List<RecordReference<TListElement>>(size);
         }
+
+        private List<Range> Ranges { get; } = new List<Range>();
 
         //Expression<Func<TListElement, TPropertyType>> fieldExpression
         //Func<TPropertyType> valueFactory
@@ -31,17 +34,19 @@ namespace TestDataFramework.Populator.Concrete
         {
             List<TListElement> Setter()
             {
-                var setterResult = new List<TListElement>();
-
-                foreach (RecordReference<TListElement> recordReference in this.InternalList)
+                if (!this.Ranges.Any())
                 {
-                    if (recordReference == null)
-                    {
-                        
-                    }
+                    return Enumerable.Empty<TListElement>().ToList();
                 }
 
-                //////////
+                Range[] ranges = this.Ranges.OrderBy(r => r.StartPosition).ToArray();
+
+                if (ranges.Last().EndPosition + 1 > this.copies)
+                {
+                    throw new ArgumentOutOfRangeException("Setting a collection: Range is greater than copies requested.");
+                }
+
+                var setterResult = new List<TListElement>();
 
                 int lastEndPosition = 0;
                 IEnumerable<TListElement> autoPopulated;
@@ -52,7 +57,7 @@ namespace TestDataFramework.Populator.Concrete
                         throw new ArgumentOutOfRangeException("Setting a collection: Ranges overlap.");
                     }
 
-                    autoPopulated = this.Populator.Add<TListElement>().Make();
+                    autoPopulated = this.Populator.Add<TListElement>(range.StartPosition - lastEndPosition).Make();
                     lastEndPosition = range.EndPosition;
                     setterResult.AddRange(autoPopulated);
 

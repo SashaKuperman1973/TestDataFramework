@@ -29,7 +29,7 @@ namespace TestDataFramework.Populator.Concrete
 
         public int Size { get; }
 
-        public void SetList<TRecordReferenceType, TPropertyType>(Expression<Func<TListElement, TPropertyType>> fieldExpression, Func<TPropertyType> valueFactory)
+        public void SetListElement<TPropertyType>(Expression<Func<TListElement, TPropertyType>> fieldExpression, Func<TPropertyType> valueFactory)
         {
             var list = new RangeOperableList<TListElement, TPropertyType>(this.Size, this.valueGuaranteePopulator, this.populator,
                 this.typeGenerator, this.attributeDecorator, this.objectGraphService);

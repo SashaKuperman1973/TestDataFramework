@@ -21,12 +21,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime;
+using System.Xml.Serialization;
 using CommonIntegrationTests.TestModels;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.DeepSetting;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Factories;
+using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete;
 using TestDataFramework.Populator.Interfaces;
 using Tests.TestModels;
@@ -468,6 +470,22 @@ namespace CommonIntegrationTests.Tests
             deep.DeepB.DeepC.IntList.ForEach(Console.WriteLine);
             Console.WriteLine(deep.DeepB.DeepC.IntList.Count);
             Console.WriteLine(deep.DeepB.DeepAList[0]);
+        }
+
+        [TestMethod]
+        public void Set_List_Test()
+        {
+            IPopulator populator = this.factory.CreateMemoryPopulator();
+
+            RecordReference<ListSetterBaseType> listSetterBaseTypeReference = populator.Add<ListSetterBaseType>();
+
+            RangeOperableList<ListElementType> list = listSetterBaseTypeReference.Set(p => p.B.HasList.ElementList, 3);
+
+            list.Set(p => p.SubElement.AString, "Me", 1);
+
+            populator.Bind();
+
+            Assert.AreEqual("Me", listSetterBaseTypeReference.RecordObject.B.HasList.ElementList[1].SubElement.AString);
         }
     }
 }

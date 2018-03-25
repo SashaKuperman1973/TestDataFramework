@@ -115,12 +115,18 @@ namespace TestDataFramework.Populator.Concrete
             return this;
         }
 
-        public virtual RangeOperableListHolder<TListElement> Set<TListElement>(Expression<Func<T, IList<TListElement>>> listFieldExpression, int size = 5)
+        public virtual RangeOperableList<TListElement> Set<TListElement>(Expression<Func<T, IList<TListElement>>> listFieldExpression, int size)
         {
-            var list = new RangeOperableList<TListElement, TPropertyValue>(size, this.valueGuaranteePopulator, this.Populator,
+            var operableList = new RangeOperableList<TListElement>(size, this.valueGuaranteePopulator, this.Populator,
                 this.TypeGenerator, this.AttributeDecorator, this.objectGraphService);
 
-            Func<IList<TListElement>> listSetter = list.GetListSetter(fieldExpression, valueFactory);
+            this.AddToExplicitPropertySetters(listFieldExpression, () =>
+            {
+                operableList.Populate();
+                return operableList.RecordObjects.ToList();
+            });
+
+            return operableList;
         }
 
         public virtual RecordReference<T> SetRange<TPropertyValue>(Expression<Func<T, TPropertyValue>> fieldExpression,

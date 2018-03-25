@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Runtime.Remoting.Metadata;
 using TestDataFramework.AttributeDecorator;
 using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.ListOperations;
@@ -22,16 +24,75 @@ namespace TestDataFramework.Populator.Concrete
             this.TypeGenerator = typeGenerator;
             this.AttributeDecorator = attributeDecorator;
             this.ObjectGraphService = objectGraphService;
-            this.InternalList = new List<RecordReference<TListElement>>(size);
+            this.InternalList = new RecordReference<TListElement>[size].ToList();
         }
 
-        public virtual void Set<TPropertyType>(int position,
-            Expression<Func<TListElement, TPropertyType>> fieldExpression, Func<TPropertyType> valueFactory)
+        protected internal override void Populate()
         {
-            this.InternalList[position] = new RecordReference<TListElement>(this.TypeGenerator, this.AttributeDecorator,
+            for (int i = 0; i < this.InternalList.Count; i++)
+            {
+                if (this.InternalList[i] == null)
+                {
+                    this.InternalList[i] = this.CreateRecordReference();
+                }
+            }
+
+            base.Populate();
+        }
+
+        public virtual RangeOperableList<TListElement> Set<TPropertyType>(Expression<Func<TListElement, TPropertyType>> fieldExpression, TPropertyType value, params Range[] ranges)
+        {
+            RangeOperableList<TListElement> result = this.Set(fieldExpression, () => value, ranges);
+            return result;
+        }
+
+        public virtual RangeOperableList<TListElement> Set<TPropertyType>(Expression<Func<TListElement, TPropertyType>> fieldExpression, Func<TPropertyType> valueFactory, params Range[] ranges)
+        {
+            if (!ranges.Any())
+            {
+                throw new ArgumentException("No positions passed in.", nameof(ranges));
+            }
+
+            int[] positions = ranges.SelectMany(r =>
+            {
+                var range = new int[r.EndPosition + 1 - r.StartPosition];
+
+                int i = 0;
+                for (int j = r.StartPosition; j <= r.EndPosition; j++)
+                {
+                    range[i++] = j;
+                }
+
+                return range;
+            }).ToArray();
+
+            IOrderedEnumerable<int> orderedPositions = positions.OrderBy(i => i);
+            int highestPosition = orderedPositions.Last();
+            int lowestPosition = orderedPositions.First();
+            if (highestPosition >= this.InternalList.Count || lowestPosition < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(ranges));
+            }
+
+            foreach (int position in positions)
+            {
+                if (this.InternalList[position] == null)
+                {
+                    this.InternalList[position] = this.CreateRecordReference();
+                }
+
+                this.InternalList[position].Set(fieldExpression, valueFactory);
+            }
+
+            return this;
+        }
+
+        private RecordReference<TListElement> CreateRecordReference()
+        {
+            var result = new RecordReference<TListElement>(this.TypeGenerator, this.AttributeDecorator,
                 this.Populator, this.ObjectGraphService, this.ValueGuaranteePopulator);
 
-            this.InternalList[position].Set(fieldExpression, valueFactory);
+            return result;
         }
     }
 }

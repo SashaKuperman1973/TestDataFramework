@@ -43,7 +43,7 @@ namespace Tests.Tests.ImmediateTests
             // Arrange
 
             var operableList = new OperableList<SubjectClass>(null, this.populatorMock.Object);
-            var subjectReference = new RecordReference<SubjectClass>(null, null, null, null);
+            var subjectReference = new RecordReference<SubjectClass>(null, null, null, null, null);
             operableList.Add(subjectReference);
 
             // Act

@@ -29,7 +29,7 @@ namespace Tests.Tests.ImmediateTests
             // Arrange
 
             var recordReference =
-                new RecordReference<SubjectClass>(null, null, this.populatorMock.Object, null);
+                new RecordReference<SubjectClass>(null, null, this.populatorMock.Object, null, null);
 
             // Act
 
@@ -46,7 +46,7 @@ namespace Tests.Tests.ImmediateTests
             // Arrange
 
             var recordReference =
-                new RecordReference<SubjectClass>(null, null, this.populatorMock.Object, null);
+                new RecordReference<SubjectClass>(null, null, this.populatorMock.Object, null, null);
 
             // Act
 

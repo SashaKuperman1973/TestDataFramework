@@ -49,6 +49,7 @@
     <Compile Include="ICodeGeneratorIntegration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestModels\ComplexClasses.cs" />
+    <Compile Include="TestModels\DeepListSetClasses.cs" />
     <Compile Include="TestModels\PrimaryForeignReferenceSubjectClasses.cs" />
     <Compile Include="TestModels\SubjectClasses.cs" />
     <Compile Include="Tests\MemoryTest.cs" />

@@ -94,7 +94,7 @@ namespace TestDataFramework.Populator.Concrete
         {
             StandardPopulator.Logger.Debug($"Entering Add. T: {typeof(T)}, primaryRecordReference: {primaryRecordReferences}");
 
-            var recordReference = new RecordReference<T>(this.typeGenerator, this.AttributeDecorator, this, this.objectGraphService);
+            var recordReference = new RecordReference<T>(this.typeGenerator, this.AttributeDecorator, this, this.objectGraphService, this.valueGuaranteePopulator);
 
             this.populatables.Add(recordReference);
             recordReference.AddPrimaryRecordReference(primaryRecordReferences);

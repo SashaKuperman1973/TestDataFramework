@@ -66,9 +66,9 @@ namespace Tests.Tests.ImmediateTests
             var foreignTable = new T2();
 
             var primaryRecordReference = new RecordReference<T1>(Helpers.GetTypeGeneratorMock(primaryTable).Object,
-                this.attributeDecorator, null, null);
+                this.attributeDecorator, null, null, null);
             var foreignRecordReference = new RecordReference<T2>(Helpers.GetTypeGeneratorMock(foreignTable).Object,
-                this.attributeDecorator, null, null);
+                this.attributeDecorator, null, null, null);
 
             // Act
 
@@ -89,10 +89,10 @@ namespace Tests.Tests.ImmediateTests
 
             var primaryRecordReference =
                 new RecordReference<PrimaryTable>(Helpers.GetTypeGeneratorMock(primaryTable).Object,
-                    this.attributeDecorator, null, null);
+                    this.attributeDecorator, null, null, null);
             var foreignRecordReference =
                 new RecordReference<ForeignTable>(Helpers.GetTypeGeneratorMock(foreignTable).Object,
-                    this.attributeDecorator, null, null);
+                    this.attributeDecorator, null, null, null);
 
             // Act
 
@@ -128,7 +128,7 @@ namespace Tests.Tests.ImmediateTests
                 .Returns(new List<PropertyInfo> {arrayPropertyInfo});
 
             var recordReference =
-                new RecordReference<PrimaryTable>(null, null, null, objectGraphServiceMock.Object);
+                new RecordReference<PrimaryTable>(null, null, null, objectGraphServiceMock.Object, null);
 
             // Act
 
@@ -168,7 +168,7 @@ namespace Tests.Tests.ImmediateTests
             var objectGraphServiceMock = new Mock<IObjectGraphService>();
 
             var recordReference = new RecordReference<PrimaryTable>(null,
-                null, null, objectGraphServiceMock.Object);
+                null, null, objectGraphServiceMock.Object, null);
 
             var setterObjectGraph = new List<PropertyInfo> {typeof(PrimaryTable).GetProperty(nameof(PrimaryTable.Guid))};
 
@@ -199,7 +199,7 @@ namespace Tests.Tests.ImmediateTests
             Mock<ITypeGenerator> typeGeneratorMock = Helpers.GetTypeGeneratorMock(record);
 
             var recordReference =
-                new RecordReference<PrimaryTable>(typeGeneratorMock.Object, this.attributeDecorator, null, null);
+                new RecordReference<PrimaryTable>(typeGeneratorMock.Object, this.attributeDecorator, null, null, null);
 
             // Act
 
@@ -232,7 +232,7 @@ namespace Tests.Tests.ImmediateTests
                 });
 
             var recordReference = new RecordReference<ThirdDeepPropertyTable>(null,
-                null, null, objectGraphServiceMock.Object);
+                null, null, objectGraphServiceMock.Object, null);
 
             const string expectedValue1 = "qwerty";
             var expectedValue2 = new FirstDeepPropertyTable();

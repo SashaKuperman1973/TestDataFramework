@@ -18,11 +18,13 @@
 */
 
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Data.SqlTypes;
 using System.Reflection;
+using System.Web.UI.HtmlControls;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using log4net;
@@ -63,21 +65,23 @@ namespace TestDataFramework.Factories
     {
         public static IPopulator CreateSqlClientPopulator(string connectionStringWithDefaultCatalogue,
             bool mustBeInATransaction = true, string defaultSchema = "dbo",
-            bool enforceKeyReferenceCheck = true, bool throwIfUnhandledPrimaryKeyType = true)
+            bool enforceKeyReferenceCheck = true, bool throwIfUnhandledPrimaryKeyType = true,
+            DeepCollectionSettingConverter deepCollectionSettingConverter = null)
         {
             using (var factory = new PopulatorFactory())
             {
                 return factory.CreateSqlClientPopulator(connectionStringWithDefaultCatalogue,
                     mustBeInATransaction, defaultSchema,
-                    enforceKeyReferenceCheck, throwIfUnhandledPrimaryKeyType);
+                    enforceKeyReferenceCheck, throwIfUnhandledPrimaryKeyType, deepCollectionSettingConverter);
             }
         }
 
-        public static IPopulator CreateMemoryPopulator(bool throwIfUnhandledPrimaryKeyType = false, string defaultSchema = null)
+        public static IPopulator CreateMemoryPopulator(bool throwIfUnhandledPrimaryKeyType = false, string defaultSchema = null, 
+            DeepCollectionSettingConverter deepCollectionSettingConverter = null)
         {
             using (var factory = new PopulatorFactory())
             {
-                return factory.CreateMemoryPopulator(throwIfUnhandledPrimaryKeyType, defaultSchema);
+                return factory.CreateMemoryPopulator(throwIfUnhandledPrimaryKeyType, defaultSchema, deepCollectionSettingConverter);
             }
         }
     }
@@ -99,7 +103,8 @@ namespace TestDataFramework.Factories
 
         public IPopulator CreateSqlClientPopulator(string connectionStringWithDefaultCatalogue, 
             bool mustBeInATransaction = true, string defaultSchema = "dbo",
-            bool enforceKeyReferenceCheck = true, bool throwIfUnhandledPrimaryKeyType = true)
+            bool enforceKeyReferenceCheck = true, bool throwIfUnhandledPrimaryKeyType = true,
+            DeepCollectionSettingConverter deepCollectionSettingConverter = null)
         {
             PopulatorFactory.Logger.Debug(
                 "Entering CreateSqlClientPopulator."+
@@ -110,7 +115,7 @@ namespace TestDataFramework.Factories
                 );
 
             IWindsorContainer iocContainer = this.GetSqlClientPopulatorContainer(connectionStringWithDefaultCatalogue,
-                mustBeInATransaction, defaultSchema, enforceKeyReferenceCheck, throwIfUnhandledPrimaryKeyType, Assembly.GetCallingAssembly());
+                mustBeInATransaction, defaultSchema, enforceKeyReferenceCheck, throwIfUnhandledPrimaryKeyType, Assembly.GetCallingAssembly(), deepCollectionSettingConverter);
 
             var result = iocContainer.Resolve<IPopulator>();
 
@@ -118,11 +123,11 @@ namespace TestDataFramework.Factories
             return result;
         }
 
-        public IPopulator CreateMemoryPopulator(bool throwIfUnhandledPrimaryKeyType = false, string defaultSchema = null)
+        public IPopulator CreateMemoryPopulator(bool throwIfUnhandledPrimaryKeyType = false, string defaultSchema = null, DeepCollectionSettingConverter deepCollectionSettingConverter = null)
         {
             PopulatorFactory.Logger.Debug($"Entering CreateMemoryPopulator. throwIfUnhandledPrimaryKeyType: {throwIfUnhandledPrimaryKeyType}, defaultSchema: {defaultSchema}");
 
-            IWindsorContainer iocContainer = this.GetMemoryPopulatorContainer(Assembly.GetCallingAssembly(), throwIfUnhandledPrimaryKeyType, defaultSchema);
+            IWindsorContainer iocContainer = this.GetMemoryPopulatorContainer(Assembly.GetCallingAssembly(), throwIfUnhandledPrimaryKeyType, defaultSchema, deepCollectionSettingConverter);
 
             var result = iocContainer.Resolve<IPopulator>();
 
@@ -142,7 +147,7 @@ namespace TestDataFramework.Factories
         }
 
         private IWindsorContainer GetSqlClientPopulatorContainer(string connectionStringWithDefaultCatalogue, bool mustBeInATransaction, string defaultSchema,
-            bool enforceKeyReferenceCheck, bool throwIfUnhandledPrimaryKeyType, Assembly callingAssembly)
+            bool enforceKeyReferenceCheck, bool throwIfUnhandledPrimaryKeyType, Assembly callingAssembly, DeepCollectionSettingConverter deepCollectionSettingConverter = null)
         {
             PopulatorFactory.Logger.Debug("Entering GetSqlClientPopulatorContainer");
 
@@ -152,7 +157,7 @@ namespace TestDataFramework.Factories
                 return this.sqlClientPopulatorContainer.Container;
             }
 
-            this.sqlClientPopulatorContainer = new DisposableContainer(PopulatorFactory.GetCommonContainer(callingAssembly, defaultSchema));
+            this.sqlClientPopulatorContainer = new DisposableContainer(PopulatorFactory.GetCommonContainer(callingAssembly, defaultSchema, deepCollectionSettingConverter));
 
             this.sqlClientPopulatorContainer.Container.Register(
 
@@ -203,7 +208,8 @@ namespace TestDataFramework.Factories
             return this.sqlClientPopulatorContainer.Container;
         }
 
-        private IWindsorContainer GetMemoryPopulatorContainer(Assembly callingAssembly, bool throwIfUnhandledPrimaryKeyType, string defaultSchema)
+        private IWindsorContainer GetMemoryPopulatorContainer(Assembly callingAssembly, bool throwIfUnhandledPrimaryKeyType, string defaultSchema, 
+            DeepCollectionSettingConverter deepCollectionSettingConverter = null)
         {
             PopulatorFactory.Logger.Debug("Entering GetMemoryPopulatorContainer");
 
@@ -213,7 +219,7 @@ namespace TestDataFramework.Factories
                 return this.memoryPopulatorContainer.Container;
             }
 
-            this.memoryPopulatorContainer = new DisposableContainer(PopulatorFactory.GetCommonContainer(callingAssembly, defaultSchema));
+            this.memoryPopulatorContainer = new DisposableContainer(PopulatorFactory.GetCommonContainer(callingAssembly, defaultSchema, deepCollectionSettingConverter));
 
             this.memoryPopulatorContainer.Container.Register(
 
@@ -252,8 +258,13 @@ namespace TestDataFramework.Factories
             return this.memoryPopulatorContainer.Container;
         }
 
-        private static IWindsorContainer GetCommonContainer(Assembly callingAssembly, string defaultSchema)
+        private static IWindsorContainer GetCommonContainer(Assembly callingAssembly, string defaultSchema, DeepCollectionSettingConverter deepCollectionSettingConverter)
         {
+            if (deepCollectionSettingConverter == null)
+            {
+                deepCollectionSettingConverter = new DeepCollectionSettingConverter();
+            }
+
             const string uniqueValueTypeGenerator = "UniqueValueTypeGenerator";
             const string standardHandledTypeGenerator = "StandardHandledTypeGenerator";
             const string accumulatorValueGenerator_StandardHandledTypeGenerator = "AccumulatorValueGenerator_StandardHandledTypeGenerator ";                
@@ -270,6 +281,8 @@ namespace TestDataFramework.Factories
                     .Instance(attributeDecorator => new TableTypeCache(x => attributeDecorator)),
 
                 #endregion Delegates
+
+                Component.For<DeepCollectionSettingConverter>().Instance(deepCollectionSettingConverter),
 
                 Component.For<IPopulator>().ImplementedBy<StandardPopulator>()
                     .DependsOn(ServiceOverride.ForKey<ITypeGenerator>().Eq(PopulatorFactory.StandardTypeGenerator))

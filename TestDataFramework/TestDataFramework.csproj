@@ -98,6 +98,7 @@
     <Compile Include="Persistence\Concrete\MemoryPersistence.cs" />
     <Compile Include="Persistence\Concrete\SqlClientPersistence.cs" />
     <Compile Include="Populator\BasePopulator.cs" />
+    <Compile Include="Populator\Concrete\Converter.cs" />
     <Compile Include="Populator\Concrete\ExplicitlyIgnoredValue.cs" />
     <Compile Include="Populator\Concrete\OperableList.cs" />
     <Compile Include="Populator\Concrete\RangeOperableList.cs" />

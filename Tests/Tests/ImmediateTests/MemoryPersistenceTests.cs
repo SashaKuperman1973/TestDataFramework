@@ -55,7 +55,7 @@ namespace Tests.Tests.ImmediateTests
 
             var primaryRecordReference = new RecordReference<PrimaryTable>(
                 Helpers.GetTypeGeneratorMock(primaryTable).Object,
-                this.attributeDecorator, null, null, null);
+                this.attributeDecorator, null, null, null, null);
 
             var recordReferenceArray = new RecordReference[] { primaryRecordReference };
 
@@ -78,12 +78,12 @@ namespace Tests.Tests.ImmediateTests
             var primaryTable = new ManualKeyPrimaryTable { Key1 = "ABCD", Key2 = 5 };
             var primaryReference =
                 new RecordReference<ManualKeyPrimaryTable>(Helpers.GetTypeGeneratorMock(primaryTable).Object,
-                    this.attributeDecorator, null, null, null);
+                    this.attributeDecorator, null, null, null, null);
                 
             var foreignTable = new ManualKeyForeignTable();
             var foreignReference =
                 new RecordReference<ManualKeyForeignTable>(Helpers.GetTypeGeneratorMock(foreignTable).Object,
-                    this.attributeDecorator, null, null, null);
+                    this.attributeDecorator, null, null, null, null);
 
             foreignReference.AddPrimaryRecordReference(primaryReference);
 

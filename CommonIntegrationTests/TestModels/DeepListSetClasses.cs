@@ -11,7 +11,7 @@ namespace CommonIntegrationTests.TestModels
 
     public class ListSetterBaseTypeB
     {
-        public ListType HasList { get; set; }
+        public ListType WithCollection { get; set; }
 
         public int AnInt { get; set; }
     }
@@ -19,6 +19,8 @@ namespace CommonIntegrationTests.TestModels
     public class ListType
     {
         public List<ListElementType> ElementList { get; set; }
+
+        public ListElementType[] ElementArray { get; set; }
     }
 
     public class ListElementType

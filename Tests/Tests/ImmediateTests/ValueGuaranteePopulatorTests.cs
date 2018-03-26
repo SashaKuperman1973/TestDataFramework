@@ -60,11 +60,11 @@ namespace Tests.Tests.ImmediateTests
 
             var operableList = new OperableList<int>(null, null)
             {
-                new RecordReference<int>(null, null, null, null, null),
-                new RecordReference<int>(null, null, null, null, null),
-                new RecordReference<int>(null, null, null, null, null),
-                new RecordReference<int>(null, null, null, null, null),
-                new RecordReference<int>(null, null, null, null, null),
+                new RecordReference<int>(null, null, null, null, null, null),
+                new RecordReference<int>(null, null, null, null, null, null),
+                new RecordReference<int>(null, null, null, null, null, null),
+                new RecordReference<int>(null, null, null, null, null, null),
+                new RecordReference<int>(null, null, null, null, null, null),
             };
 
             Helpers.ExceptionTest(() => valueGuaranteePopulator.Bind(operableList, values),
@@ -88,11 +88,11 @@ namespace Tests.Tests.ImmediateTests
 
             var operableList = new OperableList<int>(null, null)
             {
-                new RecordReference<int>(null, null, null, null, null),
-                new RecordReference<int>(null, null, null, null, null),
-                new RecordReference<int>(null, null, null, null, null),
-                new RecordReference<int>(null, null, null, null, null),
-                new RecordReference<int>(null, null, null, null, null),
+                new RecordReference<int>(null, null, null, null, null, null),
+                new RecordReference<int>(null, null, null, null, null, null),
+                new RecordReference<int>(null, null, null, null, null, null),
+                new RecordReference<int>(null, null, null, null, null, null),
+                new RecordReference<int>(null, null, null, null, null, null),
             };
 
             Helpers.ExceptionTest(() => valueGuaranteePopulator.Bind(operableList, values),

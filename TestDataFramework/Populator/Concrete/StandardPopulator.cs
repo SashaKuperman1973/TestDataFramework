@@ -42,6 +42,7 @@ namespace TestDataFramework.Populator.Concrete
         private readonly IHandledTypeGenerator handledTypeGenerator;
         private readonly ValueGuaranteePopulator valueGuaranteePopulator;
         private readonly IObjectGraphService objectGraphService;
+        private readonly DeepCollectionSettingConverter deepCollectionSettingConverter;
 
         public override IValueGenerator ValueGenerator { get; }
         private readonly List<Populatable> populatables = new List<Populatable>();
@@ -49,7 +50,7 @@ namespace TestDataFramework.Populator.Concrete
         public StandardPopulator(ITypeGenerator typeGenerator, IPersistence persistence,
             IAttributeDecorator attributeDecorator, IHandledTypeGenerator handledTypeGenerator, 
             IValueGenerator valueGenerator, ValueGuaranteePopulator valueGuaranteePopulator,
-            IObjectGraphService objectGraphService)
+            IObjectGraphService objectGraphService, DeepCollectionSettingConverter deepCollectionSettingConverter)
             : base(attributeDecorator)
         {
             StandardPopulator.Logger.Debug("Entering constructor");
@@ -60,6 +61,7 @@ namespace TestDataFramework.Populator.Concrete
             this.ValueGenerator = valueGenerator;
             this.valueGuaranteePopulator = valueGuaranteePopulator;
             this.objectGraphService = objectGraphService;
+            this.deepCollectionSettingConverter = deepCollectionSettingConverter;
 
             StandardPopulator.Logger.Debug("Entering constructor");
         }
@@ -94,7 +96,8 @@ namespace TestDataFramework.Populator.Concrete
         {
             StandardPopulator.Logger.Debug($"Entering Add. T: {typeof(T)}, primaryRecordReference: {primaryRecordReferences}");
 
-            var recordReference = new RecordReference<T>(this.typeGenerator, this.AttributeDecorator, this, this.objectGraphService, this.valueGuaranteePopulator);
+            var recordReference = new RecordReference<T>(this.typeGenerator, this.AttributeDecorator, this,
+                this.objectGraphService, this.valueGuaranteePopulator, this.deepCollectionSettingConverter);
 
             this.populatables.Add(recordReference);
             recordReference.AddPrimaryRecordReference(primaryRecordReferences);

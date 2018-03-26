@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Runtime.Remoting.Metadata;
 using TestDataFramework.AttributeDecorator;
 using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.ListOperations;
@@ -16,15 +13,18 @@ namespace TestDataFramework.Populator.Concrete
         protected readonly IObjectGraphService ObjectGraphService;
         protected readonly ITypeGenerator TypeGenerator;
         protected readonly IAttributeDecorator AttributeDecorator;
+        protected readonly DeepCollectionSettingConverter deepCollectionSettingConverter;
 
         public RangeOperableList(int size, ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator,
-            ITypeGenerator typeGenerator, IAttributeDecorator attributeDecorator, IObjectGraphService objectGraphService)
+            ITypeGenerator typeGenerator, IAttributeDecorator attributeDecorator, IObjectGraphService objectGraphService,
+            DeepCollectionSettingConverter deepCollectionSettingConverter)
             : base(valueGuaranteePopulator, populator)
         {
             this.TypeGenerator = typeGenerator;
             this.AttributeDecorator = attributeDecorator;
             this.ObjectGraphService = objectGraphService;
             this.InternalList = new RecordReference<TListElement>[size].ToList();
+            this.deepCollectionSettingConverter = deepCollectionSettingConverter;
         }
 
         protected internal override void Populate()
@@ -90,7 +90,7 @@ namespace TestDataFramework.Populator.Concrete
         private RecordReference<TListElement> CreateRecordReference()
         {
             var result = new RecordReference<TListElement>(this.TypeGenerator, this.AttributeDecorator,
-                this.Populator, this.ObjectGraphService, this.ValueGuaranteePopulator);
+                this.Populator, this.ObjectGraphService, this.ValueGuaranteePopulator, this.deepCollectionSettingConverter);
 
             return result;
         }

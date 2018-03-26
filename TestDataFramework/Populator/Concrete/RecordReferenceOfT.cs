@@ -44,12 +44,14 @@ namespace TestDataFramework.Populator.Concrete
 
         private readonly IObjectGraphService objectGraphService;
         private readonly ValueGuaranteePopulator valueGuaranteePopulator;
+        private readonly DeepCollectionSettingConverter deepCollectionSettingConverter;
 
         protected internal readonly List<ExplicitPropertySetters> ExplicitPropertySetters =
             new List<ExplicitPropertySetters>();
 
         public RecordReference(ITypeGenerator typeGenerator, IAttributeDecorator attributeDecorator,
-            BasePopulator populator, IObjectGraphService objectGraphService, ValueGuaranteePopulator valueGuaranteePopulator) : base(typeGenerator, attributeDecorator)
+            BasePopulator populator, IObjectGraphService objectGraphService, ValueGuaranteePopulator valueGuaranteePopulator,
+            DeepCollectionSettingConverter deepCollectionSettingConverter) : base(typeGenerator, attributeDecorator)
         {
             RecordReference<T>.Logger.Debug($"Entering constructor. T: {typeof(T)}");
 
@@ -57,6 +59,7 @@ namespace TestDataFramework.Populator.Concrete
             this.Populator = populator;
             this.objectGraphService = objectGraphService;
             this.valueGuaranteePopulator = valueGuaranteePopulator;
+            this.deepCollectionSettingConverter = deepCollectionSettingConverter;
 
             RecordReference<T>.Logger.Debug("Exiting constructor");
         }
@@ -115,15 +118,18 @@ namespace TestDataFramework.Populator.Concrete
             return this;
         }
 
-        public virtual RangeOperableList<TListElement> Set<TListElement>(Expression<Func<T, IList<TListElement>>> listFieldExpression, int size)
+        public virtual RangeOperableList<TListElement> Set<TListElement>(Expression<Func<T, IEnumerable<TListElement>>> listFieldExpression, int size)
         {
+            List<PropertyInfo> objectPropertyGraph = this.objectGraphService.GetObjectGraph(listFieldExpression);
+
             var operableList = new RangeOperableList<TListElement>(size, this.valueGuaranteePopulator, this.Populator,
-                this.TypeGenerator, this.AttributeDecorator, this.objectGraphService);
+                this.TypeGenerator, this.AttributeDecorator, this.objectGraphService, this.deepCollectionSettingConverter);
 
             this.AddToExplicitPropertySetters(listFieldExpression, () =>
             {
                 operableList.Populate();
-                return operableList.RecordObjects.ToList();
+                IEnumerable<TListElement> setterResult = this.deepCollectionSettingConverter.Convert(operableList.RecordObjects, objectPropertyGraph.Last());
+                return setterResult;
             });
 
             return operableList;

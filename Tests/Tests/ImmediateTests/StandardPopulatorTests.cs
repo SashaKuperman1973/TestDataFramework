@@ -59,7 +59,7 @@ namespace Tests.Tests.ImmediateTests
             this.handledTypeGeneratorMock = new Mock<IHandledTypeGenerator>();
 
             this.populator = new StandardPopulator(this.typeGeneratorMock.Object, this.persistenceMock.Object,
-                this.attributeDecorator, this.handledTypeGeneratorMock.Object, null, null, null);
+                this.attributeDecorator, this.handledTypeGeneratorMock.Object, null, null, null, null);
         }
 
         [TestMethod]
@@ -69,7 +69,7 @@ namespace Tests.Tests.ImmediateTests
 
             var expected = new SubjectClass();
             var populator = new StandardPopulator(Helpers.GetTypeGeneratorMock(expected).Object, new MockPersistence(),
-                this.attributeDecorator, null, null, null, null);
+                this.attributeDecorator, null, null, null, null, null);
 
             // Act
 
@@ -91,7 +91,7 @@ namespace Tests.Tests.ImmediateTests
             var expected = new SubjectClass { AnEmailAddress = "email"};
             var mockPersistence = new MockPersistence();
             var populator = new StandardPopulator(Helpers.GetTypeGeneratorMock(expected).Object, mockPersistence,
-                this.attributeDecorator, null, null, null, null);
+                this.attributeDecorator, null, null, null, null, null);
 
             // Act
 
@@ -122,7 +122,7 @@ namespace Tests.Tests.ImmediateTests
             Helpers.SetupTypeGeneratorMock(this.typeGeneratorMock, inputRecord);
 
             var mockPersistence = new MockPersistence();
-            var populator = new StandardPopulator(this.typeGeneratorMock.Object, mockPersistence, this.attributeDecorator, null, null, null, null);
+            var populator = new StandardPopulator(this.typeGeneratorMock.Object, mockPersistence, this.attributeDecorator, null, null, null, null, null);
 
             // Act
 
@@ -215,7 +215,7 @@ namespace Tests.Tests.ImmediateTests
             // Arrange
 
             var mockPersistence = new MockPersistence();
-            var populator = new StandardPopulator(this.typeGeneratorMock.Object, mockPersistence, this.attributeDecorator, null, null, null, null);
+            var populator = new StandardPopulator(this.typeGeneratorMock.Object, mockPersistence, this.attributeDecorator, null, null, null, null, null);
 
             Helpers.SetupTypeGeneratorMock(this.typeGeneratorMock, new SubjectClass());
             Helpers.SetupTypeGeneratorMock(this.typeGeneratorMock, new SecondClass());

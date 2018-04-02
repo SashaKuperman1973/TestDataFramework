@@ -20,14 +20,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.AttributeDecorator;
 using TestDataFramework.Populator;
+using TestDataFramework.Populator.Concrete;
 using TestDataFramework.RepositoryOperations;
 using TestDataFramework.RepositoryOperations.Model;
 using TestDataFramework.RepositoryOperations.Operations.InsertRecord;
+using TestDataFramework.TypeGenerator.Interfaces;
 using TestDataFramework.WritePrimitives.Interfaces;
 using Tests.TestModels;
 
@@ -36,9 +39,31 @@ namespace Tests.Tests.ImmediateTests
     [TestClass]
     public class InsertRecordTests
     {
+        public class ConcreteRecordReference : RecordReference
+        {
+            public ConcreteRecordReference(ITypeGenerator typeGenerator, IAttributeDecorator attributeDecorator) : base(typeGenerator, attributeDecorator)
+            {
+            }
+
+            protected internal override void Populate()
+            {
+                throw new NotImplementedException();
+            }
+
+            internal override void AddToReferences(IList<RecordReference> collection)
+            {
+                throw new NotImplementedException();
+            }
+
+            protected internal override bool IsExplicitlySet(PropertyInfo propertyInfo)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         private InsertRecord insertRecord;
         private Mock<InsertRecordService> serviceMock;
-        private Mock<RecordReference> recordReferenceMock;
+        private Mock<ConcreteRecordReference> recordReferenceMock;
         private List<AbstractRepositoryOperation> peers;
 
         private Mock<CircularReferenceBreaker> breakerMock;
@@ -56,7 +81,7 @@ namespace Tests.Tests.ImmediateTests
             this.attributeDecorator = new StandardAttributeDecorator(attributeDecorator => null, null);
 
             this.subject = new SubjectClass();
-            this.recordReferenceMock = new Mock<RecordReference>(null, this.attributeDecorator);
+            this.recordReferenceMock = new Mock<ConcreteRecordReference>(null, this.attributeDecorator);
             this.peers = new List<AbstractRepositoryOperation>();
             this.serviceMock = new Mock<InsertRecordService>(this.recordReferenceMock.Object, this.attributeDecorator, true);
             this.insertRecord = new InsertRecord(this.serviceMock.Object, this.recordReferenceMock.Object, this.peers, this.attributeDecorator);
@@ -109,9 +134,7 @@ namespace Tests.Tests.ImmediateTests
                         It.Is<List<ColumnSymbol>>(l => l.Count == 0)), Times.Once);
 
             this.serviceMock.Verify(m => m.CopyPrimaryToForeignKeyColumns(It.Is<IEnumerable<Column>>(c => !c.Any())), Times.Once());
-        }
-
-        
+        }        
 
         [TestMethod]
         public void WriteIsVisited_Test()
@@ -137,7 +160,7 @@ namespace Tests.Tests.ImmediateTests
 
             var orderedOpertations = new AbstractRepositoryOperation[2];
             var secondObject = new SubjectClass();
-            var secondrecordReferenceMock = new Mock<RecordReference>(null, this.attributeDecorator);
+            var secondrecordReferenceMock = new Mock<ConcreteRecordReference>(null, this.attributeDecorator);
             secondrecordReferenceMock.Setup(m => m.RecordObject).Returns(secondObject);
             secondrecordReferenceMock.Setup(m => m.RecordType).Returns(secondObject.GetType());
 
@@ -222,8 +245,8 @@ namespace Tests.Tests.ImmediateTests
 
             var record = new PrimaryTable();
 
-            this.recordReferenceMock.Setup(m => m.RecordObject).Returns(record);
-            this.recordReferenceMock.Setup(m => m.RecordType).Returns(record.GetType());
+            this.recordReferenceMock.SetupGet(m => m.RecordObject).Returns(record);
+            this.recordReferenceMock.SetupGet(m => m.RecordType).Returns(record.GetType());
 
             var streamReadPointer = new Counter();
 

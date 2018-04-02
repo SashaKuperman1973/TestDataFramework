@@ -44,10 +44,6 @@ namespace TestDataFramework.Populator
             this.AttributeDecorator = attributeDecorator;
         }
 
-        protected RecordReference()
-        {            
-        }
-
         public virtual object RecordObject { get; protected internal set; }
 
         public virtual void AddPrimaryRecordReference(params RecordReference[] primaryRecordReferences)

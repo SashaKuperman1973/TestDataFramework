@@ -64,6 +64,11 @@ namespace TestDataFramework.Helpers
 
         public static string DumpObject(object objectValue)
         {
+            if (objectValue == null)
+            {
+                return "null reference";
+            }
+
             var sb = new StringBuilder();
 
             sb.AppendLine(objectValue.GetType().ToString());

@@ -106,7 +106,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Assert
 
-            Assert.AreEqual(1, mockPersistence.Storage.Count);
+            Assert.AreEqual(3, mockPersistence.Storage.Count);
             Assert.AreEqual(reference.RecordObject.AnEmailAddress, mockPersistence.Storage[0]["AnEmailAddress"]);
         }
 
@@ -144,7 +144,7 @@ namespace Tests.Tests.ImmediateTests
         {
             // Arrange
 
-            var referenceMock = new Mock<RecordReference<SubjectClass>>(null, null, null, null);
+            var referenceMock = new Mock<RecordReference<SubjectClass>>(null, null, null, null, null, null);
 
             // Act
 
@@ -163,8 +163,8 @@ namespace Tests.Tests.ImmediateTests
         {
             // Arrange
 
-            var referenceMock1 = new Mock<RecordReference<SubjectClass>>(null, null, null, null);
-            var referenceMock2 = new Mock<RecordReference<SubjectClass>>(null, null, null, null);
+            var referenceMock1 = new Mock<RecordReference<SubjectClass>>(null, null, null, null, null, null);
+            var referenceMock2 = new Mock<RecordReference<SubjectClass>>(null, null, null, null, null, null);
             var set = new OperableList<SubjectClass>(new List<RecordReference<SubjectClass>> { referenceMock1.Object, referenceMock2.Object },
                 null, null);
 
@@ -198,7 +198,7 @@ namespace Tests.Tests.ImmediateTests
         {
             // Arrange
 
-            var referenceMock = new Mock<RecordReference<SubjectClass>>(null, null, null, null);
+            var referenceMock = new Mock<RecordReference<SubjectClass>>(null, null, null, null, null, null);
 
             // Act
 

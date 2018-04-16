@@ -98,9 +98,9 @@ namespace TestDataFramework.Exceptions
         }
     }
 
-    public class SetExpressionException : ApplicationException
+    public class MemberAccessExpressionException : ApplicationException
     {
-        public SetExpressionException(string message) : base(message)
+        public MemberAccessExpressionException(string message) : base(message)
         {
         }
     }

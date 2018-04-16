@@ -83,6 +83,9 @@
     <Compile Include="TestModels\SubjectClasses.cs" />
     <Compile Include="Tests\ImmediateTests\CircularReferenceBreakerTests.cs" />
     <Compile Include="Tests\ImmediateTests\DbProviderWritePrimitivesTests.cs" />
+    <Compile Include="Tests\ImmediateTests\ExplicitlyIgnoredValueTests.cs" />
+    <Compile Include="Tests\ImmediateTests\FieldExpressionValidatorTests.cs" />
+    <Compile Include="Tests\ImmediateTests\ObjectGraphServiceTest.cs" />
     <Compile Include="Tests\ImmediateTests\StandardHandledTypeGeneratorTests.cs" />
     <Compile Include="Tests\ImmediateTests\MemoryUniqueValueGeneratorTests.cs" />
     <Compile Include="Tests\ImmediateTests\StandardPopulatorTests.cs" />

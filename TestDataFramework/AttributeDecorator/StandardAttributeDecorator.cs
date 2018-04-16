@@ -27,6 +27,7 @@ using log4net;
 using TestDataFramework.Logger;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
+using TestDataFramework.Helpers.FieldExpressionValidator.Concrete;
 using TestDataFramework.RepositoryOperations.Model;
 
 namespace TestDataFramework.AttributeDecorator
@@ -37,6 +38,8 @@ namespace TestDataFramework.AttributeDecorator
 
         private readonly ConcurrentDictionary<MemberInfo, List<Attribute>> memberAttributeDicitonary =
             new ConcurrentDictionary<MemberInfo, List<Attribute>>();
+
+        private readonly AddAttributeFieldExpressionValidator fieldExpressionValidator = new AddAttributeFieldExpressionValidator();
 
         private readonly TableTypeCache tableTypeCache;
         private readonly string defaultSchema;
@@ -59,7 +62,7 @@ namespace TestDataFramework.AttributeDecorator
         {
             StandardAttributeDecorator.Logger.Debug($"Entering DecorateMember. Attribute: {attribute}");
 
-            MemberInfo memberInfo = Helper.ValidateFieldExpression(fieldExpression);
+            MemberInfo memberInfo = this.fieldExpressionValidator.ValidateMemberAccessExpression(fieldExpression).Member;
 
             this.memberAttributeDicitonary.AddOrUpdate(memberInfo, new List<Attribute> { attribute },
                 (mi, list) =>

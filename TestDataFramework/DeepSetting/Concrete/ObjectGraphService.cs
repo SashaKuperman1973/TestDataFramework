@@ -3,75 +3,33 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 using TestDataFramework.DeepSetting.Interfaces;
-using TestDataFramework.Exceptions;
+using TestDataFramework.Helpers.FieldExpressionValidator.Concrete;
 
 namespace TestDataFramework.DeepSetting.Concrete
 {
     public class ObjectGraphService : IObjectGraphService
     {
+        private readonly PropertySetFieldExpressionValidator fieldExpressionValidator = new PropertySetFieldExpressionValidator();
+
         public List<PropertyInfo> GetObjectGraph<T, TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression)
         {
-            var memberExpression = fieldExpression.Body as MemberExpression;
-
             var propertyChain = new List<PropertyInfo>();
-            ObjectGraphService.GetMemberInfo(propertyChain, memberExpression);
+            this.GetMemberInfo(propertyChain, fieldExpression.Body);
 
             return propertyChain;
         }
 
-        private static void GetMemberInfo(ICollection<PropertyInfo> list, Expression expression)
+        private void GetMemberInfo(ICollection<PropertyInfo> list, Expression expression)
         {
             if (expression.NodeType == ExpressionType.Parameter || expression.NodeType == ExpressionType.Convert)
             {
                 return;
             }
 
-            MemberExpression memberExpression = ObjectGraphService.ValidateMemberAccessExpression(expression);
+            MemberExpression memberExpression = this.fieldExpressionValidator.ValidateMemberAccessExpression(expression);
 
-            ObjectGraphService.GetMemberInfo(list, memberExpression.Expression);
+            this.GetMemberInfo(list, memberExpression.Expression);
             list.Add((PropertyInfo)memberExpression.Member);
-        }
-
-        private static MemberExpression ValidateMemberAccessExpression(Expression expression)
-        {
-            var lambdaExpression = expression as LambdaExpression;
-
-            expression = lambdaExpression?.Body ?? expression;
-
-            if (expression.NodeType != ExpressionType.MemberAccess)
-            {
-                throw new SetExpressionException(Messages.MustBePropertyAccess);
-            }
-
-            var memberExpression = expression as MemberExpression;
-
-            if (memberExpression != null) return ObjectGraphService.ValidatePropertyInfo(memberExpression);
-
-            var unaryExpression = expression as UnaryExpression;
-
-            if (unaryExpression == null)
-            {
-                throw new SetExpressionException(Messages.MustBePropertyAccess);
-            }
-
-            memberExpression = unaryExpression.Operand as MemberExpression;
-
-            if (memberExpression == null)
-            {
-                throw new SetExpressionException(Messages.MustBePropertyAccess);
-            }
-
-            return ObjectGraphService.ValidatePropertyInfo(memberExpression);
-        }
-
-        private static MemberExpression ValidatePropertyInfo(MemberExpression memberExpression)
-        {
-            if (!(memberExpression.Member is PropertyInfo))
-            {
-                throw new SetExpressionException(Messages.MustBePropertyAccess);
-            }
-
-            return memberExpression;
         }
     }
 }

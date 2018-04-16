@@ -18,6 +18,7 @@
 */
 
 using System;
+using System.Security.Policy;
 using TestDataFramework;
 using TestDataFramework.ValueProvider.Interfaces;
 
@@ -107,6 +108,8 @@ namespace Tests.TestModels
         public int[,,][][,] MultiDimensionalJaggedArray { get; set; }
 
         public int[][,,][] JaggedMultiDimensionalArray { get; set; }
+
+        public int AField;
     }
 
     public class SecondClass

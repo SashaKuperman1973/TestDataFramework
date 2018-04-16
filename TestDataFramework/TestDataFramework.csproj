@@ -87,6 +87,9 @@
     <Compile Include="HandledTypeGenerator\StandardHandledTypeGenerator.cs" />
     <Compile Include="Helpers\AssertionExtension.cs" />
     <Compile Include="Helpers\Concrete\RandomSymbolStringGenerator.cs" />
+    <Compile Include="Helpers\FieldExpressionValidator\Concrete\AddAttributeFieldExpressionValidator.cs" />
+    <Compile Include="Helpers\FieldExpressionValidator\Concrete\PropertySetFieldExpressionValidator.cs" />
+    <Compile Include="Helpers\FieldExpressionValidator\FieldExpressionValidatorBase.cs" />
     <Compile Include="Helpers\Helper.cs" />
     <Compile Include="Helpers\Interfaces\IRandomSymbolStringGenerator.cs" />
     <Compile Include="Helpers\LargeInteger.cs" />

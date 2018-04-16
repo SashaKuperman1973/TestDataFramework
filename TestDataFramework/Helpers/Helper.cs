@@ -162,33 +162,5 @@ namespace TestDataFramework.Helpers
         {
             return string.Join(" || ", columns);
         }
-
-        public static MemberInfo ValidateFieldExpression<T, TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression)
-        {
-            if (fieldExpression.Body.NodeType != ExpressionType.MemberAccess)
-            {
-                throw new SetExpressionException(Messages.MustBePropertyAccess);
-            }
-
-            var memberExpression = fieldExpression.Body as MemberExpression;
-
-            if (memberExpression != null) return memberExpression.Member;
-
-            var unaryExpression = fieldExpression.Body as UnaryExpression;
-
-            if (unaryExpression == null)
-            {
-                throw new SetExpressionException(Messages.MustBePropertyAccess);
-            }
-
-            memberExpression = unaryExpression.Operand as MemberExpression;
-
-            if (memberExpression == null)
-            {
-                throw new SetExpressionException(Messages.MustBePropertyAccess);
-            }
-
-            return memberExpression.Member;
-        }
     }
 }

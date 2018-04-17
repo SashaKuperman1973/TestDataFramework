@@ -10,6 +10,7 @@
         {
             this.startPosition = startPosition;
             this.endPosition = endPosition;
+            this.length = endPosition + 1 - startPosition;
         }
 
         public static implicit operator Range(int i)

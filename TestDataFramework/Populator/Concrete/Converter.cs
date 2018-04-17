@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using TestDataFramework.Exceptions;
 
 namespace TestDataFramework.Populator.Concrete
 {
@@ -37,9 +38,10 @@ namespace TestDataFramework.Populator.Concrete
                 
             if (converterFunction == null)
             {
-                throw new ArgumentException($"Type {propertyInfo.PropertyType} is not supported for deep collection setting");
+                throw new ArgumentException(string.Format(Messages.TypeNotSupportedForDeepCollectionSetting,
+                    propertyInfo.PropertyType));
             }
-
+            
             IEnumerable<TListElement> result = converterFunction(convertInput);
             return result;
         }

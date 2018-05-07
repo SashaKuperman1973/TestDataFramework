@@ -127,5 +127,7 @@ namespace TestDataFramework.Exceptions
 
         public const string TypeNotSupportedForDeepCollectionSetting =
             "Type {0} is not supported for deep collection setting";
+
+        public const string NoRangeOperableListPositionsPassedIn = "No positions passed in.";
     }
 }

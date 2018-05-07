@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using TestDataFramework.ListOperations;
+using TestDataFramework.Populator.Interfaces;
 
 namespace TestDataFramework.Populator.Concrete
 {
@@ -35,10 +36,10 @@ namespace TestDataFramework.Populator.Concrete
 
     public class OperableList<T> : Populatable, IList<RecordReference<T>>
     {
-        private readonly List<GuaranteedValues> guaranteedValues = new List<GuaranteedValues>();
-        protected List<RecordReference<T>> InternalList;
+        internal readonly List<GuaranteedValues> GuaranteedValues = new List<GuaranteedValues>();
+        protected internal List<RecordReference<T>> InternalList;
         protected readonly ValueGuaranteePopulator ValueGuaranteePopulator;
-        protected BasePopulator Populator;
+        protected readonly BasePopulator Populator;
 
         public OperableList(ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator)
         {
@@ -56,7 +57,7 @@ namespace TestDataFramework.Populator.Concrete
 
         public virtual OperableList<T> GuaranteeByPercentageOfTotal<TValue>(IEnumerable<TValue> guaranteedValues, int frequencyPercentage = 10)
         {
-            this.guaranteedValues.Add(new GuaranteedValues
+            this.GuaranteedValues.Add(new GuaranteedValues
             {
                 FrequencyPercentage = frequencyPercentage,
                 Values = guaranteedValues.Cast<object>(),
@@ -67,7 +68,7 @@ namespace TestDataFramework.Populator.Concrete
 
         public virtual OperableList<T> GuaranteeByPercentageOfTotal(IEnumerable<Func<T>> guaranteedValues, int frequencyPercentage = 10)
         {
-            this.guaranteedValues.Add(new GuaranteedValues
+            this.GuaranteedValues.Add(new GuaranteedValues
             {
                 FrequencyPercentage = frequencyPercentage,
                 Values = guaranteedValues,
@@ -78,7 +79,7 @@ namespace TestDataFramework.Populator.Concrete
 
         public virtual OperableList<T> GuaranteeByPercentageOfTotal(IEnumerable<T> guaranteedValues, int frequencyPercentage = 10)
         {
-            this.guaranteedValues.Add(new GuaranteedValues
+            this.GuaranteedValues.Add(new GuaranteedValues
             {
                 FrequencyPercentage = frequencyPercentage,
                 Values = guaranteedValues.Cast<object>(),
@@ -96,7 +97,7 @@ namespace TestDataFramework.Populator.Concrete
                 fixedQuantity = guaranteedValues.Count();
             }
 
-            this.guaranteedValues.Add(new GuaranteedValues
+            this.GuaranteedValues.Add(new GuaranteedValues
             {
                 TotalFrequency = fixedQuantity,
                 Values = guaranteedValues.Cast<object>(),
@@ -114,7 +115,7 @@ namespace TestDataFramework.Populator.Concrete
                 fixedQuantity = guaranteedValues.Count();
             }
 
-            this.guaranteedValues.Add(new GuaranteedValues
+            this.GuaranteedValues.Add(new GuaranteedValues
             {
                 TotalFrequency = fixedQuantity,
                 Values = guaranteedValues,
@@ -132,7 +133,7 @@ namespace TestDataFramework.Populator.Concrete
                 fixedQuantity = guaranteedValues.Count();
             }
 
-            this.guaranteedValues.Add(new GuaranteedValues
+            this.GuaranteedValues.Add(new GuaranteedValues
             {
                 TotalFrequency = fixedQuantity,
                 Values = guaranteedValues.Cast<object>(),
@@ -153,13 +154,11 @@ namespace TestDataFramework.Populator.Concrete
                 return;
             }
 
-            if (!this.guaranteedValues.Any())
+            if (this.GuaranteedValues.Any())
             {
-                this.InternalList.ForEach(recordReference => recordReference.Populate());
-                return;
+                this.ValueGuaranteePopulator.Bind(this, this.GuaranteedValues);
             }
 
-            this.ValueGuaranteePopulator.Bind(this, this.guaranteedValues);
             this.InternalList.ForEach(recordReference => recordReference.Populate());
             this.IsPopulated = true;
         }
@@ -169,21 +168,21 @@ namespace TestDataFramework.Populator.Concrete
             this.InternalList.ForEach(collection.Add);
         }
 
-        public IEnumerable<T> BindAndMake()
+        public virtual IEnumerable<T> BindAndMake()
         {
             this.Populator.Bind();
             IEnumerable<T> result = this.RecordObjects;
             return result;
         }
 
-        public IEnumerable<T> Make()
+        public virtual IEnumerable<T> Make()
         {
             this.Populator.Bind(this);
             IEnumerable<T> result = this.RecordObjects;
             return result;
         }
 
-        public IEnumerable<T> RecordObjects
+        public virtual IEnumerable<T> RecordObjects
         {
             get
             {
@@ -199,7 +198,7 @@ namespace TestDataFramework.Populator.Concrete
             return this.InternalList.GetEnumerator();
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator() 
         {
             return this.GetEnumerator();
         }
@@ -217,7 +216,7 @@ namespace TestDataFramework.Populator.Concrete
         public void Clear()
         {
             this.InternalList.Clear();
-            this.guaranteedValues.Clear();
+            this.GuaranteedValues.Clear();
         }
 
         public bool Contains(RecordReference<T> item)
@@ -252,8 +251,8 @@ namespace TestDataFramework.Populator.Concrete
 
         public RecordReference<T> this[int index]
         {
-            get { return this.InternalList[index]; }
-            set { this.InternalList[index] = value; }
+            get => this.InternalList[index];
+            set => this.InternalList[index] = value;
         }
 
         #endregion IList<> members

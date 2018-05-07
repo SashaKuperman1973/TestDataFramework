@@ -103,9 +103,11 @@
     <Compile Include="Populator\BasePopulator.cs" />
     <Compile Include="Populator\Concrete\Converter.cs" />
     <Compile Include="Populator\Concrete\ExplicitlyIgnoredValue.cs" />
+    <Compile Include="Populator\Concrete\FieldExpression.cs" />
     <Compile Include="Populator\Concrete\OperableList.cs" />
     <Compile Include="Populator\Concrete\RangeOperableList.cs" />
     <Compile Include="Populator\Concrete\RecordReferenceOfT.cs" />
+    <Compile Include="Populator\Interfaces\IRangeOperableList.cs" />
     <Compile Include="Populator\Populatable.cs" />
     <Compile Include="Populator\Interfaces\IPopulator.cs" />
     <Compile Include="Populator\Concrete\Range.cs" />

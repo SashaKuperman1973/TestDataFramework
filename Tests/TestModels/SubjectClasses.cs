@@ -263,4 +263,18 @@ namespace Tests.TestModels
         [MultiAllowed]
         public int B;
     }
+
+    public class ClassWithSideEffectProperty
+    {
+        public int i = 0;
+
+        public int SideEffectProperty {
+            set
+            {
+                this.i++;
+            }
+
+            get => 0;
+        }
+    }
 }

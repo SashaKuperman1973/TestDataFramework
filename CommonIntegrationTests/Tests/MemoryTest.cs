@@ -479,11 +479,11 @@ namespace CommonIntegrationTests.Tests
 
             RecordReference<ListSetterBaseType> listSetterBaseTypeReference = populator.Add<ListSetterBaseType>();
 
-            RangeOperableList<ListElementType> list = listSetterBaseTypeReference.Set(p => p.B.WithCollection.ElementList, 5);
+            listSetterBaseTypeReference.Set(p => p.B.WithCollection.ElementList, 5)
 
-            list.Set(p => p.SubElement.AString, "Me", 2, 4)
-                .Set(p => p.AString, "Hello", 0, 2, 4)
-                .Set(p => p.SubElement.AnInt, 7, new Range(2, 4));
+            .Set(p => p.SubElement.AString, "Me", 2, 4)
+            .Set(p => p.AString, "Hello", 0, 2, 4)
+            .Set(p => p.SubElement.AnInt, 7, new Range(2, 4));
 
             populator.Bind();
 
@@ -498,11 +498,11 @@ namespace CommonIntegrationTests.Tests
 
             RecordReference<ListSetterBaseType> listSetterBaseTypeReference = populator.Add<ListSetterBaseType>();
 
-            RangeOperableList<ListElementType> list = listSetterBaseTypeReference.Set(p => p.B.WithCollection.ElementArray, 5);
+            listSetterBaseTypeReference.Set(p => p.B.WithCollection.ElementArray, 5)
 
-            list.Set(p => p.SubElement.AString, "Me", 2, 4)
-                .Set(p => p.AString, "Hello", 0, 2, 4)
-                .Set(p => p.SubElement.AnInt, 7, new Range(2, 4));
+            .Set(p => p.SubElement.AString, "Me", 2, 4)
+            .Set(p => p.AString, "Hello", 0, 2, 4)
+            .Set(p => p.SubElement.AnInt, 7, new Range(2, 4));
 
             populator.Bind();
 

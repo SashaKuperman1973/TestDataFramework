@@ -18,6 +18,7 @@
 */
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -78,6 +79,53 @@ namespace Tests.Tests.ImmediateTests
                 Assert.AreEqual(new LargeInteger((ulong)Convert.ChangeType(value, typeof(ulong))), result);
                 this.primitivesMock.Verify(m => m.AddSqlCommand(command));
             }
+        }
+
+        [TestMethod]
+        public void Number_Input_Is_DbNull_Test()
+        {
+            // Arrange
+
+            PropertyInfo propertyInfo = typeof(ClassWithIntAutoPrimaryKey).GetProperty("Key");
+
+            WriterDelegate numberWriter = this.writerDictionary[typeof(int)];
+            DecoderDelegate numberDecoder = numberWriter(propertyInfo);
+
+            // Act
+
+            LargeInteger result = numberDecoder(propertyInfo, DBNull.Value);
+
+            // Assert
+
+            Assert.AreEqual((LargeInteger)0, result);
+        }
+
+        [TestMethod]
+        public void String_Input_Is_DbNull_Test()
+        {
+            // Arrange
+
+            PropertyInfo propertyInfo = typeof(SubjectClass).GetProperty(nameof(SubjectClass.Text));
+
+            WriterDelegate stringWriter = this.writerDictionary[typeof(string)];
+            DecoderDelegate stringDecoder = stringWriter(propertyInfo);
+
+            // Act
+
+            LargeInteger result = stringDecoder(propertyInfo, DBNull.Value);
+
+            // Assert
+
+            Assert.AreEqual((LargeInteger)0, result);
+        }
+
+        [TestMethod]
+        public void UnKnownType_Throws()
+        {
+            Helpers.ExceptionTest(() =>
+            {
+                var x = this.writerDictionary[typeof(SubjectClass)];
+            }, typeof(KeyNotFoundException), string.Format(Messages.PropertyKeyNotFound, typeof(SubjectClass)));
         }
 
         [TestMethod]

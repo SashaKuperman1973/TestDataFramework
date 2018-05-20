@@ -270,6 +270,13 @@ namespace Tests.Tests.ImmediateTests
         }
 
         [TestMethod]
+        public void NegativePrecisionThrows_Test()
+        {
+            Helpers.ExceptionTest(() => this.randomizer.GetDecimal(-1), typeof(ArgumentOutOfRangeException),
+                Messages.PrecisionMustBeNonNegative + "\r\nParameter name: precision\r\nActual value was -1.");
+        }
+
+        [TestMethod]
         public void GetDecimal_Test()
         {
             // Arrange

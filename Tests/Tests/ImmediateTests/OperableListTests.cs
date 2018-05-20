@@ -18,6 +18,7 @@
 */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
@@ -216,6 +217,68 @@ namespace Tests.Tests.ImmediateTests
         }
 
         [TestMethod]
+        public void GuaranteeByFixedQuantity_ByValue_DefaultQuantity_IsCollectionSize_Test()
+        {
+            // Arrange
+
+            var operableList = new OperableList<SubjectClass>(null, null);
+
+            var subject1 = new SubjectClass();
+            var subject2 = new SubjectClass();
+            var subject3 = new SubjectClass();
+            SubjectClass[] data = { subject1, subject2, subject3 };
+
+            // Act
+
+            operableList.GuaranteeByFixedQuantity(data);
+
+            // Assert
+
+            Assert.AreEqual(data.Length, operableList.GuaranteedValues.First().TotalFrequency);
+        }
+
+        [TestMethod]
+        public void GuaranteeByFixedQuantity_ByObject_DefaultQuantity_IsCollectionSize_Test()
+        {
+            // Arrange
+
+            var operableList = new OperableList<SubjectClass>(null, null);
+
+            var subject1 = new SubjectClass();
+            Func<SubjectClass> subject2 = () => new SubjectClass();
+            var subject3 = new SubjectClass();
+            object[] data = { subject1, subject2, subject3 };
+
+            // Act
+
+            operableList.GuaranteeByFixedQuantity(new object[] { subject1, subject2, subject3 });
+
+            // Assert
+
+            Assert.AreEqual(data.Length, operableList.GuaranteedValues.First().TotalFrequency);
+        }
+
+        [TestMethod]
+        public void GuaranteeByFixedQuantity_ByValueFunc_DefaultQuantity_IsCollectionSize_Test()
+        {
+            // Arrange
+
+            var operableList = new OperableList<SubjectClass>(null, null);
+            Func<SubjectClass> subject1 = () => new SubjectClass();
+            Func<SubjectClass> subject2 = () => new SubjectClass();
+            Func<SubjectClass> subject3 = () => new SubjectClass();
+            Func<SubjectClass>[] data = {subject1, subject2, subject3};
+
+            // Act
+
+            operableList.GuaranteeByFixedQuantity(data);
+
+            // Assert
+
+            Assert.AreEqual(data.Length, operableList.GuaranteedValues.First().TotalFrequency);
+        }
+
+        [TestMethod]
         public void AddToReferences_Test()
         {
             // Arrange
@@ -236,7 +299,7 @@ namespace Tests.Tests.ImmediateTests
         }
 
         [TestMethod]
-        public void GetEnumerator_Test()
+        public void GetEnumerator_Generic_Test()
         {
             // Arrange
 
@@ -253,6 +316,28 @@ namespace Tests.Tests.ImmediateTests
                 enumerator.MoveNext();
                 actual = enumerator.Current;
             }
+
+            // Assert
+
+            Assert.AreEqual(reference, actual);
+        }
+
+        [TestMethod]
+        public void GetEnumerator_NonGeneric_Test()
+        {
+            // Arrange
+
+            var operableList = new OperableList<SubjectClass>(null, null);
+            var reference = new RecordReference<SubjectClass>(null, null, null, null, null, null);
+            operableList.InternalList.Add(reference);
+
+            // Act
+
+            RecordReference<SubjectClass> actual;
+
+            IEnumerator enumerator = ((IEnumerable) operableList).GetEnumerator();
+            enumerator.MoveNext();
+            actual = (RecordReference<SubjectClass>)enumerator.Current;
 
             // Assert
 

@@ -412,7 +412,7 @@ namespace Tests.Tests.ImmediateTests
                 .Setup<Guid?>(nameof(ClassWithGuidKeys.Key3))
                 .Setup<Guid?>(nameof(ClassWithGuidKeys.Key4));
 
-            recordReference.Set(r => r.Key1, Guid.Empty).Set(r => r.Key3, Guid.Empty).Set(r => r.Key4, Guid.Empty);
+            recordReference.Set(r => r.Key1, Guid.Empty).Set(r => r.Key3, (Guid?)Guid.Empty).Set(r => r.Key4, (Guid?)Guid.Empty);
             recordReference.Populate();
 
             var insertRecordService = new InsertRecordService(recordReference, this.attributeDecorator, InsertRecordServiceTest.IsKeyReferenceCheckEnforced);

@@ -17,18 +17,14 @@
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime;
-using System.Xml.Serialization;
 using CommonIntegrationTests.TestModels;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TestDataFramework.DeepSetting;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Factories;
-using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete;
 using TestDataFramework.Populator.Interfaces;
 using Tests.TestModels;
@@ -479,7 +475,7 @@ namespace CommonIntegrationTests.Tests
 
             RecordReference<ListSetterBaseType> listSetterBaseTypeReference = populator.Add<ListSetterBaseType>();
 
-            listSetterBaseTypeReference.Set(p => p.B.WithCollection.ElementList, 5)
+            listSetterBaseTypeReference.SetList(p => p.B.WithCollection.ElementList, 5)
 
             .Set(p => p.SubElement.AString, "Me", 2, 4)
             .Set(p => p.AString, "Hello", 0, 2, 4)
@@ -498,7 +494,7 @@ namespace CommonIntegrationTests.Tests
 
             RecordReference<ListSetterBaseType> listSetterBaseTypeReference = populator.Add<ListSetterBaseType>();
 
-            listSetterBaseTypeReference.Set(p => p.B.WithCollection.ElementArray, 5)
+            listSetterBaseTypeReference.SetList(p => p.B.WithCollection.ElementArray, 5)
 
             .Set(p => p.SubElement.AString, "Me", 2, 4)
             .Set(p => p.AString, "Hello", 0, 2, 4)
@@ -508,6 +504,30 @@ namespace CommonIntegrationTests.Tests
 
             Assert.AreEqual("Me", listSetterBaseTypeReference.RecordObject.B.WithCollection.ElementArray[2].SubElement.AString);
             Assert.AreEqual("Me", listSetterBaseTypeReference.RecordObject.B.WithCollection.ElementArray[4].SubElement.AString);
+        }
+
+        [TestMethod]
+        public void ExplicitlySetAListViaFunction_Test()
+        {
+            IPopulator populator = this.factory.CreateMemoryPopulator();
+
+            populator.Add<ListSetterBaseTypeB>().Set(p => p.WithCollection.ElementList, () =>
+            {
+                var result = new List<ListElementType>();
+                return result;
+            });
+
+            populator.Bind();
+        }
+
+        [TestMethod]
+        public void ExplicitlySetAList_Test()
+        {
+            IPopulator populator = this.factory.CreateMemoryPopulator();
+
+            populator.Add<ListSetterBaseTypeB>().Set(p => p.WithCollection.ElementList, new List<ListElementType>());
+
+            populator.Bind();
         }
     }
 }

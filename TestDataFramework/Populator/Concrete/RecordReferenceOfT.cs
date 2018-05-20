@@ -96,7 +96,8 @@ namespace TestDataFramework.Populator.Concrete
             RecordReference<T>.Logger.Debug("Exiting Populate");
         }
 
-        public virtual RecordReference<T> Set<TPropertyValue>(Expression<Func<T, TPropertyValue>> fieldExpression, TPropertyValue value)
+        public virtual RecordReference<T> Set<TBasePropertyValue, TPropertyValue>(Expression<Func<T, TBasePropertyValue>> fieldExpression, TPropertyValue value)
+            where TPropertyValue : TBasePropertyValue
         {
             RecordReference<T>.Logger.Debug(
                 $"Entering Set(fieldExpression, value). TPropertyValue: {typeof(TPropertyValue)}, fieldExpression: {fieldExpression}, value: {value}");
@@ -107,7 +108,8 @@ namespace TestDataFramework.Populator.Concrete
             return result;
         }
 
-        public virtual RecordReference<T> Set<TPropertyValue>(Expression<Func<T, TPropertyValue>> fieldExpression, Func<TPropertyValue> valueFactory)
+        public virtual RecordReference<T> Set<TBasePropertyValue, TPropertyValue>(Expression<Func<T, TBasePropertyValue>> fieldExpression, Func<TPropertyValue> valueFactory)
+            where TPropertyValue : TBasePropertyValue
         {
             RecordReference<T>.Logger.Debug(
                 $"Entering Set(fieldExpression, valueFactory). TPropertyValue: {typeof(TPropertyValue)}, fieldExpression: {fieldExpression}, valueFactory: {valueFactory}");
@@ -118,7 +120,7 @@ namespace TestDataFramework.Populator.Concrete
             return this;
         }
 
-        public virtual RangeOperableList<TListElement> Set<TListElement>(Expression<Func<T, IEnumerable<TListElement>>> listFieldExpression, int size)
+        public virtual RangeOperableList<TListElement> SetList<TListElement>(Expression<Func<T, IEnumerable<TListElement>>> listFieldExpression, int size)
         {
             List<PropertyInfo> objectPropertyGraph = this.objectGraphService.GetObjectGraph(listFieldExpression);
 
@@ -194,7 +196,7 @@ namespace TestDataFramework.Populator.Concrete
             return result;
         }
 
-        private void AddToExplicitPropertySetters<TPropertyValue>(Expression<Func<T, TPropertyValue>> fieldExpression, Func<TPropertyValue> valueFactory)
+        private void AddToExplicitPropertySetters<TBasePropertyValue, TPropertyValue>(Expression<Func<T, TBasePropertyValue>> fieldExpression, Func<TPropertyValue> valueFactory)
         {
             object ObjectValueFactory()
             {

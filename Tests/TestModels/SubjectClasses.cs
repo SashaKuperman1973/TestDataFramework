@@ -18,7 +18,6 @@
 */
 
 using System;
-using System.Security.Policy;
 using TestDataFramework;
 using TestDataFramework.ValueProvider.Interfaces;
 
@@ -276,5 +275,11 @@ namespace Tests.TestModels
 
             get => 0;
         }
+    }
+
+    public enum AnEnum
+    {
+        SymbolA,
+        SymbolB
     }
 }

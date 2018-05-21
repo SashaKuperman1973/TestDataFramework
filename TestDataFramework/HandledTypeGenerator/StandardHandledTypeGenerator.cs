@@ -90,9 +90,11 @@ namespace TestDataFramework.HandledTypeGenerator
             return result;
         }
 
-        protected virtual object GetGenericCollection(Type[] genericArgumentTypes, Type concreteOpenType, Func<Type[], object[]> genericCollectionValueGenerator, int? collectionElementCountOverride = null)
+        protected virtual object GetGenericCollection(Type[] genericArgumentTypes, Type concreteOpenType,
+            Func<Type[], object[]> genericCollectionValueGenerator, int? collectionElementCountOverride = null)
         {
-            StandardHandledTypeGenerator.Logger.Debug($"Entering GetGenericCollection. concreteOpenType: {concreteOpenType}");
+            StandardHandledTypeGenerator.Logger.Debug(
+                $"Entering GetGenericCollection. concreteOpenType: {concreteOpenType}");
 
             Type targetType = concreteOpenType.GetGenericTypeDefinition().MakeGenericType(genericArgumentTypes);
 

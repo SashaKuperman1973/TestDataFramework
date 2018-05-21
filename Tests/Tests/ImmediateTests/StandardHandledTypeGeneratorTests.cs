@@ -19,6 +19,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -84,7 +85,6 @@ namespace Tests.Tests.ImmediateTests
             int i = 0;
             string[] s = new[] {"AA", "BB", "CC", "DD"};
 
-
             this.accumulatorValueGeneratorMock.Setup(m => m.GetValue(null, typeof(int))).Returns(() => ++i);
             this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(string))).Returns(() => s[i - 1]);
 
@@ -104,6 +104,33 @@ namespace Tests.Tests.ImmediateTests
             Assert.AreEqual("BB", dictionary[2]);
             Assert.AreEqual("CC", dictionary[3]);
             Assert.AreEqual("DD", dictionary[4]);
+        }
+
+        [TestMethod]
+        public void GetObject_Dictionary_EnumKey_Test()
+        {
+            // Arrange
+
+            int i = 0;
+            string[] s = new[] { "AA", "BB" };
+
+            this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(string))).Returns(() => s[i++]);
+
+            // Act
+
+            object result = this.handledTypeGenerator.GetObject(typeof(Dictionary<AnEnum, string>));
+
+            // Assert
+
+            var dictionary = result as Dictionary<AnEnum, string>;
+
+            Assert.IsNotNull(dictionary);
+            this.accumulatorValueGeneratorMock.Verify(m => m.GetValue(It.IsAny<PropertyInfo>(), It.IsAny<Type>()), Times.Never);
+            this.valueGeneratorMock.Verify(m => m.GetValue(null, typeof(string)), Times.Exactly(2));
+
+            Assert.AreEqual(Enum.GetNames(typeof(AnEnum)).Length, dictionary.Count);
+            Assert.AreEqual("AA", dictionary[AnEnum.SymbolA]);
+            Assert.AreEqual("BB", dictionary[AnEnum.SymbolB]);
         }
 
         [TestMethod]
@@ -186,6 +213,78 @@ namespace Tests.Tests.ImmediateTests
             Assert.AreEqual(sc[1], list[1]);
             Assert.AreEqual(sc[2], list[2]);
             Assert.AreEqual(sc[3], list[3]);
+        }
+
+        [TestMethod]
+        public void GetObject_NoHandlerFound_ReturnsNull_Test()
+        {
+            // Act
+
+            object result = this.handledTypeGenerator.GetObject(typeof(string));
+
+            // Assert
+
+            Assert.IsNull(result);
+        }
+
+        [TestMethod]
+        public void GetObject_GetTuple_OneItem_Test()
+        {
+            // Arrange
+
+            this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(string))).Returns("A");
+
+            // Act
+
+            object result = this.handledTypeGenerator.GetObject(typeof(Tuple<string>));
+
+            // Assert
+
+            var tuple = (Tuple<string>) result;
+
+            Assert.AreEqual("A", tuple.Item1);
+        }
+
+        [TestMethod]
+        public void GetObject_GetTuple_TwoItems_Test()
+        {
+            // Arrange
+
+            this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(string))).Returns("A");
+            this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(int))).Returns(5);
+
+            // Act
+
+            object result = this.handledTypeGenerator.GetObject(typeof(Tuple<string, int>));
+
+            // Assert
+
+            var tuple = (Tuple<string, int>)result;
+
+            Assert.AreEqual("A", tuple.Item1);
+            Assert.AreEqual(5, tuple.Item2);
+        }
+
+        [TestMethod]
+        public void GetObject_GetTuple_ThreeItems_Test()
+        {
+            // Arrange
+
+            this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(string))).Returns("A");
+            this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(int))).Returns(5);
+            this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(AnEnum))).Returns(AnEnum.SymbolB);
+
+            // Act
+
+            object result = this.handledTypeGenerator.GetObject(typeof(Tuple<string, int, AnEnum>));
+
+            // Assert
+
+            var tuple = (Tuple<string, int, AnEnum>)result;
+
+            Assert.AreEqual("A", tuple.Item1);
+            Assert.AreEqual(5, tuple.Item2);
+            Assert.AreEqual(AnEnum.SymbolB, tuple.Item3);
         }
     }
 }

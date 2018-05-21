@@ -42,6 +42,13 @@ namespace Tests.Tests.ImmediateTests
         }
 
         [TestMethod]
+        public void Null_Input_Test()
+        {
+            string result = this.formatter.Format(null);
+            Assert.IsNull(result);
+        }
+
+        [TestMethod]
         public void Int_Test()
         {
             const int input = 5;
@@ -143,6 +150,30 @@ namespace Tests.Tests.ImmediateTests
             const byte input = (byte) 5;
             string result = this.formatter.Format(input);
             Assert.AreEqual("5", result);
+        }
+
+        [TestMethod]
+        public void Double_Test()
+        {
+            const double input = (double)5.489;
+            string result = this.formatter.Format(input);
+            Assert.AreEqual("5.489", result);
+        }
+
+        [TestMethod]
+        public void Float_Test()
+        {
+            const float input = 5.587f;
+            string result = this.formatter.Format(input);
+            Assert.AreEqual("5.587", result);
+        }
+
+        [TestMethod]
+        public void Guid_Test()
+        {
+            Guid input = new Guid("fe3fbecb-f023-48df-8b18-88b7c8282553");
+            string result = this.formatter.Format(input);
+            Assert.AreEqual("'fe3fbecb-f023-48df-8b18-88b7c8282553'", result);
         }
     }
 }

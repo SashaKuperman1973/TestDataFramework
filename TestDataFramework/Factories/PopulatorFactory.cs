@@ -367,10 +367,11 @@ namespace TestDataFramework.Factories
                         typeGenerator =>
                             commonContainer.Resolve<IValueGenerator>(PopulatorFactory.AccumulatorValueGenerator)),
 
-                Component.For<IAttributeDecoratorBase>().ImplementedBy<StandardAttributeDecoratorBase>()
+                Component.For<IAttributeDecoratorBase>().ImplementedBy<StandardAttributeDecoratorBase>(),
 
-                #endregion Handled Type Generator
+                Component.For<StandardTableTypeCache>().ImplementedBy<StandardTableTypeCache>()
 
+            #endregion Handled Type Generator
             );
 
             if (defaultSchema != null)

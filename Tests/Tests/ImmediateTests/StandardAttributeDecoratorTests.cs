@@ -25,8 +25,11 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework;
 using TestDataFramework.AttributeDecorator;
+using TestDataFramework.AttributeDecorator.Concrete;
+using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.Exceptions;
 using TestDataFramework.HandledTypeGenerator;
+using TestDataFramework.Helpers;
 using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete;
 using TestDataFramework.ValueGenerator.Interfaces;
@@ -81,14 +84,14 @@ namespace Tests.Tests.ImmediateTests
         }
 
         private Populator populator;
-        private Mock<TableTypeCache> tableTypeCacheMock;
+        private Mock<StandardTableTypeCache> tableTypeCacheMock;
         private StandardAttributeDecorator attributeDecorator;
 
         [TestInitialize]
         public void TestInitialize()
         {
-            this.tableTypeCacheMock = new Mock<TableTypeCache>((Func<TableTypeCache, ITableTypeCacheService>)(x => null));
-            this.attributeDecorator = new StandardAttributeDecorator(x => this.tableTypeCacheMock.Object, this.GetType().Assembly, null);
+            this.tableTypeCacheMock = new Mock<StandardTableTypeCache>((Func<StandardTableTypeCache, ITableTypeCacheService>)(x => null));
+            this.attributeDecorator = new StandardAttributeDecorator(this.tableTypeCacheMock.Object, this.GetType().Assembly, null);
             this.populator = new Populator(this.attributeDecorator);
         }
 
@@ -444,7 +447,8 @@ namespace Tests.Tests.ImmediateTests
 
             this.tableTypeCacheMock.Setup(m => m.IsAssemblyCachePopulated(this.GetType().Assembly)).Returns(false);
 
-            this.tableTypeCacheMock.Setup(m => m.GetCachedTableType(foreignKeyAtribute, foreignType, this.GetType().Assembly, this.attributeDecorator.GetSingleAttribute<TableAttribute>, true))
+            this.tableTypeCacheMock.Setup(m => m.GetCachedTableType(foreignKeyAtribute, foreignType,
+                    this.GetType().Assembly, this.attributeDecorator.GetSingleAttribute<TableAttribute>, true))
                 .Returns(returnedType);
 
             // Act
@@ -453,7 +457,90 @@ namespace Tests.Tests.ImmediateTests
 
             // Assert
 
-            this.tableTypeCacheMock.Verify(m => m.PopulateAssemblyCache(foreignType.Assembly, this.attributeDecorator.GetSingleAttribute<TableAttribute>, null), Times.Once);
+            this.tableTypeCacheMock.Verify(
+                m => m.PopulateAssemblyCache(foreignType.Assembly,
+                    this.attributeDecorator.GetSingleAttribute<TableAttribute>, null), Times.Once);
+        }
+
+        [TestMethod]
+        public void GetTableType_TableTypeCache_IsNot_Populated_Test()
+        {
+            // Arrange
+
+            Type foreignType = typeof(ForeignClass);
+
+            var foreignKeyAtribute = new ForeignKeyAttribute("PrimaryClass", null);
+
+            this.tableTypeCacheMock.Setup(m => m.IsAssemblyCachePopulated(this.GetType().Assembly)).Returns(true);
+
+            // Act
+            // Assert
+
+            Helpers.ExceptionTest(() => this.attributeDecorator.GetTableType(foreignKeyAtribute, foreignType),
+                    typeof(AttributeDecoratorException),
+                    string.Format(Messages.CannotResolveForeignKey, foreignKeyAtribute, foreignType));
+        }
+
+        [TestMethod]
+        public void GetTableType_Cannot_Find_ForeignKey_In_ForeignKeyType_Assembly()
+        {
+            // Arrange
+
+            Type foreignType = typeof(ForeignClass);
+
+            var foreignKeyAtribute = new ForeignKeyAttribute("PrimaryClass", null);
+
+            this.tableTypeCacheMock.Setup(m => m.IsAssemblyCachePopulated(this.GetType().Assembly)).Returns(false);
+
+            // Act
+            // Assert
+
+            Helpers.ExceptionTest(() => this.attributeDecorator.GetTableType(foreignKeyAtribute, foreignType),
+                typeof(AttributeDecoratorException),
+                string.Format(Messages.CannotResolveForeignKey, foreignKeyAtribute, foreignType));
+
+            this.tableTypeCacheMock.Verify(m => m.PopulateAssemblyCache(It.IsAny<Assembly>(),
+                this.attributeDecorator.GetSingleAttribute<TableAttribute>, null), Times.Exactly(2));
+
+            this.tableTypeCacheMock.Verify(m => m.GetCachedTableType(foreignKeyAtribute, foreignType,
+                It.IsAny<Assembly>(), this.attributeDecorator.GetSingleAttribute<TableAttribute>, true), Times.Once);
+
+            this.tableTypeCacheMock.Verify(m => m.GetCachedTableType(foreignKeyAtribute, foreignType,
+                It.IsAny<Assembly>(), this.attributeDecorator.GetSingleAttribute<TableAttribute>, false), Times.Once);
+        }
+
+        [TestMethod]
+        public void GetTableType_ForeignKey_Found_In_ForeignKeyType_Assembly()
+        {
+            // Arrange
+
+            Type foreignType = typeof(ForeignClass);
+            Type primaryKeyTableType = typeof(PrimaryTable);
+
+            var foreignKeyAtribute = new ForeignKeyAttribute("PrimaryClass", null);
+
+            this.tableTypeCacheMock.Setup(m => m.IsAssemblyCachePopulated(this.GetType().Assembly)).Returns(false);
+
+            this.tableTypeCacheMock.Setup(m => m.GetCachedTableType(foreignKeyAtribute, foreignType,
+                    It.IsAny<Assembly>(), this.attributeDecorator.GetSingleAttribute<TableAttribute>, false))
+                .Returns(primaryKeyTableType);
+
+            // Act
+
+            Type result = this.attributeDecorator.GetTableType(foreignKeyAtribute, foreignType);
+
+            // Assert
+
+            Assert.AreEqual(primaryKeyTableType, result);
+
+            this.tableTypeCacheMock.Verify(m => m.PopulateAssemblyCache(It.IsAny<Assembly>(),
+                this.attributeDecorator.GetSingleAttribute<TableAttribute>, null), Times.Exactly(2));
+
+            this.tableTypeCacheMock.Verify(m => m.GetCachedTableType(foreignKeyAtribute, foreignType,
+                It.IsAny<Assembly>(), this.attributeDecorator.GetSingleAttribute<TableAttribute>, true), Times.Once);
+
+            this.tableTypeCacheMock.Verify(m => m.GetCachedTableType(foreignKeyAtribute, foreignType,
+                It.IsAny<Assembly>(), this.attributeDecorator.GetSingleAttribute<TableAttribute>, false), Times.Once);
         }
 
         [TestMethod]
@@ -468,7 +555,8 @@ namespace Tests.Tests.ImmediateTests
             Type returnedType = typeof(PrimaryClass);
 
             this.tableTypeCacheMock.Setup(m => m.IsAssemblyCachePopulated(foreignType.Assembly)).Returns(true);
-            this.tableTypeCacheMock.Setup(m => m.GetCachedTableType(foreignKeyAtribute, foreignType, this.GetType().Assembly, this.attributeDecorator.GetSingleAttribute<TableAttribute>, true))
+            this.tableTypeCacheMock.Setup(m => m.GetCachedTableType(foreignKeyAtribute, foreignType,
+                    this.GetType().Assembly, this.attributeDecorator.GetSingleAttribute<TableAttribute>, true))
                 .Returns(returnedType);
 
             // Act
@@ -514,7 +602,7 @@ namespace Tests.Tests.ImmediateTests
 
             const string defaultSchema = "defaultSchema123";
 
-            var attributeDecorator = new StandardAttributeDecorator(x => null, null, defaultSchema);
+            var attributeDecorator = new StandardAttributeDecorator(null, null, defaultSchema);
 
             // Act
 
@@ -535,7 +623,7 @@ namespace Tests.Tests.ImmediateTests
 
             const string defaultSchema = "defaultSchema123";
 
-            var attributeDecorator = new StandardAttributeDecorator(x => null, null, defaultSchema);
+            var attributeDecorator = new StandardAttributeDecorator(null, null, defaultSchema);
 
             // Act
 
@@ -556,7 +644,7 @@ namespace Tests.Tests.ImmediateTests
 
             const string defaultSchema = "defaultSchema123";
 
-            var attributeDecorator = new StandardAttributeDecorator(x => null, null, defaultSchema);
+            var attributeDecorator = new StandardAttributeDecorator(null, null, defaultSchema);
 
             // Act
 
@@ -578,7 +666,7 @@ namespace Tests.Tests.ImmediateTests
 
             const string defaultSchema = "defaultSchema123";
 
-            var attributeDecorator = new StandardAttributeDecorator(x => null, null, defaultSchema);
+            var attributeDecorator = new StandardAttributeDecorator(null, null, defaultSchema);
 
             // Act
 
@@ -594,5 +682,24 @@ namespace Tests.Tests.ImmediateTests
         }
 
         #endregion Default schema handling
+
+        #region GetUniqueAttributes Tests
+
+        [TestMethod]
+        public void GetUniqueAttributes_Test()
+        {
+            // Act
+
+            IEnumerable<MaxAttribute> result = this.attributeDecorator.GetUniqueAttributes<MaxAttribute>(typeof(SubjectClass));
+
+            // Assert
+
+            List<MaxAttribute> attributes = result.ToList();
+
+            Assert.AreEqual(3, attributes.Count);
+            Assert.IsTrue(attributes.All(attribute => attribute.Max == SubjectClass.Max));
+        }
+
+        #endregion GetUniqueAttributes Tests
     }
 }

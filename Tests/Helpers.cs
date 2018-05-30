@@ -27,6 +27,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework;
 using TestDataFramework.AttributeDecorator;
+using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeepSetting;
 using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.Helpers;

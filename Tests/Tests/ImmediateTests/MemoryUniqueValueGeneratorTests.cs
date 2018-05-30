@@ -22,6 +22,8 @@ using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.AttributeDecorator;
+using TestDataFramework.AttributeDecorator.Concrete;
+using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Helpers;
 using TestDataFramework.PropertyValueAccumulator;
@@ -44,7 +46,7 @@ namespace Tests.Tests.ImmediateTests
         {
             XmlConfigurator.Configure();
 
-            this.attributeDecorator = new StandardAttributeDecorator(attributeDecorator => null, null);
+            this.attributeDecorator = new StandardAttributeDecorator(null, null);
 
             this.propertyValueAccumulatorMock = new Mock<IPropertyValueAccumulator>();
             this.deferredValueGeneratorMock = new Mock<IDeferredValueGenerator<LargeInteger>>();

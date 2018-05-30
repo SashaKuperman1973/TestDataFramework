@@ -28,6 +28,7 @@ using System.Threading;
 using log4net;
 using TestDataFramework.Logger;
 using TestDataFramework.AttributeDecorator;
+using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeepSetting;
 using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.ListOperations;

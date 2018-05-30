@@ -23,6 +23,7 @@ using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.AttributeDecorator;
+using TestDataFramework.AttributeDecorator.Concrete;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Helpers;
 using TestDataFramework.PropertyValueAccumulator;
@@ -46,7 +47,7 @@ namespace Tests.Tests.ImmediateTests
             this.deferredValueGeneratorMock = new Mock<IDeferredValueGenerator<LargeInteger>>();
 
             this.generator = new KeyTypeUniqueValueGenerator(this.propertyValueAccumulatorMock.Object,
-                new StandardAttributeDecorator(attributeDecorator => null, null), 
+                new StandardAttributeDecorator(null, null), 
                 this.deferredValueGeneratorMock.Object,
                 throwIfUnhandledType: false);
         }

@@ -109,6 +109,8 @@ namespace Tests.TestModels
         public int[][,,][] JaggedMultiDimensionalArray { get; set; }
 
         public int AField;
+
+        public Guid AGuid { get; set; }
     }
 
     public class SecondClass

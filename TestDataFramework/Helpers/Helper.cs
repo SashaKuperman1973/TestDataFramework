@@ -20,12 +20,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Transactions;
-using TestDataFramework.AttributeDecorator;
-using TestDataFramework.Exceptions;
+using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService;
+using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.RepositoryOperations;
 using TestDataFramework.RepositoryOperations.Model;
 
@@ -161,6 +160,11 @@ namespace TestDataFramework.Helpers
         public static object ToCompositeString(IEnumerable<object> columns)
         {
             return string.Join(" || ", columns);
+        }
+
+        public static Attribute GetCustomAttribute(this TestDataTypeInfo element, Type attributeType)
+        {
+            return element.TypeInfo.GetCustomAttribute(attributeType);
         }
     }
 }

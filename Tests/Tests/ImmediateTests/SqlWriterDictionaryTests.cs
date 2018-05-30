@@ -23,6 +23,7 @@ using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.AttributeDecorator;
+using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeferredValueGenerator.Concrete;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;

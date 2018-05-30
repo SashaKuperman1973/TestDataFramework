@@ -27,6 +27,8 @@ using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.AttributeDecorator;
+using TestDataFramework.AttributeDecorator.Concrete;
+using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeepSetting;
 using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.Exceptions;
@@ -47,7 +49,7 @@ namespace Tests.Tests.ImmediateTests
         {
             XmlConfigurator.Configure();
 
-            this.attributeDecorator = new StandardAttributeDecorator(attributeDecorator => null, null);
+            this.attributeDecorator = new StandardAttributeDecorator(null, null);
         }
 
         [TestMethod]

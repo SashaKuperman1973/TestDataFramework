@@ -21,9 +21,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
+using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService;
 using TestDataFramework.RepositoryOperations.Model;
 
-namespace TestDataFramework.AttributeDecorator
+namespace TestDataFramework.AttributeDecorator.Interfaces
 {
     public interface IAttributeDecorator
     {
@@ -38,6 +39,8 @@ namespace TestDataFramework.AttributeDecorator
         IEnumerable<RepositoryOperations.Model.PropertyAttributes> GetPropertyAttributes(Type type);
 
         IEnumerable<T> GetCustomAttributes<T>(MemberInfo memberInfo) where T : Attribute;
+
+        T GetSingleAttribute<T>(TestDataTypeInfo testDataTypeInfo) where T : Attribute;
 
         T GetCustomAttribute<T>(MemberInfo memberInfo) where T : Attribute;
 

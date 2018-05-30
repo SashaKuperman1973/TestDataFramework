@@ -25,6 +25,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.ArrayRandomizer;
 using TestDataFramework.AttributeDecorator;
+using TestDataFramework.AttributeDecorator.Concrete;
+using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeepSetting;
 using TestDataFramework.Exceptions;
 using TestDataFramework.TypeGenerator.Interfaces;
@@ -103,7 +105,7 @@ namespace Tests.Tests.ImmediateTests
             this.randomizerMock.Setup(m => m.GetEmailAddress()).Returns(BaseValueGeneratorTests.EmailAddress);
 
             this.valueGenerator = new ValueGenerator(this.randomizerMock.Object, () => this.typeGeneratorMock.Object,
-                () => this.arrayRandomizerMock.Object, this.uniqueValueGeneratorMock.Object, new StandardAttributeDecorator(x => null, null));
+                () => this.arrayRandomizerMock.Object, this.uniqueValueGeneratorMock.Object, new StandardAttributeDecorator(null, null));
         }
 
         [TestMethod]

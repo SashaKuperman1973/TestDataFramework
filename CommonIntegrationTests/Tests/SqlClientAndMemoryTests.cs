@@ -145,5 +145,17 @@ namespace CommonIntegrationTests.Tests
         {
             x.ToList().ForEach(y => y.Set(p => p.GuidKey, g));
         }
+
+        [Ignore]
+        [TestMethod]
+        public void Guid_Test()
+        {
+            IPopulator populator = this.factory.CreateSqlClientPopulator(
+                @"Data Source=localhost;Initial Catalog=TestDataFramework;Integrated Security=SSPI;",
+                mustBeInATransaction: false);
+
+            OperableList<SubjectClass> result = populator.Add<SubjectClass>(2);
+            populator.Bind();
+        }
     }
 }

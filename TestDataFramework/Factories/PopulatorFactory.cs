@@ -31,6 +31,9 @@ using log4net;
 using TestDataFramework.Logger;
 using TestDataFramework.ArrayRandomizer;
 using TestDataFramework.AttributeDecorator;
+using TestDataFramework.AttributeDecorator.Concrete;
+using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService;
+using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeepSetting.Concrete;
 using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.DeferredValueGenerator.Concrete;
@@ -90,8 +93,8 @@ namespace TestDataFramework.Factories
     {
         private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(PopulatorFactory));
 
-        private DisposableContainer sqlClientPopulatorContainer;
-        private DisposableContainer memoryPopulatorContainer;
+        internal DisposableContainer SqlClientPopulatorContainer;
+        internal DisposableContainer MemoryPopulatorContainer;
 
         private const string GetStandardTypeGenerator = "GetStandardTypeGenerator";
         private const string StandardValueProvider = "StandardValueProvider";
@@ -141,7 +144,9 @@ namespace TestDataFramework.Factories
                 new Lazy<TService>(() => container.Resolve<TService>(serviceKey));
 
             container.Register(
-                Component.For<Func<TService>>().Instance(() => lazyStandardTypeGenerator.Value).Named(delegateKey));
+                Component.For<Func<TService>>()
+                .Instance(() => lazyStandardTypeGenerator.Value)
+                .Named(delegateKey));
 
             var q = lazyStandardTypeGenerator.Value;
         }
@@ -151,15 +156,15 @@ namespace TestDataFramework.Factories
         {
             PopulatorFactory.Logger.Debug("Entering GetSqlClientPopulatorContainer");
 
-            if (this.sqlClientPopulatorContainer != null && !this.sqlClientPopulatorContainer.IsDisposed)
+            if (this.SqlClientPopulatorContainer != null && !this.SqlClientPopulatorContainer.IsDisposed)
             {
                 PopulatorFactory.Logger.Debug("Returning existing DI container");
-                return this.sqlClientPopulatorContainer.Container;
+                return this.SqlClientPopulatorContainer.Container;
             }
 
-            this.sqlClientPopulatorContainer = new DisposableContainer(PopulatorFactory.GetCommonContainer(callingAssembly, defaultSchema, deepCollectionSettingConverter));
+            this.SqlClientPopulatorContainer = new DisposableContainer(PopulatorFactory.GetCommonContainer(callingAssembly, defaultSchema, deepCollectionSettingConverter));
 
-            this.sqlClientPopulatorContainer.Container.Register(
+            this.SqlClientPopulatorContainer.Container.Register(
 
                 Component.For<IWritePrimitives>().ImplementedBy<SqlClientWritePrimitives>()
                     .DependsOn(new { connectionStringWithDefaultCatalogue, mustBeInATransaction, configuration = ConfigurationManager.AppSettings }),
@@ -194,18 +199,15 @@ namespace TestDataFramework.Factories
                             .Eq(PopulatorFactory.GetStandardTypeGenerator))
                     .Named(PopulatorFactory.StandardValueGenerator),
 
-                Component.For<SqlWriterCommandText>().ImplementedBy<SqlWriterCommandText>(),
-
-                Component.For<Func<TableTypeCache, IAttributeDecorator>>()
-                    .Instance(tableTypeCache => new StandardAttributeDecorator(x => tableTypeCache, callingAssembly, defaultSchema))
+                Component.For<SqlWriterCommandText>().ImplementedBy<SqlWriterCommandText>()
 
                 );
 
-            PopulatorFactory.InstanceBugWorkAround<ITypeGenerator>(this.sqlClientPopulatorContainer.Container,
+            PopulatorFactory.InstanceBugWorkAround<ITypeGenerator>(this.SqlClientPopulatorContainer.Container,
                 PopulatorFactory.StandardTypeGenerator, PopulatorFactory.GetStandardTypeGenerator);
 
             PopulatorFactory.Logger.Debug("Exiting GetSqlClientPopulatorContainer");
-            return this.sqlClientPopulatorContainer.Container;
+            return this.SqlClientPopulatorContainer.Container;
         }
 
         private IWindsorContainer GetMemoryPopulatorContainer(Assembly callingAssembly, bool throwIfUnhandledPrimaryKeyType, string defaultSchema, 
@@ -213,15 +215,15 @@ namespace TestDataFramework.Factories
         {
             PopulatorFactory.Logger.Debug("Entering GetMemoryPopulatorContainer");
 
-            if (this.memoryPopulatorContainer != null && !this.memoryPopulatorContainer.IsDisposed)
+            if (this.MemoryPopulatorContainer != null && !this.MemoryPopulatorContainer.IsDisposed)
             {
                 PopulatorFactory.Logger.Debug("Returning existing DI container");
-                return this.memoryPopulatorContainer.Container;
+                return this.MemoryPopulatorContainer.Container;
             }
 
-            this.memoryPopulatorContainer = new DisposableContainer(PopulatorFactory.GetCommonContainer(callingAssembly, defaultSchema, deepCollectionSettingConverter));
+            this.MemoryPopulatorContainer = new DisposableContainer(PopulatorFactory.GetCommonContainer(callingAssembly, defaultSchema, deepCollectionSettingConverter));
 
-            this.memoryPopulatorContainer.Container.Register(
+            this.MemoryPopulatorContainer.Container.Register(
 
                 Component.For<IPropertyDataGenerator<LargeInteger>>().ImplementedBy<DefaultInitialCountGenerator>(),
 
@@ -243,19 +245,16 @@ namespace TestDataFramework.Factories
                     .DependsOn(
                         ServiceOverride.ForKey<Func<ITypeGenerator>>()
                             .Eq(PopulatorFactory.GetStandardTypeGenerator))
-                    .Named(PopulatorFactory.StandardValueGenerator),
-
-                Component.For<Func<TableTypeCache, IAttributeDecorator>>()
-                    .Instance(tableTypeCache => new StandardAttributeDecorator(x => tableTypeCache, callingAssembly, null))
+                    .Named(PopulatorFactory.StandardValueGenerator)
 
                 );
 
-            PopulatorFactory.InstanceBugWorkAround<ITypeGenerator>(this.memoryPopulatorContainer.Container,
+            PopulatorFactory.InstanceBugWorkAround<ITypeGenerator>(this.MemoryPopulatorContainer.Container,
                 PopulatorFactory.StandardTypeGenerator, PopulatorFactory.GetStandardTypeGenerator);
 
             PopulatorFactory.Logger.Debug("Exiting GetMemoryPopulatorContainer");
 
-            return this.memoryPopulatorContainer.Container;
+            return this.MemoryPopulatorContainer.Container;
         }
 
         private static IWindsorContainer GetCommonContainer(Assembly callingAssembly, string defaultSchema, DeepCollectionSettingConverter deepCollectionSettingConverter)
@@ -274,13 +273,6 @@ namespace TestDataFramework.Factories
             commonContainer.Register(
 
                 #region Common Region
-
-                #region Delegates
-
-                Component.For<Func<ITableTypeCacheService, TableTypeCache>>()
-                    .Instance(attributeDecorator => new TableTypeCache(x => attributeDecorator)),
-
-                #endregion Delegates
 
                 Component.For<DeepCollectionSettingConverter>().Instance(deepCollectionSettingConverter),
 
@@ -326,14 +318,16 @@ namespace TestDataFramework.Factories
 
                 Component.For<IRandomSymbolStringGenerator>().ImplementedBy<RandomSymbolStringGenerator>(),
 
-                Component.For<TableTypeCache>().ImplementedBy<TableTypeCache>(),
-
                 Component.For<ValueGuaranteePopulator>().ImplementedBy<ValueGuaranteePopulator>(),
 
                 Component.For<IObjectGraphService>().ImplementedBy<ObjectGraphService>(),
 
-                #endregion Common Region
+                Component.For<ITableTypeCacheService>().ImplementedBy<StandardTableTypeCacheService>(),
 
+                Component.For<TableTypeLookup>().ImplementedBy<TableTypeLookup>(),
+
+                #endregion Common Region
+            
                 #region Handled Type Generator
 
                 Component.For<IHandledTypeGenerator>()
@@ -371,7 +365,9 @@ namespace TestDataFramework.Factories
                 Component.For<UniqueValueTypeGenerator.GetAccumulatorValueGenerator>()
                     .Instance(
                         typeGenerator =>
-                            commonContainer.Resolve<IValueGenerator>(PopulatorFactory.AccumulatorValueGenerator))
+                            commonContainer.Resolve<IValueGenerator>(PopulatorFactory.AccumulatorValueGenerator)),
+
+                Component.For<IAttributeDecoratorBase>().ImplementedBy<StandardAttributeDecoratorBase>()
 
                 #endregion Handled Type Generator
 
@@ -396,7 +392,7 @@ namespace TestDataFramework.Factories
             return commonContainer;
         }
 
-        private class DisposableContainer : IDisposable
+        internal class DisposableContainer : IDisposable
         {
             public IWindsorContainer Container { get; }
 
@@ -416,8 +412,8 @@ namespace TestDataFramework.Factories
 
         public void Dispose()
         {
-            this.sqlClientPopulatorContainer?.Dispose();
-            this.memoryPopulatorContainer?.Dispose();
+            this.SqlClientPopulatorContainer?.Dispose();
+            this.MemoryPopulatorContainer?.Dispose();
         }
     }
 }

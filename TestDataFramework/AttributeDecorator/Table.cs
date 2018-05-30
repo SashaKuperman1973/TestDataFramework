@@ -18,6 +18,7 @@
 */
 
 using System;
+using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService;
 using TestDataFramework.Helpers;
 
 namespace TestDataFramework.AttributeDecorator
@@ -33,6 +34,11 @@ namespace TestDataFramework.AttributeDecorator
             this.CatalogueName = tableAttribute?.CatalogueName;
             this.TableName = foreignKeyAttribute.PrimaryTableName;
             this.Schema = foreignKeyAttribute.Schema;
+        }
+
+        // Constructs a value to add to dictionary when type has no TableAttribute.
+        public Table(TestDataTypeInfo type, string defaultSchema) : this(type.TypeInfo, defaultSchema)
+        {            
         }
 
         // Constructs a value to add to dictionary when type has no TableAttribute.

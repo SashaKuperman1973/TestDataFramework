@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.AttributeDecorator;
+using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.Exceptions;
 using TestDataFramework.ListOperations;

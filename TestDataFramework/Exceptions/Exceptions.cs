@@ -21,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using TestDataFramework.AttributeDecorator;
+using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService;
 using TestDataFramework.Helpers;
 
 namespace TestDataFramework.Exceptions
@@ -138,7 +139,7 @@ namespace TestDataFramework.Exceptions
 
     public class TableTypeCacheException : ApplicationException
     {
-        public TableTypeCacheException(string duplicateTableNameMessage, IEnumerable<Type> typesInvolved)
+        public TableTypeCacheException(string duplicateTableNameMessage, IEnumerable<TestDataTypeInfo> typesInvolved)
             : base(string.Format(duplicateTableNameMessage, string.Join(", ", typesInvolved)))
         {
         }
@@ -148,8 +149,8 @@ namespace TestDataFramework.Exceptions
         {
         }
 
-        public TableTypeCacheException(string ambigousTableSearchConditionsMessage, Table table, Type ambigousType1,
-            Type ambigousType2)
+        public TableTypeCacheException(string ambigousTableSearchConditionsMessage, Table table, TestDataTypeInfo ambigousType1,
+            TestDataTypeInfo ambigousType2)
             : base(string.Format(ambigousTableSearchConditionsMessage, table, ambigousType1, ambigousType2))
         {
         }

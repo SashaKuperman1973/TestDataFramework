@@ -23,19 +23,21 @@ using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework;
 using TestDataFramework.AttributeDecorator;
+using TestDataFramework.AttributeDecorator.Concrete;
 using TestDataFramework.Exceptions;
+using TestDataFramework.Helpers;
 
 namespace Tests.Tests.ImmediateTests
 {
     [TestClass]
-    public class TableTypeCacheTests
+    public class StandardTableTypeCacheTests
     {
-        private TableTypeCache tableTypeCache;
+        private StandardTableTypeCache tableTypeCache;
 
         [TestInitialize]
         public void Initialize()
         {
-            this.tableTypeCache = new TableTypeCache(tableTypeCache => new StandardAttributeDecorator(x => tableTypeCache, null));
+            this.tableTypeCache = new StandardTableTypeCache(null);
         }
 
         #region IsAssemblyCachePopulated tests
@@ -61,7 +63,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Act
 
-            bool result = this.tableTypeCache.IsAssemblyCachePopulated(this.GetType().Assembly);
+            bool result = this.tableTypeCache.IsAssemblyCachePopulated(foreignType.Assembly);
 
             // Assert
 
@@ -165,12 +167,16 @@ namespace Tests.Tests.ImmediateTests
 
             // Act
 
-            Helpers.ExceptionTest(() => this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType, this.GetType().Assembly, CustomAttributeExtensions.GetCustomAttribute<TableAttribute>),
-                typeof (TableTypeCacheException), string.Format(Messages.DuplicateTableName, 
-                string.Join(", ", new object[] {
-                    typeof (TestModels.DecoratedCollision.B.DecoratedCollisionClass),
-                    typeof (TestModels.DecoratedCollision.A.DecoratedCollisionClass)}
-                )));
+            Helpers.ExceptionTest(
+                () => this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType, this.GetType().Assembly,
+                    CustomAttributeExtensions.GetCustomAttribute<TableAttribute>),
+                typeof(TableTypeCacheException), string.Format(Messages.DuplicateTableName,
+                    string.Join(", ", new object[]
+                        {
+                            typeof(TestModels.DecoratedCollision.B.DecoratedCollisionClass),
+                            typeof(TestModels.DecoratedCollision.A.DecoratedCollisionClass)
+                        }
+                    )));
         }
 
         [TestMethod]

@@ -17,43 +17,39 @@
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using log4net;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using log4net;
-using TestDataFramework.Logger;
+using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
 using TestDataFramework.Helpers.FieldExpressionValidator.Concrete;
+using TestDataFramework.Logger;
 using TestDataFramework.RepositoryOperations.Model;
 
-namespace TestDataFramework.AttributeDecorator
+namespace TestDataFramework.AttributeDecorator.Concrete
 {
-    public class StandardAttributeDecorator : IAttributeDecorator, ITableTypeCacheService
+    public class StandardAttributeDecorator : StandardAttributeDecoratorBase, IAttributeDecorator
     {
         private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(StandardAttributeDecorator));
 
-        private readonly ConcurrentDictionary<MemberInfo, List<Attribute>> memberAttributeDicitonary =
-            new ConcurrentDictionary<MemberInfo, List<Attribute>>();
-
         private readonly AddAttributeFieldExpressionValidator fieldExpressionValidator = new AddAttributeFieldExpressionValidator();
 
-        private readonly TableTypeCache tableTypeCache;
-        private readonly string defaultSchema;
+        private readonly StandardTableTypeCache tableTypeCache;
         private readonly Assembly callingAssembly;
         
-        public StandardAttributeDecorator(Func<ITableTypeCacheService, TableTypeCache> createTableTypeCache,
-            Assembly callingAssembly) : this(createTableTypeCache, callingAssembly, null)
+        public StandardAttributeDecorator(StandardTableTypeCache tableTypeCache,
+            Assembly callingAssembly) : this(tableTypeCache, callingAssembly, null)
         {
         }
 
-        public StandardAttributeDecorator(Func<ITableTypeCacheService, TableTypeCache> createTableTypeCache,
+        public StandardAttributeDecorator(StandardTableTypeCache tableTypeCache,
             Assembly callingAssembly, string defaultSchema)
         {
-            this.tableTypeCache = createTableTypeCache(this);
+            this.tableTypeCache = tableTypeCache;
             this.defaultSchema = defaultSchema;
             this.callingAssembly = callingAssembly;
         }
@@ -64,7 +60,7 @@ namespace TestDataFramework.AttributeDecorator
 
             MemberInfo memberInfo = this.fieldExpressionValidator.ValidateMemberAccessExpression(fieldExpression).Member;
 
-            this.memberAttributeDicitonary.AddOrUpdate(memberInfo, new List<Attribute> { attribute },
+            this.MemberAttributeDicitonary.AddOrUpdate(memberInfo, new List<Attribute> { attribute },
                 (mi, list) =>
                 {
                     list.Add(attribute);
@@ -78,36 +74,11 @@ namespace TestDataFramework.AttributeDecorator
         {
             StandardAttributeDecorator.Logger.Debug($"Entering DecorateType. Type: {type}. Attribute: {attribute}");
 
-            this.memberAttributeDicitonary.AddOrUpdate(type, new List<Attribute> {attribute}, (t, list) =>
+            this.MemberAttributeDicitonary.AddOrUpdate(type, new List<Attribute> {attribute}, (t, list) =>
             {
                 list.Add(attribute);
                 return list;
             });
-        }
-
-        public virtual T GetSingleAttribute<T>(MemberInfo memberInfo) where T : Attribute
-        {
-            StandardAttributeDecorator.Logger.Debug(
-                $"Entering GetSingleAttribute. T: {typeof(T)} memberInfo: {memberInfo.GetExtendedMemberInfoString()}");
-
-            T[] result = this.GetCustomAttributes<T>(memberInfo).ToArray();
-
-            if (result.Length <= 1)
-            {
-                T firstOrDefaultResult = result.FirstOrDefault();
-
-                StandardAttributeDecorator.Logger.Debug($"Member attributes count <= 1. firstOrDefaultResult: {firstOrDefaultResult}");
-                return firstOrDefaultResult;
-            }
-
-            string message =
-                memberInfo.MemberType == MemberTypes.Property
-                    ? Messages.AmbigousPropertyAttributeMatch
-                    : memberInfo.MemberType == MemberTypes.TypeInfo || memberInfo.MemberType == MemberTypes.NestedType
-                        ? Messages.AmbigousTypeAttributeMatch
-                        : Messages.AmbigousAttributeMatch;
-
-            throw new AmbiguousMatchException(string.Format(message, typeof(T), memberInfo.Name, memberInfo.DeclaringType));
         }
 
         public virtual IEnumerable<T> GetUniqueAttributes<T>(Type type) where T : Attribute
@@ -162,72 +133,6 @@ namespace TestDataFramework.AttributeDecorator
                             });
 
             StandardAttributeDecorator.Logger.Debug($"Exiting GetPropertyAttributes. result: {result}");
-            return result;
-        }
-
-        public virtual IEnumerable<T> GetCustomAttributes<T>(MemberInfo memberInfo) where T : Attribute
-        {
-            StandardAttributeDecorator.Logger.Debug(
-                $"Entering GetCustomAttributes<T>. T: {typeof (T)}. memberInfo: {memberInfo}");
-
-            List<Attribute> programmaticAttributeList;
-
-            List<Attribute> attributeResult = this.memberAttributeDicitonary.TryGetValue(memberInfo, out programmaticAttributeList)
-
-                ? programmaticAttributeList.Where(a => a.GetType() == typeof(T)).ToList()
-
-                : new List<Attribute>();
-
-            attributeResult.AddRange(memberInfo.GetCustomAttributes<T>());
-
-            List<T> result = this.InsertDefaultSchema(attributeResult).Cast<T>().ToList();
-
-            StandardAttributeDecorator.Logger.Debug("Exiting GetCustomAttributes<T>");
-            return result;
-        }
-
-        public virtual IEnumerable<Attribute> GetCustomAttributes(MemberInfo memberInfo)
-        {
-            StandardAttributeDecorator.Logger.Debug(
-                $"Entering GetCustomAttributes. MemberInfo: {memberInfo}");
-
-            List<Attribute> result;
-
-            if (!this.memberAttributeDicitonary.TryGetValue(memberInfo, out result))
-            {
-                result = new List<Attribute>();
-            }
-
-            result.AddRange(memberInfo.GetCustomAttributes());
-
-            result = this.InsertDefaultSchema(result);
-
-            StandardAttributeDecorator.Logger.Debug("Exiting GetCustomAttributes.");
-            return result;
-        }
-
-        private List<Attribute> InsertDefaultSchema(IEnumerable<Attribute> attributes)
-        {
-            StandardAttributeDecorator.Logger.Debug("Entering InsertDefaultSchema");
-
-            attributes = attributes.ToList();
-
-            StandardAttributeDecorator.Logger.Debug(
-                $"Attributes: {string.Join(",", attributes)}");
-
-            List <Attribute> result = attributes.Select(a =>
-            {
-                var canHaveDefaultSchema = a as ICanHaveDefaultSchema;
-
-                Attribute resultAttribute = canHaveDefaultSchema?.IsDefaultSchema ?? false
-                    ? canHaveDefaultSchema.GetAttributeUsingDefaultSchema(this.defaultSchema)
-                    : a;
-
-                return resultAttribute;
-
-            }).ToList();
-
-            StandardAttributeDecorator.Logger.Debug("Exiting InsertDefaultSchema");
             return result;
         }
 

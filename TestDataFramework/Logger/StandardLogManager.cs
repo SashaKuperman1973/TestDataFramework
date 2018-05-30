@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.Configuration;
 using log4net;
 
@@ -8,11 +9,12 @@ namespace TestDataFramework.Logger
     {
         private static readonly Lazy<NullLogger> LazyNullLogger = new Lazy<NullLogger>(() => new NullLogger());
 
-        public static ILog GetLogger(Type type)
+        public static ILog GetLogger(Type type, NameValueCollection appSettings = null)
         {
             bool enableLogger;
 
-            if (bool.TryParse(ConfigurationManager.AppSettings["TestDataFramework-EnableLogger"], out enableLogger) &&
+            if (bool.TryParse((appSettings ?? ConfigurationManager.AppSettings)["TestDataFramework-EnableLogger"],
+                    out enableLogger) &&
                 enableLogger)
             {
                 return LogManager.GetLogger(type);

@@ -62,11 +62,21 @@
   <ItemGroup>
     <Compile Include="ArrayRandomizer\IArrayRandomizer.cs" />
     <Compile Include="ArrayRandomizer\StandardArrayRandomizer.cs" />
-    <Compile Include="AttributeDecorator\ITableTypeCacheService.cs" />
-    <Compile Include="AttributeDecorator\StandardAttributeDecorator.cs" />
-    <Compile Include="AttributeDecorator\IAttributeDecorator.cs" />
+    <Compile Include="AttributeDecorator\AssemblyLookupContext.cs" />
+    <Compile Include="AttributeDecorator\Interfaces\IAttributeDecoratorBase.cs" />
+    <Compile Include="AttributeDecorator\Concrete\StandardAttributeDecoratorBase.cs" />
+    <Compile Include="AttributeDecorator\Concrete\TableTypeCacheService\TableTypeCriteria.cs" />
+    <Compile Include="AttributeDecorator\Concrete\TableTypeCacheService\TableTypeLookup.cs" />
+    <Compile Include="AttributeDecorator\Concrete\TableTypeCacheService\TestDataAssembly.cs" />
+    <Compile Include="AttributeDecorator\Concrete\TableTypeCacheService\TestDataTypeInfo.cs" />
+    <Compile Include="AttributeDecorator\Interfaces\ITableTypeCacheService.cs" />
+    <Compile Include="AttributeDecorator\Concrete\StandardAttributeDecorator.cs" />
+    <Compile Include="AttributeDecorator\Interfaces\IAttributeDecorator.cs" />
+    <Compile Include="AttributeDecorator\Concrete\TableTypeCacheService\StandardTableTypeCacheService.cs" />
+    <Compile Include="AttributeDecorator\Concrete\TableTypeCacheService\TestDataAppDomain.cs" />
     <Compile Include="AttributeDecorator\Table.cs" />
-    <Compile Include="AttributeDecorator\TableTypeCache.cs" />
+    <Compile Include="AttributeDecorator\Concrete\StandardTableTypeCache.cs" />
+    <Compile Include="AttributeDecorator\TypeDictionaryEqualityComparer.cs" />
     <Compile Include="Attributes.cs" />
     <Compile Include="DeepSetting\Concrete\ObjectGraphService.cs" />
     <Compile Include="DeepSetting\ExplicitPropertySetters.cs" />

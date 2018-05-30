@@ -26,6 +26,7 @@ using log4net;
 using TestDataFramework.Logger;
 using TestDataFramework.ArrayRandomizer;
 using TestDataFramework.AttributeDecorator;
+using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeepSetting;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;

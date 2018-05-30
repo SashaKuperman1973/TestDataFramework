@@ -24,6 +24,7 @@ using System.Web.UI.WebControls;
 using log4net;
 using TestDataFramework.Logger;
 using TestDataFramework.AttributeDecorator;
+using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.HandledTypeGenerator;
 using TestDataFramework.ListOperations;

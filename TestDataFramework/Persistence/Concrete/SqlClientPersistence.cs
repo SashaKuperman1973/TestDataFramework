@@ -22,6 +22,7 @@ using System.Linq;
 using log4net;
 using TestDataFramework.Logger;
 using TestDataFramework.AttributeDecorator;
+using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Helpers;
 using TestDataFramework.Persistence.Interfaces;

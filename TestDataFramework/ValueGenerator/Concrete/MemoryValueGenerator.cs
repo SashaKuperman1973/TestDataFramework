@@ -23,6 +23,7 @@ using log4net;
 using TestDataFramework.Logger;
 using TestDataFramework.ArrayRandomizer;
 using TestDataFramework.AttributeDecorator;
+using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.TypeGenerator.Interfaces;
 using TestDataFramework.UniqueValueGenerator.Interfaces;
 using TestDataFramework.ValueProvider.Interfaces;

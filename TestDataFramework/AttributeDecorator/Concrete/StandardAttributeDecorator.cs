@@ -47,10 +47,9 @@ namespace TestDataFramework.AttributeDecorator.Concrete
         }
 
         public StandardAttributeDecorator(StandardTableTypeCache tableTypeCache,
-            Assembly callingAssembly, string defaultSchema)
+            Assembly callingAssembly, string defaultSchema) : base(defaultSchema)
         {
             this.tableTypeCache = tableTypeCache;
-            this.defaultSchema = defaultSchema;
             this.callingAssembly = callingAssembly;
         }
 
@@ -162,7 +161,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete
             if (!this.tableTypeCache.IsAssemblyCachePopulated(this.callingAssembly))
             {
                 StandardAttributeDecorator.Logger.Debug("Populating table-type cache with calling assembly");
-                this.tableTypeCache.PopulateAssemblyCache(this.callingAssembly, this.GetSingleAttribute<TableAttribute>, this.defaultSchema);
+                this.tableTypeCache.PopulateAssemblyCache(this.callingAssembly, this.GetSingleAttribute<TableAttribute>, this.DefaultSchema);
             }
 
             Type cachedType = this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType, this.callingAssembly,
@@ -184,7 +183,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete
             StandardAttributeDecorator.Logger.Debug("Populating table-type cache with foreign type's assembly.");
 
             this.tableTypeCache.PopulateAssemblyCache(foreignType.Assembly, this.GetSingleAttribute<TableAttribute>,
-                this.defaultSchema);
+                this.DefaultSchema);
 
             cachedType = this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType, foreignType.Assembly,
                 this.GetSingleAttribute<TableAttribute>, canScanAllCachedAssemblies: false);

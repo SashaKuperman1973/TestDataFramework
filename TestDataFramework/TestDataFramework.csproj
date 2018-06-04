@@ -63,6 +63,7 @@
     <Compile Include="ArrayRandomizer\IArrayRandomizer.cs" />
     <Compile Include="ArrayRandomizer\StandardArrayRandomizer.cs" />
     <Compile Include="AttributeDecorator\AssemblyLookupContext.cs" />
+    <Compile Include="AttributeDecorator\Concrete\TableTypeCacheService\Delegates.cs" />
     <Compile Include="AttributeDecorator\Interfaces\IAttributeDecoratorBase.cs" />
     <Compile Include="AttributeDecorator\Concrete\StandardAttributeDecoratorBase.cs" />
     <Compile Include="AttributeDecorator\Concrete\TableTypeCacheService\TableTypeCriteria.cs" />

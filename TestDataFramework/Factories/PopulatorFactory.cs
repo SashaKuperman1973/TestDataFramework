@@ -327,7 +327,7 @@ namespace TestDataFramework.Factories
                 Component.For<TableTypeLookup>().ImplementedBy<TableTypeLookup>(),
 
                 #endregion Common Region
-            
+
                 #region Handled Type Generator
 
                 Component.For<IHandledTypeGenerator>()
@@ -367,11 +367,13 @@ namespace TestDataFramework.Factories
                         typeGenerator =>
                             commonContainer.Resolve<IValueGenerator>(PopulatorFactory.AccumulatorValueGenerator)),
 
-                Component.For<IAttributeDecoratorBase>().ImplementedBy<StandardAttributeDecoratorBase>(),
+                Component.For<StandardTableTypeCache>().ImplementedBy<StandardTableTypeCache>(),
 
-                Component.For<StandardTableTypeCache>().ImplementedBy<StandardTableTypeCache>()
+                Component.For<IAttributeDecoratorBase>().ImplementedBy<StandardAttributeDecoratorBase>()
+                    .DependsOn(Dependency.OnValue("defaultSchema", defaultSchema))
 
-            #endregion Handled Type Generator
+                #endregion Handled Type Generator
+
             );
 
             if (defaultSchema != null)

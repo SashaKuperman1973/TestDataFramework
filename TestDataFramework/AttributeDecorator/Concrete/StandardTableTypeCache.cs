@@ -77,7 +77,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete
             return result;
         }
 
-        public virtual void PopulateAssemblyCache(Assembly assembly, Func<TestDataTypeInfo, TableAttribute> getTableAttibute, string defaultSchema)
+        public virtual void PopulateAssemblyCache(Assembly assembly, GetTableAttribute getTableAttibute, string defaultSchema)
         {
             StandardTableTypeCache.Logger.Debug("Entering PopulateAssemblyCache");
 
@@ -106,41 +106,8 @@ namespace TestDataFramework.AttributeDecorator.Concrete
 
             assemblyNameList.ForEach(assemblyName =>
             {
-                TestDataAssembly loadedAssembly;
-
-                try
-                {
-                    loadedAssembly = domain.Load(assemblyName);
-                }
-                catch (System.IO.FileNotFoundException exception)
-                {
-                    StandardTableTypeCache.Logger.Warn($"TestDataFramework - PopulateAssemblyCache: {exception.Message}");
-                    return;
-                }
-
-                List<TestDataTypeInfo> loadedAssemblyTypes;
-
-                try
-                {
-                    loadedAssemblyTypes = loadedAssembly.DefinedTypes.ToList();
-                }
-                catch (ReflectionTypeLoadException exception)
-                {
-                    StandardTableTypeCache.Logger.Warn($"TestDataFramework - PopulateAssemblyCache: {exception.Message}");
-                    return;
-                }
-
-                loadedAssemblyTypes.ForEach(definedType =>
-                {
-
-                    TableAttribute tableAttribute = getTableAttibute(definedType);
-
-                    Table table = tableAttribute != null
-                        ? new Table(tableAttribute)
-                        : new Table(definedType, defaultSchema);
-
-                    this.TryAdd(table, definedType, assemblyLookupContext);
-                });
+                this.tableTypeCacheService.PopulateAssemblyCache(domain, assemblyName, getTableAttibute, defaultSchema,
+                    this.tableTypeCacheService.TryAssociateTypeToTable, assemblyLookupContext);
             });
 
             this.tableTypeCacheService.UnloadDomain(domain);
@@ -164,58 +131,6 @@ namespace TestDataFramework.AttributeDecorator.Concrete
 
             StandardTableTypeCache.Logger.Debug("Exiting GetCachedTableTypeUsingAllAssemblies");
             return null;
-        }
-
-        private void TryAdd(Table table, TestDataTypeInfo definedType, AssemblyLookupContext assemblyLookupContext)
-        {
-            StandardTableTypeCache.Logger.Debug("Entering TryAdd");
-
-            // Note: If HasCatlogueName then HasTableAttribute
-
-            TypeDictionaryEqualityComparer.EqualsCriteriaDelegate equalsCriteria =
-                (fromSet, input) =>
-
-                    fromSet.HasCatalogueName && fromSet.CatalogueName.Equals(input.CatalogueName) ||
-                    fromSet.HasTableAttribute && input.HasTableAttribute && !fromSet.HasCatalogueName &&
-                    !input.HasCatalogueName ||
-                    !fromSet.HasTableAttribute && !input.HasTableAttribute;
-
-            assemblyLookupContext.TypeDictionaryEqualityComparer.SetEqualsCriteria(equalsCriteria);
-
-            bool tryAddResult = assemblyLookupContext.TypeDictionary.TryAdd(table, definedType);
-
-            if (tryAddResult)
-            {
-                StandardTableTypeCache.Logger.Debug("Exiting TryAdd");
-                return;
-            }
-
-            StandardTableTypeCache.Logger.Debug($"Table class collision detected. Table object: {table}");
-
-            assemblyLookupContext.CollisionDictionary.AddOrUpdate(table, new List<TestDataTypeInfo>
-            {
-                // first item of collision to add to list
-
-                assemblyLookupContext.TypeDictionary.GetOrAdd(table,
-                    t =>
-                    {
-                        throw new TableTypeCacheException(Messages.ErrorGettingDefinedType, table);
-                    }),
-
-                // second item of collision to add to list
-
-                definedType
-            },
-
-                // collision key already exists. update collision list with newly attempted type.
-                        
-                (tbl, list) =>
-                {
-                    list.Add(definedType);
-                    return list;
-                });
-
-            StandardTableTypeCache.Logger.Debug("Exiting TryAdd");
         }
     }
 }

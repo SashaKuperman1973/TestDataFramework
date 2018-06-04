@@ -19,7 +19,12 @@ namespace TestDataFramework.AttributeDecorator.Concrete
         protected readonly ConcurrentDictionary<MemberInfo, List<Attribute>> MemberAttributeDicitonary =
             new ConcurrentDictionary<MemberInfo, List<Attribute>>();
 
-        protected string defaultSchema;
+        protected string DefaultSchema;
+
+        public StandardAttributeDecoratorBase(string defaultSchema)
+        {
+            this.DefaultSchema = defaultSchema;
+        }
 
         public virtual T GetSingleAttribute<T>(TestDataTypeInfo testDataTypeInfo) where T : Attribute
         {
@@ -106,7 +111,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete
                 var canHaveDefaultSchema = a as ICanHaveDefaultSchema;
 
                 Attribute resultAttribute = canHaveDefaultSchema?.IsDefaultSchema ?? false
-                    ? canHaveDefaultSchema.GetAttributeUsingDefaultSchema(this.defaultSchema)
+                    ? canHaveDefaultSchema.GetAttributeUsingDefaultSchema(this.DefaultSchema)
                     : a;
 
                 return resultAttribute;

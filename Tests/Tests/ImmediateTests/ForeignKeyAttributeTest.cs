@@ -70,7 +70,7 @@ namespace Tests.Tests.ImmediateTests
         [TestMethod]
         public void Constructor_NoPrimaryTableType_Exception()
         {
-            Helpers.ExceptionTest(() => { new ForeignKeyAttribute((Type) null, "xxx"); }, typeof (ArgumentNullException),
+            Helpers.ExceptionTest(() => { new ForeignKeyAttribute((Type) null, "xxx"); }, typeof(ArgumentNullException),
                 "Value cannot be null.\r\nParameter name: primaryTableType");
         }
 
@@ -125,9 +125,12 @@ namespace Tests.Tests.ImmediateTests
         {
             // Arrange. Act.
 
-            ICanHaveDefaultSchema foreignKeyAttributeWithPrimaryType = new ForeignKeyAttribute(typeof(string), "primaryKeyName123");
-            ICanHaveDefaultSchema foreignKeyAttributeWithTableName = new ForeignKeyAttribute("primaryTableName123", "primaryKeyName123");
-            ICanHaveDefaultSchema foreignKeyAttributeWithSchema = new ForeignKeyAttribute("schema123", "primaryTableName123", "primaryKeyName");
+            ICanHaveDefaultSchema foreignKeyAttributeWithPrimaryType =
+                new ForeignKeyAttribute(typeof(string), "primaryKeyName123");
+            ICanHaveDefaultSchema foreignKeyAttributeWithTableName =
+                new ForeignKeyAttribute("primaryTableName123", "primaryKeyName123");
+            ICanHaveDefaultSchema foreignKeyAttributeWithSchema =
+                new ForeignKeyAttribute("schema123", "primaryTableName123", "primaryKeyName");
 
             // Assert
 

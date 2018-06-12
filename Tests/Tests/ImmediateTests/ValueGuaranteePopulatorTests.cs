@@ -21,7 +21,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq.Language;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Factories;
 using TestDataFramework.ListOperations;
@@ -40,7 +39,8 @@ namespace Tests.Tests.ImmediateTests
 
             var values = new List<GuaranteedValues> {new GuaranteedValues()};
 
-            Helpers.ExceptionTest(() => valueGuaranteePopulator.Bind<object>(null, values), typeof(ValueGuaranteeException),
+            Helpers.ExceptionTest(() => valueGuaranteePopulator.Bind<object>(null, values),
+                typeof(ValueGuaranteeException),
                 Messages.NeitherPercentageNorTotalGiven);
         }
 
@@ -64,7 +64,7 @@ namespace Tests.Tests.ImmediateTests
                 new RecordReference<int>(null, null, null, null, null, null),
                 new RecordReference<int>(null, null, null, null, null, null),
                 new RecordReference<int>(null, null, null, null, null, null),
-                new RecordReference<int>(null, null, null, null, null, null),
+                new RecordReference<int>(null, null, null, null, null, null)
             };
 
             Helpers.ExceptionTest(() => valueGuaranteePopulator.Bind(operableList, values),
@@ -82,7 +82,7 @@ namespace Tests.Tests.ImmediateTests
                 new GuaranteedValues
                 {
                     TotalFrequency = 5,
-                    Values = new object[] {1, 2, (Func<string>)(() => "Hello"), 4}
+                    Values = new object[] {1, 2, (Func<string>) (() => "Hello"), 4}
                 }
             };
 
@@ -92,7 +92,7 @@ namespace Tests.Tests.ImmediateTests
                 new RecordReference<int>(null, null, null, null, null, null),
                 new RecordReference<int>(null, null, null, null, null, null),
                 new RecordReference<int>(null, null, null, null, null, null),
-                new RecordReference<int>(null, null, null, null, null, null),
+                new RecordReference<int>(null, null, null, null, null, null)
             };
 
             Helpers.ExceptionTest(() => valueGuaranteePopulator.Bind(operableList, values),
@@ -103,7 +103,7 @@ namespace Tests.Tests.ImmediateTests
         [TestMethod]
         public void TotalFrequency_LessThan_RequiredValues_LessThan_TotalListElements()
         {
-            var guaranteedValuesSet = new GuaranteedValues[]
+            var guaranteedValuesSet = new[]
             {
                 new GuaranteedValues
                 {
@@ -121,7 +121,7 @@ namespace Tests.Tests.ImmediateTests
         [TestMethod]
         public void BoundaryCondition_TotalFrequency_EqualTo_RequiredValues_LessThan_TotalListElements()
         {
-            var guaranteedValuesSet = new GuaranteedValues[]
+            var guaranteedValuesSet = new[]
             {
                 new GuaranteedValues
                 {
@@ -139,7 +139,7 @@ namespace Tests.Tests.ImmediateTests
         [TestMethod]
         public void ValueGuaranteeException_TooFewReferences()
         {
-            var guaranteedValuesSet = new GuaranteedValues[]
+            var guaranteedValuesSet = new[]
             {
                 new GuaranteedValues
                 {
@@ -182,7 +182,7 @@ namespace Tests.Tests.ImmediateTests
             List<int?> subjectValues = operableList.Where(reference => reference.RecordObject != default(int))
                 .Select(reference => (int?) reference.RecordObject).ToList();
 
-            int found = 0;
+            var found = 0;
             int index;
             values.ForEach(value =>
             {

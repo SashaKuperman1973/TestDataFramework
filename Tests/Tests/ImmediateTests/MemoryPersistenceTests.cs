@@ -21,7 +21,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using TestDataFramework.AttributeDecorator;
 using TestDataFramework.AttributeDecorator.Concrete;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.AttributeDecorator.Interfaces;
@@ -54,13 +53,13 @@ namespace Tests.Tests.ImmediateTests
 
             var persistence = new MemoryPersistence(deferredValueGeneratorMock.Object, this.attributeDecorator);
 
-            var primaryTable = new PrimaryTable { Integer = 5, Text = "Text" };
+            var primaryTable = new PrimaryTable {Integer = 5, Text = "Text"};
 
             var primaryRecordReference = new RecordReference<PrimaryTable>(
                 Helpers.GetTypeGeneratorMock(primaryTable).Object,
                 this.attributeDecorator, null, null, null, null);
 
-            var recordReferenceArray = new RecordReference[] { primaryRecordReference };
+            var recordReferenceArray = new RecordReference[] {primaryRecordReference};
 
             // Act
 
@@ -78,11 +77,11 @@ namespace Tests.Tests.ImmediateTests
         {
             // Arrange
 
-            var primaryTable = new ManualKeyPrimaryTable { Key1 = "ABCD", Key2 = 5 };
+            var primaryTable = new ManualKeyPrimaryTable {Key1 = "ABCD", Key2 = 5};
             var primaryReference =
                 new RecordReference<ManualKeyPrimaryTable>(Helpers.GetTypeGeneratorMock(primaryTable).Object,
                     this.attributeDecorator, null, null, null, null);
-                
+
             var foreignTable = new ManualKeyForeignTable();
             var foreignReference =
                 new RecordReference<ManualKeyForeignTable>(Helpers.GetTypeGeneratorMock(foreignTable).Object,
@@ -97,7 +96,7 @@ namespace Tests.Tests.ImmediateTests
 
             primaryReference.Populate();
             foreignReference.Populate();
-            persistence.Persist(new RecordReference[] { primaryReference, foreignReference});
+            persistence.Persist(new RecordReference[] {primaryReference, foreignReference});
 
             // Assert
 

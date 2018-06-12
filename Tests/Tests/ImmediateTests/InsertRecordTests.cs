@@ -24,13 +24,11 @@ using System.Reflection;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using TestDataFramework.AttributeDecorator;
 using TestDataFramework.AttributeDecorator.Concrete;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.Helpers;
 using TestDataFramework.Populator;
-using TestDataFramework.Populator.Concrete;
 using TestDataFramework.RepositoryOperations;
 using TestDataFramework.RepositoryOperations.Model;
 using TestDataFramework.RepositoryOperations.Operations.InsertRecord;
@@ -43,39 +41,17 @@ namespace Tests.Tests.ImmediateTests
     [TestClass]
     public class InsertRecordTests
     {
-        public class ConcreteRecordReference : RecordReference
-        {
-            public ConcreteRecordReference(ITypeGenerator typeGenerator, IAttributeDecorator attributeDecorator) : base(typeGenerator, attributeDecorator)
-            {
-            }
-
-            protected internal override void Populate()
-            {
-                throw new NotImplementedException();
-            }
-
-            internal override void AddToReferences(IList<RecordReference> collection)
-            {
-                throw new NotImplementedException();
-            }
-
-            protected internal override bool IsExplicitlySet(PropertyInfo propertyInfo)
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        private InsertRecord insertRecord;
-        private Mock<InsertRecordService> serviceMock;
-        private Mock<ConcreteRecordReference> recordReferenceMock;
-        private List<AbstractRepositoryOperation> peers;
-
-        private Mock<CircularReferenceBreaker> breakerMock;
-        private Mock<IWritePrimitives> writePrimitivesMock;
-
         private IAttributeDecorator attributeDecorator;
 
+        private Mock<CircularReferenceBreaker> breakerMock;
+
+        private InsertRecord insertRecord;
+        private List<AbstractRepositoryOperation> peers;
+        private Mock<ConcreteRecordReference> recordReferenceMock;
+        private Mock<InsertRecordService> serviceMock;
+
         private SubjectClass subject;
+        private Mock<IWritePrimitives> writePrimitivesMock;
 
         [TestInitialize]
         public void Initialize()
@@ -87,8 +63,10 @@ namespace Tests.Tests.ImmediateTests
             this.subject = new SubjectClass();
             this.recordReferenceMock = new Mock<ConcreteRecordReference>(null, this.attributeDecorator);
             this.peers = new List<AbstractRepositoryOperation>();
-            this.serviceMock = new Mock<InsertRecordService>(this.recordReferenceMock.Object, this.attributeDecorator, true);
-            this.insertRecord = new InsertRecord(this.serviceMock.Object, this.recordReferenceMock.Object, this.peers, this.attributeDecorator);
+            this.serviceMock =
+                new Mock<InsertRecordService>(this.recordReferenceMock.Object, this.attributeDecorator, true);
+            this.insertRecord = new InsertRecord(this.serviceMock.Object, this.recordReferenceMock.Object, this.peers,
+                this.attributeDecorator);
 
             this.breakerMock = new Mock<CircularReferenceBreaker>();
             this.writePrimitivesMock = new Mock<IWritePrimitives>();
@@ -107,8 +85,8 @@ namespace Tests.Tests.ImmediateTests
             var currentOrder = new Counter();
             var regularColumns = new List<Column>();
             var foreignKeyColumns = new List<ExtendedColumnSymbol>();
-            var columnList = regularColumns.Concat(Helpers.ColumnSymbolToColumn(foreignKeyColumns));
-            string tableName = typeof (SubjectClass).Name;
+            IEnumerable<Column> columnList = regularColumns.Concat(Helpers.ColumnSymbolToColumn(foreignKeyColumns));
+            var tableName = typeof(SubjectClass).Name;
 
             this.serviceMock.Setup(m => m.GetPrimaryKeyOperations(this.peers)).Returns(primaryKeyOperations);
             this.serviceMock.Setup(m => m.GetRegularColumns(this.writePrimitivesMock.Object)).Returns(regularColumns);
@@ -116,11 +94,14 @@ namespace Tests.Tests.ImmediateTests
 
             // Act
 
-            this.insertRecord.Write(this.breakerMock.Object, this.writePrimitivesMock.Object, currentOrder, orderedOperations);
+            this.insertRecord.Write(this.breakerMock.Object, this.writePrimitivesMock.Object, currentOrder,
+                orderedOperations);
 
             // Assert
 
-            this.breakerMock.Verify(m => m.Push<IWritePrimitives, Counter, AbstractRepositoryOperation[]>(this.insertRecord.Write), Times.Once);
+            this.breakerMock.Verify(
+                m => m.Push<IWritePrimitives, Counter, AbstractRepositoryOperation[]>(this.insertRecord.Write),
+                Times.Once);
             this.serviceMock.Verify(m => m.GetPrimaryKeyOperations(this.peers), Times.Once);
             this.serviceMock.Verify(
                 m =>
@@ -137,24 +118,32 @@ namespace Tests.Tests.ImmediateTests
                     m.WritePrimitives(this.writePrimitivesMock.Object, null, It.IsAny<string>(), tableName, columnList,
                         It.Is<List<ColumnSymbol>>(l => l.Count == 0)), Times.Once);
 
-            this.serviceMock.Verify(m => m.CopyPrimaryToForeignKeyColumns(It.Is<IEnumerable<Column>>(c => !c.Any())), Times.Once());
-        }        
+            this.serviceMock.Verify(m => m.CopyPrimaryToForeignKeyColumns(It.Is<IEnumerable<Column>>(c => !c.Any())),
+                Times.Once());
+        }
 
         [TestMethod]
         public void WriteIsVisited_Test()
         {
             // Arrange
 
-            this.breakerMock.Setup(m => m.IsVisited<IWritePrimitives, Counter, AbstractRepositoryOperation[]>(this.insertRecord.Write)).Returns(true);
+            this.breakerMock
+                .Setup(m => m.IsVisited<IWritePrimitives, Counter, AbstractRepositoryOperation[]>(this.insertRecord
+                    .Write)).Returns(true);
 
             // Act
 
-            this.insertRecord.Write(this.breakerMock.Object, this.writePrimitivesMock.Object, new Counter(), new AbstractRepositoryOperation[1]);
+            this.insertRecord.Write(this.breakerMock.Object, this.writePrimitivesMock.Object, new Counter(),
+                new AbstractRepositoryOperation[1]);
 
             // Assert
 
-            this.breakerMock.Verify(m => m.IsVisited<IWritePrimitives, Counter, AbstractRepositoryOperation[]>(this.insertRecord.Write), Times.Once);
-            this.breakerMock.Verify(m => m.Push<IWritePrimitives, Counter, AbstractRepositoryOperation[]>(this.insertRecord.Write), Times.Never);
+            this.breakerMock.Verify(
+                m => m.IsVisited<IWritePrimitives, Counter, AbstractRepositoryOperation[]>(this.insertRecord.Write),
+                Times.Once);
+            this.breakerMock.Verify(
+                m => m.Push<IWritePrimitives, Counter, AbstractRepositoryOperation[]>(this.insertRecord.Write),
+                Times.Never);
         }
 
         [TestMethod]
@@ -168,8 +157,9 @@ namespace Tests.Tests.ImmediateTests
             secondrecordReferenceMock.Setup(m => m.RecordObject).Returns(secondObject);
             secondrecordReferenceMock.Setup(m => m.RecordType).Returns(secondObject.GetType());
 
-            var secondInsertRecord = new InsertRecord(this.serviceMock.Object, secondrecordReferenceMock.Object, this.peers, this.attributeDecorator);
-            var primaryKeyOperations = new List<InsertRecord> { secondInsertRecord };
+            var secondInsertRecord = new InsertRecord(this.serviceMock.Object, secondrecordReferenceMock.Object,
+                this.peers, this.attributeDecorator);
+            var primaryKeyOperations = new List<InsertRecord> {secondInsertRecord};
 
             var regularColumns = new List<Column>();
             var foreignKeyColumns = new List<ExtendedColumnSymbol>();
@@ -179,28 +169,30 @@ namespace Tests.Tests.ImmediateTests
             this.serviceMock.Setup(m => m.GetForeignKeyColumns(primaryKeyOperations)).Returns(foreignKeyColumns);
 
             this.serviceMock.Setup(
-                m =>
-                    m.WritePrimaryKeyOperations(It.IsAny<IWritePrimitives>(), It.IsAny<IEnumerable<AbstractRepositoryOperation>>(),
-                        It.IsAny<CircularReferenceBreaker>(), It.IsAny<Counter>(),
-                        It.IsAny<AbstractRepositoryOperation[]>()))
+                    m =>
+                        m.WritePrimaryKeyOperations(It.IsAny<IWritePrimitives>(),
+                            It.IsAny<IEnumerable<AbstractRepositoryOperation>>(),
+                            It.IsAny<CircularReferenceBreaker>(), It.IsAny<Counter>(),
+                            It.IsAny<AbstractRepositoryOperation[]>()))
                 .Callback
                 <IWritePrimitives, IEnumerable<AbstractRepositoryOperation>, CircularReferenceBreaker, Counter,
                     AbstractRepositoryOperation[]>(
-                        (writer, secondPrimaryKeyOperations, breaker, secondCurrentOrder, secondOrderedOperations) =>
-                        {
-                            this.serviceMock.Setup(
-                                n =>
-                                    n.WritePrimaryKeyOperations(It.IsAny<IWritePrimitives>(),
-                                        It.IsAny<IEnumerable<InsertRecord>>(),
-                                        It.IsAny<CircularReferenceBreaker>(), It.IsAny<Counter>(),
-                                        It.IsAny<AbstractRepositoryOperation[]>()));
+                    (writer, secondPrimaryKeyOperations, breaker, secondCurrentOrder, secondOrderedOperations) =>
+                    {
+                        this.serviceMock.Setup(
+                            n =>
+                                n.WritePrimaryKeyOperations(It.IsAny<IWritePrimitives>(),
+                                    It.IsAny<IEnumerable<InsertRecord>>(),
+                                    It.IsAny<CircularReferenceBreaker>(), It.IsAny<Counter>(),
+                                    It.IsAny<AbstractRepositoryOperation[]>()));
 
-                            secondInsertRecord.Write(breaker, writer, secondCurrentOrder, secondOrderedOperations);
-                        });
+                        secondInsertRecord.Write(breaker, writer, secondCurrentOrder, secondOrderedOperations);
+                    });
 
             // Act
 
-            this.insertRecord.Write(this.breakerMock.Object, this.writePrimitivesMock.Object, new Counter(), orderedOpertations);
+            this.insertRecord.Write(this.breakerMock.Object, this.writePrimitivesMock.Object, new Counter(),
+                orderedOpertations);
 
             // Assert
 
@@ -217,11 +209,14 @@ namespace Tests.Tests.ImmediateTests
 
             // Act
 
-            this.insertRecord.Write(this.breakerMock.Object, this.writePrimitivesMock.Object, new Counter(), orderedOpertations);
+            this.insertRecord.Write(this.breakerMock.Object, this.writePrimitivesMock.Object, new Counter(),
+                orderedOpertations);
 
             // Assert
 
-            this.breakerMock.Verify(m => m.Push<IWritePrimitives, Counter, AbstractRepositoryOperation[]>(this.insertRecord.Write), Times.Once);
+            this.breakerMock.Verify(
+                m => m.Push<IWritePrimitives, Counter, AbstractRepositoryOperation[]>(this.insertRecord.Write),
+                Times.Once);
             Assert.AreEqual(this.insertRecord, orderedOpertations[0]);
         }
 
@@ -234,12 +229,16 @@ namespace Tests.Tests.ImmediateTests
 
             // Act
 
-            this.insertRecord.Write(this.breakerMock.Object, this.writePrimitivesMock.Object, new Counter(), orderedOpertations);
-            this.insertRecord.Write(this.breakerMock.Object, this.writePrimitivesMock.Object, new Counter(), orderedOpertations);
+            this.insertRecord.Write(this.breakerMock.Object, this.writePrimitivesMock.Object, new Counter(),
+                orderedOpertations);
+            this.insertRecord.Write(this.breakerMock.Object, this.writePrimitivesMock.Object, new Counter(),
+                orderedOpertations);
 
             // Assert
 
-            this.breakerMock.Verify(m => m.Push<IWritePrimitives, Counter, AbstractRepositoryOperation[]>(this.insertRecord.Write), Times.Once);
+            this.breakerMock.Verify(
+                m => m.Push<IWritePrimitives, Counter, AbstractRepositoryOperation[]>(this.insertRecord.Write),
+                Times.Once);
         }
 
         [TestMethod]
@@ -256,11 +255,12 @@ namespace Tests.Tests.ImmediateTests
 
             const int expected = 8;
 
-            var returnValue = new object[] { "Key", expected, "Guid", Guid.NewGuid() };
+            var returnValue = new object[] {"Key", expected, "Guid", Guid.NewGuid()};
 
             // Act
 
-            this.insertRecord.Write(this.breakerMock.Object, this.writePrimitivesMock.Object, new Counter(), new AbstractRepositoryOperation[1]);
+            this.insertRecord.Write(this.breakerMock.Object, this.writePrimitivesMock.Object, new Counter(),
+                new AbstractRepositoryOperation[1]);
             this.insertRecord.Read(streamReadPointer, returnValue);
 
             // Assert
@@ -281,11 +281,12 @@ namespace Tests.Tests.ImmediateTests
 
             var streamReadPointer = new Counter();
 
-            var returnValue = new object[] { "Key1", Guid.NewGuid(), "Key3", Guid.NewGuid(), "Key4", Guid.NewGuid() };
+            var returnValue = new object[] {"Key1", Guid.NewGuid(), "Key3", Guid.NewGuid(), "Key4", Guid.NewGuid()};
 
             // Act
 
-            this.insertRecord.Write(this.breakerMock.Object, this.writePrimitivesMock.Object, new Counter(), new AbstractRepositoryOperation[1]);
+            this.insertRecord.Write(this.breakerMock.Object, this.writePrimitivesMock.Object, new Counter(),
+                new AbstractRepositoryOperation[1]);
             this.insertRecord.Read(streamReadPointer, returnValue);
 
             // Assert
@@ -293,6 +294,29 @@ namespace Tests.Tests.ImmediateTests
             Assert.AreEqual(returnValue[1], record.Key1);
             Assert.AreEqual(returnValue[3], record.Key3);
             Assert.AreEqual(6, streamReadPointer.Value);
+        }
+
+        public class ConcreteRecordReference : RecordReference
+        {
+            public ConcreteRecordReference(ITypeGenerator typeGenerator, IAttributeDecorator attributeDecorator) : base(
+                typeGenerator, attributeDecorator)
+            {
+            }
+
+            protected internal override void Populate()
+            {
+                throw new NotImplementedException();
+            }
+
+            internal override void AddToReferences(IList<RecordReference> collection)
+            {
+                throw new NotImplementedException();
+            }
+
+            protected internal override bool IsExplicitlySet(PropertyInfo propertyInfo)
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }

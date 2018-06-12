@@ -3,7 +3,6 @@ using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework;
-using TestDataFramework.AttributeDecorator;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.ValueGenerator.Concrete;
 using TestDataFramework.ValueProvider.Interfaces;
@@ -14,10 +13,10 @@ namespace Tests.Tests.ImmediateTests
     [TestClass]
     public class SqlClientValueGeneratorTests
     {
+        private Mock<IAttributeDecorator> attributeDecoratorMock;
         private SqlClientValueGenerator sqlClientValueGenerator;
 
         private Mock<IValueProvider> valueProviderMock;
-        private Mock<IAttributeDecorator> attributeDecoratorMock;
 
         [TestInitialize]
         public void Initialize()
@@ -25,7 +24,8 @@ namespace Tests.Tests.ImmediateTests
             this.valueProviderMock = new Mock<IValueProvider>();
             this.attributeDecoratorMock = new Mock<IAttributeDecorator>();
 
-            this.sqlClientValueGenerator = new SqlClientValueGenerator(this.valueProviderMock.Object, null, null, null, this.attributeDecoratorMock.Object);
+            this.sqlClientValueGenerator = new SqlClientValueGenerator(this.valueProviderMock.Object, null, null, null,
+                this.attributeDecoratorMock.Object);
         }
 
         [TestMethod]

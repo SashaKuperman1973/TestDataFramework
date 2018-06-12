@@ -37,35 +37,14 @@ namespace Tests.Tests.ImmediateTests
     [TestClass]
     public class DbProviderWritePrimitivesTests
     {
-        private class WritePrimitives : DbProviderWritePrimitives
-        {
-            public WritePrimitives(string connectionStringWithDefaultCatalogue, DbProviderFactory dbProviderFactory,
-                IValueFormatter formatter, bool mustBeInATransaction, NameValueCollection configuration)
-                : base(
-                    connectionStringWithDefaultCatalogue, dbProviderFactory, formatter, mustBeInATransaction,
-                    configuration)
-            {
-            }
-
-            public override object SelectIdentity(string columnName)
-            {
-                throw new NotImplementedException();
-            }
-
-            public override object WriteGuid(string columnName)
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        private Mock<DbProviderFactory> dbProviderFactoryMock;
-        private WritePrimitives primitives;
-        private Mock<IValueFormatter> formatterMock;
-        private Mock<DbCommand> insertCommandMock;
-        private Mock<DbDataReader> readerMock;
+        private const string ConnectionString = "cn";
         private Mock<DbConnection> connectionMock;
 
-        private const string ConnectionString = "cn";
+        private Mock<DbProviderFactory> dbProviderFactoryMock;
+        private Mock<IValueFormatter> formatterMock;
+        private Mock<DbCommand> insertCommandMock;
+        private WritePrimitives primitives;
+        private Mock<DbDataReader> readerMock;
 
         [TestInitialize]
         public void Initialize()
@@ -77,8 +56,8 @@ namespace Tests.Tests.ImmediateTests
 
             this.primitives = new WritePrimitives(DbProviderWritePrimitivesTests.ConnectionString,
                 this.dbProviderFactoryMock.Object, this.formatterMock.Object,
-                mustBeInATransaction: false,
-                configuration: new NameValueCollection {{"TestDataFramework_DumpSqlInput", "true"}});
+                false,
+                new NameValueCollection {{"TestDataFramework_DumpSqlInput", "true"}});
 
             this.connectionMock = new Mock<DbConnection>();
             this.insertCommandMock = new Mock<DbCommand>();
@@ -96,19 +75,19 @@ namespace Tests.Tests.ImmediateTests
 
             // Setup has rows flag to return 2 row for 1st record set and 1 row for second.
             var hasRows = new[] {true, true, false, true, false};
-            int hasRowsPosition = 0;
+            var hasRowsPosition = 0;
 
             this.readerMock.Setup(m => m.HasRows).Returns(() => hasRows[hasRowsPosition++]);
 
             // Setup reader to signal 2 rows in first result set and 1 row in second set.
             var read = new[] {true, true, false, true, false};
-            int readPosition = 0;
+            var readPosition = 0;
 
             this.readerMock.Setup(m => m.Read()).Returns(() => read[readPosition++]);
 
             // Three rows setup (note: in two result sets), 1st with 2 coluns back, 2nd with 3 columns and 3rd with 2 columns.
             var fieldCount = new[] {2, 3, 2};
-            int fieldCountPosition = 0;
+            var fieldCountPosition = 0;
 
             this.readerMock.Setup(m => m.FieldCount).Returns(() => fieldCount[fieldCountPosition++]);
 
@@ -116,17 +95,15 @@ namespace Tests.Tests.ImmediateTests
             {
                 new object[] {"A", 1},
                 new object[] {"B", 2, 3.5d},
-                new object[] {"C", 'K'},
+                new object[] {"C", 'K'}
             };
 
-            int rowNumber = 0;
+            var rowNumber = 0;
 
             this.readerMock.Setup(m => m.GetValues(It.IsAny<object[]>())).Callback<object[]>(a =>
             {
-                for (int i = 0; i < a.Length; i++)
-                {
+                for (var i = 0; i < a.Length; i++)
                     a[i] = expected[rowNumber][i];
-                }
 
                 rowNumber++;
             });
@@ -159,8 +136,8 @@ namespace Tests.Tests.ImmediateTests
 
             var columns = new[]
             {
-                new Column { Name = "Row1", Value = 1},
-                new Column { Name = "Row2", Value = "B"},
+                new Column {Name = "Row1", Value = 1},
+                new Column {Name = "Row2", Value = "B"}
             };
 
             this.formatterMock.Setup(m => m.Format(columns[0].Value)).Returns("1st Value");
@@ -177,7 +154,7 @@ namespace Tests.Tests.ImmediateTests
 
             this.formatterMock.Verify();
 
-            string expectedText =
+            var expectedText =
                 new StringBuilder("insert into [xx] ([Row1], [Row2]) values (1st Value, 2nd Value);").AppendLine()
                     .AppendLine()
                     .ToString();
@@ -192,8 +169,8 @@ namespace Tests.Tests.ImmediateTests
 
             var columns = new[]
             {
-                new Column { Name = "Row1", Value = 1},
-                new Column { Name = "Row2", Value = "B"},
+                new Column {Name = "Row1", Value = 1},
+                new Column {Name = "Row2", Value = "B"}
             };
 
             this.formatterMock.Setup(m => m.Format(columns[0].Value)).Returns("1st Value");
@@ -211,8 +188,10 @@ namespace Tests.Tests.ImmediateTests
 
             this.formatterMock.Verify();
 
-            string expectedText =
-                new StringBuilder($"insert into [{schema}].[{tableName}] ([Row1], [Row2]) values (1st Value, 2nd Value);").AppendLine()
+            var expectedText =
+                new StringBuilder(
+                        $"insert into [{schema}].[{tableName}] ([Row1], [Row2]) values (1st Value, 2nd Value);")
+                    .AppendLine()
                     .AppendLine()
                     .ToString();
 
@@ -226,8 +205,8 @@ namespace Tests.Tests.ImmediateTests
 
             var columns = new[]
             {
-                new Column { Name = "Row1", Value = 1},
-                new Column { Name = "Row2", Value = "B"},
+                new Column {Name = "Row1", Value = 1},
+                new Column {Name = "Row2", Value = "B"}
             };
 
             this.formatterMock.Setup(m => m.Format(columns[0].Value)).Returns("1st Value");
@@ -246,8 +225,10 @@ namespace Tests.Tests.ImmediateTests
 
             this.formatterMock.Verify();
 
-            string expectedText =
-                new StringBuilder($"insert into [{catalogueName}].[{schema}].[{tableName}] ([Row1], [Row2]) values (1st Value, 2nd Value);").AppendLine()
+            var expectedText =
+                new StringBuilder(
+                        $"insert into [{catalogueName}].[{schema}].[{tableName}] ([Row1], [Row2]) values (1st Value, 2nd Value);")
+                    .AppendLine()
                     .AppendLine()
                     .ToString();
 
@@ -264,8 +245,9 @@ namespace Tests.Tests.ImmediateTests
 
             // Act. Assert.
 
-            Helpers.ExceptionTest(() => this.primitives.Insert(catalogueName, null, tableName, Enumerable.Empty<Column>()),
-                typeof (WritePrimitivesException),
+            Helpers.ExceptionTest(
+                () => this.primitives.Insert(catalogueName, null, tableName, Enumerable.Empty<Column>()),
+                typeof(WritePrimitivesException),
                 string.Format(Messages.CatalogueAndNoSchema, catalogueName, tableName));
         }
 
@@ -274,10 +256,11 @@ namespace Tests.Tests.ImmediateTests
         {
             this.primitives = new WritePrimitives(null,
                 null, null,
-                mustBeInATransaction: true,
-                configuration: null);
+                true,
+                null);
 
-            Helpers.ExceptionTest(() => this.primitives.Execute(), typeof(NotInATransactionException), Messages.NotInATransaction);
+            Helpers.ExceptionTest(() => this.primitives.Execute(), typeof(NotInATransactionException),
+                Messages.NotInATransaction);
         }
 
         [TestMethod]
@@ -300,6 +283,27 @@ namespace Tests.Tests.ImmediateTests
 
             this.insertCommandMock.VerifySet(m => m.CommandText = "ABCD\r\n\r\n");
             this.insertCommandMock.VerifySet(m => m.CommandText = "XYZR\r\n\r\n");
+        }
+
+        private class WritePrimitives : DbProviderWritePrimitives
+        {
+            public WritePrimitives(string connectionStringWithDefaultCatalogue, DbProviderFactory dbProviderFactory,
+                IValueFormatter formatter, bool mustBeInATransaction, NameValueCollection configuration)
+                : base(
+                    connectionStringWithDefaultCatalogue, dbProviderFactory, formatter, mustBeInATransaction,
+                    configuration)
+            {
+            }
+
+            public override object SelectIdentity(string columnName)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override object WriteGuid(string columnName)
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }

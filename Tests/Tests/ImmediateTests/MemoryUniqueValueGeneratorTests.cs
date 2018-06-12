@@ -21,7 +21,6 @@ using System.Reflection;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using TestDataFramework.AttributeDecorator;
 using TestDataFramework.AttributeDecorator.Concrete;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.AttributeDecorator.Interfaces;
@@ -36,11 +35,10 @@ namespace Tests.Tests.ImmediateTests
     [TestClass]
     public class MemoryUniqueValueGeneratorTests
     {
+        private IAttributeDecorator attributeDecorator;
+        private Mock<IDeferredValueGenerator<LargeInteger>> deferredValueGeneratorMock;
         private MemoryUniqueValueGenerator generator;
         private Mock<IPropertyValueAccumulator> propertyValueAccumulatorMock;
-        private Mock<IDeferredValueGenerator<LargeInteger>> deferredValueGeneratorMock;
-
-        private IAttributeDecorator attributeDecorator;
 
         [TestInitialize]
         public void Initialize()
@@ -52,8 +50,9 @@ namespace Tests.Tests.ImmediateTests
             this.propertyValueAccumulatorMock = new Mock<IPropertyValueAccumulator>();
             this.deferredValueGeneratorMock = new Mock<IDeferredValueGenerator<LargeInteger>>();
 
-            this.generator = new MemoryUniqueValueGenerator(this.propertyValueAccumulatorMock.Object, this.attributeDecorator,
-                this.deferredValueGeneratorMock.Object, throwIfUnhandledType: false);
+            this.generator = new MemoryUniqueValueGenerator(this.propertyValueAccumulatorMock.Object,
+                this.attributeDecorator,
+                this.deferredValueGeneratorMock.Object, false);
         }
 
         [TestMethod]
@@ -69,7 +68,8 @@ namespace Tests.Tests.ImmediateTests
 
             // Assert
 
-            this.deferredValueGeneratorMock.Verify(m => m.AddDelegate(keyPropertyInfo, It.IsAny<DeferredValueGetterDelegate<LargeInteger>>()), Times.Once);
+            this.deferredValueGeneratorMock.Verify(
+                m => m.AddDelegate(keyPropertyInfo, It.IsAny<DeferredValueGetterDelegate<LargeInteger>>()), Times.Once);
         }
 
         [TestMethod]
@@ -85,7 +85,8 @@ namespace Tests.Tests.ImmediateTests
 
             // Assert
 
-            this.deferredValueGeneratorMock.Verify(m => m.AddDelegate(keyPropertyInfo, It.IsAny<DeferredValueGetterDelegate<LargeInteger>>()), Times.Once);
+            this.deferredValueGeneratorMock.Verify(
+                m => m.AddDelegate(keyPropertyInfo, It.IsAny<DeferredValueGetterDelegate<LargeInteger>>()), Times.Once);
         }
 
         [TestMethod]
@@ -101,7 +102,9 @@ namespace Tests.Tests.ImmediateTests
 
             // Assert
 
-            this.deferredValueGeneratorMock.Verify(m => m.AddDelegate(It.IsAny<PropertyInfo>(), It.IsAny<DeferredValueGetterDelegate<LargeInteger>>()), Times.Never);
+            this.deferredValueGeneratorMock.Verify(
+                m => m.AddDelegate(It.IsAny<PropertyInfo>(), It.IsAny<DeferredValueGetterDelegate<LargeInteger>>()),
+                Times.Never);
         }
 
         [TestMethod]
@@ -118,7 +121,8 @@ namespace Tests.Tests.ImmediateTests
 
             // Assert
 
-            this.propertyValueAccumulatorMock.Verify(m => m.GetValue(keyPropertyInfo, Helper.DefaultInitalCount), Times.Exactly(2));
+            this.propertyValueAccumulatorMock.Verify(m => m.GetValue(keyPropertyInfo, Helper.DefaultInitalCount),
+                Times.Exactly(2));
         }
     }
 }

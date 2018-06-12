@@ -17,16 +17,13 @@
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-using System;
 using Castle.Windsor;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.Factories;
-using TestDataFramework.Helpers;
 using TestDataFramework.Populator.Concrete;
 using TestDataFramework.Populator.Interfaces;
-using TestDataFramework.TypeGenerator.Interfaces;
 
 namespace Tests.Tests.ImmediateTests
 {

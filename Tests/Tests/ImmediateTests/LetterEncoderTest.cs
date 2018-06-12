@@ -40,11 +40,11 @@ namespace Tests.Tests.ImmediateTests
             const int stringLength = 10;
 
             const string expected = "BCD";
-            const ulong input = 26*26 + 2*26 + 3;
+            const ulong input = 26 * 26 + 2 * 26 + 3;
 
             var generator = new LetterEncoder();
 
-            string result = generator.Encode(input, stringLength);
+            var result = generator.Encode(input, stringLength);
 
             Assert.AreEqual(expected, result);
         }
@@ -64,12 +64,13 @@ namespace Tests.Tests.ImmediateTests
         [TestMethod]
         public void OverflowException_Test()
         {
-            ulong input = (ulong)Math.Pow(26, 2) + 2 * 26 + 3;
+            var input = (ulong) Math.Pow(26, 2) + 2 * 26 + 3;
             const string stringValueOfInput = "ABCD";
 
             var generator = new LetterEncoder();
 
-            Helpers.ExceptionTest(() => generator.Encode(input, maxStringLength: stringValueOfInput.Length - 1), typeof (OverflowException),
+            Helpers.ExceptionTest(() => generator.Encode(input, stringValueOfInput.Length - 1),
+                typeof(OverflowException),
                 string.Format(Messages.StringGeneratorOverflow, input, stringValueOfInput.Length - 1));
         }
     }

@@ -14,6 +14,5 @@ namespace Tests.Tests.ImmediateTests
 
             Assert.AreEqual(explicitlyIgnoredValue2, explicitlyIgnoredValue1);
         }
-
     }
 }

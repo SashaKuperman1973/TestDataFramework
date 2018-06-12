@@ -9,17 +9,6 @@ namespace Tests.Tests.ImmediateTests
     [TestClass]
     public class DeepCollectionSettingConverterTests
     {
-        private class ConverterTestSubject
-        {
-            public IEnumerable<int> AnIEnumerable { get; set; }
-
-            public List<int> AList { get; set; }
-
-            public int[] AnArray { get; set; }
-
-            public HashSet<int> AHashSet { get; set; }
-        }
-
         [TestMethod]
         public void Convert_Test()
         {
@@ -45,7 +34,7 @@ namespace Tests.Tests.ImmediateTests
         {
             var converter = new DeepCollectionSettingConverter();
 
-            var input = new[] { 1, 2, 3, 4, 5 };
+            var input = new[] {1, 2, 3, 4, 5};
 
             Helpers.ExceptionTest(
                 () => converter.Convert(input,
@@ -53,6 +42,17 @@ namespace Tests.Tests.ImmediateTests
                 typeof(ArgumentException),
                 string.Format(Messages.TypeNotSupportedForDeepCollectionSetting,
                     typeof(ConverterTestSubject).GetProperty(nameof(ConverterTestSubject.AHashSet)).PropertyType));
+        }
+
+        private class ConverterTestSubject
+        {
+            public IEnumerable<int> AnIEnumerable { get; set; }
+
+            public List<int> AList { get; set; }
+
+            public int[] AnArray { get; set; }
+
+            public HashSet<int> AHashSet { get; set; }
         }
     }
 }

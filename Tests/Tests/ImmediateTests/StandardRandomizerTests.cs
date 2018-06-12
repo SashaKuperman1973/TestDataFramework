@@ -32,14 +32,12 @@ namespace Tests.Tests.ImmediateTests
     [TestClass]
     public class StandardRandomizerTests
     {
+        private const int Integer = 5;
+        private readonly DateTime now = DateTime.Now;
+        private Func<long> randomizeLongInteger;
         private StandardRandomizer randomizer;
         private Mock<Random> randomMock;
         private Mock<IRandomSymbolStringGenerator> stringGeneratorMock;
-        private readonly DateTime now = DateTime.Now;
-        private Func<long> randomizeLongInteger;
-
-
-        private const int Integer = 5;
 
         [TestInitialize]
         public void Initialize()
@@ -60,11 +58,12 @@ namespace Tests.Tests.ImmediateTests
         {
             // Arrange
 
-            this.randomMock.Setup(m => m.Next(It.Is<int>(i => i == int.MaxValue))).Returns(StandardRandomizerTests.Integer).Verifiable();
+            this.randomMock.Setup(m => m.Next(It.Is<int>(i => i == int.MaxValue)))
+                .Returns(StandardRandomizerTests.Integer).Verifiable();
 
             // Act
 
-            int result = this.randomizer.GetInteger(null);
+            var result = this.randomizer.GetInteger(null);
 
             // Assert
 
@@ -82,7 +81,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Act
 
-            int result = this.randomizer.GetInteger(maximum);
+            var result = this.randomizer.GetInteger(maximum);
 
             // Assert
 
@@ -100,12 +99,12 @@ namespace Tests.Tests.ImmediateTests
 
             // Act
 
-            long result = this.randomizer.GetLongInteger(0x10000);
+            var result = this.randomizer.GetLongInteger(0x10000);
 
             // Assert
 
             this.randomMock.Verify();
-            Assert.AreEqual((long)StandardRandomizerTests.Integer, result);
+            Assert.AreEqual(StandardRandomizerTests.Integer, result);
         }
 
 
@@ -114,29 +113,27 @@ namespace Tests.Tests.ImmediateTests
         {
             // Arrange
 
-            long maxValue = long.MaxValue - new Random().Next() - 1;
-            long expected = maxValue - new Random().Next();
+            var maxValue = long.MaxValue - new Random().Next() - 1;
+            var expected = maxValue - new Random().Next();
 
             if ((maxValue & 0xffff) == 0)
-            {
                 maxValue--;
-            }
 
-            this.randomMock.Setup(m => m.Next((int)((maxValue >> (16 * 0)) & 0xffff)))
-                .Returns((int)((expected >> (16 * 0)) & 0xffff)).Verifiable();
+            this.randomMock.Setup(m => m.Next((int) ((maxValue >> (16 * 0)) & 0xffff)))
+                .Returns((int) ((expected >> (16 * 0)) & 0xffff)).Verifiable();
 
-            this.randomMock.Setup(m => m.Next((int)((maxValue >> (16 * 1)) & 0xffff) + 1))
-                .Returns((int)((expected >> (16 * 1)) & 0xffff)).Verifiable();
+            this.randomMock.Setup(m => m.Next((int) ((maxValue >> (16 * 1)) & 0xffff) + 1))
+                .Returns((int) ((expected >> (16 * 1)) & 0xffff)).Verifiable();
 
-            this.randomMock.Setup(m => m.Next((int)((maxValue >> (16 * 2)) & 0xffff) + 1))
-                .Returns((int)((expected >> (16 * 2)) & 0xffff)).Verifiable();
+            this.randomMock.Setup(m => m.Next((int) ((maxValue >> (16 * 2)) & 0xffff) + 1))
+                .Returns((int) ((expected >> (16 * 2)) & 0xffff)).Verifiable();
 
-            this.randomMock.Setup(m => m.Next((int)((maxValue >> (16 * 3)) & 0xffff) + 1))
-                .Returns((int)((expected >> (16 * 3)) & 0xffff)).Verifiable();
+            this.randomMock.Setup(m => m.Next((int) ((maxValue >> (16 * 3)) & 0xffff) + 1))
+                .Returns((int) ((expected >> (16 * 3)) & 0xffff)).Verifiable();
 
             // Act
 
-            long result = this.randomizer.GetLongInteger(maxValue);
+            var result = this.randomizer.GetLongInteger(maxValue);
 
             // Assert
 
@@ -153,7 +150,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Act
 
-            long result = this.randomizer.GetLongInteger(null);
+            var result = this.randomizer.GetLongInteger(null);
 
             // Assert
 
@@ -176,7 +173,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Act
 
-            long result = this.randomizer.GetLongInteger(null);
+            var result = this.randomizer.GetLongInteger(null);
 
             // Assert
 
@@ -189,16 +186,17 @@ namespace Tests.Tests.ImmediateTests
             // Arrange
 
             const int max = 7;
-            this.randomMock.Setup(m => m.Next(It.Is<int>(i => i == max))).Returns(StandardRandomizerTests.Integer).Verifiable();
+            this.randomMock.Setup(m => m.Next(It.Is<int>(i => i == max))).Returns(StandardRandomizerTests.Integer)
+                .Verifiable();
 
             // Act
 
-            short result = this.randomizer.GetShortInteger(max);
+            var result = this.randomizer.GetShortInteger(max);
 
             // Assert
 
             this.randomMock.Verify();
-            Assert.AreEqual((short)StandardRandomizerTests.Integer, result);
+            Assert.AreEqual((short) StandardRandomizerTests.Integer, result);
         }
 
         [TestMethod]
@@ -206,16 +204,17 @@ namespace Tests.Tests.ImmediateTests
         {
             // Arrange
 
-            this.randomMock.Setup(m => m.Next(It.Is<int>(i => i == short.MaxValue))).Returns(StandardRandomizerTests.Integer).Verifiable();
+            this.randomMock.Setup(m => m.Next(It.Is<int>(i => i == short.MaxValue)))
+                .Returns(StandardRandomizerTests.Integer).Verifiable();
 
             // Act
 
-            short result = this.randomizer.GetShortInteger(null);
+            var result = this.randomizer.GetShortInteger(null);
 
             // Assert
 
             this.randomMock.Verify();
-            Assert.AreEqual((short)StandardRandomizerTests.Integer, result);
+            Assert.AreEqual((short) StandardRandomizerTests.Integer, result);
         }
 
         [TestMethod]
@@ -228,7 +227,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Act
 
-            string result = this.randomizer.GetString(5);
+            var result = this.randomizer.GetString(5);
 
             // Assert
 
@@ -239,14 +238,14 @@ namespace Tests.Tests.ImmediateTests
         public void GetCharacter_Test()
         {
             // 26 letters in the alphabet
-            for (int code = 0; code < 26; code++)
+            for (var code = 0; code < 26; code++)
             {
                 this.randomMock.Setup(m => m.Next(It.Is<int>(i => i == 26))).Returns(code);
 
-                char result = this.randomizer.GetCharacter();
+                var result = this.randomizer.GetCharacter();
 
                 // 65 is ASCII code of "A".
-                Assert.AreEqual((char)(code + 65), result);
+                Assert.AreEqual((char) (code + 65), result);
             }
         }
 
@@ -262,7 +261,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Act
 
-            decimal result = this.randomizer.GetDecimal(null);
+            var result = this.randomizer.GetDecimal(null);
 
             // Assert
 
@@ -288,7 +287,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Act
 
-            decimal result = this.randomizer.GetDecimal(4);
+            var result = this.randomizer.GetDecimal(4);
 
             // Assert
 
@@ -307,7 +306,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Act
 
-            double result = this.randomizer.GetDouble(null);
+            var result = this.randomizer.GetDouble(null);
 
             // Assert
 
@@ -326,7 +325,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Act
 
-            double result = this.randomizer.GetDouble(4);
+            var result = this.randomizer.GetDouble(4);
 
             // Assert
 
@@ -342,7 +341,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Act
 
-            bool result = this.randomizer.GetBoolean();
+            var result = this.randomizer.GetBoolean();
 
             // Assert
 
@@ -359,7 +358,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Act
 
-            bool result = this.randomizer.GetBoolean();
+            var result = this.randomizer.GetBoolean();
 
             // Assert
 
@@ -372,7 +371,7 @@ namespace Tests.Tests.ImmediateTests
         {
             // Arrange
 
-            long ticks = this.randomizeLongInteger();
+            var ticks = this.randomizeLongInteger();
 
             DateTime expected = this.now.AddTicks(-ticks);
 
@@ -392,7 +391,7 @@ namespace Tests.Tests.ImmediateTests
         {
             // Arrange
 
-            long ticks = this.randomizeLongInteger();
+            var ticks = this.randomizeLongInteger();
 
             DateTime expected = this.now.AddTicks(ticks);
 
@@ -415,7 +414,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Act
 
-            byte result = this.randomizer.GetByte();
+            var result = this.randomizer.GetByte();
 
             // Assert
 
@@ -431,7 +430,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Act
 
-            string result = this.randomizer.GetEmailAddress();
+            var result = this.randomizer.GetEmailAddress();
 
             // Assert
 
@@ -450,7 +449,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Act
 
-            float result = this.randomizer.GetFloat(null);
+            var result = this.randomizer.GetFloat(null);
 
             // Assert
 
@@ -470,7 +469,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Act
 
-            float result = this.randomizer.GetFloat(4);
+            var result = this.randomizer.GetFloat(4);
 
             // Assert
 
@@ -490,7 +489,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Act
 
-            float result = this.randomizer.GetFloat(7);
+            var result = this.randomizer.GetFloat(7);
 
             // Assert
 
@@ -510,7 +509,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Act
 
-            float result = this.randomizer.GetFloat(0);
+            var result = this.randomizer.GetFloat(0);
 
             // Assert
 
@@ -523,7 +522,7 @@ namespace Tests.Tests.ImmediateTests
         {
             // Act. Assert.
 
-            Helpers.ExceptionTest(() => this.randomizer.GetFloat(8), typeof (ArgumentOutOfRangeException),
+            Helpers.ExceptionTest(() => this.randomizer.GetFloat(8), typeof(ArgumentOutOfRangeException),
                 new ArgumentOutOfRangeException("precision", 8, Messages.FloatPrecisionOutOfRange).Message);
         }
     }

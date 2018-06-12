@@ -1,15 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Management.Instrumentation;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using TestDataFramework.AttributeDecorator;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.Exceptions;
@@ -25,15 +19,15 @@ namespace Tests.Tests.ImmediateTests
     [TestClass]
     public class RangeOperableListTests
     {
+        private const int ListSize = 20;
+        private Mock<IAttributeDecorator> attributeDecoratorMock;
+        private Mock<DeepCollectionSettingConverter> deepCollectionSettingConverterMock;
+        private Mock<IObjectGraphService> objectGraphServiceMock;
+        private Mock<BasePopulator> populatorMock;
         private RangeOperableList<SubjectClass> rangeOperableList;
+        private Mock<ITypeGenerator> typeGeneratorMock;
 
         private Mock<ValueGuaranteePopulator> valueGuaranteePopulatorMock;
-        private Mock<BasePopulator> populatorMock;
-        private Mock<ITypeGenerator> typeGeneratorMock;
-        private Mock<IAttributeDecorator> attributeDecoratorMock;
-        private Mock<IObjectGraphService> objectGraphServiceMock;
-        private Mock<DeepCollectionSettingConverter> deepCollectionSettingConverterMock;
-        private const int ListSize = 20;
 
         [TestInitialize]
         public void Initialize()
@@ -94,13 +88,10 @@ namespace Tests.Tests.ImmediateTests
         public void Set_ValidateAgainstUpperBoundary_Test()
         {
             Helpers.ExceptionTest(() =>
-
-                    this.rangeOperableList.Set(null, () => 1, 
+                    this.rangeOperableList.Set(null, () => 1,
                         new Range(RangeOperableListTests.ListSize - 3, RangeOperableListTests.ListSize)
                     ),
-
                 typeof(ArgumentOutOfRangeException),
-
                 "Specified argument was out of the range of valid values.\r\nParameter name: ranges"
             );
         }
@@ -109,11 +100,8 @@ namespace Tests.Tests.ImmediateTests
         public void Set_ValidateAgainstLowerBoundary_Test()
         {
             Helpers.ExceptionTest(() =>
-
                     this.rangeOperableList.Set(null, () => 1, new Range(-2, 3)),
-
                 typeof(ArgumentOutOfRangeException),
-
                 "Specified argument was out of the range of valid values.\r\nParameter name: ranges"
             );
         }

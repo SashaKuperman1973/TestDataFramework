@@ -87,4 +87,3 @@ namespace Tests.TestModels
         public decimal Key { get; set; }
     }
 }
-

@@ -41,7 +41,7 @@ namespace Tests.TestModels
         [PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Auto)]
         public int Key { get; set; }
 
-        [ForeignKey(primaryTableType: typeof (PrimaryTable), primaryKeyName: "Key")]
+        [ForeignKey(typeof(PrimaryTable), "Key")]
         public int ForeignKey { get; set; }
 
         public string Text { get; set; }
@@ -79,6 +79,7 @@ namespace Tests.TestModels
         [PrimaryKey]
         public string Key { get; set; }
     }
+
     public class TypeMismatchForeignTable
     {
         [ForeignKey(typeof(TypeMismatchPrimaryTable), "Key")]
@@ -90,6 +91,7 @@ namespace Tests.TestModels
         [PrimaryKey]
         public int Key { get; set; }
     }
+
     public class TableTypeMismatchForeignTable
     {
         [ForeignKey(typeof(object), "Key")]
@@ -100,7 +102,6 @@ namespace Tests.TestModels
     {
         [PrimaryKey]
         public int Key { get; set; }
-
     }
 
     public class PropertyNameMismatchForeignTable

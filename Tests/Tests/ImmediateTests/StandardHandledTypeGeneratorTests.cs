@@ -32,9 +32,9 @@ namespace Tests.Tests.ImmediateTests
     [TestClass]
     public class StandardHandledTypeGeneratorTests
     {
+        private Mock<IValueGenerator> accumulatorValueGeneratorMock;
         private StandardHandledTypeGenerator handledTypeGenerator;
         private Mock<IValueGenerator> valueGeneratorMock;
-        private Mock<IValueGenerator> accumulatorValueGeneratorMock;
 
         [TestInitialize]
         public void Initialize()
@@ -46,7 +46,7 @@ namespace Tests.Tests.ImmediateTests
 
             this.handledTypeGenerator = new StandardHandledTypeGenerator(this.valueGeneratorMock.Object,
                 () => this.accumulatorValueGeneratorMock.Object,
-                collectionElementCount: 4);
+                4);
         }
 
         [TestMethod]
@@ -59,7 +59,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Act
 
-            object result = this.handledTypeGenerator.GetObject(typeof(KeyValuePair<int,string>));
+            object result = this.handledTypeGenerator.GetObject(typeof(KeyValuePair<int, string>));
 
             // Assert
 
@@ -82,8 +82,8 @@ namespace Tests.Tests.ImmediateTests
 
             // Arrange
 
-            int i = 0;
-            string[] s = new[] {"AA", "BB", "CC", "DD"};
+            var i = 0;
+            string[] s = {"AA", "BB", "CC", "DD"};
 
             this.accumulatorValueGeneratorMock.Setup(m => m.GetValue(null, typeof(int))).Returns(() => ++i);
             this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(string))).Returns(() => s[i - 1]);
@@ -97,7 +97,7 @@ namespace Tests.Tests.ImmediateTests
             var dictionary = result as Dictionary<int, string>;
 
             this.accumulatorValueGeneratorMock.Verify(m => m.GetValue(null, typeof(int)), Times.Exactly(4));
-            this.valueGeneratorMock.Verify(m => m.GetValue(null, typeof (string)), Times.Exactly(4));
+            this.valueGeneratorMock.Verify(m => m.GetValue(null, typeof(string)), Times.Exactly(4));
 
             Assert.IsNotNull(dictionary);
             Assert.AreEqual("AA", dictionary[1]);
@@ -111,8 +111,8 @@ namespace Tests.Tests.ImmediateTests
         {
             // Arrange
 
-            int i = 0;
-            string[] s = new[] { "AA", "BB" };
+            var i = 0;
+            string[] s = {"AA", "BB"};
 
             this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(string))).Returns(() => s[i++]);
 
@@ -125,7 +125,8 @@ namespace Tests.Tests.ImmediateTests
             var dictionary = result as Dictionary<AnEnum, string>;
 
             Assert.IsNotNull(dictionary);
-            this.accumulatorValueGeneratorMock.Verify(m => m.GetValue(It.IsAny<PropertyInfo>(), It.IsAny<Type>()), Times.Never);
+            this.accumulatorValueGeneratorMock.Verify(m => m.GetValue(It.IsAny<PropertyInfo>(), It.IsAny<Type>()),
+                Times.Never);
             this.valueGeneratorMock.Verify(m => m.GetValue(null, typeof(string)), Times.Exactly(2));
 
             Assert.AreEqual(Enum.GetNames(typeof(AnEnum)).Length, dictionary.Count);
@@ -149,16 +150,16 @@ namespace Tests.Tests.ImmediateTests
 
             // Arrange
 
-            int i = 0;
-            object[] o = new[] {new object(), new object(), new object(), new object(),};
-            string[] s = new[] { "AA", "BB", "CC", "DD" };
+            var i = 0;
+            object[] o = {new object(), new object(), new object(), new object()};
+            string[] s = {"AA", "BB", "CC", "DD"};
 
             this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(object))).Returns(
                 () =>
-                o[i++]);
+                    o[i++]);
             this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(string))).Returns(
                 () =>
-                s[i - 1]);
+                    s[i - 1]);
 
             // Act
 
@@ -168,8 +169,8 @@ namespace Tests.Tests.ImmediateTests
 
             var dictionary = result as Dictionary<object, string>;
 
-            this.valueGeneratorMock.Verify(m => m.GetValue(null, typeof (object)), Times.Exactly(4));
-            this.valueGeneratorMock.Verify(m => m.GetValue(null, typeof (string)), Times.Exactly(4));
+            this.valueGeneratorMock.Verify(m => m.GetValue(null, typeof(object)), Times.Exactly(4));
+            this.valueGeneratorMock.Verify(m => m.GetValue(null, typeof(string)), Times.Exactly(4));
 
             Assert.IsNotNull(dictionary);
             Assert.AreEqual("AA", dictionary[o[0]]);
@@ -197,10 +198,10 @@ namespace Tests.Tests.ImmediateTests
 
             // Arrange
 
-            SubjectClass[] sc = new[] {new SubjectClass(), new SubjectClass(), new SubjectClass(), new SubjectClass(),};
-            int i = 0;
+            SubjectClass[] sc = {new SubjectClass(), new SubjectClass(), new SubjectClass(), new SubjectClass()};
+            var i = 0;
 
-            this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof (SubjectClass))).Returns(() => sc[i++]);
+            this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(SubjectClass))).Returns(() => sc[i++]);
 
             // Act
 
@@ -259,7 +260,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Assert
 
-            var tuple = (Tuple<string, int>)result;
+            var tuple = (Tuple<string, int>) result;
 
             Assert.AreEqual("A", tuple.Item1);
             Assert.AreEqual(5, tuple.Item2);
@@ -280,7 +281,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Assert
 
-            var tuple = (Tuple<string, int, AnEnum>)result;
+            var tuple = (Tuple<string, int, AnEnum>) result;
 
             Assert.AreEqual("A", tuple.Item1);
             Assert.AreEqual(5, tuple.Item2);

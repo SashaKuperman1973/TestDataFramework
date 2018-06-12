@@ -23,7 +23,6 @@ using System.Linq;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using TestDataFramework.AttributeDecorator;
 using TestDataFramework.AttributeDecorator.Concrete;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.AttributeDecorator.Interfaces;
@@ -41,10 +40,10 @@ namespace Tests.Tests.ImmediateTests
     [TestClass]
     public class SqlClientPersistenceTests
     {
+        private IAttributeDecorator attributeDecorator;
+        private Mock<IDeferredValueGenerator<LargeInteger>> deferredValueGeneratorMock;
         private SqlClientPersistence persistence;
         private Mock<IWritePrimitives> writePrimitivesMock;
-        private Mock<IDeferredValueGenerator<LargeInteger>> deferredValueGeneratorMock;
-        private IAttributeDecorator attributeDecorator;
 
         [TestInitialize]
         public void Initialize()
@@ -64,19 +63,21 @@ namespace Tests.Tests.ImmediateTests
         {
             // Arrange
 
-            var primaryTable = new PrimaryTable { Integer = 5, Text = "Text"};
+            var primaryTable = new PrimaryTable {Integer = 5, Text = "Text"};
 
             var primaryRecordReference =
                 new RecordReference<PrimaryTable>(Helpers.GetTypeGeneratorMock(primaryTable).Object,
                     this.attributeDecorator, null, null, null, null);
             primaryRecordReference.Populate();
 
-            string tableName = typeof(PrimaryTable).Name;
+            var tableName = typeof(PrimaryTable).Name;
 
             List<Column> primaryTableColumns = null;
 
-            this.writePrimitivesMock.Setup(m => m.Insert(null, It.IsAny<string>(), tableName, It.IsAny<IEnumerable<Column>>()))
-                .Callback<string, string, string, IEnumerable<Column>>((cat, s, t, col) => primaryTableColumns = col.ToList());
+            this.writePrimitivesMock.Setup(m => m.Insert(null, It.IsAny<string>(), tableName,
+                    It.IsAny<IEnumerable<Column>>()))
+                .Callback<string, string, string, IEnumerable<Column>>((cat, s, t, col) => primaryTableColumns =
+                    col.ToList());
 
             this.writePrimitivesMock.Setup(m => m.Execute()).Returns(new object[] {"Key", 0, "Guid", Guid.NewGuid()});
 
@@ -88,7 +89,8 @@ namespace Tests.Tests.ImmediateTests
 
             // Assert
 
-            this.writePrimitivesMock.Verify(m => m.Insert(null, It.IsAny<string>(), tableName, It.IsAny<IEnumerable<Column>>()), Times.Once());
+            this.writePrimitivesMock.Verify(
+                m => m.Insert(null, It.IsAny<string>(), tableName, It.IsAny<IEnumerable<Column>>()), Times.Once());
 
             this.deferredValueGeneratorMock.Verify(
                 m => m.Execute(It.Is<IEnumerable<RecordReference>>(e => e.First() == recordReferenceArray[0])),
@@ -109,7 +111,7 @@ namespace Tests.Tests.ImmediateTests
         {
             // Arrange
 
-            var primaryTable = new PrimaryTable { Integer = 1};
+            var primaryTable = new PrimaryTable {Integer = 1};
             var primaryRecordReference =
                 new RecordReference<PrimaryTable>(Helpers.GetTypeGeneratorMock(primaryTable).Object,
                     this.attributeDecorator, null, null, null, null);
@@ -125,12 +127,14 @@ namespace Tests.Tests.ImmediateTests
 
             var columns = new List<List<Column>>();
 
-            this.writePrimitivesMock.Setup(m => m.Insert(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<Column>>()))
+            this.writePrimitivesMock.Setup(m => m.Insert(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
+                    It.IsAny<IEnumerable<Column>>()))
                 .Callback<string, string, string, IEnumerable<Column>>((cat, s, t, col) => columns.Add(col.ToList()));
 
             this.writePrimitivesMock.Setup(m => m.SelectIdentity(It.IsAny<string>())).Returns(new Variable(null));
 
-            this.writePrimitivesMock.Setup(m => m.Execute()).Returns(new object[] {"Key", 0, "Guid", Guid.NewGuid(), "Key", 0});
+            this.writePrimitivesMock.Setup(m => m.Execute())
+                .Returns(new object[] {"Key", 0, "Guid", Guid.NewGuid(), "Key", 0});
 
             // Act
 
@@ -138,7 +142,7 @@ namespace Tests.Tests.ImmediateTests
             // to test that the primary key record writes first regardless which insert operation's
             // Write method is called.
 
-            this.persistence.Persist(new RecordReference[] { foreignRecordReference, primaryRecordReference});
+            this.persistence.Persist(new RecordReference[] {foreignRecordReference, primaryRecordReference});
 
             // Assert
 
@@ -171,12 +175,13 @@ namespace Tests.Tests.ImmediateTests
 
             var columns = new List<List<Column>>();
 
-            this.writePrimitivesMock.Setup(m => m.Insert(catalogueName, schema, tableName, It.IsAny<IEnumerable<Column>>()))
+            this.writePrimitivesMock.Setup(m => m.Insert(catalogueName, schema, tableName,
+                    It.IsAny<IEnumerable<Column>>()))
                 .Callback<string, string, string, IEnumerable<Column>>((cat, s, t, col) => columns.Add(col.ToList()));
 
             // Act
 
-            this.persistence.Persist(new RecordReference[] { foreignRecordReference, primaryRecordReference });
+            this.persistence.Persist(new RecordReference[] {foreignRecordReference, primaryRecordReference});
 
             // Assert
 
@@ -203,17 +208,17 @@ namespace Tests.Tests.ImmediateTests
 
             foreignRecordReference.AddPrimaryRecordReference(primaryRecordReference);
 
-            var expected = new object[] {"Key", 1, "Guid",  Guid.NewGuid(), "Key", 2};
+            var expected = new object[] {"Key", 1, "Guid", Guid.NewGuid(), "Key", 2};
 
             this.writePrimitivesMock.Setup(m => m.Execute()).Returns(expected);
-            
+
             // Act
 
             // Note the foreign key record is being passed in before the primary key record. 
             // This is to test that the primary key record that wrote first gets the first return
             // data element and the foreign key record gets the subsequent one.
 
-            this.persistence.Persist(new RecordReference[] { foreignRecordReference, primaryRecordReference });
+            this.persistence.Persist(new RecordReference[] {foreignRecordReference, primaryRecordReference});
 
             // Assert
 

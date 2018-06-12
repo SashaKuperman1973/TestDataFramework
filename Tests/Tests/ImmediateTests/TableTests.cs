@@ -17,7 +17,6 @@
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework;
 using TestDataFramework.AttributeDecorator;
@@ -69,7 +68,7 @@ namespace Tests.Tests.ImmediateTests
             var fkAttribute = new ForeignKeyAttribute(schema, primaryTableName, primaryKeyName);
 
             const string catalogueName = "catalogueNameABC";
-            
+
             var tableAttribute = new TableAttribute(catalogueName, "fkTableSchemaABC", "fkTableName");
 
             // Act
@@ -138,7 +137,7 @@ namespace Tests.Tests.ImmediateTests
         [TestMethod]
         public void Different_Object_Equals_Test()
         {
-            String s = "ABCD";
+            var s = "ABCD";
 
             var table = new Table(new TypeInfoWrapper(typeof(SubjectClass)), null);
 

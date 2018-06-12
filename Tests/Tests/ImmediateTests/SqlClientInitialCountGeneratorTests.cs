@@ -31,9 +31,9 @@ namespace Tests.Tests.ImmediateTests
     [TestClass]
     public class SqlClientInitialCountGeneratorTests
     {
+        private Mock<LetterEncoder> encoderMock;
         private SqlClientInitialCountGenerator generator;
         private Mock<IWriterDictinary> writersMock;
-        private Mock<LetterEncoder> encoderMock;
 
         [TestInitialize]
         public void Initialize()
@@ -59,7 +59,7 @@ namespace Tests.Tests.ImmediateTests
             var dictionary = new Dictionary<PropertyInfo, Data<LargeInteger>>
             {
                 {propertyInfo1, data1},
-                {propertyInfo2, data2},
+                {propertyInfo2, data2}
             };
 
             WriterDelegate writer1 = writerPi => (decoderPi, input) => returnValue1;

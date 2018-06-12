@@ -20,12 +20,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using TestDataFramework.AttributeDecorator;
 using TestDataFramework.AttributeDecorator.Concrete;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.AttributeDecorator.Interfaces;
@@ -46,18 +43,17 @@ namespace Tests.Tests.ImmediateTests
     [TestClass]
     public class InsertRecordServiceTest
     {
-        private InsertRecordService insertRecordService;
-        private RecordReference<ForeignTable> recordReference;
-        private Mock<IWritePrimitives> writerMock;
-        private Mock<ITypeGenerator> typeGeneratorMock;
-        private Mock<IObjectGraphService> objectGraphServiceMock;
-        private IEnumerable<AbstractRepositoryOperation> peers;
+        private const bool IsKeyReferenceCheckEnforced = true;
         private IAttributeDecorator attributeDecorator;
 
         private ForeignTable foreignKeyTable;
+        private InsertRecordService insertRecordService;
         private List<Column> mainTableColumns;
-
-        private const bool IsKeyReferenceCheckEnforced = true;
+        private Mock<IObjectGraphService> objectGraphServiceMock;
+        private IEnumerable<AbstractRepositoryOperation> peers;
+        private RecordReference<ForeignTable> recordReference;
+        private Mock<ITypeGenerator> typeGeneratorMock;
+        private Mock<IWritePrimitives> writerMock;
 
         [TestInitialize]
         public void Initialize()
@@ -72,12 +68,12 @@ namespace Tests.Tests.ImmediateTests
             this.recordReference = new RecordReference<ForeignTable>(this.typeGeneratorMock.Object,
                 this.attributeDecorator, null, this.objectGraphServiceMock.Object, null, null);
             this.recordReference.Populate();
-            this.insertRecordService = new InsertRecordService(this.recordReference, this.attributeDecorator, InsertRecordServiceTest.IsKeyReferenceCheckEnforced);
+            this.insertRecordService = new InsertRecordService(this.recordReference, this.attributeDecorator,
+                InsertRecordServiceTest.IsKeyReferenceCheckEnforced);
             this.writerMock = new Mock<IWritePrimitives>();
             this.peers = Enumerable.Empty<AbstractRepositoryOperation>();
 
             this.mainTableColumns = Helpers.GetColumns(this.foreignKeyTable, this.attributeDecorator);
-
         }
 
         [TestMethod]
@@ -90,13 +86,19 @@ namespace Tests.Tests.ImmediateTests
 
             var peerRecordreferences = new RecordReference[]
             {
-                new RecordReference<SubjectClass>(subjectTypeGeneratorMock.Object, this.attributeDecorator, null, null, null, null),
-                new RecordReference<PrimaryTable>(primaryTableTypeGeneratorMock.Object, this.attributeDecorator, null, null, null, null),
-                new RecordReference<SubjectClass>(subjectTypeGeneratorMock.Object, this.attributeDecorator, null, null, null, null),
-                new RecordReference<PrimaryTable>(primaryTableTypeGeneratorMock.Object, this.attributeDecorator, null, null, null, null),
+                new RecordReference<SubjectClass>(subjectTypeGeneratorMock.Object, this.attributeDecorator, null, null,
+                    null, null),
+                new RecordReference<PrimaryTable>(primaryTableTypeGeneratorMock.Object, this.attributeDecorator, null,
+                    null, null, null),
+                new RecordReference<SubjectClass>(subjectTypeGeneratorMock.Object, this.attributeDecorator, null, null,
+                    null, null),
+                new RecordReference<PrimaryTable>(primaryTableTypeGeneratorMock.Object, this.attributeDecorator, null,
+                    null, null, null)
             };
 
-            InsertRecord[] peerOperations = peerRecordreferences.Select(r => new InsertRecord(this.insertRecordService, r, this.peers, this.attributeDecorator)).ToArray();
+            InsertRecord[] peerOperations = peerRecordreferences
+                .Select(r => new InsertRecord(this.insertRecordService, r, this.peers, this.attributeDecorator))
+                .ToArray();
 
             // Act
 
@@ -120,7 +122,7 @@ namespace Tests.Tests.ImmediateTests
             var primaryKeyOperations = new[]
             {
                 new Mock<InsertRecord>(this.insertRecordService, null, this.peers, null),
-                new Mock<InsertRecord>(this.insertRecordService, null, this.peers, null),
+                new Mock<InsertRecord>(this.insertRecordService, null, this.peers, null)
             };
 
             // Act
@@ -151,7 +153,8 @@ namespace Tests.Tests.ImmediateTests
 
             // Act
 
-            this.insertRecordService.WritePrimitives(this.writerMock.Object, catalogueName, schema, tableName, this.mainTableColumns, primaryKeyValues);
+            this.insertRecordService.WritePrimitives(this.writerMock.Object, catalogueName, schema, tableName,
+                this.mainTableColumns, primaryKeyValues);
 
             // Assert
 
@@ -166,13 +169,14 @@ namespace Tests.Tests.ImmediateTests
             const string identityVariableSymbol = "ABCD";
             const string catalogueName = "catABC";
             const string schema = "schemaABC";
-            string tableName = this.foreignKeyTable.GetType().Name;
+            var tableName = this.foreignKeyTable.GetType().Name;
 
             this.writerMock.Setup(m => m.SelectIdentity(It.IsAny<string>())).Returns(identityVariableSymbol);
 
             // Act
 
-            this.insertRecordService.WritePrimitives(this.writerMock.Object, catalogueName, schema, tableName, this.mainTableColumns, primaryKeyValues);
+            this.insertRecordService.WritePrimitives(this.writerMock.Object, catalogueName, schema, tableName,
+                this.mainTableColumns, primaryKeyValues);
 
             // Assert
 
@@ -181,7 +185,7 @@ namespace Tests.Tests.ImmediateTests
             Assert.AreEqual(1, primaryKeyValues.Count);
 
             Assert.AreEqual("Key", primaryKeyValues[0].ColumnName);
-            Assert.AreEqual(typeof (ForeignTable), primaryKeyValues[0].TableType);
+            Assert.AreEqual(typeof(ForeignTable), primaryKeyValues[0].TableType);
             Assert.AreEqual(identityVariableSymbol, primaryKeyValues[0].Value);
         }
 
@@ -212,17 +216,18 @@ namespace Tests.Tests.ImmediateTests
                     InsertRecordServiceTest.IsKeyReferenceCheckEnforced);
             // Act
 
-            this.insertRecordService.WritePrimitives(this.writerMock.Object, catalogueName, schema, tableName, Helpers.GetColumns(table, this.attributeDecorator), primaryKeyValues);
+            this.insertRecordService.WritePrimitives(this.writerMock.Object, catalogueName, schema, tableName,
+                Helpers.GetColumns(table, this.attributeDecorator), primaryKeyValues);
 
             // Assert
 
             Assert.AreEqual(2, primaryKeyValues.Count);
 
-            Assert.AreEqual(typeof (ManualKeyPrimaryTable), primaryKeyValues[0].TableType);
+            Assert.AreEqual(typeof(ManualKeyPrimaryTable), primaryKeyValues[0].TableType);
             Assert.AreEqual(keyValue1, primaryKeyValues[0].Value);
             Assert.AreEqual("Key1", primaryKeyValues[0].ColumnName);
 
-            Assert.AreEqual(typeof (ManualKeyPrimaryTable), primaryKeyValues[1].TableType);
+            Assert.AreEqual(typeof(ManualKeyPrimaryTable), primaryKeyValues[1].TableType);
             Assert.AreEqual(keyValue2, primaryKeyValues[1].Value);
             Assert.AreEqual("Key2", primaryKeyValues[1].ColumnName);
         }
@@ -239,7 +244,8 @@ namespace Tests.Tests.ImmediateTests
                 new InsertRecordService(
                     new RecordReference<KeyNoneTable>(
                         Helpers.GetTypeGeneratorMock(
-                            new KeyNoneTable()).Object, this.attributeDecorator, null, null, null, null), this.attributeDecorator,
+                            new KeyNoneTable()).Object, this.attributeDecorator, null, null, null, null),
+                    this.attributeDecorator,
                     InsertRecordServiceTest.IsKeyReferenceCheckEnforced);
 
             const string tableName = "ABCD";
@@ -248,7 +254,8 @@ namespace Tests.Tests.ImmediateTests
 
             // Act
 
-            this.insertRecordService.WritePrimitives(this.writerMock.Object, catalogueName, schema, tableName, columns, primaryKeyValues);
+            this.insertRecordService.WritePrimitives(this.writerMock.Object, catalogueName, schema, tableName, columns,
+                primaryKeyValues);
 
             // Assert
 
@@ -262,16 +269,19 @@ namespace Tests.Tests.ImmediateTests
 
             var target = new ManualKeyForeignTable();
 
-            var recordReference = new RecordReference<ManualKeyForeignTable>(Helpers.GetTypeGeneratorMock(target).Object, this.attributeDecorator, null, null, null, null);
+            var recordReference =
+                new RecordReference<ManualKeyForeignTable>(Helpers.GetTypeGeneratorMock(target).Object,
+                    this.attributeDecorator, null, null, null, null);
             recordReference.Populate();
 
-            this.insertRecordService = new InsertRecordService(recordReference, this.attributeDecorator, InsertRecordServiceTest.IsKeyReferenceCheckEnforced);
+            this.insertRecordService = new InsertRecordService(recordReference, this.attributeDecorator,
+                InsertRecordServiceTest.IsKeyReferenceCheckEnforced);
 
             var columns = new[]
             {
-                new Column { Name = "ForeignKey1", Value = "ABCD" },
-                new Column { Name = "Two", Value = new Variable(null) },
-                new Column { Name = "ForeignKey2", Value = 3 },
+                new Column {Name = "ForeignKey1", Value = "ABCD"},
+                new Column {Name = "Two", Value = new Variable(null)},
+                new Column {Name = "ForeignKey2", Value = 3}
             };
 
             // Act
@@ -291,15 +301,18 @@ namespace Tests.Tests.ImmediateTests
 
             var target = new ManualKeyForeignTable();
 
-            var recordReference = new RecordReference<ManualKeyForeignTable>(Helpers.GetTypeGeneratorMock(target).Object, this.attributeDecorator, null, null, null, null);
+            var recordReference =
+                new RecordReference<ManualKeyForeignTable>(Helpers.GetTypeGeneratorMock(target).Object,
+                    this.attributeDecorator, null, null, null, null);
             recordReference.Populate();
 
-            this.insertRecordService = new InsertRecordService(recordReference, this.attributeDecorator, InsertRecordServiceTest.IsKeyReferenceCheckEnforced);
+            this.insertRecordService = new InsertRecordService(recordReference, this.attributeDecorator,
+                InsertRecordServiceTest.IsKeyReferenceCheckEnforced);
 
             var columns = new[]
             {
-                new Column { Name = "ForeignKey1", Value = "ABCD" },
-                new Column { Name = "Two", Value = new object() },
+                new Column {Name = "ForeignKey1", Value = "ABCD"},
+                new Column {Name = "Two", Value = new object()}
             };
 
             // Act
@@ -308,7 +321,7 @@ namespace Tests.Tests.ImmediateTests
             Helpers.ExceptionTest(
                 () => this.insertRecordService.CopyPrimaryToForeignKeyColumns(columns),
                 typeof(InvalidOperationException),
-                "Sequence contains no matching element");            
+                "Sequence contains no matching element");
         }
 
         [TestMethod]
@@ -343,10 +356,12 @@ namespace Tests.Tests.ImmediateTests
 
             var table = new ManualKeyPrimaryTable {Key1 = "ABCD", Key2 = 7};
 
-            var typeGeneratorMock = Helpers.GetTypeGeneratorMock(table);
-            var recordReference = new RecordReference<ManualKeyPrimaryTable>(typeGeneratorMock.Object, this.attributeDecorator, null, null, null, null);
+            Mock<ITypeGenerator> typeGeneratorMock = Helpers.GetTypeGeneratorMock(table);
+            var recordReference = new RecordReference<ManualKeyPrimaryTable>(typeGeneratorMock.Object,
+                this.attributeDecorator, null, null, null, null);
             recordReference.Populate();
-            var insertRecordService = new InsertRecordService(recordReference, this.attributeDecorator, InsertRecordServiceTest.IsKeyReferenceCheckEnforced);
+            var insertRecordService = new InsertRecordService(recordReference, this.attributeDecorator,
+                InsertRecordServiceTest.IsKeyReferenceCheckEnforced);
 
             // Act
 
@@ -372,10 +387,12 @@ namespace Tests.Tests.ImmediateTests
 
             Mock<ITypeGenerator> typeGeneratorMock = Helpers.GetTypeGeneratorMock(table);
 
-            var recordReference = new RecordReference<ClassWithGuidKeys>(typeGeneratorMock.Object, this.attributeDecorator, null, null, null, null);
+            var recordReference = new RecordReference<ClassWithGuidKeys>(typeGeneratorMock.Object,
+                this.attributeDecorator, null, null, null, null);
             recordReference.Populate();
 
-            var insertRecordService = new InsertRecordService(recordReference, this.attributeDecorator, InsertRecordServiceTest.IsKeyReferenceCheckEnforced);
+            var insertRecordService = new InsertRecordService(recordReference, this.attributeDecorator,
+                InsertRecordServiceTest.IsKeyReferenceCheckEnforced);
 
             Variable v1, v2, v3;
             this.writerMock.Setup(m => m.WriteGuid("Key1")).Returns(v1 = new Variable("x"));
@@ -404,7 +421,7 @@ namespace Tests.Tests.ImmediateTests
         {
             // Arrange
 
-            var table = new ClassWithGuidKeys { Key1 = Guid.NewGuid(), Key3 = Guid.NewGuid(), Key4 = null };
+            var table = new ClassWithGuidKeys {Key1 = Guid.NewGuid(), Key3 = Guid.NewGuid(), Key4 = null};
 
             Mock<ITypeGenerator> typeGeneratorMock = Helpers.GetTypeGeneratorMock(table);
             var recordReference = new RecordReference<ClassWithGuidKeys>(typeGeneratorMock.Object,
@@ -415,10 +432,12 @@ namespace Tests.Tests.ImmediateTests
                 .Setup<Guid?>(nameof(ClassWithGuidKeys.Key3))
                 .Setup<Guid?>(nameof(ClassWithGuidKeys.Key4));
 
-            recordReference.Set(r => r.Key1, Guid.Empty).Set(r => r.Key3, (Guid?)Guid.Empty).Set(r => r.Key4, (Guid?)Guid.Empty);
+            recordReference.Set(r => r.Key1, Guid.Empty).Set(r => r.Key3, (Guid?) Guid.Empty)
+                .Set(r => r.Key4, (Guid?) Guid.Empty);
             recordReference.Populate();
 
-            var insertRecordService = new InsertRecordService(recordReference, this.attributeDecorator, InsertRecordServiceTest.IsKeyReferenceCheckEnforced);
+            var insertRecordService = new InsertRecordService(recordReference, this.attributeDecorator,
+                InsertRecordServiceTest.IsKeyReferenceCheckEnforced);
 
             // Act
 
@@ -442,11 +461,12 @@ namespace Tests.Tests.ImmediateTests
 
             var primaryKeySymbols = new List<ColumnSymbol>
             {
-                new ColumnSymbol {ColumnName = "Key", TableType = typeof (PrimaryTable), Value = primaryKeyValue}
+                new ColumnSymbol {ColumnName = "Key", TableType = typeof(PrimaryTable), Value = primaryKeyValue}
             };
 
             var primaryKeyInsertRecordMock = new Mock<InsertRecord>(this.insertRecordService,
-                new RecordReference<PrimaryTable>(Helpers.GetTypeGeneratorMock(new PrimaryTable()).Object, this.attributeDecorator, null, null, null, null),
+                new RecordReference<PrimaryTable>(Helpers.GetTypeGeneratorMock(new PrimaryTable()).Object,
+                    this.attributeDecorator, null, null, null, null),
                 this.peers, null);
 
             primaryKeyInsertRecordMock.Setup(m => m.GetPrimaryKeySymbols()).Returns(primaryKeySymbols);
@@ -468,21 +488,20 @@ namespace Tests.Tests.ImmediateTests
         {
             // Arrange
 
-            var insertRecordService = new InsertRecordService(this.recordReference, this.attributeDecorator, enforceKeyReferenceCheck: false);
+            var insertRecordService = new InsertRecordService(this.recordReference, this.attributeDecorator, false);
 
             var primaryKeySymbols = new List<ColumnSymbol>
             {
-                new ColumnSymbol {ColumnName = "Key1", TableType = typeof (ManualKeyPrimaryTable), Value = "ABCD"},
-                new ColumnSymbol {ColumnName = "Key2", TableType = typeof (ManualKeyPrimaryTable), Value = 5},
+                new ColumnSymbol {ColumnName = "Key1", TableType = typeof(ManualKeyPrimaryTable), Value = "ABCD"},
+                new ColumnSymbol {ColumnName = "Key2", TableType = typeof(ManualKeyPrimaryTable), Value = 5}
             };
 
             var primaryKeyInsertRecordMock = new Mock<InsertRecord>(insertRecordService,
-
                 new RecordReference<ManualKeyPrimaryTable>(
-                    Helpers.GetTypeGeneratorMock(new ManualKeyPrimaryTable()).Object, this.attributeDecorator, null, null, null, null),
-                
+                    Helpers.GetTypeGeneratorMock(new ManualKeyPrimaryTable()).Object, this.attributeDecorator, null,
+                    null, null, null),
                 this.peers, this.attributeDecorator
-                );
+            );
 
             primaryKeyInsertRecordMock.Setup(m => m.GetPrimaryKeySymbols()).Returns(primaryKeySymbols);
 
@@ -490,14 +509,14 @@ namespace Tests.Tests.ImmediateTests
 
             List<ExtendedColumnSymbol> fkColumns =
                 // Remember: Insert record service populated with the record reference as given in the test initialization above.
-                insertRecordService.GetForeignKeyColumns(new[] { primaryKeyInsertRecordMock.Object }).ToList();
+                insertRecordService.GetForeignKeyColumns(new[] {primaryKeyInsertRecordMock.Object}).ToList();
 
             // Assert
 
             Assert.AreEqual(1, fkColumns.Count);
             Assert.AreEqual("ForeignKey", fkColumns[0].ColumnName);
 
-            Assert.AreEqual(Helper.GetDefaultValue(typeof (ForeignTable).GetProperty("ForeignKey").PropertyType),
+            Assert.AreEqual(Helper.GetDefaultValue(typeof(ForeignTable).GetProperty("ForeignKey").PropertyType),
                 fkColumns[0].Value);
         }
 
@@ -508,17 +527,19 @@ namespace Tests.Tests.ImmediateTests
 
             const int explicitValue = 7;
 
-            this.foreignKeyTable.ForeignKey = explicitValue;  // Simulate getting expicitly set value from type generator
+            this.foreignKeyTable.ForeignKey = explicitValue; // Simulate getting expicitly set value from type generator
 
             var primaryKeySymbols = new List<ColumnSymbol>
             {
-                new ColumnSymbol {ColumnName = "Key", TableType = typeof (PrimaryTable), Value = 5}
+                new ColumnSymbol {ColumnName = "Key", TableType = typeof(PrimaryTable), Value = 5}
             };
 
             var recordReference =
-                new RecordReference<PrimaryTable>(Helpers.GetTypeGeneratorMock(new PrimaryTable()).Object, this.attributeDecorator, null, null, null, null);
+                new RecordReference<PrimaryTable>(Helpers.GetTypeGeneratorMock(new PrimaryTable()).Object,
+                    this.attributeDecorator, null, null, null, null);
 
-            var primaryKeyInsertRecordMock = new Mock<InsertRecord>(this.insertRecordService, recordReference, this.peers, this.attributeDecorator);
+            var primaryKeyInsertRecordMock = new Mock<InsertRecord>(this.insertRecordService, recordReference,
+                this.peers, this.attributeDecorator);
 
             primaryKeyInsertRecordMock.Setup(m => m.GetPrimaryKeySymbols()).Returns(primaryKeySymbols);
 
@@ -526,12 +547,12 @@ namespace Tests.Tests.ImmediateTests
                 .Setup<int>(nameof(ForeignTable.ForeignKey));
 
             // Just record the fact that "ForeignKey" is explicitly set. Actual value comes from explicit value above.
-            this.recordReference.Set(r => r.ForeignKey, default(int));  
+            this.recordReference.Set(r => r.ForeignKey, default(int));
 
             // Act
 
             List<ExtendedColumnSymbol> fkColumns =
-                this.insertRecordService.GetForeignKeyColumns(new[] { primaryKeyInsertRecordMock.Object }).ToList();
+                this.insertRecordService.GetForeignKeyColumns(new[] {primaryKeyInsertRecordMock.Object}).ToList();
 
             // Assert
 
@@ -545,21 +566,20 @@ namespace Tests.Tests.ImmediateTests
         {
             // Arrange
 
-            var insertRecordService = new InsertRecordService(this.recordReference, this.attributeDecorator, enforceKeyReferenceCheck: true);
+            var insertRecordService = new InsertRecordService(this.recordReference, this.attributeDecorator, true);
 
             var primaryKeySymbols = new List<ColumnSymbol>
             {
-                new ColumnSymbol {ColumnName = "Key1", TableType = typeof (ManualKeyPrimaryTable), Value = "ABCD"},
-                new ColumnSymbol {ColumnName = "Key2", TableType = typeof (ManualKeyPrimaryTable), Value = 5},
+                new ColumnSymbol {ColumnName = "Key1", TableType = typeof(ManualKeyPrimaryTable), Value = "ABCD"},
+                new ColumnSymbol {ColumnName = "Key2", TableType = typeof(ManualKeyPrimaryTable), Value = 5}
             };
 
             var primaryKeyInsertRecordMock = new Mock<InsertRecord>(insertRecordService,
-
                 new RecordReference<ManualKeyPrimaryTable>(
-                    Helpers.GetTypeGeneratorMock(new ManualKeyPrimaryTable()).Object, this.attributeDecorator, null, null, null, null),
-
+                    Helpers.GetTypeGeneratorMock(new ManualKeyPrimaryTable()).Object, this.attributeDecorator, null,
+                    null, null, null),
                 this.peers, this.attributeDecorator
-                );
+            );
 
             primaryKeyInsertRecordMock.Setup(m => m.GetPrimaryKeySymbols()).Returns(primaryKeySymbols);
 
@@ -569,7 +589,7 @@ namespace Tests.Tests.ImmediateTests
 
             Helpers.ExceptionTest(
                 () => insertRecordService.GetForeignKeyColumns(new[] {primaryKeyInsertRecordMock.Object}),
-                typeof (InserRecordServiceException),
+                typeof(InserRecordServiceException),
                 "Foreign key in record found without corresponding record/primary key assigned. Foreign type: Tests.TestModels.ForeignTable, Property name: ForeignKey");
         }
     }

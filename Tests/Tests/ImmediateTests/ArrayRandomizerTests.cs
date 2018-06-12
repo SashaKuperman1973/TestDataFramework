@@ -31,12 +31,11 @@ namespace Tests.Tests.ImmediateTests
     [TestClass]
     public class ArrayRandomizerTests
     {
+        private const int Integer = 5;
+        private const int ElementLength = 3;
         private StandardArrayRandomizer arrayRandomizer;
         private Mock<Random> randomMock;
         private Mock<IValueGenerator> valueGeneratorMock;
-
-        private const int Integer = 5;
-        private const int ElementLength = 3;
 
         [TestInitialize]
         public void Initialize()
@@ -45,8 +44,10 @@ namespace Tests.Tests.ImmediateTests
             this.valueGeneratorMock = new Mock<IValueGenerator>();
             this.arrayRandomizer = new StandardArrayRandomizer(this.randomMock.Object, this.valueGeneratorMock.Object);
 
-            this.valueGeneratorMock.Setup(m => m.GetValue(It.IsAny<PropertyInfo>(), It.IsAny<Type>())).Returns(ArrayRandomizerTests.Integer);
-            this.valueGeneratorMock.Setup(m => m.GetValue(It.IsAny<PropertyInfo>(), It.Is<Type>(t => t.IsArray))).Returns<PropertyInfo, Type>((p, t) => this.arrayRandomizer.GetArray(p, t));
+            this.valueGeneratorMock.Setup(m => m.GetValue(It.IsAny<PropertyInfo>(), It.IsAny<Type>()))
+                .Returns(ArrayRandomizerTests.Integer);
+            this.valueGeneratorMock.Setup(m => m.GetValue(It.IsAny<PropertyInfo>(), It.Is<Type>(t => t.IsArray)))
+                .Returns<PropertyInfo, Type>((p, t) => this.arrayRandomizer.GetArray(p, t));
             this.randomMock.Setup(m => m.Next(It.IsAny<int>())).Returns(ArrayRandomizerTests.ElementLength - 1);
 
             XmlConfigurator.Configure();
@@ -57,8 +58,8 @@ namespace Tests.Tests.ImmediateTests
         {
             // Act
 
-            PropertyInfo propertyInfo = typeof (SubjectClass).GetProperty("SimpleArray");
-            object value = this.arrayRandomizer.GetArray(propertyInfo, propertyInfo.PropertyType) ;
+            PropertyInfo propertyInfo = typeof(SubjectClass).GetProperty("SimpleArray");
+            object value = this.arrayRandomizer.GetArray(propertyInfo, propertyInfo.PropertyType);
 
             // Assert
 
@@ -126,7 +127,7 @@ namespace Tests.Tests.ImmediateTests
         {
             Assert.IsNotNull(result);
 
-            int rank = result.Rank;
+            var rank = result.Rank;
 
             var index = new int[rank];
 
@@ -145,9 +146,7 @@ namespace Tests.Tests.ImmediateTests
 
                 i = 0;
                 while (i < rank && ++index[i] >= ArrayRandomizerTests.ElementLength)
-                {
                     index[i++] = 0;
-                }
             } while (i < rank);
         }
     }

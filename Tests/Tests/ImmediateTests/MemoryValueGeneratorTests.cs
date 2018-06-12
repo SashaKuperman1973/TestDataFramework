@@ -14,12 +14,12 @@ namespace Tests.Tests.ImmediateTests
 
             object result = memoryValueGenerator.GetValue(null, typeof(Guid));
             Assert.IsTrue(result is Guid);
-            Guid guid1 = (Guid)result;
+            var guid1 = (Guid) result;
             Assert.AreNotEqual(Guid.Empty, guid1);
 
             result = memoryValueGenerator.GetValue(null, typeof(Guid));
             Assert.IsTrue(result is Guid);
-            Guid guid2 = (Guid)result;
+            var guid2 = (Guid) result;
             Assert.AreNotEqual(Guid.Empty, guid2);
 
             Assert.AreNotEqual(guid1, guid2);

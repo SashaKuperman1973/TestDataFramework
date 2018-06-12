@@ -39,16 +39,14 @@ namespace Tests.Tests.ImmediateTests
 
             // Act
 
-            string result = randomSymbolStringGenerator.GetRandomString(stringLength);
+            var result = randomSymbolStringGenerator.GetRandomString(stringLength);
 
             // Assert
 
             Assert.AreEqual(stringLength, result.Length);
 
-            foreach (char character in result)
-            {
+            foreach (var character in result)
                 Assert.IsTrue(character >= 'A' && character <= 'Z');
-            }
         }
     }
 }

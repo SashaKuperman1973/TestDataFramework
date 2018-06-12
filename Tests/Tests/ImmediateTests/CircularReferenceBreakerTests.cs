@@ -28,7 +28,6 @@ namespace Tests.Tests.ImmediateTests
     {
         private void TestMethod(CircularReferenceBreaker breaker, object arg1, object arg2, object arg3)
         {
-            
         }
 
         [TestMethod]

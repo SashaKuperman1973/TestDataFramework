@@ -27,8 +27,8 @@ namespace Tests.Tests.ImmediateTests
     [TestClass]
     public class AccumulatorValueProviderTests
     {
-        private AccumulatorValueProvider valueProvider;
         private readonly ulong initialCount = Helper.DefaultInitalCount;
+        private AccumulatorValueProvider valueProvider;
 
         [TestInitialize]
         public void Initialize()
@@ -41,13 +41,13 @@ namespace Tests.Tests.ImmediateTests
         {
             // Act
 
-            int result1 = this.valueProvider.GetInteger(null);
-            int result2 = this.valueProvider.GetInteger(null);
+            var result1 = this.valueProvider.GetInteger(null);
+            var result2 = this.valueProvider.GetInteger(null);
 
             // Assert
 
-            Assert.AreEqual((int)this.initialCount, result1);
-            Assert.AreEqual((int)this.initialCount + 1, result2);
+            Assert.AreEqual((int) this.initialCount, result1);
+            Assert.AreEqual((int) this.initialCount + 1, result2);
         }
 
         [TestMethod]
@@ -55,13 +55,13 @@ namespace Tests.Tests.ImmediateTests
         {
             // Act
 
-            long result1 = this.valueProvider.GetLongInteger(null);
-            long result2 = this.valueProvider.GetLongInteger(null);
+            var result1 = this.valueProvider.GetLongInteger(null);
+            var result2 = this.valueProvider.GetLongInteger(null);
 
             // Assert
 
-            Assert.AreEqual((long)this.initialCount, result1);
-            Assert.AreEqual((long)this.initialCount + 1, result2);
+            Assert.AreEqual((long) this.initialCount, result1);
+            Assert.AreEqual((long) this.initialCount + 1, result2);
         }
 
         [TestMethod]
@@ -69,13 +69,13 @@ namespace Tests.Tests.ImmediateTests
         {
             // Act
 
-            short result1 = this.valueProvider.GetShortInteger(null);
-            short result2 = this.valueProvider.GetShortInteger(null);
+            var result1 = this.valueProvider.GetShortInteger(null);
+            var result2 = this.valueProvider.GetShortInteger(null);
 
             // Assert
 
-            Assert.AreEqual((short)this.initialCount, result1);
-            Assert.AreEqual((short)this.initialCount + 1, result2);
+            Assert.AreEqual((short) this.initialCount, result1);
+            Assert.AreEqual((short) this.initialCount + 1, result2);
         }
 
         [TestMethod]
@@ -83,8 +83,8 @@ namespace Tests.Tests.ImmediateTests
         {
             // Act
 
-            string result1 = this.valueProvider.GetString(5);
-            string result2 = this.valueProvider.GetString(7);
+            var result1 = this.valueProvider.GetString(5);
+            var result2 = this.valueProvider.GetString(7);
 
             // Assert
 
@@ -95,7 +95,7 @@ namespace Tests.Tests.ImmediateTests
         [TestMethod]
         public void GetString_DefaultLength_Test()
         {
-            string result = this.valueProvider.GetString(null);
+            var result = this.valueProvider.GetString(null);
 
             Assert.AreEqual("B+++++++++", result);
         }
@@ -105,8 +105,8 @@ namespace Tests.Tests.ImmediateTests
         {
             // Act
 
-            char result1 = this.valueProvider.GetCharacter();
-            char result2 = this.valueProvider.GetCharacter();
+            var result1 = this.valueProvider.GetCharacter();
+            var result2 = this.valueProvider.GetCharacter();
 
             // Assert
 
@@ -119,13 +119,13 @@ namespace Tests.Tests.ImmediateTests
         {
             // Act
 
-            decimal result1 = this.valueProvider.GetDecimal(null);
-            decimal result2 = this.valueProvider.GetDecimal(null);
+            var result1 = this.valueProvider.GetDecimal(null);
+            var result2 = this.valueProvider.GetDecimal(null);
 
             // Assert
 
-            Assert.AreEqual((decimal)this.initialCount, result1);
-            Assert.AreEqual((decimal)this.initialCount + 1, result2);
+            Assert.AreEqual(this.initialCount, result1);
+            Assert.AreEqual((decimal) this.initialCount + 1, result2);
         }
 
         [TestMethod]
@@ -133,9 +133,9 @@ namespace Tests.Tests.ImmediateTests
         {
             // Act
 
-            bool result1 = this.valueProvider.GetBoolean();
-            bool result2 = this.valueProvider.GetBoolean();
-            bool result3 = this.valueProvider.GetBoolean();
+            var result1 = this.valueProvider.GetBoolean();
+            var result2 = this.valueProvider.GetBoolean();
+            var result3 = this.valueProvider.GetBoolean();
 
             // Assert
 
@@ -163,13 +163,13 @@ namespace Tests.Tests.ImmediateTests
         {
             // Act
 
-            byte result1 = this.valueProvider.GetByte();
-            byte result2 = this.valueProvider.GetByte();
+            var result1 = this.valueProvider.GetByte();
+            var result2 = this.valueProvider.GetByte();
 
             // Assert
 
-            Assert.AreEqual((byte)this.initialCount + 1, result1);
-            Assert.AreEqual((byte)this.initialCount + 2, result2);
+            Assert.AreEqual((byte) this.initialCount + 1, result1);
+            Assert.AreEqual((byte) this.initialCount + 2, result2);
         }
 
         [TestMethod]
@@ -177,13 +177,13 @@ namespace Tests.Tests.ImmediateTests
         {
             // Act
 
-            double result1 = this.valueProvider.GetDouble(null);
-            double result2 = this.valueProvider.GetDouble(null);
+            var result1 = this.valueProvider.GetDouble(null);
+            var result2 = this.valueProvider.GetDouble(null);
 
             // Assert
 
-            Assert.AreEqual((double)this.initialCount, result1);
-            Assert.AreEqual((double)this.initialCount + 1, result2);
+            Assert.AreEqual(this.initialCount, result1);
+            Assert.AreEqual((double) this.initialCount + 1, result2);
         }
 
         [TestMethod]
@@ -191,13 +191,13 @@ namespace Tests.Tests.ImmediateTests
         {
             // Act
 
-            float result1 = this.valueProvider.GetFloat(null);
-            float result2 = this.valueProvider.GetFloat(null);
+            var result1 = this.valueProvider.GetFloat(null);
+            var result2 = this.valueProvider.GetFloat(null);
 
             // Assert
 
-            Assert.AreEqual((float)this.initialCount, result1);
-            Assert.AreEqual((float)this.initialCount + 1, result2);
+            Assert.AreEqual(this.initialCount, result1);
+            Assert.AreEqual((float) this.initialCount + 1, result2);
         }
     }
 }

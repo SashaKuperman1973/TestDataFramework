@@ -20,9 +20,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -89,7 +87,7 @@ namespace Tests.Tests.ImmediateTests
             var operableList = new OperableList<SubjectClass>(null, null);
             var recordReference = new RecordReference<SubjectClass>(null, null, null, null, null, null);
             var subject = new SubjectClass();
-            ((RecordReference)recordReference).RecordObject = subject;
+            ((RecordReference) recordReference).RecordObject = subject;
 
             // Act
 
@@ -107,7 +105,7 @@ namespace Tests.Tests.ImmediateTests
 
             var operableList = new OperableList<SubjectClass>(null, null);
             var subject = new SubjectClass();
-            SubjectClass[] data = {subject,};
+            SubjectClass[] data = {subject};
 
             // Act
 
@@ -146,7 +144,7 @@ namespace Tests.Tests.ImmediateTests
 
             var operableList = new OperableList<SubjectClass>(null, null);
             Func<SubjectClass> subject = () => new SubjectClass();
-            Func<SubjectClass>[] data = { subject, };
+            Func<SubjectClass>[] data = {subject};
 
             // Act
 
@@ -165,7 +163,7 @@ namespace Tests.Tests.ImmediateTests
 
             var operableList = new OperableList<SubjectClass>(null, null);
             var subject = new SubjectClass();
-            SubjectClass[] data = { subject, };
+            SubjectClass[] data = {subject};
 
             // Act
 
@@ -189,7 +187,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Act
 
-            operableList.GuaranteeByFixedQuantity(new object[] { a, b }, 10);
+            operableList.GuaranteeByFixedQuantity(new object[] {a, b}, 10);
 
             // Assert
 
@@ -204,7 +202,7 @@ namespace Tests.Tests.ImmediateTests
 
             var operableList = new OperableList<SubjectClass>(null, null);
             Func<SubjectClass> subject = () => new SubjectClass();
-            Func<SubjectClass>[] data = { subject, };
+            Func<SubjectClass>[] data = {subject};
 
             // Act
 
@@ -226,7 +224,7 @@ namespace Tests.Tests.ImmediateTests
             var subject1 = new SubjectClass();
             var subject2 = new SubjectClass();
             var subject3 = new SubjectClass();
-            SubjectClass[] data = { subject1, subject2, subject3 };
+            SubjectClass[] data = {subject1, subject2, subject3};
 
             // Act
 
@@ -247,11 +245,11 @@ namespace Tests.Tests.ImmediateTests
             var subject1 = new SubjectClass();
             Func<SubjectClass> subject2 = () => new SubjectClass();
             var subject3 = new SubjectClass();
-            object[] data = { subject1, subject2, subject3 };
+            object[] data = {subject1, subject2, subject3};
 
             // Act
 
-            operableList.GuaranteeByFixedQuantity(new object[] { subject1, subject2, subject3 });
+            operableList.GuaranteeByFixedQuantity(new object[] {subject1, subject2, subject3});
 
             // Assert
 
@@ -285,7 +283,7 @@ namespace Tests.Tests.ImmediateTests
 
             var operableList = new OperableList<SubjectClass>(null, null);
             var subjectRecord = new RecordReference<SubjectClass>(null, null, null, null, null, null);
-            operableList.InternalList = new List<RecordReference<SubjectClass>> { subjectRecord };
+            operableList.InternalList = new List<RecordReference<SubjectClass>> {subjectRecord};
 
             var data = new List<RecordReference>();
 
@@ -337,7 +335,7 @@ namespace Tests.Tests.ImmediateTests
 
             IEnumerator enumerator = ((IEnumerable) operableList).GetEnumerator();
             enumerator.MoveNext();
-            actual = (RecordReference<SubjectClass>)enumerator.Current;
+            actual = (RecordReference<SubjectClass>) enumerator.Current;
 
             // Assert
 
@@ -391,7 +389,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Act
 
-            int c = operableList.Count;
+            var c = operableList.Count;
 
             // Assert
 
@@ -444,7 +442,7 @@ namespace Tests.Tests.ImmediateTests
             var reference = new RecordReference<SubjectClass>(null, null, null, null, null, null);
 
             var subject = new SubjectClass();
-            SubjectClass[] data = { subject, };
+            SubjectClass[] data = {subject};
 
             operableList.GuaranteeByFixedQuantity(data);
             operableList.Add(reference);
@@ -468,7 +466,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Act
 
-            bool result = operableList.Contains(reference);
+            var result = operableList.Contains(reference);
 
             // Assert
 
@@ -484,7 +482,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Act
 
-            bool result = operableList.IsReadOnly;
+            var result = operableList.IsReadOnly;
 
             // Assert
 
@@ -527,7 +525,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Act
 
-            int index = operableList.IndexOf(reference2);
+            var index = operableList.IndexOf(reference2);
 
             // Assert
 
@@ -579,7 +577,7 @@ namespace Tests.Tests.ImmediateTests
             // Act
 
             operableList.RemoveAt(1);
-            
+
             // Assert
 
             Assert.IsFalse(operableList.Contains(subject));
@@ -606,8 +604,10 @@ namespace Tests.Tests.ImmediateTests
 
             // Assert
 
-            typeGeneratorMock.Verify(m => m.GetObject<SubjectClass>(It.IsAny<List<ExplicitPropertySetters>>()), Times.Exactly(2));
-            valueGuaranteePopulatorMock.Verify(m => m.Bind(It.IsAny<OperableList<SubjectClass>>(), It.IsAny<List<GuaranteedValues>>()), Times.Never);
+            typeGeneratorMock.Verify(m => m.GetObject<SubjectClass>(It.IsAny<List<ExplicitPropertySetters>>()),
+                Times.Exactly(2));
+            valueGuaranteePopulatorMock.Verify(
+                m => m.Bind(It.IsAny<OperableList<SubjectClass>>(), It.IsAny<List<GuaranteedValues>>()), Times.Never);
         }
 
         [TestMethod]
@@ -620,7 +620,7 @@ namespace Tests.Tests.ImmediateTests
             var operableList = new OperableList<SubjectClass>(valueGuaranteePopulatorMock.Object, null);
 
             var subject = new SubjectClass();
-            SubjectClass[] data = { subject, };
+            SubjectClass[] data = {subject};
 
             operableList.GuaranteeByPercentageOfTotal(data, 10);
 
@@ -650,7 +650,8 @@ namespace Tests.Tests.ImmediateTests
 
             // Assert
 
-            typeGeneratorMock.Verify(m => m.GetObject<SubjectClass>(It.IsAny<IEnumerable<ExplicitPropertySetters>>()), Times.Once);
+            typeGeneratorMock.Verify(m => m.GetObject<SubjectClass>(It.IsAny<IEnumerable<ExplicitPropertySetters>>()),
+                Times.Once);
         }
 
         [TestMethod]
@@ -659,12 +660,16 @@ namespace Tests.Tests.ImmediateTests
             var operableList = new OperableList<ClassWithSideEffectProperty>(null, null);
 
             var objectGraphServiceMock = new Mock<IObjectGraphService>();
-            PropertyInfo propertyInfo = typeof(ClassWithSideEffectProperty).GetProperty(nameof(ClassWithSideEffectProperty.SideEffectProperty));
+            PropertyInfo propertyInfo =
+                typeof(ClassWithSideEffectProperty).GetProperty(nameof(ClassWithSideEffectProperty.SideEffectProperty));
 
-            objectGraphServiceMock.Setup(m => m.GetObjectGraph<ClassWithSideEffectProperty, int>(p => p.SideEffectProperty))
-                .Returns(new List<PropertyInfo> { propertyInfo });
+            objectGraphServiceMock
+                .Setup(m => m.GetObjectGraph<ClassWithSideEffectProperty, int>(p => p.SideEffectProperty))
+                .Returns(new List<PropertyInfo> {propertyInfo});
 
-            var recordReference = new RecordReference<ClassWithSideEffectProperty>(null, null, null, objectGraphServiceMock.Object, null, null);
+            var recordReference =
+                new RecordReference<ClassWithSideEffectProperty>(null, null, null, objectGraphServiceMock.Object, null,
+                    null);
             operableList.Add(recordReference);
 
             var subject = new ClassWithSideEffectProperty();

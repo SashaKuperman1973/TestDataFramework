@@ -22,7 +22,6 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using TestDataFramework.AttributeDecorator;
 using TestDataFramework.AttributeDecorator.Concrete;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
@@ -36,10 +35,10 @@ namespace Tests.Tests.ImmediateTests
     [TestClass]
     public class KeyTypeUniqueValueGeneratorTests
     {
+        private Mock<IDeferredValueGenerator<LargeInteger>> deferredValueGeneratorMock;
         private KeyTypeUniqueValueGenerator generator;
 
         private Mock<IPropertyValueAccumulator> propertyValueAccumulatorMock;
-        private Mock<IDeferredValueGenerator<LargeInteger>> deferredValueGeneratorMock;
 
         [TestInitialize]
         public void Initialize()
@@ -48,26 +47,26 @@ namespace Tests.Tests.ImmediateTests
             this.deferredValueGeneratorMock = new Mock<IDeferredValueGenerator<LargeInteger>>();
 
             this.generator = new KeyTypeUniqueValueGenerator(this.propertyValueAccumulatorMock.Object,
-                new StandardAttributeDecorator(null, new AssemblyWrapper(null), new Schema()), 
+                new StandardAttributeDecorator(null, new AssemblyWrapper(null), new Schema()),
                 this.deferredValueGeneratorMock.Object,
-                throwIfUnhandledType: false);
+                false);
         }
 
         [TestMethod]
         public void GetValue_Test()
         {
             new[]
-            {
-                typeof(ByteKeyClass),
-                typeof(IntKeyClass),
-                typeof(ShortKeyClass),
-                typeof(LongKeyClass),
-                typeof(StringKeyClass),
-                typeof(UIntKeyClass),
-                typeof(UShortKeyClass),
-                typeof(ULongKeyClass),
-            }
-            .ToList().ForEach(this.PrimaryKeyTest);
+                {
+                    typeof(ByteKeyClass),
+                    typeof(IntKeyClass),
+                    typeof(ShortKeyClass),
+                    typeof(LongKeyClass),
+                    typeof(StringKeyClass),
+                    typeof(UIntKeyClass),
+                    typeof(UShortKeyClass),
+                    typeof(ULongKeyClass)
+                }
+                .ToList().ForEach(this.PrimaryKeyTest);
         }
 
         private void PrimaryKeyTest(Type @class)

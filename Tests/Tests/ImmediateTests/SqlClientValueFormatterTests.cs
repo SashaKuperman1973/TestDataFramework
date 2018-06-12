@@ -19,6 +19,7 @@
 
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestDataFramework.Exceptions;
 using TestDataFramework.RepositoryOperations.Model;
 using TestDataFramework.ValueFormatter.Concrete;
 
@@ -51,10 +52,6 @@ namespace Tests.Tests.ImmediateTests
             Assert.AreEqual("@ABCD", result);
         }
 
-        private class NotHandledType
-        {
-        }
-
         [TestMethod]
         public void Format_NotHanldedType_Test()
         {
@@ -64,8 +61,8 @@ namespace Tests.Tests.ImmediateTests
 
             // Act. Assert.
 
-            Helpers.ExceptionTest(() => this.formatter.Format(unhandled), typeof (NotSupportedException),
-                string.Format(TestDataFramework.Exceptions.Messages.InsertionDoesNotSupportType, unhandled.GetType(), unhandled));
+            Helpers.ExceptionTest(() => this.formatter.Format(unhandled), typeof(NotSupportedException),
+                string.Format(Messages.InsertionDoesNotSupportType, unhandled.GetType(), unhandled));
         }
 
         [TestMethod]
@@ -78,6 +75,10 @@ namespace Tests.Tests.ImmediateTests
             // Assert
 
             Assert.AreEqual("5", result);
+        }
+
+        private class NotHandledType
+        {
         }
     }
 }

@@ -16,7 +16,9 @@ namespace Tests.Tests.ImmediateTests
 
             var objectGraphService = new ObjectGraphService();
 
-            List<PropertyInfo> objectGraph = objectGraphService.GetObjectGraph<SubjectClass, int>(subjectClassParam => subjectClassParam.SecondObject.SecondInteger);
+            List<PropertyInfo> objectGraph =
+                objectGraphService.GetObjectGraph<SubjectClass, int>(subjectClassParam => subjectClassParam.SecondObject
+                    .SecondInteger);
 
             Assert.AreEqual(nameof(SubjectClass.SecondObject), objectGraph[0].Name);
             Assert.AreEqual(typeof(SecondClass), objectGraph[0].PropertyType);

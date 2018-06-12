@@ -17,12 +17,12 @@
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-using log4net.Config;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using log4net.Config;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using TestDataFramework.AttributeDecorator.Concrete;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.AttributeDecorator.Interfaces;
@@ -40,12 +40,11 @@ namespace Tests.Tests.ImmediateTests
     [TestClass]
     public class StandardPopulatorTests
     {
-        private StandardPopulator populator;
-
         private IAttributeDecorator attributeDecorator;
-        private Mock<IPersistence> persistenceMock;
-        private Mock<ITypeGenerator> typeGeneratorMock;
         private Mock<IHandledTypeGenerator> handledTypeGeneratorMock;
+        private Mock<IPersistence> persistenceMock;
+        private StandardPopulator populator;
+        private Mock<ITypeGenerator> typeGeneratorMock;
 
         [TestInitialize]
         public void Initialize()
@@ -87,7 +86,7 @@ namespace Tests.Tests.ImmediateTests
         {
             // Arrange
 
-            var expected = new SubjectClass { AnEmailAddress = "email"};
+            var expected = new SubjectClass {AnEmailAddress = "email"};
             var mockPersistence = new MockPersistence();
             var populator = new StandardPopulator(Helpers.GetTypeGeneratorMock(expected).Object, mockPersistence,
                 this.attributeDecorator, null, null, null, null, null);
@@ -117,11 +116,12 @@ namespace Tests.Tests.ImmediateTests
             const int integer = 5;
             const string text = "abcde";
 
-            var inputRecord = new SubjectClass {Integer = integer, Text = text,};
+            var inputRecord = new SubjectClass {Integer = integer, Text = text};
             Helpers.SetupTypeGeneratorMock(this.typeGeneratorMock, inputRecord);
 
             var mockPersistence = new MockPersistence();
-            var populator = new StandardPopulator(this.typeGeneratorMock.Object, mockPersistence, this.attributeDecorator, null, null, null, null, null);
+            var populator = new StandardPopulator(this.typeGeneratorMock.Object, mockPersistence,
+                this.attributeDecorator, null, null, null, null, null);
 
             // Act
 
@@ -164,7 +164,8 @@ namespace Tests.Tests.ImmediateTests
 
             var referenceMock1 = new Mock<RecordReference<SubjectClass>>(null, null, null, null, null, null);
             var referenceMock2 = new Mock<RecordReference<SubjectClass>>(null, null, null, null, null, null);
-            var set = new OperableList<SubjectClass>(new List<RecordReference<SubjectClass>> { referenceMock1.Object, referenceMock2.Object },
+            var set = new OperableList<SubjectClass>(
+                new List<RecordReference<SubjectClass>> {referenceMock1.Object, referenceMock2.Object},
                 null, null);
 
             // Act
@@ -214,7 +215,8 @@ namespace Tests.Tests.ImmediateTests
             // Arrange
 
             var mockPersistence = new MockPersistence();
-            var populator = new StandardPopulator(this.typeGeneratorMock.Object, mockPersistence, this.attributeDecorator, null, null, null, null, null);
+            var populator = new StandardPopulator(this.typeGeneratorMock.Object, mockPersistence,
+                this.attributeDecorator, null, null, null, null, null);
 
             Helpers.SetupTypeGeneratorMock(this.typeGeneratorMock, new SubjectClass());
             Helpers.SetupTypeGeneratorMock(this.typeGeneratorMock, new SecondClass());
@@ -236,7 +238,8 @@ namespace Tests.Tests.ImmediateTests
             // Arrange
 
             var valueGetterDictionary = new Dictionary<Type, HandledTypeValueGetter>();
-            this.handledTypeGeneratorMock.SetupGet(m => m.HandledTypeValueGetterDictionary).Returns(valueGetterDictionary);
+            this.handledTypeGeneratorMock.SetupGet(m => m.HandledTypeValueGetterDictionary)
+                .Returns(valueGetterDictionary);
 
             var subject = new SubjectClass();
 

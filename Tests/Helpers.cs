@@ -18,7 +18,6 @@
 */
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -26,7 +25,6 @@ using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework;
-using TestDataFramework.AttributeDecorator;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeepSetting;
 using TestDataFramework.DeepSetting.Interfaces;
@@ -64,16 +62,14 @@ namespace Tests
             Assert.AreEqual(exceptionType, exception.GetType());
 
             if (message != null)
-            {
                 Assert.AreEqual(message, exception.Message);
-            }
         }
 
         public static Mock<ITypeGenerator> GetTypeGeneratorMock<T>(T returnObject)
         {
             var typeGeneratorMock = new Mock<ITypeGenerator>();
 
-            Helpers.SetupTypeGeneratorMock<T>(typeGeneratorMock, returnObject);
+            Helpers.SetupTypeGeneratorMock(typeGeneratorMock, returnObject);
 
             return typeGeneratorMock;
         }
@@ -95,7 +91,6 @@ namespace Tests
                     p =>
                         (primaryKeyAttribute = attributeDecorator.GetSingleAttribute<PrimaryKeyAttribute>(p)) == null ||
                         primaryKeyAttribute.KeyType != PrimaryKeyAttribute.KeyTypeEnum.Auto)
-
                 .Select(p => new Column
                 {
                     Name = Helper.GetColumnName(p, attributeDecorator),
@@ -132,7 +127,8 @@ namespace Tests
             public ObjectGraphMockSetup<T> Setup<TPropertyType>(string propertyName)
             {
                 Func<Expression<Func<T, TPropertyType>>, string, bool> evaluatePropertyInfo =
-                    (expression, propertyNameToEvaluate) => ObjectGraphMockSetup<T>.ValidateMemberAccessExpression(expression).Member
+                    (expression, propertyNameToEvaluate) => ObjectGraphMockSetup<T>
+                        .ValidateMemberAccessExpression(expression).Member
                         .Name
                         .Equals(propertyNameToEvaluate, StringComparison.Ordinal);
 
@@ -152,9 +148,7 @@ namespace Tests
                 expression = lambdaExpression?.Body ?? expression;
 
                 if (expression.NodeType != ExpressionType.MemberAccess)
-                {
                     throw new MemberAccessException();
-                }
 
                 var memberExpression = expression as MemberExpression;
 
@@ -163,16 +157,12 @@ namespace Tests
                 var unaryExpression = expression as UnaryExpression;
 
                 if (unaryExpression == null)
-                {
                     throw new MemberAccessException();
-                }
 
                 memberExpression = unaryExpression.Operand as MemberExpression;
 
                 if (memberExpression == null)
-                {
                     throw new MemberAccessException();
-                }
 
                 return ObjectGraphMockSetup<T>.ValidatePropertyInfo(memberExpression);
             }
@@ -180,16 +170,13 @@ namespace Tests
             private static MemberExpression ValidatePropertyInfo(MemberExpression memberExpression)
             {
                 if (!(memberExpression.Member is PropertyInfo))
-                {
                     throw new MemberAccessException();
-                }
 
                 return memberExpression;
             }
 
             internal class MemberAccessException : Exception
             {
-
             }
         }
     }

@@ -2,7 +2,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework;
-using TestDataFramework.AttributeDecorator;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeferredValueGenerator.Concrete;
 using Tests.TestModels;
@@ -12,10 +11,10 @@ namespace Tests.Tests.ImmediateTests
     [TestClass]
     public class SqlWriterCommandTextGeneratorTests
     {
-        private TestDataFramework.DeferredValueGenerator.Concrete.SqlWriterCommandTextGenerator textGenerator;
+        private Mock<IAttributeDecorator> attributeDecoratorMock;
 
         private Mock<SqlWriterCommandText> sqlWriterCommandTextMock;
-        private Mock<IAttributeDecorator> attributeDecoratorMock;
+        private SqlWriterCommandTextGenerator textGenerator;
 
         [TestInitialize]
         public void Initialize()
@@ -23,7 +22,8 @@ namespace Tests.Tests.ImmediateTests
             this.sqlWriterCommandTextMock = new Mock<SqlWriterCommandText>();
             this.attributeDecoratorMock = new Mock<IAttributeDecorator>();
 
-            this.textGenerator = new TestDataFramework.DeferredValueGenerator.Concrete.SqlWriterCommandTextGenerator(this.attributeDecoratorMock.Object, this.sqlWriterCommandTextMock.Object);
+            this.textGenerator = new SqlWriterCommandTextGenerator(this.attributeDecoratorMock.Object,
+                this.sqlWriterCommandTextMock.Object);
         }
 
         [TestMethod]
@@ -33,19 +33,19 @@ namespace Tests.Tests.ImmediateTests
 
             var tableAttribute = new TableAttribute("CatalogueName", "SchemaName", "TableName");
 
-            PropertyInfo propertyInfo = typeof (PrimaryTable).GetProperty("Key");
+            PropertyInfo propertyInfo = typeof(PrimaryTable).GetProperty("Key");
 
             this.sqlWriterCommandTextMock.Setup(
-                m => m.GetStringSelect(tableAttribute.CatalogueName, tableAttribute.Schema, tableAttribute.Name, "Key"))
+                    m => m.GetStringSelect(tableAttribute.CatalogueName, tableAttribute.Schema, tableAttribute.Name,
+                        "Key"))
                 .Returns(testString);
 
             this.attributeDecoratorMock.Setup(m => m.GetCustomAttributes<TableAttribute>(typeof(PrimaryTable)))
-                .Returns(new TableAttribute[] {tableAttribute});
+                .Returns(new[] {tableAttribute});
 
-            string result = this.textGenerator.WriteString(propertyInfo);
+            var result = this.textGenerator.WriteString(propertyInfo);
 
             Assert.AreEqual(testString, result);
-
         }
 
         [TestMethod]
@@ -58,13 +58,14 @@ namespace Tests.Tests.ImmediateTests
             PropertyInfo propertyInfo = typeof(PrimaryTable).GetProperty("Key");
 
             this.sqlWriterCommandTextMock.Setup(
-                m => m.GetNumberSelect(tableAttribute.CatalogueName, tableAttribute.Schema, tableAttribute.Name, "Key"))
+                    m => m.GetNumberSelect(tableAttribute.CatalogueName, tableAttribute.Schema, tableAttribute.Name,
+                        "Key"))
                 .Returns(testString);
 
             this.attributeDecoratorMock.Setup(m => m.GetCustomAttributes<TableAttribute>(typeof(PrimaryTable)))
-                .Returns(new TableAttribute[] { tableAttribute });
+                .Returns(new[] {tableAttribute});
 
-            string result = this.textGenerator.WriteNumber(propertyInfo);
+            var result = this.textGenerator.WriteNumber(propertyInfo);
 
             Assert.AreEqual(testString, result);
         }

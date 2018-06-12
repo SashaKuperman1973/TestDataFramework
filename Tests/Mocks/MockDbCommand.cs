@@ -18,12 +18,13 @@
 */
 
 using System;
+using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
 
 namespace Tests.Mocks
 {
-	[System.ComponentModel.DesignerCategory("Code")]
+    [DesignerCategory("Code")]
     public class MockDbCommand : DbCommand
     {
         private readonly DbCommand command;
@@ -35,23 +36,18 @@ namespace Tests.Mocks
             this.reader = reader;
         }
 
-        public override void Prepare()
-        {
-            throw new NotImplementedException();
-        }
-
         public override string CommandText
         {
-            get { return this.command.CommandText; }
+            get => this.command.CommandText;
 
-            set { this.command.CommandText = value; }
+            set => this.command.CommandText = value;
         }
 
         public override CommandType CommandType
         {
-            get { return this.command.CommandType; }
+            get => this.command.CommandType;
 
-            set { this.command.CommandType = value; }
+            set => this.command.CommandType = value;
         }
 
         public override int CommandTimeout { get; set; }
@@ -62,12 +58,17 @@ namespace Tests.Mocks
 
         protected override DbConnection DbConnection
         {
-            get { return this.Connection; }
+            get => this.Connection;
 
-            set { this.Connection = value; }
+            set => this.Connection = value;
         }
 
         public new virtual DbConnection Connection { get; set; }
+
+        public override void Prepare()
+        {
+            throw new NotImplementedException();
+        }
 
         public override void Cancel()
         {

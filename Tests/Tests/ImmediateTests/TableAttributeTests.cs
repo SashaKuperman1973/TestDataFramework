@@ -95,81 +95,22 @@ namespace Tests.Tests.ImmediateTests
             const string catalogue = "catalogueABC";
             const string tableName = "tableNameABC";
 
-            Helpers.ExceptionTest(() => new TableAttribute(catalogueName: catalogue, schema: null, name: tableName), typeof (TableAttributeException),
+            Helpers.ExceptionTest(() => new TableAttribute(catalogue, null, tableName), typeof(TableAttributeException),
                 string.Format(Messages.CatalogueAndNoSchema, catalogue, tableName));
-
         }
 
         [TestMethod]
         public void TableNameRequiredException_Test()
         {
-            Helpers.ExceptionTest(() => new TableAttribute(null, null, name: null), typeof(ArgumentNullException),
+            Helpers.ExceptionTest(() => new TableAttribute(null, null, null), typeof(ArgumentNullException),
                 "Value cannot be null.\r\nParameter name: name");
 
-            Helpers.ExceptionTest(() => new TableAttribute(null, name: null), typeof(ArgumentNullException),
+            Helpers.ExceptionTest(() => new TableAttribute(null, null), typeof(ArgumentNullException),
                 "Value cannot be null.\r\nParameter name: name");
 
-            Helpers.ExceptionTest(() => new TableAttribute(name: null), typeof(ArgumentNullException),
+            Helpers.ExceptionTest(() => new TableAttribute(null), typeof(ArgumentNullException),
                 "Value cannot be null.\r\nParameter name: name");
         }
-
-        #region Equals tests
-
-        [TestMethod]
-        public void CatalogueNull_SchemaNull_Equals_Test()
-        {
-            var tableAttribute1 = new TableAttribute(catalogueName: null, schema: null, name: "AA");
-            var tableAttribute2 = new TableAttribute(catalogueName: null, schema: null, name: "AA");
-
-            Assert.IsTrue(tableAttribute1.Equals(tableAttribute2));
-        }
-
-        [TestMethod]
-        public void CatalogueNull_SameSchema_Equals_Test()
-        {
-            var tableAttribute1 = new TableAttribute(catalogueName: null, schema: "BB", name: "AA");
-            var tableAttribute2 = new TableAttribute(catalogueName: null, schema: "BB", name: "AA");
-
-            Assert.IsTrue(tableAttribute1.Equals(tableAttribute2));
-        }
-
-        [TestMethod]
-        public void SameCatalogue_SameSchema_Equals_Test()
-        {
-            var tableAttribute1 = new TableAttribute(catalogueName: "CC", schema: "BB", name: "AA");
-            var tableAttribute2 = new TableAttribute(catalogueName: "CC", schema: "BB", name: "AA");
-
-            Assert.IsTrue(tableAttribute1.Equals(tableAttribute2));
-        }
-
-        [TestMethod]
-        public void CatalogueNull_SchemaNull_DifferentName_NotEqual_Test()
-        {
-            var tableAttribute1 = new TableAttribute(catalogueName: null, schema: null, name: "AA");
-            var tableAttribute2 = new TableAttribute(catalogueName: null, schema: null, name: "BB");
-
-            Assert.IsFalse(tableAttribute1.Equals(tableAttribute2));
-        }
-
-        [TestMethod]
-        public void CatalogueNull_DifferentSchema_SameName_NotEqual_Test()
-        {
-            var tableAttribute1 = new TableAttribute(catalogueName: null, schema: "KK", name: "AA");
-            var tableAttribute2 = new TableAttribute(catalogueName: null, schema: "LL", name: "AA");
-
-            Assert.IsFalse(tableAttribute1.Equals(tableAttribute2));
-        }
-
-        [TestMethod]
-        public void DifferentCatalogue_SameSchema_SameName_NotEqual_Test()
-        {
-            var tableAttribute1 = new TableAttribute(catalogueName: "KK", schema: "BB", name: "AA");
-            var tableAttribute2 = new TableAttribute(catalogueName: "LL", schema: "BB", name: "AA");
-
-            Assert.IsFalse(tableAttribute1.Equals(tableAttribute2));
-        }
-
-        #endregion Equals tests
 
         [TestMethod]
         public void GetAttributeUsingDefaultSchema_Test()
@@ -201,7 +142,8 @@ namespace Tests.Tests.ImmediateTests
 
             ICanHaveDefaultSchema tableAttributeWithName = new TableAttribute("tableName123");
             ICanHaveDefaultSchema tableAttributeWithSchema = new TableAttribute("schema123", "tableName123");
-            ICanHaveDefaultSchema tableAttributeWithCatalogue = new TableAttribute("catalogueName123", "schema123", "tableName123");
+            ICanHaveDefaultSchema tableAttributeWithCatalogue =
+                new TableAttribute("catalogueName123", "schema123", "tableName123");
 
             // Assert
 
@@ -209,5 +151,63 @@ namespace Tests.Tests.ImmediateTests
             Assert.IsFalse(tableAttributeWithSchema.IsDefaultSchema);
             Assert.IsFalse(tableAttributeWithCatalogue.IsDefaultSchema);
         }
+
+        #region Equals tests
+
+        [TestMethod]
+        public void CatalogueNull_SchemaNull_Equals_Test()
+        {
+            var tableAttribute1 = new TableAttribute(null, null, "AA");
+            var tableAttribute2 = new TableAttribute(null, null, "AA");
+
+            Assert.IsTrue(tableAttribute1.Equals(tableAttribute2));
+        }
+
+        [TestMethod]
+        public void CatalogueNull_SameSchema_Equals_Test()
+        {
+            var tableAttribute1 = new TableAttribute(null, "BB", "AA");
+            var tableAttribute2 = new TableAttribute(null, "BB", "AA");
+
+            Assert.IsTrue(tableAttribute1.Equals(tableAttribute2));
+        }
+
+        [TestMethod]
+        public void SameCatalogue_SameSchema_Equals_Test()
+        {
+            var tableAttribute1 = new TableAttribute("CC", "BB", "AA");
+            var tableAttribute2 = new TableAttribute("CC", "BB", "AA");
+
+            Assert.IsTrue(tableAttribute1.Equals(tableAttribute2));
+        }
+
+        [TestMethod]
+        public void CatalogueNull_SchemaNull_DifferentName_NotEqual_Test()
+        {
+            var tableAttribute1 = new TableAttribute(null, null, "AA");
+            var tableAttribute2 = new TableAttribute(null, null, "BB");
+
+            Assert.IsFalse(tableAttribute1.Equals(tableAttribute2));
+        }
+
+        [TestMethod]
+        public void CatalogueNull_DifferentSchema_SameName_NotEqual_Test()
+        {
+            var tableAttribute1 = new TableAttribute(null, "KK", "AA");
+            var tableAttribute2 = new TableAttribute(null, "LL", "AA");
+
+            Assert.IsFalse(tableAttribute1.Equals(tableAttribute2));
+        }
+
+        [TestMethod]
+        public void DifferentCatalogue_SameSchema_SameName_NotEqual_Test()
+        {
+            var tableAttribute1 = new TableAttribute("KK", "BB", "AA");
+            var tableAttribute2 = new TableAttribute("LL", "BB", "AA");
+
+            Assert.IsFalse(tableAttribute1.Equals(tableAttribute2));
+        }
+
+        #endregion Equals tests
     }
 }

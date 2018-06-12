@@ -22,7 +22,6 @@ using System.Reflection;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using TestDataFramework.AttributeDecorator;
 using TestDataFramework.AttributeDecorator.Concrete;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.Helpers;
@@ -93,14 +92,9 @@ namespace Tests.Tests.ImmediateTests
         private static void AreEqual(object expected, object actual)
         {
             if (expected == null)
-            {
                 Assert.IsNull(actual);
-            }
             else
-            {
                 Assert.AreEqual(Convert.ChangeType(expected, actual.GetType()), actual);
-            }
-
         }
     }
 }

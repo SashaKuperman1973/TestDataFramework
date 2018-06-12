@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.Populator.Concrete;
 
@@ -33,12 +28,12 @@ namespace Tests.Tests.ImmediateTests
 
             Helpers.ExceptionTest(() =>
             {
-                int x = range.EndPosition;
+                var x = range.EndPosition;
             }, typeof(InvalidOperationException));
 
             Helpers.ExceptionTest(() =>
             {
-                int x = range.Length;
+                var x = range.Length;
             }, typeof(InvalidOperationException));
         }
 
@@ -51,12 +46,12 @@ namespace Tests.Tests.ImmediateTests
 
             Helpers.ExceptionTest(() =>
             {
-                int x = range.StartPosition;
+                var x = range.StartPosition;
             }, typeof(InvalidOperationException));
 
             Helpers.ExceptionTest(() =>
             {
-                int x = range.Length;
+                var x = range.Length;
             }, typeof(InvalidOperationException));
         }
 
@@ -69,12 +64,12 @@ namespace Tests.Tests.ImmediateTests
 
             Helpers.ExceptionTest(() =>
             {
-                int x = range.StartPosition;
+                var x = range.StartPosition;
             }, typeof(InvalidOperationException));
 
             Helpers.ExceptionTest(() =>
             {
-                int x = range.EndPosition;
+                var x = range.EndPosition;
             }, typeof(InvalidOperationException));
         }
 

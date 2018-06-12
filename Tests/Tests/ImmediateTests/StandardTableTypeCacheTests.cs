@@ -17,11 +17,8 @@
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-using System;
-using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using TestDataFramework;
 using TestDataFramework.AttributeDecorator;
 using TestDataFramework.AttributeDecorator.Concrete;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
@@ -36,7 +33,7 @@ namespace Tests.Tests.ImmediateTests
         private StandardTableTypeCache tableTypeCache;
 
         private Mock<ITableTypeCacheService> tableTypeServicedMock;
-        
+
         [TestInitialize]
         public void Initialize()
         {
@@ -49,7 +46,7 @@ namespace Tests.Tests.ImmediateTests
         {
             // Act
 
-            bool result = this.tableTypeCache.IsAssemblyCachePopulated(new AssemblyWrapper());
+            var result = this.tableTypeCache.IsAssemblyCachePopulated(new AssemblyWrapper());
 
             // Assert
 
@@ -66,7 +63,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Act
 
-            bool result = this.tableTypeCache.IsAssemblyCachePopulated(assembly);
+            var result = this.tableTypeCache.IsAssemblyCachePopulated(assembly);
 
             // Assert
 
@@ -80,7 +77,6 @@ namespace Tests.Tests.ImmediateTests
 
             Helpers.ExceptionTest(
                 () => this.tableTypeCache.GetCachedTableType(null, null, new AssemblyWrapper(), null),
-
                 typeof(TableTypeLookupException),
                 string.Format(Messages.AssemblyCacheNotPopulated, this.GetType().Assembly));
         }

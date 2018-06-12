@@ -31,22 +31,10 @@ namespace Tests.Tests.ImmediateTests
     [TestClass]
     public class BaseUniqueValueGeneratorTests
     {
-        private class UniqueValueGenerator : BaseUniqueValueGenerator
-        {
-            public UniqueValueGenerator(IPropertyValueAccumulator accumulator,
-                IDeferredValueGenerator<LargeInteger> deferredValueGenerator) : base(accumulator, deferredValueGenerator, throwIfUnhandledType: false)
-            {
-            }
-
-            public new void DeferValue(PropertyInfo propertyInfo)
-            {
-                base.DeferValue(propertyInfo);
-            }
-        }
+        private Mock<IDeferredValueGenerator<LargeInteger>> deferredValueGeneratorMock;
+        private Mock<IPropertyValueAccumulator> propertyValueAccumulatorMock;
 
         private UniqueValueGenerator uniqueValueGenerator;
-        private Mock<IPropertyValueAccumulator> propertyValueAccumulatorMock;
-        private Mock<IDeferredValueGenerator<LargeInteger>> deferredValueGeneratorMock;
 
         [TestInitialize]
         public void Initialize()
@@ -68,8 +56,9 @@ namespace Tests.Tests.ImmediateTests
             DeferredValueGetterDelegate<LargeInteger> inputDelegate = null;
 
             this.deferredValueGeneratorMock.Setup(
-                m => m.AddDelegate(propertyInfo, It.IsAny<DeferredValueGetterDelegate<LargeInteger>>()))
-                .Callback<PropertyInfo, DeferredValueGetterDelegate<LargeInteger>>((pi, d) => inputDelegate = d).Verifiable();
+                    m => m.AddDelegate(propertyInfo, It.IsAny<DeferredValueGetterDelegate<LargeInteger>>()))
+                .Callback<PropertyInfo, DeferredValueGetterDelegate<LargeInteger>>((pi, d) => inputDelegate = d)
+                .Verifiable();
 
             const long initialCount = 5;
 
@@ -91,7 +80,7 @@ namespace Tests.Tests.ImmediateTests
         {
             // Arrange
 
-            PropertyInfo propertyInfo = typeof (PrimaryTable).GetProperty("Text");
+            PropertyInfo propertyInfo = typeof(PrimaryTable).GetProperty("Text");
 
             // Act
 
@@ -100,8 +89,22 @@ namespace Tests.Tests.ImmediateTests
             // Assert
 
             this.propertyValueAccumulatorMock.Verify(
-                m => m.GetValue(propertyInfo, Helper.DefaultInitalCount), 
+                m => m.GetValue(propertyInfo, Helper.DefaultInitalCount),
                 Times.Once);
+        }
+
+        private class UniqueValueGenerator : BaseUniqueValueGenerator
+        {
+            public UniqueValueGenerator(IPropertyValueAccumulator accumulator,
+                IDeferredValueGenerator<LargeInteger> deferredValueGenerator) : base(accumulator,
+                deferredValueGenerator, false)
+            {
+            }
+
+            public new void DeferValue(PropertyInfo propertyInfo)
+            {
+                base.DeferValue(propertyInfo);
+            }
         }
     }
 }

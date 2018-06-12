@@ -18,7 +18,6 @@
 */
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -26,7 +25,6 @@ using System.Reflection;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using TestDataFramework.AttributeDecorator;
 using TestDataFramework.AttributeDecorator.Concrete;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.AttributeDecorator.Interfaces;
@@ -113,7 +111,7 @@ namespace Tests.Tests.ImmediateTests
 
             const int expectedInt = 5;
             const string expectedString = "ABCD";
-            int[] expectedArray = new[] {1, 2};
+            int[] expectedArray = {1, 2};
 
             var objectGraphServiceMock = new Mock<IObjectGraphService>();
 
@@ -163,17 +161,16 @@ namespace Tests.Tests.ImmediateTests
             // Arrange
 
             var guids = new Guid[5];
-            for (int i = 0; i < guids.Length; i++)
-            {
+            for (var i = 0; i < guids.Length; i++)
                 guids[i] = Guid.NewGuid();
-            }
 
             var objectGraphServiceMock = new Mock<IObjectGraphService>();
 
             var recordReference = new RecordReference<PrimaryTable>(null,
                 null, null, objectGraphServiceMock.Object, null, null);
 
-            var setterObjectGraph = new List<PropertyInfo> {typeof(PrimaryTable).GetProperty(nameof(PrimaryTable.Guid))};
+            var setterObjectGraph =
+                new List<PropertyInfo> {typeof(PrimaryTable).GetProperty(nameof(PrimaryTable.Guid))};
 
             objectGraphServiceMock.Setup(m => m.GetObjectGraph(It.IsAny<Expression<Func<PrimaryTable, Guid>>>()))
                 .Returns(setterObjectGraph);
@@ -202,7 +199,8 @@ namespace Tests.Tests.ImmediateTests
             Mock<ITypeGenerator> typeGeneratorMock = Helpers.GetTypeGeneratorMock(record);
 
             var recordReference =
-                new RecordReference<PrimaryTable>(typeGeneratorMock.Object, this.attributeDecorator, null, null, null, null);
+                new RecordReference<PrimaryTable>(typeGeneratorMock.Object, this.attributeDecorator, null, null, null,
+                    null);
 
             // Act
 
@@ -228,7 +226,8 @@ namespace Tests.Tests.ImmediateTests
                 });
 
             objectGraphServiceMock
-                .Setup(m => m.GetObjectGraph(It.IsAny<Expression<Func<ThirdDeepPropertyTable, FirstDeepPropertyTable>>>()))
+                .Setup(m => m.GetObjectGraph(
+                    It.IsAny<Expression<Func<ThirdDeepPropertyTable, FirstDeepPropertyTable>>>()))
                 .Returns(new List<PropertyInfo>
                 {
                     typeof(SecondDeepPropertyTable).GetProperty(nameof(SecondDeepPropertyTable.Deep1))

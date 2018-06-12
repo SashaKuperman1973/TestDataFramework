@@ -24,7 +24,6 @@ using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.ArrayRandomizer;
-using TestDataFramework.AttributeDecorator;
 using TestDataFramework.AttributeDecorator.Concrete;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.AttributeDecorator.Interfaces;
@@ -42,41 +41,26 @@ namespace Tests.Tests.ImmediateTests
     [TestClass]
     public class BaseValueGeneratorTests
     {
-        private Mock<IValueProvider> randomizerMock;
-        private Mock<ITypeGenerator> typeGeneratorMock;
-        private Mock<IArrayRandomizer> arrayRandomizerMock;
-        private BaseValueGenerator valueGenerator;
-        private Mock<IUniqueValueGenerator> uniqueValueGeneratorMock;
-
         private const int IntegerResult = 5;
         private const long LongResult = 6;
         private const short ShortResult = 7;
         private const uint UnsignedIntegerResult = BaseValueGeneratorTests.IntegerResult;
         private const ulong UnsignedLongResult = BaseValueGeneratorTests.LongResult;
-        private const ushort UnsignedShortResult = (ushort)BaseValueGeneratorTests.ShortResult;
-        private static readonly string StringResult = Guid.NewGuid().ToString("N");
+        private const ushort UnsignedShortResult = (ushort) BaseValueGeneratorTests.ShortResult;
         private const char CharacterResult = 'A';
         private const decimal DecimalResult = 48576.412587m;
         private const bool BooleanResult = true;
-        private static readonly DateTime DateTimeResult = DateTime.Now;
         private const byte ByteResult = 8;
         private const double DoubleResult = 574.1575d;
         private const float FloatResult = 4646.158f;
         private const string EmailAddress = "address@domain.com";
-
-        private class ValueGenerator : BaseValueGenerator
-        {
-            public ValueGenerator(IValueProvider valueProvider, Func<ITypeGenerator> getTypeGenerator,
-                Func<IArrayRandomizer> getArrayRandomizer, IUniqueValueGenerator uniqueValueGenerator, IAttributeDecorator attributeDecorator)
-                : base(valueProvider, getTypeGenerator, getArrayRandomizer, uniqueValueGenerator, attributeDecorator)
-            {
-            }
-
-            protected override object GetGuid(PropertyInfo propertyInfo)
-            {
-                return default(Guid);
-            }
-        }
+        private static readonly string StringResult = Guid.NewGuid().ToString("N");
+        private static readonly DateTime DateTimeResult = DateTime.Now;
+        private Mock<IArrayRandomizer> arrayRandomizerMock;
+        private Mock<IValueProvider> randomizerMock;
+        private Mock<ITypeGenerator> typeGeneratorMock;
+        private Mock<IUniqueValueGenerator> uniqueValueGeneratorMock;
+        private BaseValueGenerator valueGenerator;
 
         [TestInitialize]
         public void Initialize()
@@ -88,22 +72,30 @@ namespace Tests.Tests.ImmediateTests
             this.arrayRandomizerMock = new Mock<IArrayRandomizer>();
             this.uniqueValueGeneratorMock = new Mock<IUniqueValueGenerator>();
 
-            this.randomizerMock.Setup(m => m.GetInteger(It.Is<int?>(max => max == null))).Returns(BaseValueGeneratorTests.IntegerResult);
-            this.randomizerMock.Setup(m => m.GetLongInteger(It.Is<long?>(max => max == null))).Returns(BaseValueGeneratorTests.LongResult);
-            this.randomizerMock.Setup(m => m.GetShortInteger(It.Is<short?>(max => max == null))).Returns(BaseValueGeneratorTests.ShortResult);
-            this.randomizerMock.Setup(m => m.GetString(It.Is<int?>(length => length == null))).Returns(BaseValueGeneratorTests.StringResult);
+            this.randomizerMock.Setup(m => m.GetInteger(It.Is<int?>(max => max == null)))
+                .Returns(BaseValueGeneratorTests.IntegerResult);
+            this.randomizerMock.Setup(m => m.GetLongInteger(It.Is<long?>(max => max == null)))
+                .Returns(BaseValueGeneratorTests.LongResult);
+            this.randomizerMock.Setup(m => m.GetShortInteger(It.Is<short?>(max => max == null)))
+                .Returns(BaseValueGeneratorTests.ShortResult);
+            this.randomizerMock.Setup(m => m.GetString(It.Is<int?>(length => length == null)))
+                .Returns(BaseValueGeneratorTests.StringResult);
             this.randomizerMock.Setup(m => m.GetCharacter()).Returns(BaseValueGeneratorTests.CharacterResult);
-            this.randomizerMock.Setup(m => m.GetDecimal(It.Is<int?>(precision => precision == null))).Returns(BaseValueGeneratorTests.DecimalResult);
+            this.randomizerMock.Setup(m => m.GetDecimal(It.Is<int?>(precision => precision == null)))
+                .Returns(BaseValueGeneratorTests.DecimalResult);
             this.randomizerMock.Setup(m => m.GetBoolean()).Returns(BaseValueGeneratorTests.BooleanResult);
             this.randomizerMock.Setup(
-                m =>
-                    m.GetDateTime(It.Is<PastOrFuture?>(pastOrFuture => pastOrFuture == null),
-                        It.Is<Func<long?, long>>(lir => lir == this.randomizerMock.Object.GetLongInteger), null, null))
+                    m =>
+                        m.GetDateTime(It.Is<PastOrFuture?>(pastOrFuture => pastOrFuture == null),
+                            It.Is<Func<long?, long>>(lir => lir == this.randomizerMock.Object.GetLongInteger), null,
+                            null))
                 .Returns(BaseValueGeneratorTests.DateTimeResult);
 
             this.randomizerMock.Setup(m => m.GetByte()).Returns(BaseValueGeneratorTests.ByteResult);
-            this.randomizerMock.Setup(m => m.GetDouble(It.Is<int?>(precision => precision == null))).Returns(BaseValueGeneratorTests.DoubleResult);
-            this.randomizerMock.Setup(m => m.GetFloat(It.Is<int?>(precision => precision == null))).Returns(BaseValueGeneratorTests.FloatResult);
+            this.randomizerMock.Setup(m => m.GetDouble(It.Is<int?>(precision => precision == null)))
+                .Returns(BaseValueGeneratorTests.DoubleResult);
+            this.randomizerMock.Setup(m => m.GetFloat(It.Is<int?>(precision => precision == null)))
+                .Returns(BaseValueGeneratorTests.FloatResult);
             this.randomizerMock.Setup(m => m.GetEmailAddress()).Returns(BaseValueGeneratorTests.EmailAddress);
 
             this.valueGenerator = new ValueGenerator(this.randomizerMock.Object, () => this.typeGeneratorMock.Object,
@@ -136,7 +128,7 @@ namespace Tests.Tests.ImmediateTests
                 new Tuple<string, object>("UnsignedNullableLong", BaseValueGeneratorTests.UnsignedLongResult),
                 new Tuple<string, object>("NullableShort", BaseValueGeneratorTests.ShortResult),
                 new Tuple<string, object>("UnsignedNullableShort", BaseValueGeneratorTests.UnsignedShortResult),
-                new Tuple<string, object>("AnEmailAddress", BaseValueGeneratorTests.EmailAddress),
+                new Tuple<string, object>("AnEmailAddress", BaseValueGeneratorTests.EmailAddress)
             };
 
             list.ForEach(type => this.TypeTest(type.Item1, type.Item2));
@@ -148,7 +140,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Arrange
 
-            PropertyInfo propertyInfo = typeof (SubjectClass).GetProperty(propertyName);
+            PropertyInfo propertyInfo = typeof(SubjectClass).GetProperty(propertyName);
 
             // Act
 
@@ -166,17 +158,18 @@ namespace Tests.Tests.ImmediateTests
 
             PropertyInfo propertyInfo = typeof(SubjectClass).GetProperty("TextWithLength");
 
-            this.randomizerMock.Setup(m => m.GetString(It.Is<int?>(length => length == SubjectClass.StringLength))).Verifiable();
+            this.randomizerMock.Setup(m => m.GetString(It.Is<int?>(length => length == SubjectClass.StringLength)))
+                .Verifiable();
 
             // Act
 
-            this.valueGenerator.GetValue(propertyInfo, (ObjectGraphNode)null);
+            this.valueGenerator.GetValue(propertyInfo, (ObjectGraphNode) null);
 
             // Assert
 
             this.randomizerMock.Verify();
         }
-  
+
         [TestMethod]
         public void GetValue_Attribute_Tests()
         {
@@ -201,41 +194,42 @@ namespace Tests.Tests.ImmediateTests
                 new Tuple<string, Action>(
                     "IntegerWithMax",
                     () =>
-                        this.randomizerMock.Verify((
-                            m => m.GetInteger(It.Is<int?>(max => max == SubjectClass.Max))),
+                        this.randomizerMock.Verify(m => m.GetInteger(It.Is<int?>(max => max == SubjectClass.Max)),
                             Times.Once())
-                    ),
+                ),
                 new Tuple<string, Action>(
                     "LongIntegerWithMax",
                     () =>
                         this.randomizerMock.Verify(
                             m => m.GetLongInteger(It.Is<long?>(max => max == SubjectClass.Max)),
                             Times.Once())
-                    ),
+                ),
                 new Tuple<string, Action>(
                     "ShortIntegerWithMax",
                     () =>
                         this.randomizerMock.Verify(
                             m => m.GetShortInteger(It.Is<short?>(max => max == SubjectClass.Max)),
                             Times.Once())
-                    ),
+                ),
                 new Tuple<string, Action>(
                     "DateTimeWithTense",
                     () =>
                         this.randomizerMock.Verify(
-                            m => m.GetDateTime(It.Is<PastOrFuture?>(pastOrFuture => pastOrFuture == PastOrFuture.Future), It.IsAny<Func<long?, long>>(), null, null),
+                            m => m.GetDateTime(
+                                It.Is<PastOrFuture?>(pastOrFuture => pastOrFuture == PastOrFuture.Future),
+                                It.IsAny<Func<long?, long>>(), null, null),
                             Times.Once())
-                    ),
+                )
             };
 
             // Act and Assert
 
             propertyNameAnVerifierList.ForEach(propertyNameVerifier =>
             {
-                PropertyInfo propertyInfo = typeof (SubjectClass).GetProperty(propertyNameVerifier.Item1);
-                this.valueGenerator.GetValue(propertyInfo, (ObjectGraphNode)null);
+                PropertyInfo propertyInfo = typeof(SubjectClass).GetProperty(propertyNameVerifier.Item1);
+                this.valueGenerator.GetValue(propertyInfo, (ObjectGraphNode) null);
                 propertyNameVerifier.Item2();
-            });            
+            });
         }
 
         [TestMethod]
@@ -245,12 +239,13 @@ namespace Tests.Tests.ImmediateTests
 
             var secondClass = new SecondClass();
 
-            this.typeGeneratorMock.Setup(m => m.GetObject(It.Is<Type>(t => t == typeof (SecondClass)), null)).Returns(secondClass);
-            PropertyInfo propertyInfo = typeof (SubjectClass).GetProperty("SecondObject");
+            this.typeGeneratorMock.Setup(m => m.GetObject(It.Is<Type>(t => t == typeof(SecondClass)), null))
+                .Returns(secondClass);
+            PropertyInfo propertyInfo = typeof(SubjectClass).GetProperty("SecondObject");
 
             // Act
 
-            object result = this.valueGenerator.GetValue(propertyInfo, (ObjectGraphNode)null);
+            object result = this.valueGenerator.GetValue(propertyInfo, (ObjectGraphNode) null);
             this.typeGeneratorMock.Verify();
 
             // Assert
@@ -269,33 +264,33 @@ namespace Tests.Tests.ImmediateTests
                 new
                 {
                     Property = "IntegerMaxLessThanZero",
-                    ExceptionType = typeof (ArgumentOutOfRangeException),
+                    ExceptionType = typeof(ArgumentOutOfRangeException),
                     Message = Messages.MaxAttributeLessThanZero
                 },
                 new
                 {
                     Property = "IntegerMaxOutOfRange",
-                    ExceptionType = typeof (ArgumentOutOfRangeException),
+                    ExceptionType = typeof(ArgumentOutOfRangeException),
                     Message = string.Format(Messages.MaxAttributeOutOfRange, "int")
                 },
                 new
                 {
                     Property = "LongMaxLessThanZero",
-                    ExceptionType = typeof (ArgumentOutOfRangeException),
+                    ExceptionType = typeof(ArgumentOutOfRangeException),
                     Message = Messages.MaxAttributeLessThanZero
                 },
                 new
                 {
                     Property = "ShortMaxLessThanZero",
-                    ExceptionType = typeof (ArgumentOutOfRangeException),
+                    ExceptionType = typeof(ArgumentOutOfRangeException),
                     Message = Messages.MaxAttributeLessThanZero
                 },
                 new
                 {
                     Property = "ShortMaxOutOfRange",
-                    ExceptionType = typeof (ArgumentOutOfRangeException),
+                    ExceptionType = typeof(ArgumentOutOfRangeException),
                     Message = string.Format(Messages.MaxAttributeOutOfRange, "short")
-                },
+                }
             };
 
             foreach (var input in inputs)
@@ -315,17 +310,17 @@ namespace Tests.Tests.ImmediateTests
 
             var expected = new int[0];
 
-            PropertyInfo simpleArrayPropertyInfo = typeof (SubjectClass).GetProperty("SimpleArray");
+            PropertyInfo simpleArrayPropertyInfo = typeof(SubjectClass).GetProperty("SimpleArray");
 
             this.arrayRandomizerMock.Setup(
-                m =>
-                    m.GetArray(It.Is<PropertyInfo>(p => p == simpleArrayPropertyInfo),
-                        It.Is<Type>(t => t == simpleArrayPropertyInfo.PropertyType)))
+                    m =>
+                        m.GetArray(It.Is<PropertyInfo>(p => p == simpleArrayPropertyInfo),
+                            It.Is<Type>(t => t == simpleArrayPropertyInfo.PropertyType)))
                 .Returns(expected);
-            
+
             // Act
 
-            object result = this.valueGenerator.GetValue(simpleArrayPropertyInfo, (ObjectGraphNode)null);
+            object result = this.valueGenerator.GetValue(simpleArrayPropertyInfo, (ObjectGraphNode) null);
 
             // Assert
 
@@ -340,8 +335,8 @@ namespace Tests.Tests.ImmediateTests
 
             this.uniqueValueGeneratorMock.Setup(m => m.GetValue(primaryKeyPropertyInfo)).Returns(default(int));
 
-            object result1 = this.valueGenerator.GetValue(primaryKeyPropertyInfo, (ObjectGraphNode)null);
-            object result2 = this.valueGenerator.GetValue(primaryKeyPropertyInfo, (ObjectGraphNode)null);
+            object result1 = this.valueGenerator.GetValue(primaryKeyPropertyInfo, (ObjectGraphNode) null);
+            object result2 = this.valueGenerator.GetValue(primaryKeyPropertyInfo, (ObjectGraphNode) null);
 
             this.uniqueValueGeneratorMock.Verify();
             Assert.AreEqual(expected, result1);
@@ -355,10 +350,25 @@ namespace Tests.Tests.ImmediateTests
 
             this.uniqueValueGeneratorMock.Setup(m => m.GetValue(primaryKeyPropertyInfo)).Returns(1).Verifiable();
 
-            object result = this.valueGenerator.GetValue(primaryKeyPropertyInfo, (ObjectGraphNode)null);
+            object result = this.valueGenerator.GetValue(primaryKeyPropertyInfo, (ObjectGraphNode) null);
 
             this.uniqueValueGeneratorMock.Verify();
             Assert.AreEqual(1, result);
+        }
+
+        private class ValueGenerator : BaseValueGenerator
+        {
+            public ValueGenerator(IValueProvider valueProvider, Func<ITypeGenerator> getTypeGenerator,
+                Func<IArrayRandomizer> getArrayRandomizer, IUniqueValueGenerator uniqueValueGenerator,
+                IAttributeDecorator attributeDecorator)
+                : base(valueProvider, getTypeGenerator, getArrayRandomizer, uniqueValueGenerator, attributeDecorator)
+            {
+            }
+
+            protected override object GetGuid(PropertyInfo propertyInfo)
+            {
+                return default(Guid);
+            }
         }
     }
 }

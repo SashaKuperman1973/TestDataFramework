@@ -29,8 +29,14 @@ namespace Tests.TestModels
         public const int Precision = 4;
         public const long Max = 7;
 
-        public int Getter { get { throw new NotImplementedException();} }
-        public int Setter { set { throw new NotImplementedException();} }
+        public int AField;
+
+        public int Getter => throw new NotImplementedException();
+
+        public int Setter
+        {
+            set => throw new NotImplementedException();
+        }
 
         [PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Auto)]
         public int Key { get; set; }
@@ -108,8 +114,6 @@ namespace Tests.TestModels
 
         public int[][,,][] JaggedMultiDimensionalArray { get; set; }
 
-        public int AField;
-
         public Guid AGuid { get; set; }
     }
 
@@ -132,7 +136,6 @@ namespace Tests.TestModels
     {
         private ClassWithoutADefaultConstructor()
         {
-            
         }
     }
 
@@ -216,7 +219,6 @@ namespace Tests.TestModels
     [Table("DbTable")]
     public class ClrClass
     {
-        
     }
 
     [AttributeUsage(AttributeTargets.All, AllowMultiple = true)]
@@ -256,24 +258,20 @@ namespace Tests.TestModels
     [MultiAllowed]
     public class AmbiguousAttributeClass
     {
-        [MultiAllowed]
-        [MultiAllowed]
-        public int A { get; set; }
+        [MultiAllowed] [MultiAllowed] public int B;
 
         [MultiAllowed]
         [MultiAllowed]
-        public int B;
+        public int A { get; set; }
     }
 
     public class ClassWithSideEffectProperty
     {
-        public int i = 0;
+        public int i;
 
-        public int SideEffectProperty {
-            set
-            {
-                this.i++;
-            }
+        public int SideEffectProperty
+        {
+            set { this.i++; }
 
             get => 0;
         }

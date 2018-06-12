@@ -17,14 +17,10 @@
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Reflection;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using TestDataFramework.AttributeDecorator;
 using TestDataFramework.AttributeDecorator.Concrete;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.AttributeDecorator.Interfaces;
@@ -60,15 +56,17 @@ namespace Tests.Tests.ImmediateTests
             var typeGeneratorMock = new Mock<ITypeGenerator>();
 
             typeGeneratorMock.Setup(
-                m => m.GetObject<PrimaryTable>(It.IsAny<IEnumerable<ExplicitPropertySetters>>()))
+                    m => m.GetObject<PrimaryTable>(It.IsAny<IEnumerable<ExplicitPropertySetters>>()))
                 .Returns(new PrimaryTable());
 
             typeGeneratorMock.Setup(
                     m => m.GetObject<ForeignTable>(It.IsAny<IEnumerable<ExplicitPropertySetters>>()))
                 .Returns(new ForeignTable());
 
-            var recordObject1 = new RecordReference<PrimaryTable>(typeGeneratorMock.Object, this.attributeDecorator, null, null, null, null);
-            var recordObject2 = new RecordReference<ForeignTable>(typeGeneratorMock.Object, this.attributeDecorator, null, null, null, null);
+            var recordObject1 = new RecordReference<PrimaryTable>(typeGeneratorMock.Object, this.attributeDecorator,
+                null, null, null, null);
+            var recordObject2 = new RecordReference<ForeignTable>(typeGeneratorMock.Object, this.attributeDecorator,
+                null, null, null, null);
 
             var dataSource = new Mock<IPropertyDataGenerator<LargeInteger>>();
             var generator = new StandardDeferredValueGenerator<LargeInteger>(dataSource.Object);

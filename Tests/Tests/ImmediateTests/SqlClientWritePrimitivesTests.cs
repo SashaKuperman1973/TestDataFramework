@@ -34,15 +34,18 @@ namespace Tests.Tests.ImmediateTests
     [TestClass]
     public class SqlClientWritePrimitivesTests
     {
-        private Mock<DbProviderFactory> dbProviderFactoryMock;
-        private SqlClientWritePrimitives primitives;
-        private Mock<IValueFormatter> formatterMock;
-        private Mock<IRandomSymbolStringGenerator> symbolGeneratorMock;
-        private Mock<DbCommand> insertCommandMock;
-
         private const string ConnectionString = "cn";
         private const string ColumnName = "col1";
         private const string VariableSymbol = "ABCD";
+
+        private const string CatalogueName = "CatalogueName";
+        private const string Schema = "Schema";
+        private const string TableName = "TableName";
+        private Mock<DbProviderFactory> dbProviderFactoryMock;
+        private Mock<IValueFormatter> formatterMock;
+        private Mock<DbCommand> insertCommandMock;
+        private SqlClientWritePrimitives primitives;
+        private Mock<IRandomSymbolStringGenerator> symbolGeneratorMock;
 
         [TestInitialize]
         public void Initialize()
@@ -55,8 +58,8 @@ namespace Tests.Tests.ImmediateTests
 
             this.primitives = new SqlClientWritePrimitives(SqlClientWritePrimitivesTests.ConnectionString,
                 this.dbProviderFactoryMock.Object, this.formatterMock.Object, this.symbolGeneratorMock.Object,
-                mustBeInATransaction: false,
-                configuration: new NameValueCollection {{"TestDataFramework_DumpSqlInput", "true"}});
+                false,
+                new NameValueCollection {{"TestDataFramework_DumpSqlInput", "true"}});
 
             var connectionMock = new Mock<DbConnection>();
             var readerMock = new Mock<DbDataReader>();
@@ -66,7 +69,8 @@ namespace Tests.Tests.ImmediateTests
             this.dbProviderFactoryMock.Setup(m => m.CreateCommand()).Returns(mockInsertCommand);
             this.dbProviderFactoryMock.Setup(m => m.CreateConnection()).Returns(connectionMock.Object);
 
-            this.symbolGeneratorMock.Setup(m => m.GetRandomString(It.IsAny<int?>())).Returns(SqlClientWritePrimitivesTests.VariableSymbol);
+            this.symbolGeneratorMock.Setup(m => m.GetRandomString(It.IsAny<int?>()))
+                .Returns(SqlClientWritePrimitivesTests.VariableSymbol);
         }
 
         [TestMethod]
@@ -79,7 +83,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Assert
 
-            string expectedText =
+            var expectedText =
                 new StringBuilder($"declare @{SqlClientWritePrimitivesTests.VariableSymbol} bigint;").AppendLine()
                     .AppendLine($"select @{SqlClientWritePrimitivesTests.VariableSymbol} = @@identity;")
                     .AppendLine($"select '{SqlClientWritePrimitivesTests.ColumnName}'")
@@ -100,7 +104,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Assert
 
-            string expectedText =
+            var expectedText =
                 new StringBuilder($"declare @{SqlClientWritePrimitivesTests.VariableSymbol} uniqueidentifier;")
                     .AppendLine()
                     .AppendLine($"select @{SqlClientWritePrimitivesTests.VariableSymbol} = NEWID();")
@@ -112,17 +116,13 @@ namespace Tests.Tests.ImmediateTests
             this.insertCommandMock.VerifySet(m => m.CommandText = expectedText);
         }
 
-        private const string CatalogueName = "CatalogueName";
-        private const string Schema = "Schema";
-        private const string TableName = "TableName";
-
         [TestMethod]
         public void BuildFullTableName_Test()
         {
-            string result = SqlClientWritePrimitives.BuildFullTableName(SqlClientWritePrimitivesTests.CatalogueName,
+            var result = SqlClientWritePrimitives.BuildFullTableName(SqlClientWritePrimitivesTests.CatalogueName,
                 SqlClientWritePrimitivesTests.Schema, SqlClientWritePrimitivesTests.TableName);
 
-            string expected =
+            var expected =
                 $"[{SqlClientWritePrimitivesTests.CatalogueName}].[{SqlClientWritePrimitivesTests.Schema}].[{SqlClientWritePrimitivesTests.TableName}]";
 
             Assert.AreEqual(expected, result);
@@ -131,10 +131,10 @@ namespace Tests.Tests.ImmediateTests
         [TestMethod]
         public void BuildFullTableName_Schema_and_TableName_Test()
         {
-            string result = SqlClientWritePrimitives.BuildFullTableName(null, SqlClientWritePrimitivesTests.Schema,
+            var result = SqlClientWritePrimitives.BuildFullTableName(null, SqlClientWritePrimitivesTests.Schema,
                 SqlClientWritePrimitivesTests.TableName);
 
-            string expected = $"[{SqlClientWritePrimitivesTests.Schema}].[{SqlClientWritePrimitivesTests.TableName}]";
+            var expected = $"[{SqlClientWritePrimitivesTests.Schema}].[{SqlClientWritePrimitivesTests.TableName}]";
 
             Assert.AreEqual(expected, result);
         }
@@ -142,9 +142,10 @@ namespace Tests.Tests.ImmediateTests
         [TestMethod]
         public void BuildFullTableName_TableName_Test()
         {
-            string result = SqlClientWritePrimitives.BuildFullTableName(null, null, SqlClientWritePrimitivesTests.TableName);
+            var result =
+                SqlClientWritePrimitives.BuildFullTableName(null, null, SqlClientWritePrimitivesTests.TableName);
 
-            string expected = $"[{SqlClientWritePrimitivesTests.TableName}]";
+            var expected = $"[{SqlClientWritePrimitivesTests.TableName}]";
 
             Assert.AreEqual(expected, result);
         }
@@ -153,14 +154,12 @@ namespace Tests.Tests.ImmediateTests
         public void BuildFullTableName_CatalogueAndNoSchema_Throws()
         {
             Helpers.ExceptionTest(() =>
-                SqlClientWritePrimitives.BuildFullTableName(SqlClientWritePrimitivesTests.CatalogueName, null,
-                    SqlClientWritePrimitivesTests.TableName),
-
-                typeof (WritePrimitivesException),
-
+                    SqlClientWritePrimitives.BuildFullTableName(SqlClientWritePrimitivesTests.CatalogueName, null,
+                        SqlClientWritePrimitivesTests.TableName),
+                typeof(WritePrimitivesException),
                 string.Format(Messages.CatalogueAndNoSchema, SqlClientWritePrimitivesTests.CatalogueName,
                     SqlClientWritePrimitivesTests.TableName)
-                );
+            );
         }
     }
 }

@@ -22,7 +22,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using TestDataFramework.AttributeDecorator;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeferredValueGenerator.Concrete;
 using TestDataFramework.Exceptions;
@@ -35,12 +34,12 @@ namespace Tests.Tests.ImmediateTests
     [TestClass]
     public class SqlWriterDictionaryTests
     {
-        private SqlWriterDictionary writerDictionary;
-        private Mock<LetterEncoder> encoderMock;
-        private Mock<IWritePrimitives> primitivesMock;
+        private Mock<IAttributeDecorator> attributeDecoratorMock;
         private Mock<SqlWriterCommandTextGenerator> commandGeneratorMock;
         private Mock<SqlWriterCommandText> commandTextProviderMock;
-        private Mock<IAttributeDecorator> attributeDecoratorMock;
+        private Mock<LetterEncoder> encoderMock;
+        private Mock<IWritePrimitives> primitivesMock;
+        private SqlWriterDictionary writerDictionary;
 
         [TestInitialize]
         public void Initialize()
@@ -48,7 +47,9 @@ namespace Tests.Tests.ImmediateTests
             this.encoderMock = new Mock<LetterEncoder>();
             this.primitivesMock = new Mock<IWritePrimitives>();
             this.commandTextProviderMock = new Mock<SqlWriterCommandText>();
-            this.commandGeneratorMock = new Mock<SqlWriterCommandTextGenerator>(this.attributeDecoratorMock, this.commandTextProviderMock.Object);
+            this.commandGeneratorMock =
+                new Mock<SqlWriterCommandTextGenerator>(this.attributeDecoratorMock,
+                    this.commandTextProviderMock.Object);
             this.attributeDecoratorMock = new Mock<IAttributeDecorator>();
 
             this.writerDictionary = new SqlWriterDictionary(this.encoderMock.Object, this.primitivesMock.Object,
@@ -65,7 +66,7 @@ namespace Tests.Tests.ImmediateTests
             const string command = "XXXX";
             this.commandGeneratorMock.Setup(m => m.WriteNumber(propertyInfo)).Returns(command);
 
-            var values = new object[] { (byte)1, (int)2, (short)3, (long)4 };
+            var values = new object[] {(byte) 1, 2, (short) 3, (long) 4};
 
             foreach (object value in values)
             {
@@ -77,7 +78,7 @@ namespace Tests.Tests.ImmediateTests
 
                 // Assert
 
-                Assert.AreEqual(new LargeInteger((ulong)Convert.ChangeType(value, typeof(ulong))), result);
+                Assert.AreEqual(new LargeInteger((ulong) Convert.ChangeType(value, typeof(ulong))), result);
                 this.primitivesMock.Verify(m => m.AddSqlCommand(command));
             }
         }
@@ -98,7 +99,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Assert
 
-            Assert.AreEqual((LargeInteger)0, result);
+            Assert.AreEqual((LargeInteger) 0, result);
         }
 
         [TestMethod]
@@ -117,7 +118,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Assert
 
-            Assert.AreEqual((LargeInteger)0, result);
+            Assert.AreEqual((LargeInteger) 0, result);
         }
 
         [TestMethod]
@@ -125,7 +126,7 @@ namespace Tests.Tests.ImmediateTests
         {
             Helpers.ExceptionTest(() =>
             {
-                var x = this.writerDictionary[typeof(SubjectClass)];
+                WriterDelegate x = this.writerDictionary[typeof(SubjectClass)];
             }, typeof(KeyNotFoundException), string.Format(Messages.PropertyKeyNotFound, typeof(SubjectClass)));
         }
 
@@ -190,7 +191,7 @@ namespace Tests.Tests.ImmediateTests
             WriterDelegate stringWriter = this.writerDictionary[typeof(string)];
             DecoderDelegate decoder = stringWriter(propertyInfo);
 
-            Helpers.ExceptionTest(() => decoder(propertyInfo, input), typeof (UnexpectedTypeException),
+            Helpers.ExceptionTest(() => decoder(propertyInfo, input), typeof(UnexpectedTypeException),
                 string.Format(Messages.UnexpectedHandlerType, propertyInfo, input));
         }
     }

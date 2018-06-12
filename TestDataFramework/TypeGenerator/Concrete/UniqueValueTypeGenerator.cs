@@ -20,9 +20,9 @@
 using System.Reflection;
 using log4net;
 using TestDataFramework.DeepSetting;
-using TestDataFramework.Logger;
 using TestDataFramework.HandledTypeGenerator;
 using TestDataFramework.Helpers;
+using TestDataFramework.Logger;
 using TestDataFramework.TypeGenerator.Interfaces;
 using TestDataFramework.ValueGenerator.Interfaces;
 
@@ -30,19 +30,21 @@ namespace TestDataFramework.TypeGenerator.Concrete
 {
     public class UniqueValueTypeGenerator : StandardTypeGenerator
     {
-        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(UniqueValueTypeGenerator));
-
         public delegate IValueGenerator GetAccumulatorValueGenerator(ITypeGenerator typeGenerator);
+
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(UniqueValueTypeGenerator));
 
         private readonly IValueGenerator accumulatorValueGenerator;
 
-        public UniqueValueTypeGenerator(GetAccumulatorValueGenerator getAccumulatorValueGenerator, IValueGenerator valueGenerator,
+        public UniqueValueTypeGenerator(GetAccumulatorValueGenerator getAccumulatorValueGenerator,
+            IValueGenerator valueGenerator,
             IHandledTypeGenerator handledTypeGenerator) : base(valueGenerator, handledTypeGenerator)
         {
             this.accumulatorValueGenerator = getAccumulatorValueGenerator(this);
         }
 
-        protected override void SetProperty(object objectToFill, PropertyInfo targetPropertyInfo, ObjectGraphNode objectGraphNode)
+        protected override void SetProperty(object objectToFill, PropertyInfo targetPropertyInfo,
+            ObjectGraphNode objectGraphNode)
         {
             UniqueValueTypeGenerator.Logger.Debug("Entering SetProperty. targetPropertyInfo: " +
                                                   targetPropertyInfo.GetExtendedMemberInfoString());

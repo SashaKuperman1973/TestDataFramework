@@ -67,18 +67,21 @@ namespace DeclarativeIntegrationTests.Tests
             SqlClientAndMemoryTests.PrimaryKeyForeignKeyTest(populator, new DeclarativeGeneratorIntegrationTest());
         }
 
-        private static void PrimaryKeyForeignKeyTest(IPopulator populator, ICodeGeneratorIntegration codeGeneratorIntegration)
+        private static void PrimaryKeyForeignKeyTest(IPopulator populator,
+            ICodeGeneratorIntegration codeGeneratorIntegration)
         {
             IList<RecordReference<ManualKeyPrimaryTableClass>> primaries = populator.Add<ManualKeyPrimaryTableClass>(2);
 
             IList<RecordReference<ManualKeyForeignTable>> foreignSet1 = populator.Add<ManualKeyForeignTable>(2);
             foreignSet1.ToList().ForEach(f => f.AddPrimaryRecordReference(primaries[0]));
 
-            IList<RecordReference<ManualKeyForeignTable>> foreignSet2 = populator.Add<ManualKeyForeignTable>(2, primaries[1]);
+            IList<RecordReference<ManualKeyForeignTable>> foreignSet2 =
+                populator.Add<ManualKeyForeignTable>(2, primaries[1]);
 
             codeGeneratorIntegration.AddTypes(populator, foreignSet1, foreignSet2);
 
-            primaries[0].Set(o => o.ADecimal, 112233.445566m).Set(o => o.AString, "AAXX").Set(o => o.Key1, "HummHummHumm");
+            primaries[0].Set(o => o.ADecimal, 112233.445566m).Set(o => o.AString, "AAXX")
+                .Set(o => o.Key1, "HummHummHumm");
 
             foreignSet2[1].Set(o => o.ALong, 11111L).Set(o => o.AShort, (short) 1234);
 
@@ -87,7 +90,7 @@ namespace DeclarativeIntegrationTests.Tests
                     new TransactionOptions {IsolationLevel = IsolationLevel.ReadCommitted}))
             {
                 populator.Bind();
-                
+
                 //transactionScope.Complete();
             }
 
@@ -111,7 +114,7 @@ namespace DeclarativeIntegrationTests.Tests
             IPopulator populator = this.factory.CreateSqlClientPopulator(
                 @"Data Source=localhost;Initial Catalog=TestDataFramework;Integrated Security=SSPI;");
 
-            var unresolvedKeyTableRecord = populator.Add<UnresolvedKeyTable>();
+            RecordReference<UnresolvedKeyTable> unresolvedKeyTableRecord = populator.Add<UnresolvedKeyTable>();
             unresolvedKeyTableRecord.Set(p => p.DoesntExist, (int?) null);
 
             using (var transaction = new TransactionScope(TransactionScopeOption.Required,

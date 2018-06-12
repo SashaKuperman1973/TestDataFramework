@@ -5,6 +5,8 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wr
 {
     public class TypeInfoWrapper : MemberInfo, IWrapper<TypeInfo>
     {
+        private readonly Guid id = Guid.NewGuid();
+
         public TypeInfoWrapper(TypeInfo typeInfo)
         {
             this.Wrapped = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
@@ -13,18 +15,14 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wr
         public TypeInfoWrapper(Type type)
         {
             if (type == null)
-            {
                 throw new ArgumentNullException(nameof(type));
-            }
 
             this.Wrapped = type.GetTypeInfo();
         }
 
         public TypeInfoWrapper()
-        {            
+        {
         }
-
-        public TypeInfo Wrapped { get; }
 
         public virtual AssemblyWrapper Assembly => this.Wrapped == null
             ? new AssemblyWrapper()
@@ -37,6 +35,10 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wr
         public override Type DeclaringType => this.Wrapped.DeclaringType;
 
         public override Type ReflectedType => this.Wrapped.ReflectedType;
+
+        public override string Name => this.Wrapped.Name;
+
+        public TypeInfo Wrapped { get; }
 
         public override object[] GetCustomAttributes(bool inherit)
         {
@@ -53,22 +55,20 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wr
             return this.Wrapped.GetCustomAttributes(attributeType, inherit);
         }
 
-        public override string Name => this.Wrapped.Name;
-
         public override string ToString()
         {
-            return this.Wrapped?.ToString() ?? string.Empty;
+            return this.Wrapped?.ToString() ?? $"Empty TypeInfo Wrapper. ID: {this.id}";
         }
 
         public override bool Equals(object obj)
         {
-            bool result = EqualityHelper<TypeInfoWrapper, TypeInfo>.Equals(this, obj);
+            var result = EqualityHelper<TypeInfoWrapper, TypeInfo>.Equals(this, obj);
             return result;
         }
 
         public override int GetHashCode()
         {
-            int result = this.Wrapped == null ? 0 : this.Wrapped.GetHashCode();
+            var result = this.Wrapped == null ? 0 : this.Wrapped.GetHashCode();
             return result;
         }
     }

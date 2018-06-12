@@ -18,7 +18,6 @@
 */
 
 using System;
-using System.Collections.Generic;
 using TestDataFramework.HandledTypeGenerator;
 using TestDataFramework.Populator.Concrete;
 using TestDataFramework.ValueGenerator.Interfaces;
@@ -27,6 +26,7 @@ namespace TestDataFramework.Populator.Interfaces
 {
     public interface IPopulator
     {
+        IValueGenerator ValueGenerator { get; }
         void Bind();
 
         OperableList<T> Add<T>(int copies, params RecordReference[] primaryRecordReferences);
@@ -36,8 +36,6 @@ namespace TestDataFramework.Populator.Interfaces
         BasePopulator.Decorator<T> DecorateType<T>();
 
         void Extend(Type type, HandledTypeValueGetter valueGetter);
-
-        IValueGenerator ValueGenerator { get; }
 
         void Clear();
     }

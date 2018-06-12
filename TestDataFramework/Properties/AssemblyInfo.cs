@@ -32,12 +32,12 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCopyright("Copyright © Alexander Kuperman 2016, 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-[assembly: InternalsVisibleTo("Tests, PublicKey="+
-"002400000480000094000000060200000024000052534131000400000100010063b224b9c0b6fc"+
-"c6e711c1cf121ae0d03e1273048681200fce14f7ddfbd46bd074c37a715dbc8e809202e52096b3"+
-"77e27ada756b2bd36900a478d8e4ce16c2d6dd56bbd682bcb9d8b3caee1195101e5ce5b0e02094"+
-"fc9b8e3ea1f242890967288f8a18689618ab072ad78ceb80bed9b98247b04294eef2dda38cc2e4"+
-"dbbdc1b5")]
+[assembly: InternalsVisibleTo("Tests, PublicKey=" +
+                              "002400000480000094000000060200000024000052534131000400000100010063b224b9c0b6fc" +
+                              "c6e711c1cf121ae0d03e1273048681200fce14f7ddfbd46bd074c37a715dbc8e809202e52096b3" +
+                              "77e27ada756b2bd36900a478d8e4ce16c2d6dd56bbd682bcb9d8b3caee1195101e5ce5b0e02094" +
+                              "fc9b8e3ea1f242890967288f8a18689618ab072ad78ceb80bed9b98247b04294eef2dda38cc2e4" +
+                              "dbbdc1b5")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 

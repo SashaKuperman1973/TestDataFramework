@@ -67,7 +67,7 @@ namespace CommonIntegrationTests.Tests
             RecordReference<ForeignTable> foreignC = populator.Add<ForeignTable>(primaryA[1], primaryB[0]);
 
             populator.Bind();
-            
+
             Console.WriteLine("Here");
         }
 
@@ -106,7 +106,7 @@ namespace CommonIntegrationTests.Tests
         {
             IPopulator populator = this.factory.CreateSqlClientPopulator(
                 @"Data Source=localhost;Initial Catalog=TestDataFramework;Integrated Security=SSPI;",
-                mustBeInATransaction: false);
+                false);
 
             IList<RecordReference<ManualKeyPrimaryTableClass>> result = populator.Add<ManualKeyPrimaryTableClass>(5);
 
@@ -125,7 +125,7 @@ namespace CommonIntegrationTests.Tests
         {
             IPopulator populator = this.factory.CreateSqlClientPopulator(
                 @"Data Source=localhost;Initial Catalog=TestDataFramework;Integrated Security=SSPI;",
-                mustBeInATransaction: false);
+                false);
 
             Guid g = Guid.NewGuid();
 
@@ -152,7 +152,7 @@ namespace CommonIntegrationTests.Tests
         {
             IPopulator populator = this.factory.CreateSqlClientPopulator(
                 @"Data Source=localhost;Initial Catalog=TestDataFramework;Integrated Security=SSPI;",
-                mustBeInATransaction: false);
+                false);
 
             OperableList<SubjectClass> result = populator.Add<SubjectClass>(2);
             populator.Bind();

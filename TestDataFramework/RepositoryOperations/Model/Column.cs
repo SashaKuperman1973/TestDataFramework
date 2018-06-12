@@ -16,6 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 namespace TestDataFramework.RepositoryOperations.Model
 {
     public class Column
@@ -25,7 +26,7 @@ namespace TestDataFramework.RepositoryOperations.Model
 
         public override string ToString()
         {
-            string result = $"Name: {this.Name}, Value: {this.Value}";
+            var result = $"Name: {this.Name}, Value: {this.Value}";
             return result;
         }
     }

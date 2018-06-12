@@ -21,7 +21,6 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using TestDataFramework.AttributeDecorator;
-using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.Helpers;
 
@@ -36,7 +35,7 @@ namespace TestDataFramework.Exceptions
 
         private static string GetStackMessage(Type currentType, IEnumerable<Type> stack)
         {
-            string message = string.Format(Messages.TypeRecursion,
+            var message = string.Format(Messages.TypeRecursion,
                 string.Join(" -> ", stack), Helper.PrintType(currentType));
 
             return message;
@@ -118,13 +117,14 @@ namespace TestDataFramework.Exceptions
     public class UnHandledTypeException : ApplicationException
     {
         public UnHandledTypeException(string message, Type type) : base(string.Format(message, type))
-        {            
+        {
         }
     }
 
     public class AttributeDecoratorException : ApplicationException
     {
-        public AttributeDecoratorException(string cannotResolveForeignTableMessage, ForeignKeyAttribute foreignAttribute, TypeInfoWrapper foreignType)
+        public AttributeDecoratorException(string cannotResolveForeignTableMessage,
+            ForeignKeyAttribute foreignAttribute, TypeInfoWrapper foreignType)
             : base(string.Format(cannotResolveForeignTableMessage, foreignAttribute, foreignType))
         {
         }
@@ -134,7 +134,7 @@ namespace TestDataFramework.Exceptions
     {
         public TableTypeLookupException(string assemblyCacheNotPopulatedMessage, AssemblyWrapper assembly)
             : base(string.Format(assemblyCacheNotPopulatedMessage, assembly))
-        {            
+        {
         }
     }
 
@@ -150,7 +150,8 @@ namespace TestDataFramework.Exceptions
         {
         }
 
-        public TableTypeCacheException(string ambigousTableSearchConditionsMessage, Table table, TypeInfoWrapper ambigousType1,
+        public TableTypeCacheException(string ambigousTableSearchConditionsMessage, Table table,
+            TypeInfoWrapper ambigousType1,
             TypeInfoWrapper ambigousType2)
             : base(string.Format(ambigousTableSearchConditionsMessage, table, ambigousType1, ambigousType2))
         {
@@ -161,7 +162,7 @@ namespace TestDataFramework.Exceptions
     {
         public WritePrimitivesException(string catalogueAndNoSchemaMessage, string catalogueName, string tableName)
             : base(string.Format(catalogueAndNoSchemaMessage, catalogueName, tableName))
-        {            
+        {
         }
     }
 
@@ -177,7 +178,7 @@ namespace TestDataFramework.Exceptions
     {
         public InserRecordServiceException(string message, string foreignTypeName, string propertyName)
             : base(string.Format(message, foreignTypeName, propertyName))
-        {            
+        {
         }
     }
 

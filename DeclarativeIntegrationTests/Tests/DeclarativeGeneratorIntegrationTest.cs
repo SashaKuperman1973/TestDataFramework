@@ -28,10 +28,11 @@ namespace DeclarativeIntegrationTests.Tests
 {
     public class DeclarativeGeneratorIntegrationTest : ICodeGeneratorIntegration
     {
-        private IList<RecordReference<TertiaryManualKeyForeignTable>> tertiaryForeignSet;
         private IList<RecordReference<ForeignToAutoPrimaryTable>> foreignToAutoSet;
+        private IList<RecordReference<TertiaryManualKeyForeignTable>> tertiaryForeignSet;
 
-        public void AddTypes(IPopulator populator, IList<RecordReference<ManualKeyForeignTable>> foreignSet1, IList<RecordReference<ManualKeyForeignTable>> foreignSet2)
+        public void AddTypes(IPopulator populator, IList<RecordReference<ManualKeyForeignTable>> foreignSet1,
+            IList<RecordReference<ManualKeyForeignTable>> foreignSet2)
         {
             this.tertiaryForeignSet = populator.Add<TertiaryManualKeyForeignTable>(4);
 

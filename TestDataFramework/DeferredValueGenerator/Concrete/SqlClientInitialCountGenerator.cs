@@ -21,10 +21,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using log4net;
-using TestDataFramework.Logger;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
+using TestDataFramework.Logger;
 
 namespace TestDataFramework.DeferredValueGenerator.Concrete
 {
@@ -53,7 +53,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
                 return;
             }
 
-            List<DecoderDelegate> decoders = new List<DecoderDelegate>();
+            var decoders = new List<DecoderDelegate>();
 
             List<KeyValuePair<PropertyInfo, Data<LargeInteger>>> propertyDataList =
                 propertyDataDictionary.ToList();
@@ -76,13 +76,12 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
             object[] results = this.writerDictinary.Execute();
 
             if (results.Length != decoders.Count)
-            {
                 throw new DataLengthMismatchException(Messages.DataCountsDoNotMatch);
-            }
 
-            for (int i = 0; i < results.Length; i++)
+            for (var i = 0; i < results.Length; i++)
             {
-                SqlClientInitialCountGenerator.Logger.Debug($"PropertyInfo to set: {propertyDataList[i].Key}, Db result: {results[i]}");
+                SqlClientInitialCountGenerator.Logger.Debug(
+                    $"PropertyInfo to set: {propertyDataList[i].Key}, Db result: {results[i]}");
 
                 propertyDataList[i].Value.Item = decoders[i](propertyDataList[i].Key, results[i]) + 1;
 

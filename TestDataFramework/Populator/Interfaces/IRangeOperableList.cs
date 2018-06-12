@@ -26,6 +26,8 @@ namespace TestDataFramework.Populator.Interfaces
 {
     public interface IRangeOperableList<T>
     {
+        IEnumerable<T> RecordObjects { get; }
+
         OperableList<T> GuaranteeByPercentageOfTotal<TValue>(IEnumerable<TValue> guaranteedValues,
             int frequencyPercentage = 10);
 
@@ -45,8 +47,6 @@ namespace TestDataFramework.Populator.Interfaces
         IEnumerable<T> BindAndMake();
 
         IEnumerable<T> Make();
-
-        IEnumerable<T> RecordObjects { get; }
 
         RangeOperableList<T> Set<TProperty>(Expression<Func<T, TProperty>> fieldExpression,
             TProperty value, params Range[] ranges);

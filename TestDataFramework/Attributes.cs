@@ -27,8 +27,8 @@ namespace TestDataFramework
 {
     public interface ICanHaveDefaultSchema
     {
-        Attribute GetAttributeUsingDefaultSchema(string defaultSchema);
         bool IsDefaultSchema { get; }
+        Attribute GetAttributeUsingDefaultSchema(string defaultSchema);
     }
 
     internal class AttributeHelper
@@ -131,23 +131,24 @@ namespace TestDataFramework
             this.IsDefaultSchema = false;
         }
 
-        public virtual Attribute GetAttributeUsingDefaultSchema(string defaultSchema)
-        {
-            return new ForeignKeyAttribute(defaultSchema, this.PrimaryTableName, this.PrimaryKeyName);
-        }
-
         public Type PrimaryTableType { get; }
         public string Schema { get; }
         public string PrimaryTableName { get; }
         public string PrimaryKeyName { get; }
 
+        public virtual Attribute GetAttributeUsingDefaultSchema(string defaultSchema)
+        {
+            return new ForeignKeyAttribute(defaultSchema, this.PrimaryTableName, this.PrimaryKeyName);
+        }
+
         public bool IsDefaultSchema { get; }
 
         public override string ToString()
         {
-            string result =
+            var result =
                 string.Format("PrimaryTableType: {0}, PrimaryTableName: {1}, PrimaryKeyName: {2}, Schema: {3}",
-                    AttributeHelper.GetStrings(this.PrimaryTableType, this.PrimaryTableName, this.PrimaryKeyName, this.Schema));
+                    AttributeHelper.GetStrings(this.PrimaryTableType, this.PrimaryTableName, this.PrimaryKeyName,
+                        this.Schema));
 
             return result;
         }
@@ -160,9 +161,7 @@ namespace TestDataFramework
             name.IsNotNull(nameof(name));
 
             if (catalogueName != null && schema == null)
-            {
                 throw new TableAttributeException(Messages.CatalogueAndNoSchema, catalogueName, name);
-            }
 
             this.CatalogueName = catalogueName;
             this.Name = name;
@@ -179,11 +178,6 @@ namespace TestDataFramework
             this.IsDefaultSchema = false;
         }
 
-        public virtual Attribute GetAttributeUsingDefaultSchema(string defaultSchema)
-        {
-            return new TableAttribute(this.CatalogueName, defaultSchema, this.Name);
-        }
-
         public TableAttribute(string name)
         {
             name.IsNotNull(nameof(name));
@@ -194,6 +188,11 @@ namespace TestDataFramework
         public string CatalogueName { get; }
         public string Name { get; }
         public string Schema { get; }
+
+        public virtual Attribute GetAttributeUsingDefaultSchema(string defaultSchema)
+        {
+            return new TableAttribute(this.CatalogueName, defaultSchema, this.Name);
+        }
 
         public bool IsDefaultSchema { get; }
 
@@ -207,21 +206,19 @@ namespace TestDataFramework
         {
             var value = obj as TableAttribute;
 
-            bool result = value != null && 
-
-                (this.Schema == null && value.Schema == null ||
-                    (this.Schema?.Equals(value.Schema) ?? false)) &&
-                
-                    (this.CatalogueName == null && value.CatalogueName == null ||
-                    (this.CatalogueName?.Equals(value.CatalogueName) ?? false)) &&
-
-                this.Name.Equals(value.Name);
+            var result = value != null &&
+                         (this.Schema == null && value.Schema == null ||
+                          (this.Schema?.Equals(value.Schema) ?? false)) &&
+                         (this.CatalogueName == null && value.CatalogueName == null ||
+                          (this.CatalogueName?.Equals(value.CatalogueName) ?? false)) &&
+                         this.Name.Equals(value.Name);
             return result;
         }
 
         public override string ToString()
         {
-            string result = $"Name: {this.Name}, Schema: {this.Schema ?? "<null>"}, Catalogue: {this.CatalogueName ?? "<null>"}";
+            var result =
+                $"Name: {this.Name}, Schema: {this.Schema ?? "<null>"}, Catalogue: {this.CatalogueName ?? "<null>"}";
             return result;
         }
     }
@@ -242,7 +239,7 @@ namespace TestDataFramework
         {
             Auto,
             Manual,
-            None,
+            None
         }
 
         public PrimaryKeyAttribute(KeyTypeEnum keyType = KeyTypeEnum.Manual)

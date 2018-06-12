@@ -19,9 +19,8 @@
 
 namespace PocoIntegrationTests.TestModels
 {
-  public class ForeignToAutoPrimaryTable
-  {
-    public int ForignKey { get; set; }
-	
-  }
+    public class ForeignToAutoPrimaryTable
+    {
+        public int ForignKey { get; set; }
+    }
 }

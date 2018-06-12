@@ -20,14 +20,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web.UI.WebControls;
 using log4net;
-using TestDataFramework.Logger;
-using TestDataFramework.AttributeDecorator;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.HandledTypeGenerator;
 using TestDataFramework.ListOperations;
+using TestDataFramework.Logger;
 using TestDataFramework.Persistence.Interfaces;
 using TestDataFramework.TypeGenerator.Interfaces;
 using TestDataFramework.ValueGenerator.Interfaces;
@@ -36,20 +34,18 @@ namespace TestDataFramework.Populator.Concrete
 {
     public class StandardPopulator : BasePopulator
     {
-        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof (StandardPopulator));
-
-        private readonly ITypeGenerator typeGenerator;
-        private readonly IPersistence persistence;
-        private readonly IHandledTypeGenerator handledTypeGenerator;
-        private readonly ValueGuaranteePopulator valueGuaranteePopulator;
-        private readonly IObjectGraphService objectGraphService;
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(StandardPopulator));
         private readonly DeepCollectionSettingConverter deepCollectionSettingConverter;
-
-        public override IValueGenerator ValueGenerator { get; }
+        private readonly IHandledTypeGenerator handledTypeGenerator;
+        private readonly IObjectGraphService objectGraphService;
+        private readonly IPersistence persistence;
         private readonly List<Populatable> populatables = new List<Populatable>();
 
+        private readonly ITypeGenerator typeGenerator;
+        private readonly ValueGuaranteePopulator valueGuaranteePopulator;
+
         public StandardPopulator(ITypeGenerator typeGenerator, IPersistence persistence,
-            IAttributeDecorator attributeDecorator, IHandledTypeGenerator handledTypeGenerator, 
+            IAttributeDecorator attributeDecorator, IHandledTypeGenerator handledTypeGenerator,
             IValueGenerator valueGenerator, ValueGuaranteePopulator valueGuaranteePopulator,
             IObjectGraphService objectGraphService, DeepCollectionSettingConverter deepCollectionSettingConverter)
             : base(attributeDecorator)
@@ -67,6 +63,8 @@ namespace TestDataFramework.Populator.Concrete
             StandardPopulator.Logger.Debug("Entering constructor");
         }
 
+        public override IValueGenerator ValueGenerator { get; }
+
         public override void Clear()
         {
             this.populatables.Clear();
@@ -79,15 +77,14 @@ namespace TestDataFramework.Populator.Concrete
 
         public override OperableList<T> Add<T>(int copies, params RecordReference[] primaryRecordReferences)
         {
-            StandardPopulator.Logger.Debug($"Entering Add. T: {typeof(T)}, copies: {copies}, primaryRecordReference: {primaryRecordReferences}");
+            StandardPopulator.Logger.Debug(
+                $"Entering Add. T: {typeof(T)}, copies: {copies}, primaryRecordReference: {primaryRecordReferences}");
 
             var result = new OperableList<T>(this.valueGuaranteePopulator, this);
             this.populatables.Add(result);
 
-            for (int i = 0; i < copies; i++)
-            {
+            for (var i = 0; i < copies; i++)
                 result.Add(this.Add<T>(primaryRecordReferences));
-            }
 
             StandardPopulator.Logger.Debug("Exiting Add");
             return result;
@@ -95,7 +92,8 @@ namespace TestDataFramework.Populator.Concrete
 
         public override RecordReference<T> Add<T>(params RecordReference[] primaryRecordReferences)
         {
-            StandardPopulator.Logger.Debug($"Entering Add. T: {typeof(T)}, primaryRecordReference: {primaryRecordReferences}");
+            StandardPopulator.Logger.Debug(
+                $"Entering Add. T: {typeof(T)}, primaryRecordReference: {primaryRecordReferences}");
 
             var recordReference = new RecordReference<T>(this.typeGenerator, this.AttributeDecorator, this,
                 this.objectGraphService, this.valueGuaranteePopulator, this.deepCollectionSettingConverter);
@@ -129,18 +127,17 @@ namespace TestDataFramework.Populator.Concrete
 
             recordReference.Populate();
 
-            this.persistence.Persist(new[] { recordReference });
+            this.persistence.Persist(new[] {recordReference});
             recordReference.IsPopulated = true;
         }
 
         protected internal override void Bind<T>(OperableList<T> operableList)
         {
             if (!operableList.IsPopulated)
-            {
                 operableList.Populate();
-            }
 
-            List<RecordReference<T>> unprocessedReferences = operableList.Where(reference => !reference.IsPopulated).ToList();
+            List<RecordReference<T>> unprocessedReferences =
+                operableList.Where(reference => !reference.IsPopulated).ToList();
 
             unprocessedReferences.ForEach(recordReference => recordReference.Populate());
 

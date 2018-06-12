@@ -16,6 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 namespace TestDataFramework.RepositoryOperations.Model
 {
     public class ExtendedColumnSymbol : ColumnSymbol
@@ -24,7 +25,7 @@ namespace TestDataFramework.RepositoryOperations.Model
 
         public override string ToString()
         {
-            string result = base.ToString() + ", " + this.PropertyAttribute;
+            var result = base.ToString() + ", " + this.PropertyAttribute;
             return result;
         }
     }

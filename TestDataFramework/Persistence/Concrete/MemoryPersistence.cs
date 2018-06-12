@@ -21,12 +21,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using log4net;
-using TestDataFramework.Logger;
-using TestDataFramework.AttributeDecorator;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Helpers;
+using TestDataFramework.Logger;
 using TestDataFramework.Persistence.Interfaces;
 using TestDataFramework.Populator;
 using TestDataFramework.RepositoryOperations.Model;
@@ -35,12 +34,13 @@ namespace TestDataFramework.Persistence.Concrete
 {
     public class MemoryPersistence : IPersistence
     {
-        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof (MemoryPersistence));
-
-        private readonly IDeferredValueGenerator<LargeInteger> deferredValueGenerator;
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(MemoryPersistence));
         private readonly IAttributeDecorator attributeDecorator;
 
-        public MemoryPersistence(IDeferredValueGenerator<LargeInteger> deferredValueGenerator, IAttributeDecorator attributeDecorator)
+        private readonly IDeferredValueGenerator<LargeInteger> deferredValueGenerator;
+
+        public MemoryPersistence(IDeferredValueGenerator<LargeInteger> deferredValueGenerator,
+            IAttributeDecorator attributeDecorator)
         {
             MemoryPersistence.Logger.Debug("Entering constructor");
 
@@ -76,7 +76,7 @@ namespace TestDataFramework.Persistence.Concrete
             var primaryKeys = recordReference.PrimaryKeyReferences.SelectMany(
                 pkRef =>
                     this.attributeDecorator.GetPropertyAttributes<PrimaryKeyAttribute>(pkRef.RecordType)
-                        .Select(pkpa => new {@Object = pkRef.RecordObject, PkProperty = pkpa.PropertyInfo}));
+                        .Select(pkpa => new {Object = pkRef.RecordObject, PkProperty = pkpa.PropertyInfo}));
 
             IEnumerable<PropertyAttribute<ForeignKeyAttribute>> foreignKeyPropertyAttributes =
                 this.attributeDecorator.GetPropertyAttributes<ForeignKeyAttribute>(recordReference.RecordType);
@@ -92,9 +92,7 @@ namespace TestDataFramework.Persistence.Concrete
                             fkpa.Attribute.PrimaryKeyName);
 
                 if (primaryKey?.Object == null)
-                {
                     return;
-                }
 
                 MemoryPersistence.Logger.Debug($"PropertyInfo to get from: {primaryKey.PkProperty}");
                 object primaryKeyPropertyValue = primaryKey.PkProperty.GetValue(primaryKey.Object);

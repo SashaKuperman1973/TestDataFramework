@@ -20,8 +20,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete;
@@ -35,11 +33,9 @@ namespace TestDataFramework.ListOperations
             if (
                 guaranteedValuesList.Any(
                     valueSet => !valueSet.FrequencyPercentage.HasValue && !valueSet.TotalFrequency.HasValue))
-            {
                 throw new ValueGuaranteeException(Messages.NeitherPercentageNorTotalGiven);
-            }
 
-            List<RecordReference<T>> workingList  =
+            List<RecordReference<T>> workingList =
                 references.Where(reference => !reference.ExplicitPropertySetters.Any()).ToList();
 
             List<Tuple<IEnumerable<object>, int>> valuesPerPercentageSet =
@@ -47,7 +43,7 @@ namespace TestDataFramework.ListOperations
                     .Select(
                         valueSet =>
                         {
-                            int quantity = (int) ((float) references.Count*valueSet.FrequencyPercentage.Value/100f);
+                            var quantity = (int) ((float) references.Count * valueSet.FrequencyPercentage.Value / 100f);
 
                             quantity = quantity >= 1 ? quantity : 1;
 
@@ -67,25 +63,22 @@ namespace TestDataFramework.ListOperations
                     .Select(valueSet => new Tuple<List<object>, int>(valueSet.Item1.ToList(), valueSet.Item2))
                     .ToList();
 
-            int totalQuantityOfGuaranteedValues =
+            var totalQuantityOfGuaranteedValues =
                 allValues.Sum(tuple => tuple.Item2);
 
             if (totalQuantityOfGuaranteedValues > workingList.Count)
-            {
                 throw new ValueGuaranteeException(Messages.TooFewReferencesForValueGuarantee);
-            }
 
             var random = new Random();
 
             foreach (Tuple<List<object>, int> valueAndPopulationQuantity in allValues)
-            {
-                for (int valueIndex = 0; valueIndex < valueAndPopulationQuantity.Item2; valueIndex++)
+                for (var valueIndex = 0; valueIndex < valueAndPopulationQuantity.Item2; valueIndex++)
                 {
-                    int referenceIndex = random.Next(workingList.Count);
+                    var referenceIndex = random.Next(workingList.Count);
                     RecordReference reference = workingList[referenceIndex];
 
                     object subject =
-                        valueAndPopulationQuantity.Item1[valueIndex%valueAndPopulationQuantity.Item1.Count];
+                        valueAndPopulationQuantity.Item1[valueIndex % valueAndPopulationQuantity.Item1.Count];
 
                     Func<object> objectFunc;
 
@@ -97,20 +90,16 @@ namespace TestDataFramework.ListOperations
 
                         Type[] typeArgs = subject.GetType().GetGenericArguments();
                         if (typeArgs.Length > 1 || typeArgs[0] != typeof(T))
-                        {
                             throw new ValueGuaranteeException(string.Format(Messages.GuaranteedTypeNotOfListType,
                                 typeof(T), typeArgs[0], ValueGuaranteePopulator.GetValue(objectFunc)));
-                        }
 
                         reference.RecordObject = objectFunc();
                     }
                     else
                     {
                         if (subjectType != typeof(T))
-                        {
                             throw new ValueGuaranteeException(string.Format(Messages.GuaranteedTypeNotOfListType,
                                 typeof(T), subject.GetType(), subject));
-                        }
 
                         reference.RecordObject = subject;
                     }
@@ -118,7 +107,6 @@ namespace TestDataFramework.ListOperations
                     reference.IsPopulated = true;
                     workingList.RemoveAt(referenceIndex);
                 }
-            }
         }
 
         private static object GetValue(Func<object> objectFunc)

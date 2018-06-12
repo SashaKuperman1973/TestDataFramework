@@ -5,6 +5,7 @@
         private static ExplicitlyIgnoredValue instance;
 
         public static ExplicitlyIgnoredValue Instance => ExplicitlyIgnoredValue.instance ??
-                                                         (ExplicitlyIgnoredValue.instance = new ExplicitlyIgnoredValue());
+                                                         (ExplicitlyIgnoredValue.instance =
+                                                             new ExplicitlyIgnoredValue());
     }
 }

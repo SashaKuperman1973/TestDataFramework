@@ -1,5 +1,4 @@
-﻿using System;
-using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService;
+﻿using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 
 namespace TestDataFramework.AttributeDecorator.Interfaces

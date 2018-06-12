@@ -22,10 +22,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using log4net;
-using TestDataFramework.Logger;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
+using TestDataFramework.Logger;
 using TestDataFramework.WritePrimitives.Interfaces;
 
 namespace TestDataFramework.DeferredValueGenerator.Concrete
@@ -37,12 +37,15 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
     public class SqlWriterDictionary : IWriterDictinary
     {
         private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(SqlWriterDictionary));
+        private readonly SqlWriterCommandTextGenerator commandTextGenerator;
 
         private readonly LetterEncoder encoder;
         private readonly IWritePrimitives writePrimitives;
-        private readonly SqlWriterCommandTextGenerator commandTextGenerator;
 
-        public SqlWriterDictionary(LetterEncoder encoder, IWritePrimitives writePrimitives, SqlWriterCommandTextGenerator commandTextGenerator)
+        private Dictionary<Type, WriterDelegate> writerDictionary;
+
+        public SqlWriterDictionary(LetterEncoder encoder, IWritePrimitives writePrimitives,
+            SqlWriterCommandTextGenerator commandTextGenerator)
         {
             SqlWriterDictionary.Logger.Debug("Entering constructor");
 
@@ -55,23 +58,6 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
             SqlWriterDictionary.Logger.Debug("Exiting constructor");
         }
 
-        private void PopulateWriterDictionary()
-        {
-            this.writerDictionary = new Dictionary<Type, WriterDelegate>()
-            {
-                {typeof (int), this.WriteNumberCommand},
-                {typeof (short), this.WriteNumberCommand},
-                {typeof (long), this.WriteNumberCommand},
-                {typeof (byte), this.WriteNumberCommand},
-                {typeof (uint), this.WriteNumberCommand},
-                {typeof (ushort), this.WriteNumberCommand},
-                {typeof (ulong), this.WriteNumberCommand},
-                {typeof (string), this.WriteStringCommand},
-            };
-        }
-
-        private Dictionary<Type, WriterDelegate> writerDictionary;
-
         public WriterDelegate this[Type type]
         {
             get
@@ -80,9 +66,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
 
                 WriterDelegate writer;
                 if (!this.writerDictionary.TryGetValue(type, out writer))
-                {
                     throw new KeyNotFoundException(string.Format(Messages.PropertyKeyNotFound, type));
-                }
 
                 SqlWriterDictionary.Logger.Debug("Exiting Type indexer");
 
@@ -100,11 +84,27 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
             return result;
         }
 
+        private void PopulateWriterDictionary()
+        {
+            this.writerDictionary = new Dictionary<Type, WriterDelegate>
+            {
+                {typeof(int), this.WriteNumberCommand},
+                {typeof(short), this.WriteNumberCommand},
+                {typeof(long), this.WriteNumberCommand},
+                {typeof(byte), this.WriteNumberCommand},
+                {typeof(uint), this.WriteNumberCommand},
+                {typeof(ushort), this.WriteNumberCommand},
+                {typeof(ulong), this.WriteNumberCommand},
+                {typeof(string), this.WriteStringCommand}
+            };
+        }
+
         private DecoderDelegate WriteNumberCommand(PropertyInfo propertyInfo)
         {
-            SqlWriterDictionary.Logger.Debug("Entering WriteNumberCommand. propertyInfo: " + propertyInfo.GetExtendedMemberInfoString());
+            SqlWriterDictionary.Logger.Debug("Entering WriteNumberCommand. propertyInfo: " +
+                                             propertyInfo.GetExtendedMemberInfoString());
 
-            string commandText = this.commandTextGenerator.WriteNumber(propertyInfo);                
+            var commandText = this.commandTextGenerator.WriteNumber(propertyInfo);
 
             this.writePrimitives.AddSqlCommand(commandText);
 
@@ -114,7 +114,8 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
 
         private static LargeInteger DecodeNumber(PropertyInfo propertyInfo, object input)
         {
-            SqlWriterDictionary.Logger.Debug($"Entering DecodeNumber. propertyInfo: {propertyInfo.GetExtendedMemberInfoString()}, input: {input}");
+            SqlWriterDictionary.Logger.Debug(
+                $"Entering DecodeNumber. propertyInfo: {propertyInfo.GetExtendedMemberInfoString()}, input: {input}");
 
             if (input is DBNull)
             {
@@ -123,12 +124,11 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
             }
 
             if (
-                !new[] { typeof(byte), typeof(int), typeof(short), typeof(long) }.Contains(input.GetType()))
-            {
-                throw new UnexpectedTypeException(string.Format(Messages.UnexpectedHandlerType, propertyInfo.GetExtendedMemberInfoString(), input));
-            }
+                !new[] {typeof(byte), typeof(int), typeof(short), typeof(long)}.Contains(input.GetType()))
+                throw new UnexpectedTypeException(string.Format(Messages.UnexpectedHandlerType,
+                    propertyInfo.GetExtendedMemberInfoString(), input));
 
-            LargeInteger result = (ulong)Convert.ChangeType(input, typeof(ulong));
+            LargeInteger result = (ulong) Convert.ChangeType(input, typeof(ulong));
 
             SqlWriterDictionary.Logger.Debug("Exiting DecodeNumber");
 
@@ -137,9 +137,10 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
 
         private DecoderDelegate WriteStringCommand(PropertyInfo propertyInfo)
         {
-            SqlWriterDictionary.Logger.Debug("Entering WriteStringCommand. propertyInfo: " + propertyInfo.GetExtendedMemberInfoString());
+            SqlWriterDictionary.Logger.Debug("Entering WriteStringCommand. propertyInfo: " +
+                                             propertyInfo.GetExtendedMemberInfoString());
 
-            string commandText = this.commandTextGenerator.WriteString(propertyInfo);                
+            var commandText = this.commandTextGenerator.WriteString(propertyInfo);
 
             this.writePrimitives.AddSqlCommand(commandText);
 
@@ -150,7 +151,8 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
 
         private LargeInteger DecodeString(PropertyInfo propertyInfo, object input)
         {
-            SqlWriterDictionary.Logger.Debug($"Entering DecodeString. propertyInfo: {propertyInfo.GetExtendedMemberInfoString()}, input: {input}");
+            SqlWriterDictionary.Logger.Debug(
+                $"Entering DecodeString. propertyInfo: {propertyInfo.GetExtendedMemberInfoString()}, input: {input}");
 
             if (input is DBNull)
             {
@@ -159,11 +161,9 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
             }
 
             if (input.GetType() != typeof(string))
-            {
                 throw new UnexpectedTypeException(string.Format(Messages.UnexpectedHandlerType, propertyInfo, input));
-            }
 
-            LargeInteger result = this.encoder.Decode(((string)input).ToUpper());
+            LargeInteger result = this.encoder.Decode(((string) input).ToUpper());
 
             SqlWriterDictionary.Logger.Debug("Exiting DecodeString");
 

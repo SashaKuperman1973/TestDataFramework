@@ -21,19 +21,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using log4net;
-using TestDataFramework.Logger;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Helpers;
+using TestDataFramework.Logger;
 using TestDataFramework.Populator;
 
 namespace TestDataFramework.DeferredValueGenerator.Concrete
 {
     public class StandardDeferredValueGenerator<T> : IDeferredValueGenerator<T>
     {
-        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof (StandardDeferredValueGenerator<T>));
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(StandardDeferredValueGenerator<T>));
+
+        private static readonly ReferenceRecordObjectEqualityComparer ReferenceRecordObjectEqualityComparerObject =
+            new ReferenceRecordObjectEqualityComparer();
 
         private readonly IPropertyDataGenerator<T> dataSource;
-        private readonly Dictionary<PropertyInfo, Data<T>> propertyDataDictionary = new Dictionary<PropertyInfo, Data<T>>();
+
+        private readonly Dictionary<PropertyInfo, Data<T>> propertyDataDictionary =
+            new Dictionary<PropertyInfo, Data<T>>();
 
         public StandardDeferredValueGenerator(IPropertyDataGenerator<T> dataSource)
         {
@@ -71,11 +76,13 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
 
             uniqueTargets.ToList().ForEach(targetRecordReference =>
             {
-                StandardDeferredValueGenerator<T>.Logger.Debug("Target object type: " + targetRecordReference.RecordType);
+                StandardDeferredValueGenerator<T>.Logger.Debug(
+                    "Target object type: " + targetRecordReference.RecordType);
 
                 targetRecordReference.RecordType.GetPropertiesHelper().ToList().ForEach(propertyInfo =>
                 {
-                    StandardDeferredValueGenerator<T>.Logger.Debug("Property: " + propertyInfo.GetExtendedMemberInfoString());
+                    StandardDeferredValueGenerator<T>.Logger.Debug(
+                        "Property: " + propertyInfo.GetExtendedMemberInfoString());
 
                     if (targetRecordReference.IsExplicitlySet(propertyInfo))
                     {
@@ -94,7 +101,8 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
                         return;
                     }
 
-                    StandardDeferredValueGenerator<T>.Logger.Debug($"Property found in deferred properties dictionary. Data: {data}");
+                    StandardDeferredValueGenerator<T>.Logger.Debug(
+                        $"Property found in deferred properties dictionary. Data: {data}");
 
                     object value = data.ValueGetter(data.Item);
 
@@ -117,15 +125,13 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
                 targets.Where(t => !t.RecordObject?.GetType().IsValueType ?? false)
                     .Distinct(StandardDeferredValueGenerator<T>.ReferenceRecordObjectEqualityComparerObject);
 
-            IEnumerable<RecordReference> valueTypes = targets.Where(t => t.RecordObject?.GetType().IsValueType ?? false);
+            IEnumerable<RecordReference> valueTypes =
+                targets.Where(t => t.RecordObject?.GetType().IsValueType ?? false);
 
             IEnumerable<RecordReference> result = distinctReferenceTypes.Concat(valueTypes);
 
             return result;
         }
-
-        private static readonly ReferenceRecordObjectEqualityComparer ReferenceRecordObjectEqualityComparerObject =
-            new ReferenceRecordObjectEqualityComparer();
 
         private class ReferenceRecordObjectEqualityComparer : IEqualityComparer<RecordReference>
         {
@@ -139,6 +145,5 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
                 return obj.RecordObject.GetHashCode();
             }
         }
-
     }
 }

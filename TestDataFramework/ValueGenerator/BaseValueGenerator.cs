@@ -21,15 +21,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Castle.MicroKernel.Registration;
 using log4net;
-using TestDataFramework.Logger;
 using TestDataFramework.ArrayRandomizer;
-using TestDataFramework.AttributeDecorator;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeepSetting;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
+using TestDataFramework.Logger;
 using TestDataFramework.TypeGenerator.Interfaces;
 using TestDataFramework.UniqueValueGenerator.Interfaces;
 using TestDataFramework.ValueGenerator.Interfaces;
@@ -40,19 +38,18 @@ namespace TestDataFramework.ValueGenerator
     public abstract class BaseValueGenerator : IValueGenerator
     {
         private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(BaseValueGenerator));
-
-        protected readonly IValueProvider ValueProvider;
-        protected readonly Func<ITypeGenerator> GetTypeGenerator;
-        protected readonly Func<IArrayRandomizer> GetArrayRandomizer;
-        protected readonly IUniqueValueGenerator UniqueValueGenerator;
         protected readonly IAttributeDecorator AttributeDecorator;
-
-        private delegate object GetValueForTypeDelegate(PropertyInfo propertyInfo);
+        protected readonly Func<IArrayRandomizer> GetArrayRandomizer;
+        protected readonly Func<ITypeGenerator> GetTypeGenerator;
 
         private readonly Dictionary<Type, GetValueForTypeDelegate> typeValueGetterDictionary;
+        protected readonly IUniqueValueGenerator UniqueValueGenerator;
+
+        protected readonly IValueProvider ValueProvider;
 
         protected BaseValueGenerator(IValueProvider valueProvider, Func<ITypeGenerator> getTypeGenerator,
-            Func<IArrayRandomizer> getArrayRandomizer, IUniqueValueGenerator uniqueValueGenerator, IAttributeDecorator attributeDecorator)
+            Func<IArrayRandomizer> getArrayRandomizer, IUniqueValueGenerator uniqueValueGenerator,
+            IAttributeDecorator attributeDecorator)
         {
             BaseValueGenerator.Logger.Debug("Entering constructor");
 
@@ -64,23 +61,23 @@ namespace TestDataFramework.ValueGenerator
 
             this.typeValueGetterDictionary = new Dictionary<Type, GetValueForTypeDelegate>
             {
-                {typeof (EmailAttribute), x => this.ValueProvider.GetEmailAddress()},
-                {typeof (PrimaryKeyAttribute), this.GetPrimaryKey},
-                {typeof (string), this.GetString},
-                {typeof (decimal), this.GetDecimal},
-                {typeof (int), this.GetInteger},
-                {typeof (uint), this.GetUnsignedInteger},
-                {typeof (long), this.GetLong},
-                {typeof (ulong), this.GetUnsignedLong},
-                {typeof (short), this.GetShort},
-                {typeof (ushort), this.GetUnsignedShort},
-                {typeof (bool), x => this.ValueProvider.GetBoolean()},
-                {typeof (char), x => this.ValueProvider.GetCharacter()},
-                {typeof (DateTime), this.GetDateTime},
-                {typeof (byte), x => this.ValueProvider.GetByte()},
-                {typeof (double), this.GetDouble},
-                {typeof (float), this.GetFloat},
-                {typeof (Guid), this.GetGuid },
+                {typeof(EmailAttribute), x => this.ValueProvider.GetEmailAddress()},
+                {typeof(PrimaryKeyAttribute), this.GetPrimaryKey},
+                {typeof(string), this.GetString},
+                {typeof(decimal), this.GetDecimal},
+                {typeof(int), this.GetInteger},
+                {typeof(uint), this.GetUnsignedInteger},
+                {typeof(long), this.GetLong},
+                {typeof(ulong), this.GetUnsignedLong},
+                {typeof(short), this.GetShort},
+                {typeof(ushort), this.GetUnsignedShort},
+                {typeof(bool), x => this.ValueProvider.GetBoolean()},
+                {typeof(char), x => this.ValueProvider.GetCharacter()},
+                {typeof(DateTime), this.GetDateTime},
+                {typeof(byte), x => this.ValueProvider.GetByte()},
+                {typeof(double), this.GetDouble},
+                {typeof(float), this.GetFloat},
+                {typeof(Guid), this.GetGuid}
             };
 
             BaseValueGenerator.Logger.Debug("Exiting constructor");
@@ -89,7 +86,8 @@ namespace TestDataFramework.ValueGenerator
         // This is the general entry point.
         public virtual object GetValue(PropertyInfo propertyInfo, ObjectGraphNode objectGraphNode)
         {
-            BaseValueGenerator.Logger.Debug($"Entering GetValue(PropertyInfo, ObjectGraphNode). propertyInfo: {propertyInfo}");
+            BaseValueGenerator.Logger.Debug(
+                $"Entering GetValue(PropertyInfo, ObjectGraphNode). propertyInfo: {propertyInfo}");
 
             propertyInfo.IsNotNull(nameof(propertyInfo));
 
@@ -103,7 +101,7 @@ namespace TestDataFramework.ValueGenerator
             object result = getter != null
                 ? getter(propertyInfo)
                 : this.GetValue(
-                    propertyInfo, 
+                    propertyInfo,
                     propertyInfo.PropertyType,
                     forType => this.GetTypeGenerator().GetObject(forType, objectGraphNode));
 
@@ -123,6 +121,8 @@ namespace TestDataFramework.ValueGenerator
             return this.GetValue(propertyInfo, type, forType => null);
         }
 
+        private delegate object GetValueForTypeDelegate(PropertyInfo propertyInfo);
+
         #region Private Methods
 
         private object GetValue(PropertyInfo propertyInfo, Type type, Func<Type, object> nonIntrinsicTypeGenerator)
@@ -133,9 +133,7 @@ namespace TestDataFramework.ValueGenerator
             type.IsNotNull(nameof(type));
 
             if (type.IsArray)
-            {
                 return this.GetArrayRandomizer().GetArray(propertyInfo, type);
-            }
 
             Type forType = Nullable.GetUnderlyingType(type) ?? type;
 
@@ -196,7 +194,7 @@ namespace TestDataFramework.ValueGenerator
 
             int? length = lengthAttribute?.Length;
 
-            string result = this.ValueProvider.GetString(length);
+            var result = this.ValueProvider.GetString(length);
 
             BaseValueGenerator.Logger.Debug("Exiting GetString");
             return result;
@@ -212,7 +210,7 @@ namespace TestDataFramework.ValueGenerator
 
             int? precision = precisionAttribute?.Precision;
 
-            decimal result = this.ValueProvider.GetDecimal(precision);
+            var result = this.ValueProvider.GetDecimal(precision);
 
             BaseValueGenerator.Logger.Debug("Exiting GetDecimal");
             return result;
@@ -228,7 +226,7 @@ namespace TestDataFramework.ValueGenerator
 
             int? precision = precisionAttribute?.Precision;
 
-            double result = this.ValueProvider.GetDouble(precision);
+            var result = this.ValueProvider.GetDouble(precision);
 
             BaseValueGenerator.Logger.Debug("Exiting GetDouble");
             return result;
@@ -244,7 +242,7 @@ namespace TestDataFramework.ValueGenerator
 
             int? precision = precisionAttribute?.Precision;
 
-            float result = this.ValueProvider.GetFloat(precision);
+            var result = this.ValueProvider.GetFloat(precision);
 
             BaseValueGenerator.Logger.Debug("Exiting GetFloat");
             return result;
@@ -261,16 +259,13 @@ namespace TestDataFramework.ValueGenerator
             long? max = maxAttribute?.Max;
 
             if (max < 0)
-            {
                 throw new ArgumentOutOfRangeException(Messages.MaxAttributeLessThanZero, (Exception) null);
-            }
 
             if (max > int.MaxValue)
-            {
-                throw new ArgumentOutOfRangeException(string.Format(Messages.MaxAttributeOutOfRange, "int"), (Exception) null);
-            }
+                throw new ArgumentOutOfRangeException(string.Format(Messages.MaxAttributeOutOfRange, "int"),
+                    (Exception) null);
 
-            int result = this.ValueProvider.GetInteger((int?)max);
+            var result = this.ValueProvider.GetInteger((int?) max);
 
             BaseValueGenerator.Logger.Debug("Exiting GetInteger");
             return result;
@@ -279,7 +274,7 @@ namespace TestDataFramework.ValueGenerator
         private object GetUnsignedInteger(PropertyInfo propertyInfo)
         {
             object integer = this.GetInteger(propertyInfo);
-            uint result = Convert.ToUInt32(integer);
+            var result = Convert.ToUInt32(integer);
             return result;
         }
 
@@ -294,11 +289,9 @@ namespace TestDataFramework.ValueGenerator
             long? max = maxAttribute?.Max;
 
             if (max < 0)
-            {
-                throw new ArgumentOutOfRangeException(Messages.MaxAttributeLessThanZero, (Exception)null);
-            }
+                throw new ArgumentOutOfRangeException(Messages.MaxAttributeLessThanZero, (Exception) null);
 
-            long result = this.ValueProvider.GetLongInteger(max);
+            var result = this.ValueProvider.GetLongInteger(max);
 
             BaseValueGenerator.Logger.Debug("Exiting GetLong");
             return result;
@@ -307,7 +300,7 @@ namespace TestDataFramework.ValueGenerator
         private object GetUnsignedLong(PropertyInfo propertyInfo)
         {
             object integer = this.GetLong(propertyInfo);
-            ulong result = Convert.ToUInt64(integer);
+            var result = Convert.ToUInt64(integer);
             return result;
         }
 
@@ -322,16 +315,13 @@ namespace TestDataFramework.ValueGenerator
             long? max = maxAttribute?.Max;
 
             if (max < 0)
-            {
-                throw new ArgumentOutOfRangeException(Messages.MaxAttributeLessThanZero, (Exception)null);
-            }
+                throw new ArgumentOutOfRangeException(Messages.MaxAttributeLessThanZero, (Exception) null);
 
             if (max > short.MaxValue)
-            {
-                throw new ArgumentOutOfRangeException(string.Format(Messages.MaxAttributeOutOfRange, "short"), (Exception)null);
-            }
+                throw new ArgumentOutOfRangeException(string.Format(Messages.MaxAttributeOutOfRange, "short"),
+                    (Exception) null);
 
-            short result = this.ValueProvider.GetShortInteger((short?)max);
+            var result = this.ValueProvider.GetShortInteger((short?) max);
 
             BaseValueGenerator.Logger.Debug("Exiting GetShort");
             return result;
@@ -340,7 +330,7 @@ namespace TestDataFramework.ValueGenerator
         private object GetUnsignedShort(PropertyInfo propertyInfo)
         {
             object integer = this.GetShort(propertyInfo);
-            ushort result = Convert.ToUInt16(integer);
+            var result = Convert.ToUInt16(integer);
             return result;
         }
 

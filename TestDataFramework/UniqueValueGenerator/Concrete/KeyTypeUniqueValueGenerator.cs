@@ -20,22 +20,22 @@
 using System.Linq;
 using System.Reflection;
 using log4net;
-using TestDataFramework.Logger;
-using TestDataFramework.AttributeDecorator;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Helpers;
+using TestDataFramework.Logger;
 using TestDataFramework.PropertyValueAccumulator;
 
 namespace TestDataFramework.UniqueValueGenerator.Concrete
 {
     public class KeyTypeUniqueValueGenerator : BaseUniqueValueGenerator
     {
-        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof (KeyTypeUniqueValueGenerator));
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(KeyTypeUniqueValueGenerator));
 
         private readonly IAttributeDecorator attributeDecorator;
 
-        public KeyTypeUniqueValueGenerator(IPropertyValueAccumulator accumulator, IAttributeDecorator attributeDecorator,
+        public KeyTypeUniqueValueGenerator(IPropertyValueAccumulator accumulator,
+            IAttributeDecorator attributeDecorator,
             IDeferredValueGenerator<LargeInteger> deferredValueGenerator, bool throwIfUnhandledType)
             : base(accumulator, deferredValueGenerator, throwIfUnhandledType)
         {
@@ -65,12 +65,12 @@ namespace TestDataFramework.UniqueValueGenerator.Concrete
             if (this.attributeDecorator.GetSingleAttribute<ForeignKeyAttribute>(propertyInfo) != null ||
                 primaryKeyAttribute.KeyType != PrimaryKeyAttribute.KeyTypeEnum.Manual || !new[]
                 {
-                    typeof (byte), typeof (int), typeof (short), typeof (long), typeof (string),
-                    typeof (uint), typeof (ushort), typeof (ulong),
+                    typeof(byte), typeof(int), typeof(short), typeof(long), typeof(string),
+                    typeof(uint), typeof(ushort), typeof(ulong)
                 }.Contains(propertyInfo.PropertyType))
             {
                 KeyTypeUniqueValueGenerator.Logger.Debug("Not deferring value. Exiting GetValue.");
-                return Helper.GetDefaultValue(propertyInfo.PropertyType);                
+                return Helper.GetDefaultValue(propertyInfo.PropertyType);
             }
 
             KeyTypeUniqueValueGenerator.Logger.Debug("Deferring value");

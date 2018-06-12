@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using log4net;
-using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService;
-using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
@@ -43,18 +41,20 @@ namespace TestDataFramework.AttributeDecorator.Concrete
             {
                 T firstOrDefaultResult = result.FirstOrDefault();
 
-                StandardAttributeDecoratorBase.Logger.Debug($"Member attributes count <= 1. firstOrDefaultResult: {firstOrDefaultResult}");
+                StandardAttributeDecoratorBase.Logger.Debug(
+                    $"Member attributes count <= 1. firstOrDefaultResult: {firstOrDefaultResult}");
                 return firstOrDefaultResult;
             }
 
-            string message =
+            var message =
                 memberInfo.MemberType == MemberTypes.Property
                     ? Messages.AmbigousPropertyAttributeMatch
                     : memberInfo.MemberType == MemberTypes.TypeInfo || memberInfo.MemberType == MemberTypes.NestedType
                         ? Messages.AmbigousTypeAttributeMatch
                         : Messages.AmbigousAttributeMatch;
 
-            throw new AmbiguousMatchException(string.Format(message, typeof(T), memberInfo.Name, memberInfo.DeclaringType));
+            throw new AmbiguousMatchException(string.Format(message, typeof(T), memberInfo.Name,
+                memberInfo.DeclaringType));
         }
 
         public virtual IEnumerable<T> GetCustomAttributes<T>(MemberInfo memberInfo) where T : Attribute
@@ -64,11 +64,10 @@ namespace TestDataFramework.AttributeDecorator.Concrete
 
             List<Attribute> programmaticAttributeList;
 
-            List<Attribute> attributeResult = this.MemberAttributeDicitonary.TryGetValue(memberInfo, out programmaticAttributeList)
-
-                ? programmaticAttributeList.Where(a => a.GetType() == typeof(T)).ToList()
-
-                : new List<Attribute>();
+            List<Attribute> attributeResult =
+                this.MemberAttributeDicitonary.TryGetValue(memberInfo, out programmaticAttributeList)
+                    ? programmaticAttributeList.Where(a => a.GetType() == typeof(T)).ToList()
+                    : new List<Attribute>();
 
             attributeResult.AddRange(memberInfo.GetCustomAttributes<T>());
 
@@ -86,9 +85,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete
             List<Attribute> result;
 
             if (!this.MemberAttributeDicitonary.TryGetValue(memberInfo, out result))
-            {
                 result = new List<Attribute>();
-            }
 
             result.AddRange(memberInfo.GetCustomAttributes());
 
@@ -104,7 +101,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete
 
             attributes = attributes.ToList();
 
-            StandardAttributeDecorator.Logger.Debug(
+            StandardAttributeDecoratorBase.Logger.Debug(
                 $"Attributes: {string.Join(",", attributes)}");
 
             List<Attribute> result = attributes.Select(a =>
@@ -116,7 +113,6 @@ namespace TestDataFramework.AttributeDecorator.Concrete
                     : a;
 
                 return resultAttribute;
-
             }).ToList();
 
             StandardAttributeDecoratorBase.Logger.Debug("Exiting InsertDefaultSchema");

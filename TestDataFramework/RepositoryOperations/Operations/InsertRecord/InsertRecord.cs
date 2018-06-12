@@ -22,12 +22,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using log4net;
-using TestDataFramework.Logger;
-using TestDataFramework.AttributeDecorator;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
+using TestDataFramework.Logger;
 using TestDataFramework.Populator;
 using TestDataFramework.RepositoryOperations.Model;
 using TestDataFramework.WritePrimitives.Interfaces;
@@ -37,19 +36,6 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 {
     public class InsertRecord : AbstractRepositoryOperation
     {
-        #region Private Fields
-
-        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(InsertRecord));
-
-        private readonly InsertRecordService service;
-        private readonly IAttributeDecorator attributeDecorator;
-
-        private readonly List<ColumnSymbol> primaryKeyValues = new List<ColumnSymbol>();
-        private IEnumerable<ExtendedColumnSymbol> foreignKeyColumns;
-        private IEnumerable<InsertRecord> primaryKeyOperations;
-
-        #endregion Private Fields
-
         public InsertRecord(InsertRecordService service, RecordReference recordReference,
             IEnumerable<AbstractRepositoryOperation> peers, IAttributeDecorator attributeDecorator)
         {
@@ -63,9 +49,23 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             InsertRecord.Logger.Debug("Exiting constructor");
         }
 
+        #region Private Fields
+
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(InsertRecord));
+
+        private readonly InsertRecordService service;
+        private readonly IAttributeDecorator attributeDecorator;
+
+        private readonly List<ColumnSymbol> primaryKeyValues = new List<ColumnSymbol>();
+        private IEnumerable<ExtendedColumnSymbol> foreignKeyColumns;
+        private IEnumerable<InsertRecord> primaryKeyOperations;
+
+        #endregion Private Fields
+
         #region Public methods
 
-        public override void Write(CircularReferenceBreaker breaker, IWritePrimitives writer, Counter order, AbstractRepositoryOperation[] orderedOperations)
+        public override void Write(CircularReferenceBreaker breaker, IWritePrimitives writer, Counter order,
+            AbstractRepositoryOperation[] orderedOperations)
         {
             InsertRecord.Logger.Debug("Entering Write:" + this);
             InsertRecord.Logger.Debug($"breaker: {breaker}");
@@ -86,7 +86,8 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
             this.primaryKeyOperations = this.service.GetPrimaryKeyOperations(this.Peers).ToList();
 
-            this.service.WritePrimaryKeyOperations(writer, this.primaryKeyOperations, breaker, order, orderedOperations);
+            this.service.WritePrimaryKeyOperations(writer, this.primaryKeyOperations, breaker, order,
+                orderedOperations);
 
             Columns columnData = this.GetColumnData(writer);
 
@@ -96,7 +97,8 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
             TableName tableName = Helper.GetTableName(this.RecordReference.RecordType, this.attributeDecorator);
 
-            this.service.WritePrimitives(writer, tableName.CatalogueName, tableName.Schema, tableName.Name, columnData.AllColumns, this.primaryKeyValues);
+            this.service.WritePrimitives(writer, tableName.CatalogueName, tableName.Schema, tableName.Name,
+                columnData.AllColumns, this.primaryKeyValues);
 
             this.service.CopyPrimaryToForeignKeyColumns(columnData.ForeignKeyColumns);
 
@@ -109,7 +111,8 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
         public override void Read(Counter readStreamPointer, object[] data)
         {
-            InsertRecord.Logger.Debug($"Entering Read. readStreamPointer.Value: {readStreamPointer.Value}, data: {string.Join(",", data)}");
+            InsertRecord.Logger.Debug(
+                $"Entering Read. readStreamPointer.Value: {readStreamPointer.Value}, data: {string.Join(",", data)}");
 
             IEnumerable<PropertyAttributes> propertyAttributes =
                 this.attributeDecorator.GetPropertyAttributes(this.RecordReference.RecordType).ToList();
@@ -125,7 +128,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
                 PropertyInfo property = propertiesForRead.First(
                     p => Helper.GetColumnName(p, this.attributeDecorator).Equals(columnName, StringComparison.Ordinal)
-                    );
+                );
 
                 try
                 {
@@ -191,7 +194,6 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                     .First(
                         p =>
                             Helper.GetColumnName(p, this.attributeDecorator)
-
                                 .Equals(foreignKeyAttribute.PrimaryKeyName, StringComparison.Ordinal));
 
             return result;
@@ -221,21 +223,16 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             InsertRecord.Logger.Debug("Entering GetPropertiesForRead");
 
             IEnumerable<PropertyAttributes> result = propertyAttributes.Where(pa =>
-
                 !this.RecordReference.IsExplicitlySet(pa.PropertyInfo)
-
                 &&
-
                 (pa.Attributes.Any(
-                    a =>
-
-                        (a.GetType() == typeof (PrimaryKeyAttribute) &&
-                         ((PrimaryKeyAttribute) a).KeyType == PrimaryKeyAttribute.KeyTypeEnum.Auto)
-                    )
-
-                || pa.PropertyInfo.PropertyType.IsGuid() && pa.Attributes.All(a => a.GetType() != typeof (ForeignKeyAttribute)))
-
-                );
+                     a =>
+                         a.GetType() == typeof(PrimaryKeyAttribute) &&
+                         ((PrimaryKeyAttribute) a).KeyType == PrimaryKeyAttribute.KeyTypeEnum.Auto
+                 )
+                 || pa.PropertyInfo.PropertyType.IsGuid() &&
+                 pa.Attributes.All(a => a.GetType() != typeof(ForeignKeyAttribute)))
+            );
 
             InsertRecord.Logger.Debug("Exiting GetPropertiesForRead");
             return result.Select(pa => pa.PropertyInfo);

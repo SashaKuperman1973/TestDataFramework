@@ -22,9 +22,11 @@ namespace TestDataFramework.Helpers
     public class TableName : TableAttribute
     {
         public TableName(string catalogueName, string schema, string name) : base(catalogueName, schema, name)
-        { }
+        {
+        }
 
         public TableName(string name) : base(name)
-        { }
+        {
+        }
     }
 }

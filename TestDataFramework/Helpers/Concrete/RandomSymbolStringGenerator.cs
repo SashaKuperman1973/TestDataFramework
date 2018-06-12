@@ -19,21 +19,21 @@
 
 using System;
 using log4net;
-using TestDataFramework.Logger;
 using TestDataFramework.Helpers.Interfaces;
+using TestDataFramework.Logger;
 
 namespace TestDataFramework.Helpers.Concrete
 {
     public class RandomSymbolStringGenerator : IRandomSymbolStringGenerator
     {
-        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(RandomSymbolStringGenerator));
-
         public const int DefaultLength = 10;
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(RandomSymbolStringGenerator));
         private readonly int constructorSetDefaultLength;
 
         private readonly Random random;
 
-        public RandomSymbolStringGenerator(Random random, int? defaultLength = RandomSymbolStringGenerator.DefaultLength)
+        public RandomSymbolStringGenerator(Random random,
+            int? defaultLength = RandomSymbolStringGenerator.DefaultLength)
         {
             RandomSymbolStringGenerator.Logger.Debug("Entering constructor");
 
@@ -53,9 +53,9 @@ namespace TestDataFramework.Helpers.Concrete
 
             for (var i = 0; i < length; i++)
             {
-                int ascii = this.random.Next(26);
+                var ascii = this.random.Next(26);
                 ascii += 65;
-                theString[i] = (char)ascii;
+                theString[i] = (char) ascii;
             }
 
             var result = new string(theString);

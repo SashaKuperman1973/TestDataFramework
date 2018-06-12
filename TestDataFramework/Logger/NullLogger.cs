@@ -7,6 +7,7 @@ namespace TestDataFramework.Logger
     public class NullLogger : ILog
     {
         public ILogger Logger { get; }
+
         public void Debug(object message)
         {
             // NoOp

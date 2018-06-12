@@ -21,9 +21,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using log4net;
-using TestDataFramework.Logger;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Helpers;
+using TestDataFramework.Logger;
 
 namespace TestDataFramework.DeferredValueGenerator.Concrete
 {
@@ -39,7 +39,8 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
 
             propertyDataDictionary.ToList().ForEach(kvp =>
             {
-                DefaultInitialCountGenerator.Logger.Debug($"Setting for property: {kvp.Key.GetExtendedMemberInfoString()}");
+                DefaultInitialCountGenerator.Logger.Debug(
+                    $"Setting for property: {kvp.Key.GetExtendedMemberInfoString()}");
                 kvp.Value.Item = Helper.DefaultInitalCount;
             });
 

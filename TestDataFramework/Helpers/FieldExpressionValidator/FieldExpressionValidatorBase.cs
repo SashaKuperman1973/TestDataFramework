@@ -14,9 +14,7 @@ namespace TestDataFramework.Helpers.FieldExpressionValidator
             expression = lambdaExpression?.Body ?? expression;
 
             if (expression.NodeType != ExpressionType.MemberAccess)
-            {
                 throw new MemberAccessExpressionException(this.ErrorMessage);
-            }
 
             var memberExpression = expression as MemberExpression;
 
@@ -25,16 +23,12 @@ namespace TestDataFramework.Helpers.FieldExpressionValidator
             var unaryExpression = expression as UnaryExpression;
 
             if (unaryExpression == null)
-            {
                 throw new MemberAccessExpressionException(this.ErrorMessage);
-            }
 
             memberExpression = unaryExpression.Operand as MemberExpression;
 
             if (memberExpression == null)
-            {
                 throw new MemberAccessExpressionException(this.ErrorMessage);
-            }
 
             return this.ValidatePropertyInfo(memberExpression);
         }
@@ -42,9 +36,7 @@ namespace TestDataFramework.Helpers.FieldExpressionValidator
         private MemberExpression ValidatePropertyInfo(MemberExpression memberExpression)
         {
             if (!(memberExpression.Member is PropertyInfo))
-            {
                 throw new MemberAccessExpressionException(this.ErrorMessage);
-            }
 
             return memberExpression;
         }

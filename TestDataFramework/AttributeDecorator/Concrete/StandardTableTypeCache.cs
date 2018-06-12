@@ -21,7 +21,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using log4net;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
@@ -35,10 +34,10 @@ namespace TestDataFramework.AttributeDecorator.Concrete
     {
         private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(StandardTableTypeCache));
 
+        private readonly ITableTypeCacheService tableTypeCacheService;
+
         internal readonly ConcurrentDictionary<AssemblyWrapper, AssemblyLookupContext> TableTypeDictionary =
             new ConcurrentDictionary<AssemblyWrapper, AssemblyLookupContext>();
-
-        private readonly ITableTypeCacheService tableTypeCacheService;
 
         public StandardTableTypeCache(ITableTypeCacheService tableTypeCacheService)
         {
@@ -48,14 +47,15 @@ namespace TestDataFramework.AttributeDecorator.Concrete
         public virtual bool IsAssemblyCachePopulated(AssemblyWrapper assembly)
         {
             StandardTableTypeCache.Logger.Debug("Entering IsAssemblyCachePopulated");
-            
-            bool result = this.TableTypeDictionary.ContainsKey(assembly);
+
+            var result = this.TableTypeDictionary.ContainsKey(assembly);
 
             StandardTableTypeCache.Logger.Debug("Exiting IsAssemblyCachePopulated");
             return result;
         }
 
-        public virtual TypeInfoWrapper GetCachedTableType(ForeignKeyAttribute foreignKeyAttribute, TypeInfoWrapper foreignType,
+        public virtual TypeInfoWrapper GetCachedTableType(ForeignKeyAttribute foreignKeyAttribute,
+            TypeInfoWrapper foreignType,
             AssemblyWrapper initialAssemblyToScan, Func<TypeInfoWrapper, TableAttribute> getTableAttibute,
             bool canScanAllCachedAssemblies = true)
         {
@@ -71,9 +71,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete
                     assemblyLookupContext);
 
             if (result != null)
-            {
                 return result;
-            }
 
             result = canScanAllCachedAssemblies
                 ? this.GetCachedTableTypeUsingAllAssemblies(foreignKeyAttribute, tableAttribute)
@@ -83,13 +81,14 @@ namespace TestDataFramework.AttributeDecorator.Concrete
             return result;
         }
 
-        public virtual void PopulateAssemblyCache(AssemblyWrapper assembly, GetTableAttribute getTableAttibute, string defaultSchema)
+        public virtual void PopulateAssemblyCache(AssemblyWrapper assembly, GetTableAttribute getTableAttibute,
+            string defaultSchema)
         {
             StandardTableTypeCache.Logger.Debug("Entering PopulateAssemblyCache");
 
             AssemblyLookupContext assemblyLookupContext = this.TableTypeDictionary.GetOrAdd(
                 assembly,
-                a => StandardTableTypeCache.CreateAsemblyLookupContext());
+                a => new AssemblyLookupContext());
 
             List<AssemblyNameWrapper> assemblyNameList = assembly.GetReferencedAssemblies().ToList();
             assemblyNameList.Add(assembly.GetName());
@@ -107,35 +106,19 @@ namespace TestDataFramework.AttributeDecorator.Concrete
             StandardTableTypeCache.Logger.Debug("Exiting PopulateAssemblyCache");
         }
 
-        private static AssemblyLookupContext CreateAsemblyLookupContext()
-        {
-            var typeDictionaryEqualityComparer = new TypeDictionaryEqualityComparer();
-
-            var resultContext = new AssemblyLookupContext
-            {
-                TypeDictionary = new ConcurrentDictionary<Table, TypeInfoWrapper>(typeDictionaryEqualityComparer),
-
-                CollisionDictionary =
-                    new ConcurrentDictionary<Table, List<TypeInfoWrapper>>(typeDictionaryEqualityComparer),
-
-                TypeDictionaryEqualityComparer = typeDictionaryEqualityComparer
-            };
-
-            return resultContext;
-        }
-
-        private TypeInfoWrapper GetCachedTableTypeUsingAllAssemblies(ForeignKeyAttribute foreignKeyAttribute, TableAttribute tableAttribute)
+        private TypeInfoWrapper GetCachedTableTypeUsingAllAssemblies(ForeignKeyAttribute foreignKeyAttribute,
+            TableAttribute tableAttribute)
         {
             StandardTableTypeCache.Logger.Debug("Entering GetCachedTableTypeUsingAllAssemblies");
 
             foreach (KeyValuePair<AssemblyWrapper, AssemblyLookupContext> tableTypeKvp in this.TableTypeDictionary)
             {
-                TypeInfoWrapper result = this.tableTypeCacheService.GetCachedTableType(foreignKeyAttribute, tableAttribute, tableTypeKvp.Value);
+                TypeInfoWrapper result =
+                    this.tableTypeCacheService.GetCachedTableType(foreignKeyAttribute, tableAttribute,
+                        tableTypeKvp.Value);
 
                 if (result != null)
-                {
                     return result;
-                }
             }
 
             StandardTableTypeCache.Logger.Debug("Exiting GetCachedTableTypeUsingAllAssemblies");

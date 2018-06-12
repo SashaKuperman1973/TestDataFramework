@@ -20,10 +20,10 @@
 using System;
 using System.Reflection;
 using log4net;
-using TestDataFramework.Logger;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
+using TestDataFramework.Logger;
 using TestDataFramework.PropertyValueAccumulator;
 using TestDataFramework.UniqueValueGenerator.Interfaces;
 
@@ -65,10 +65,8 @@ namespace TestDataFramework.UniqueValueGenerator
             this.UnhandledTypeCheck(propertyInfo.PropertyType);
 
             this.deferredValueGenerator.AddDelegate(propertyInfo,
-
                 initialCount => this.accumulator.GetValue(propertyInfo, initialCount)
-
-                );
+            );
 
             BaseUniqueValueGenerator.Logger.Debug("Exiting DeferValue");
         }
@@ -76,9 +74,7 @@ namespace TestDataFramework.UniqueValueGenerator
         private void UnhandledTypeCheck(Type type)
         {
             if (this.throwIfUnhandledType && !this.accumulator.IsTypeHandled(type))
-            {
                 throw new UnHandledTypeException(Messages.UnhandledUniqueKeyType, type);
-            }
         }
     }
 }

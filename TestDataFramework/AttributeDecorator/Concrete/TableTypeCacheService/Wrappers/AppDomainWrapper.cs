@@ -13,7 +13,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wr
         }
 
         public AppDomainWrapper()
-        {            
+        {
         }
 
         public virtual AssemblyWrapper Load(AssemblyNameWrapper assemblyName)

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
+﻿using System.Collections.Generic;
 using log4net;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.AttributeDecorator.Interfaces;
@@ -20,37 +18,39 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
             this.attributeDecorator = attributeDecorator;
         }
 
-        public virtual TypeInfoWrapper GetTableTypeByCriteria(Table table, TypeDictionaryEqualityComparer.EqualsCriteriaDelegate matchCriteria, AssemblyLookupContext assemblyLookupContext)
+        public virtual TypeInfoWrapper GetTableTypeByCriteria(Table table,
+            TypeDictionaryEqualityComparer.EqualsCriteriaDelegate matchCriteria,
+            AssemblyLookupContext assemblyLookupContext)
         {
             TableTypeLookup.Logger.Debug("Entering GetTableTypeByCriteria.");
 
             TypeInfoWrapper result;
-            List<TypeInfoWrapper> collisionTypes;
+            IList<TypeInfoWrapper> collisionTypes;
 
             assemblyLookupContext.TypeDictionaryEqualityComparer.SetEqualsCriteria(matchCriteria);
 
             if (assemblyLookupContext.CollisionDictionary.TryGetValue(table, out collisionTypes))
-            {
                 throw new TableTypeCacheException(Messages.DuplicateTableName, collisionTypes);
-            }
 
             TableTypeLookup.Logger.Debug("Exiting GetTableTypeByCriteria.");
             return assemblyLookupContext.TypeDictionary.TryGetValue(table, out result) ? result : null;
         }
 
-        public virtual TypeInfoWrapper GetTableTypeWithCatalogue(Table table, AssemblyLookupContext assemblyLookupContext)
+        public virtual TypeInfoWrapper GetTableTypeWithCatalogue(Table table,
+            AssemblyLookupContext assemblyLookupContext)
         {
             TableTypeLookup.Logger.Debug("Entering GetTableTypeWithCatalogue.");
 
             if (table.HasCatalogueName)
             {
-                TableTypeLookup.Logger.Debug("Table has no catalogue name. Exiting GetTableTypeWithCatalogue.");
+                TableTypeLookup.Logger.Debug("Table has a catalogue name. Exiting GetTableTypeWithCatalogue.");
                 return null;
             }
 
             TypeInfoWrapper result;
 
-            assemblyLookupContext.TypeDictionaryEqualityComparer.SetEqualsCriteria((fromSet, input) => fromSet.HasCatalogueName);
+            assemblyLookupContext.TypeDictionaryEqualityComparer.SetEqualsCriteria((fromSet, input) =>
+                fromSet.HasCatalogueName);
 
             if (!assemblyLookupContext.TypeDictionary.TryGetValue(table, out result)) return null;
 
@@ -65,13 +65,11 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
                     !fromSet.CatalogueName.Equals(resultTableAttribute.CatalogueName)
             );
 
-            TypeInfoWrapper abmigousConditionType;
+            TypeInfoWrapper ambigousConditionType;
 
-            if (assemblyLookupContext.TypeDictionary.TryGetValue(table, out abmigousConditionType))
-            {
+            if (assemblyLookupContext.TypeDictionary.TryGetValue(table, out ambigousConditionType))
                 throw new TableTypeCacheException(Messages.AmbigousTableSearchConditions, table, result,
-                    abmigousConditionType);
-            }
+                    ambigousConditionType);
 
             TableTypeLookup.Logger.Debug("Exiting GetTableTypeWithCatalogue.");
             return result;

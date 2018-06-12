@@ -23,20 +23,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using log4net;
-using TestDataFramework.Logger;
-using TestDataFramework.AttributeDecorator;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
+using TestDataFramework.Logger;
 
 namespace TestDataFramework.PropertyValueAccumulator
 {
     public class StandardPropertyValueAccumulator : IPropertyValueAccumulator
     {
         private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(StandardPropertyValueAccumulator));
+        private readonly IAttributeDecorator attributeDecorator;
+
+        private readonly ConcurrentDictionary<PropertyInfo, LargeInteger> countDictionary =
+            new ConcurrentDictionary<PropertyInfo, LargeInteger>();
 
         private readonly LetterEncoder stringGenerator;
-        private readonly IAttributeDecorator attributeDecorator;
 
         public StandardPropertyValueAccumulator(LetterEncoder stringGenerator, IAttributeDecorator attributeDecorator)
         {
@@ -64,11 +66,11 @@ namespace TestDataFramework.PropertyValueAccumulator
         {
             StandardPropertyValueAccumulator.Logger.Debug("Entering IsTypeHandled");
 
-            bool result = new[]
+            var result = new[]
             {
-                typeof (string),
-                typeof (byte), typeof (int), typeof (short), typeof (long),
-                typeof (uint), typeof (ushort), typeof (ulong),
+                typeof(string),
+                typeof(byte), typeof(int), typeof(short), typeof(long),
+                typeof(uint), typeof(ushort), typeof(ulong)
             }.Contains(type);
 
             StandardPropertyValueAccumulator.Logger.Debug($"Exiting IsTypeHandled. result: {result}");
@@ -87,7 +89,7 @@ namespace TestDataFramework.PropertyValueAccumulator
 
             // string
 
-            if (type == typeof (string))
+            if (type == typeof(string))
             {
                 StandardPropertyValueAccumulator.Logger.Debug("Property type string");
                 result = this.GetString(propertyInfo);
@@ -97,20 +99,18 @@ namespace TestDataFramework.PropertyValueAccumulator
 
             else if (new[]
             {
-                typeof(byte), typeof (int), typeof (short), typeof (long),
-                typeof (uint), typeof (ushort), typeof (ulong),
+                typeof(byte), typeof(int), typeof(short), typeof(long),
+                typeof(uint), typeof(ushort), typeof(ulong)
             }.Contains(type))
             {
                 StandardPropertyValueAccumulator.Logger.Debug("Property type integral numeric");
-                var value = (ulong)this.GetCount(propertyInfo);
+                var value = (ulong) this.GetCount(propertyInfo);
                 result = Convert.ChangeType(value, type);
             }
 
             StandardPropertyValueAccumulator.Logger.Debug("Exiting PrivateGetValue");
             return result;
         }
-
-        private readonly ConcurrentDictionary<PropertyInfo, LargeInteger> countDictionary = new ConcurrentDictionary<PropertyInfo, LargeInteger>();
 
         private LargeInteger GetCount(PropertyInfo propertyInfo)
         {
@@ -128,9 +128,9 @@ namespace TestDataFramework.PropertyValueAccumulator
 
             var stringLengthAttribute = this.attributeDecorator.GetCustomAttribute<StringLengthAttribute>(propertyInfo);
 
-            int stringLength = stringLengthAttribute?.Length ?? defaultStringLength;
+            var stringLength = stringLengthAttribute?.Length ?? defaultStringLength;
 
-            string result = this.stringGenerator.Encode(count, stringLength);
+            var result = this.stringGenerator.Encode(count, stringLength);
 
             return result;
         }

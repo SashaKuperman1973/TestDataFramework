@@ -22,12 +22,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using log4net;
-using TestDataFramework.Logger;
-using TestDataFramework.AttributeDecorator;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
+using TestDataFramework.Logger;
 using TestDataFramework.RepositoryOperations.Model;
 using TestDataFramework.TypeGenerator.Interfaces;
 
@@ -36,9 +35,11 @@ namespace TestDataFramework.Populator
     public abstract class RecordReference : Populatable
     {
         private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(RecordReference));
+        protected readonly IAttributeDecorator AttributeDecorator;
+
+        protected internal readonly IEnumerable<RecordReference> PrimaryKeyReferences = new List<RecordReference>();
 
         protected readonly ITypeGenerator TypeGenerator;
-        protected readonly IAttributeDecorator AttributeDecorator;
 
         protected RecordReference(ITypeGenerator typeGenerator, IAttributeDecorator attributeDecorator)
         {
@@ -47,6 +48,8 @@ namespace TestDataFramework.Populator
         }
 
         public virtual object RecordObject { get; protected internal set; }
+
+        protected internal virtual Type RecordType { get; protected set; }
 
         public virtual void AddPrimaryRecordReference(params RecordReference[] primaryRecordReferences)
         {
@@ -63,18 +66,12 @@ namespace TestDataFramework.Populator
                 $"Entering AddPrimaryRecordReference(RecordReference). record object: {primaryRecordReference.RecordObject}");
 
             if (!this.ValidateRelationship(primaryRecordReference))
-            {
                 throw new NoReferentialIntegrityException(primaryRecordReference.RecordType, this.RecordType);
-            }
 
-            ((List<RecordReference>)this.PrimaryKeyReferences).Add(primaryRecordReference);
+            ((List<RecordReference>) this.PrimaryKeyReferences).Add(primaryRecordReference);
 
             RecordReference.Logger.Debug("Exiting AddPrimaryRecordReference(RecordReference)");
         }
-
-        protected internal virtual Type RecordType { get; protected set; }
-
-        protected internal readonly IEnumerable<RecordReference> PrimaryKeyReferences = new List<RecordReference>();
 
         protected internal abstract bool IsExplicitlySet(PropertyInfo propertyInfo);
 
@@ -85,14 +82,15 @@ namespace TestDataFramework.Populator
             IEnumerable<PropertyAttribute<ForeignKeyAttribute>> foreignKeyPropertyAttributes =
                 this.AttributeDecorator.GetPropertyAttributes<ForeignKeyAttribute>(this.RecordType).ToList();
 
-            bool result =
+            var result =
                 this.AttributeDecorator.GetPropertyAttributes<PrimaryKeyAttribute>(primaryRecordReference.RecordType)
                     .All(
                         pkPa =>
                             foreignKeyPropertyAttributes.Any(
                                 fkPa =>
                                     pkPa.PropertyInfo.DeclaringType ==
-                                    this.AttributeDecorator.GetTableType(fkPa.Attribute, new TypeInfoWrapper(this.RecordType.GetTypeInfo()))
+                                    this.AttributeDecorator.GetTableType(fkPa.Attribute,
+                                        new TypeInfoWrapper(this.RecordType.GetTypeInfo()))
                                     &&
                                     Helper.GetColumnName(pkPa.PropertyInfo, this.AttributeDecorator)
                                         .Equals(fkPa.Attribute.PrimaryKeyName, StringComparison.Ordinal)

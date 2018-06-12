@@ -46,13 +46,13 @@ namespace CommonIntegrationTests.TestModels
         [PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Auto)]
         public int Key { get; set; }
 
-        [ForeignKey(primaryTableType: typeof(PrimaryTable), primaryKeyName: nameof(PrimaryTable.Key1))]
+        [ForeignKey(typeof(PrimaryTable), nameof(PrimaryTable.Key1))]
         public int ForeignKeyA1 { get; set; }
 
-        [ForeignKey(primaryTableType: typeof(PrimaryTable), primaryKeyName: nameof(PrimaryTable.Key2))]
+        [ForeignKey(typeof(PrimaryTable), nameof(PrimaryTable.Key2))]
         public int ForeignKeyA2 { get; set; }
 
-        [ForeignKey(primaryTableType: typeof(PrimaryTableB), primaryKeyName: nameof(PrimaryTableB.Key1))]
+        [ForeignKey(typeof(PrimaryTableB), nameof(PrimaryTableB.Key1))]
         public int ForeignKeyB { get; set; }
 
         public string Text { get; set; }
@@ -128,6 +128,7 @@ namespace CommonIntegrationTests.TestModels
         [PrimaryKey]
         public string Key { get; set; }
     }
+
     public class TypeMismatchForeignTable
     {
         [ForeignKey(typeof(TypeMismatchPrimaryTable), "Key")]
@@ -139,6 +140,7 @@ namespace CommonIntegrationTests.TestModels
         [PrimaryKey]
         public int Key { get; set; }
     }
+
     public class TableTypeMismatchForeignTable
     {
         [ForeignKey(typeof(object), "Key")]
@@ -149,7 +151,6 @@ namespace CommonIntegrationTests.TestModels
     {
         [PrimaryKey]
         public int Key { get; set; }
-
     }
 
     public class PropertyNameMismatchForeignTable

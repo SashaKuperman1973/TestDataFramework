@@ -20,11 +20,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using log4net;
-using TestDataFramework.Logger;
-using TestDataFramework.AttributeDecorator;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Helpers;
+using TestDataFramework.Logger;
 using TestDataFramework.Persistence.Interfaces;
 using TestDataFramework.Populator;
 using TestDataFramework.RepositoryOperations;
@@ -36,12 +35,12 @@ namespace TestDataFramework.Persistence.Concrete
 {
     public class SqlClientPersistence : IPersistence
     {
-        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof (SqlClientPersistence));
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(SqlClientPersistence));
+        private readonly IAttributeDecorator attributeDecorator;
+        private readonly IDeferredValueGenerator<LargeInteger> deferredValueGenerator;
+        private readonly bool enforceKeyReferenceCheck;
 
         private readonly IWritePrimitives writePrimitives;
-        private readonly IDeferredValueGenerator<LargeInteger> deferredValueGenerator;
-        private readonly IAttributeDecorator attributeDecorator;
-        private readonly bool enforceKeyReferenceCheck;
 
         public SqlClientPersistence(IWritePrimitives writePrimitives,
             IDeferredValueGenerator<LargeInteger> deferredValueGenerator,
@@ -73,31 +72,26 @@ namespace TestDataFramework.Persistence.Concrete
             var operations = new List<AbstractRepositoryOperation>();
 
             foreach (RecordReference recordReference in recordReferences)
-            {
                 operations.Add(
                     new InsertRecord(
-                        new InsertRecordService(recordReference, this.attributeDecorator, this.enforceKeyReferenceCheck),
+                        new InsertRecordService(recordReference, this.attributeDecorator,
+                            this.enforceKeyReferenceCheck),
                         recordReference, operations, this.attributeDecorator));
-            }
 
             var orderedOperations = new AbstractRepositoryOperation[operations.Count];
 
             var currentOrder = new Counter();
 
             foreach (AbstractRepositoryOperation operation in operations)
-            {
                 operation.Write(new CircularReferenceBreaker(), this.writePrimitives, currentOrder,
                     orderedOperations);
-            }
 
             var readStreamPointer = new Counter();
 
             object[] returnValues = this.writePrimitives.Execute();
 
             foreach (AbstractRepositoryOperation orderedOperation in orderedOperations)
-            {
                 orderedOperation.Read(readStreamPointer, returnValues);
-            }
 
             SqlClientPersistence.Logger.Debug("Exiting Persist");
         }

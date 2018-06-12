@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using log4net;
@@ -21,7 +22,8 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
             this.tableTypeLookup = tableAttribute;
         }
 
-        public virtual TypeInfoWrapper GetCachedTableType(ForeignKeyAttribute foreignAttribute, TableAttribute tableAttribute, AssemblyLookupContext assemblyLookupContext)
+        public virtual TypeInfoWrapper GetCachedTableType(ForeignKeyAttribute foreignAttribute,
+            TableAttribute tableAttribute, AssemblyLookupContext assemblyLookupContext)
         {
             StandardTableTypeCacheService.Logger.Debug("Entering GetCachedTableType");
 
@@ -35,7 +37,8 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
 
             // 1.
             // Test for a complete match
-            if ((result = this.tableTypeLookup.GetTableTypeByCriteria(table, TableTypeCriteria.CompleteMatchCriteria, assemblyLookupContext)) != null)
+            if ((result = this.tableTypeLookup.GetTableTypeByCriteria(table, TableTypeCriteria.CompleteMatchCriteria,
+                    assemblyLookupContext)) != null)
             {
                 StandardTableTypeCacheService.Logger.Debug("Complete match found. Exiting GetCachedTableType.");
                 return result;
@@ -45,23 +48,28 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
             // !input.HasCataloguName && fromSet.HasCatalogueName
             if ((result = this.tableTypeLookup.GetTableTypeWithCatalogue(table, assemblyLookupContext)) != null)
             {
-                StandardTableTypeCacheService.Logger.Debug("!input.HasCataloguName && fromSet.HasCatalogueName match found. Exiting GetCachedTableType.");
+                StandardTableTypeCacheService.Logger.Debug(
+                    "!input.HasCataloguName && fromSet.HasCatalogueName match found. Exiting GetCachedTableType.");
                 return result;
             }
 
             // 3.
             // Match on what's decorated
-            if ((result = this.tableTypeLookup.GetTableTypeByCriteria(table, TableTypeCriteria.MatchOnWhatIsDecorated, assemblyLookupContext)) != null)
+            if ((result = this.tableTypeLookup.GetTableTypeByCriteria(table, TableTypeCriteria.MatchOnWhatIsDecorated,
+                    assemblyLookupContext)) != null)
             {
-                StandardTableTypeCacheService.Logger.Debug("Match on what's decorated found. Exiting GetCachedTableType.");
+                StandardTableTypeCacheService.Logger.Debug(
+                    "Match on what's decorated found. Exiting GetCachedTableType.");
                 return result;
             }
 
             // 4.
             // Match on everything not already tried
-            if ((result = this.tableTypeLookup.GetTableTypeByCriteria(table, TableTypeCriteria.MatchOnEverythingNotAlreadyTried, assemblyLookupContext)) != null)
+            if ((result = this.tableTypeLookup.GetTableTypeByCriteria(table,
+                    TableTypeCriteria.MatchOnEverythingNotAlreadyTried, assemblyLookupContext)) != null)
             {
-                StandardTableTypeCacheService.Logger.Debug("Match on everything not already tried found. Exiting GetCachedTableType.");
+                StandardTableTypeCacheService.Logger.Debug(
+                    "Match on everything not already tried found. Exiting GetCachedTableType.");
                 return result;
             }
 
@@ -71,7 +79,8 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
 
         public virtual AppDomainWrapper CreateDomain()
         {
-            AppDomain domain = AppDomain.CreateDomain("TestDataFramework_" + Guid.NewGuid(), null, AppDomain.CurrentDomain.SetupInformation);
+            AppDomain domain = AppDomain.CreateDomain("TestDataFramework_" + Guid.NewGuid(), null,
+                AppDomain.CurrentDomain.SetupInformation);
             var result = new AppDomainWrapper(domain);
             return result;
         }
@@ -90,15 +99,18 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
 
             // Note: If HasCatlogueName then HasTableAttribute
 
-            bool EqualsCriteria(Table fromSet, Table input) => fromSet.HasCatalogueName &&
-                                                               fromSet.CatalogueName.Equals(input.CatalogueName) ||
-                                                               fromSet.HasTableAttribute && input.HasTableAttribute &&
-                                                               !fromSet.HasCatalogueName && !input.HasCatalogueName ||
-                                                               !fromSet.HasTableAttribute && !input.HasTableAttribute;
+            bool EqualsCriteria(Table fromSet, Table input)
+            {
+                return fromSet.HasCatalogueName &&
+                       fromSet.CatalogueName.Equals(input.CatalogueName) ||
+                       fromSet.HasTableAttribute && input.HasTableAttribute &&
+                       !fromSet.HasCatalogueName && !input.HasCatalogueName ||
+                       !fromSet.HasTableAttribute && !input.HasTableAttribute;
+            }
 
             assemblyLookupContext.TypeDictionaryEqualityComparer.SetEqualsCriteria(EqualsCriteria);
 
-            bool tryAddResult = assemblyLookupContext.TypeDictionary.TryAdd(table, definedType);
+            var tryAddResult = assemblyLookupContext.TypeDictionary.TryAdd(table, definedType);
 
             if (tryAddResult)
             {
@@ -113,10 +125,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
                     // first item of collision to add to list
 
                     assemblyLookupContext.TypeDictionary.GetOrAdd(table,
-                        t =>
-                        {
-                            throw new TableTypeCacheException(Messages.ErrorGettingDefinedType, table);
-                        }),
+                        t => { throw new TableTypeCacheException(Messages.ErrorGettingDefinedType, table); }),
 
                     // second item of collision to add to list
 
@@ -124,7 +133,6 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
                 },
 
                 // collision key already exists. update collision list with newly attempted type.
-
                 (tbl, list) =>
                 {
                     list.Add(definedType);
@@ -145,7 +153,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
             {
                 loadedAssembly = domain.Load(assemblyName);
             }
-            catch (System.IO.FileNotFoundException exception)
+            catch (FileNotFoundException exception)
             {
                 StandardTableTypeCacheService.Logger.Warn(
                     $"TestDataFramework - PopulateAssemblyCache: {exception.Message}");

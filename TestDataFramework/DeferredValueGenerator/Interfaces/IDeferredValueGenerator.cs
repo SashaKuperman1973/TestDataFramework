@@ -37,7 +37,7 @@ namespace TestDataFramework.DeferredValueGenerator.Interfaces
 
         public override string ToString()
         {
-            string result = $"Item: {this.Item}, ValueGetter: {this.ValueGetter}";
+            var result = $"Item: {this.Item}, ValueGetter: {this.ValueGetter}";
             return result;
         }
     }

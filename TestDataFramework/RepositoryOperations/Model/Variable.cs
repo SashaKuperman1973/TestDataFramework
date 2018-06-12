@@ -16,15 +16,16 @@
     You should have received a copy of the GNU General Public License
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 namespace TestDataFramework.RepositoryOperations.Model
 {
     public class Variable
     {
-        public string Symbol { get; }
-
         public Variable(string symbol)
         {
             this.Symbol = symbol;
         }
+
+        public string Symbol { get; }
     }
 }

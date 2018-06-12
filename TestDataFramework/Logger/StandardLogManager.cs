@@ -16,9 +16,7 @@ namespace TestDataFramework.Logger
             if (bool.TryParse((appSettings ?? ConfigurationManager.AppSettings)["TestDataFramework-EnableLogger"],
                     out enableLogger) &&
                 enableLogger)
-            {
                 return LogManager.GetLogger(type);
-            }
 
             return StandardLogManager.LazyNullLogger.Value;
         }

@@ -53,9 +53,7 @@ namespace CommonIntegrationTests
         private static string GetMessage(Exception ex)
         {
             if (ex.InnerException != null)
-            {
                 return Helpers.GetMessage(ex.InnerException);
-            }
 
             return ex.Message;
         }

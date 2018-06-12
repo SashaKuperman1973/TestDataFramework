@@ -15,22 +15,28 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wr
         }
 
         public AssemblyWrapper()
-        {            
+        {
         }
-
-        public Assembly Wrapped { get; }
 
         public virtual IEnumerable<TypeInfoWrapper> DefinedTypes => this.Wrapped.DefinedTypes
             .Select(typeInfo => new TypeInfoWrapper(typeInfo));
 
-        public virtual AssemblyNameWrapper[] GetReferencedAssemblies() => this.Wrapped.GetReferencedAssemblies()
-            .Select(assembly => new AssemblyNameWrapper(assembly)).ToArray();
+        public Assembly Wrapped { get; }
 
-        public virtual AssemblyNameWrapper GetName() => new AssemblyNameWrapper(this.Wrapped.GetName());
+        public virtual AssemblyNameWrapper[] GetReferencedAssemblies()
+        {
+            return this.Wrapped.GetReferencedAssemblies()
+                .Select(assembly => new AssemblyNameWrapper(assembly)).ToArray();
+        }
+
+        public virtual AssemblyNameWrapper GetName()
+        {
+            return new AssemblyNameWrapper(this.Wrapped.GetName());
+        }
 
         public override bool Equals(object obj)
         {
-            bool result = EqualityHelper<AssemblyWrapper, Assembly>.Equals(this, obj);
+            var result = EqualityHelper<AssemblyWrapper, Assembly>.Equals(this, obj);
             return result;
         }
 

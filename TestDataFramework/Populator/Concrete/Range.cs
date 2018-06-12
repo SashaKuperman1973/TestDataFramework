@@ -2,6 +2,12 @@
 {
     public class Range
     {
+        private int? endPosition;
+
+        private int? length;
+
+        private int? startPosition;
+
         public Range()
         {
         }
@@ -13,13 +19,6 @@
             this.length = endPosition + 1 - startPosition;
         }
 
-        public static implicit operator Range(int i)
-        {
-            var result = new Range {StartPosition = i, EndPosition = i};
-            return result;
-        }
-
-        private int? startPosition;
         public int StartPosition
         {
             get => this.startPosition.Value;
@@ -29,17 +28,12 @@
                 this.startPosition = value;
 
                 if (this.length.HasValue)
-                {
                     this.endPosition = this.startPosition.Value + this.length.Value - 1;
-                }
                 else if (this.endPosition.HasValue)
-                {
                     this.length = this.endPosition.Value + 1 - this.startPosition.Value;
-                }
             }
         }
 
-        private int? endPosition;
         public int EndPosition
         {
             get => this.endPosition.Value;
@@ -49,17 +43,12 @@
                 this.endPosition = value;
 
                 if (this.startPosition.HasValue)
-                {
                     this.length = this.endPosition.Value + 1 - this.startPosition.Value;
-                }
                 else if (this.length.HasValue)
-                {
                     this.startPosition = this.endPosition.Value + 1 - this.length.Value;
-                }
             }
         }
 
-        private int? length;
         public int Length
         {
             get => this.length.Value;
@@ -69,14 +58,16 @@
                 this.length = value;
 
                 if (this.startPosition.HasValue)
-                {
                     this.endPosition = this.startPosition.Value + this.length.Value - 1;
-                }
                 else if (this.endPosition.HasValue)
-                {
                     this.startPosition = this.endPosition.Value - this.length.Value + 1;
-                }
             }
+        }
+
+        public static implicit operator Range(int i)
+        {
+            var result = new Range {StartPosition = i, EndPosition = i};
+            return result;
         }
     }
 }

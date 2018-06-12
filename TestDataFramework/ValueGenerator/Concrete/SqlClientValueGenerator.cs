@@ -20,10 +20,9 @@
 using System;
 using System.Reflection;
 using log4net;
-using TestDataFramework.Logger;
 using TestDataFramework.ArrayRandomizer;
-using TestDataFramework.AttributeDecorator;
 using TestDataFramework.AttributeDecorator.Interfaces;
+using TestDataFramework.Logger;
 using TestDataFramework.TypeGenerator.Interfaces;
 using TestDataFramework.UniqueValueGenerator.Interfaces;
 using TestDataFramework.ValueProvider.Interfaces;
@@ -35,7 +34,8 @@ namespace TestDataFramework.ValueGenerator.Concrete
         private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(SqlClientValueGenerator));
 
         public SqlClientValueGenerator(IValueProvider valueProvider, Func<ITypeGenerator> getTypeGenerator,
-            Func<IArrayRandomizer> getArrayRandomizer, IUniqueValueGenerator uniqueValueGenerator, IAttributeDecorator attributeDecorator)
+            Func<IArrayRandomizer> getArrayRandomizer, IUniqueValueGenerator uniqueValueGenerator,
+            IAttributeDecorator attributeDecorator)
             : base(valueProvider, getTypeGenerator, getArrayRandomizer, uniqueValueGenerator, attributeDecorator)
         {
         }
@@ -44,14 +44,15 @@ namespace TestDataFramework.ValueGenerator.Concrete
         {
             SqlClientValueGenerator.Logger.Debug("Executing GetGuid");
 
-            return default(Guid); 
+            return default(Guid);
         }
 
         protected override object GetDateTime(PropertyInfo propertyInfo)
         {
             var baseDateTime = (DateTime) base.GetDateTime(propertyInfo);
 
-            DateTime result = baseDateTime.Date.Add(new TimeSpan(baseDateTime.Hour, baseDateTime.Minute, baseDateTime.Second));
+            DateTime result =
+                baseDateTime.Date.Add(new TimeSpan(baseDateTime.Hour, baseDateTime.Minute, baseDateTime.Second));
             result = result.AddMilliseconds(baseDateTime.TimeOfDay.Milliseconds);
 
             return result;

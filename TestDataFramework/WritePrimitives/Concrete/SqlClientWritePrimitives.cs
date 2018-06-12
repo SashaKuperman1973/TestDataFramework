@@ -22,9 +22,9 @@ using System.Collections.Specialized;
 using System.Data.Common;
 using System.Linq;
 using log4net;
-using TestDataFramework.Logger;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers.Interfaces;
+using TestDataFramework.Logger;
 using TestDataFramework.RepositoryOperations.Model;
 using TestDataFramework.ValueFormatter.Interfaces;
 
@@ -32,13 +32,15 @@ namespace TestDataFramework.WritePrimitives.Concrete
 {
     public class SqlClientWritePrimitives : DbProviderWritePrimitives
     {
-        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof (SqlClientWritePrimitives));
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(SqlClientWritePrimitives));
 
         private readonly IRandomSymbolStringGenerator symbolGenerator;
 
-        public SqlClientWritePrimitives(string connectionStringWithDefaultCatalogue, DbProviderFactory dbProviderFactory,
+        public SqlClientWritePrimitives(string connectionStringWithDefaultCatalogue,
+            DbProviderFactory dbProviderFactory,
             IValueFormatter formatter, IRandomSymbolStringGenerator symbolGenerator, bool mustBeInATransaction,
-            NameValueCollection configuration) : base(connectionStringWithDefaultCatalogue, dbProviderFactory, formatter, mustBeInATransaction, configuration)
+            NameValueCollection configuration) : base(connectionStringWithDefaultCatalogue, dbProviderFactory,
+            formatter, mustBeInATransaction, configuration)
         {
             SqlClientWritePrimitives.Logger.Debug("Entering constructor");
 
@@ -51,7 +53,7 @@ namespace TestDataFramework.WritePrimitives.Concrete
         {
             SqlClientWritePrimitives.Logger.Debug($"Entering SelectIdentity. columnName: {columnName}");
 
-            string symbol = this.symbolGenerator.GetRandomString(10);
+            var symbol = this.symbolGenerator.GetRandomString(10);
             SqlClientWritePrimitives.Logger.Debug($"symbol: {symbol}");
 
             this.ExecutionStatements.AppendLine($"declare @{symbol} bigint;");
@@ -70,7 +72,7 @@ namespace TestDataFramework.WritePrimitives.Concrete
         {
             SqlClientWritePrimitives.Logger.Debug($"Entering WriteGuid. columnName: {columnName}");
 
-            string symbol = this.symbolGenerator.GetRandomString(10);
+            var symbol = this.symbolGenerator.GetRandomString(10);
             SqlClientWritePrimitives.Logger.Debug($"symbol: {symbol}");
 
             this.ExecutionStatements.AppendLine($"declare @{symbol} uniqueidentifier;");
@@ -89,16 +91,14 @@ namespace TestDataFramework.WritePrimitives.Concrete
         {
             SqlClientWritePrimitives.Logger.Debug("Entering BuildFullTableName");
 
-            string result = $"[{tableName}]";
+            var result = $"[{tableName}]";
 
             if (schema != null)
             {
                 result = $"[{schema}]." + result;
 
                 if (catalogueName != null)
-                {
                     result = $"[{catalogueName}]." + result;
-                }
             }
             else if (catalogueName != null)
             {
@@ -113,10 +113,10 @@ namespace TestDataFramework.WritePrimitives.Concrete
         {
             SqlClientWritePrimitives.Logger.Debug("Entering BuildParameterListText");
 
-            string result = "(" + string.Join(", ", columns.Select(c => "[" + c.Name + "]")) + ")";
+            var result = "(" + string.Join(", ", columns.Select(c => "[" + c.Name + "]")) + ")";
 
             SqlClientWritePrimitives.Logger.Debug("Exiting BuildParameterListText");
             return result;
         }
-    }  
+    }
 }

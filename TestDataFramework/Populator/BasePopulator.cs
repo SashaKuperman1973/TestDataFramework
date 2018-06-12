@@ -22,10 +22,9 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using log4net;
-using TestDataFramework.Logger;
-using TestDataFramework.AttributeDecorator;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.HandledTypeGenerator;
+using TestDataFramework.Logger;
 using TestDataFramework.Populator.Concrete;
 using TestDataFramework.Populator.Interfaces;
 using TestDataFramework.ValueGenerator.Interfaces;
@@ -38,22 +37,50 @@ namespace TestDataFramework.Populator
 
         protected readonly IAttributeDecorator AttributeDecorator;
 
-        protected readonly ConcurrentDictionary<Type, Decorator> DecoratorDictionary = new ConcurrentDictionary<Type, Decorator>();
+        protected readonly ConcurrentDictionary<Type, Decorator> DecoratorDictionary =
+            new ConcurrentDictionary<Type, Decorator>();
 
         protected BasePopulator(IAttributeDecorator attributeDecorator)
         {
             this.AttributeDecorator = attributeDecorator;
         }
 
+
+        public Decorator<T> DecorateType<T>()
+        {
+            BasePopulator.Logger.Debug("Entering DecorateType<T>");
+
+            Decorator result = this.DecoratorDictionary.GetOrAdd(typeof(T), new Decorator<T>(this.AttributeDecorator));
+
+            BasePopulator.Logger.Debug("Exiting DecorateType<T>");
+            return (Decorator<T>) result;
+        }
+
+        public abstract void Bind();
+
+        public abstract OperableList<T> Add<T>(int copies, params RecordReference[] primaryRecordReferences);
+
+        public abstract RecordReference<T> Add<T>(params RecordReference[] primaryRecordReferences);
+
+        public abstract void Extend(Type type, HandledTypeValueGetter valueGetter);
+
+        public abstract IValueGenerator ValueGenerator { get; }
+
+        public abstract void Clear();
+
         internal void AddToDecoratorDictionary(IDictionary<Type, Decorator> decoratorDictionary)
         {
             foreach (KeyValuePair<Type, Decorator> kvp in decoratorDictionary)
-            {
                 this.DecoratorDictionary.TryAdd(kvp.Key, kvp.Value);
-            }
         }
 
-        public class Decorator { }
+        protected internal abstract void Bind(RecordReference recordReference);
+
+        protected internal abstract void Bind<T>(OperableList<T> operableList);
+
+        public class Decorator
+        {
+        }
 
         public class Decorator<T> : Decorator
         {
@@ -66,7 +93,8 @@ namespace TestDataFramework.Populator
                 this.attributeDecorator = attributeDecorator;
             }
 
-            public Decorator<T> AddAttributeToMember<TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression, Attribute attribute)
+            public Decorator<T> AddAttributeToMember<TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression,
+                Attribute attribute)
             {
                 Decorator<T>.Logger.Debug($"Entering AddAttributeToMember<TPropertyType>. Attribute: {attribute}.");
 
@@ -86,32 +114,5 @@ namespace TestDataFramework.Populator
                 return this;
             }
         }
-
-
-        public Decorator<T> DecorateType<T>()
-        {
-            BasePopulator.Logger.Debug("Entering DecorateType<T>");
-
-            Decorator result = this.DecoratorDictionary.GetOrAdd(typeof (T), new Decorator<T>(this.AttributeDecorator));
-
-            BasePopulator.Logger.Debug("Exiting DecorateType<T>");
-            return (Decorator<T>)result;
-        }
-
-        public abstract void Bind();
-
-        protected internal abstract void Bind(RecordReference recordReference);
-
-        protected internal abstract void Bind<T>(OperableList<T> operableList);
-        
-        public abstract OperableList<T> Add<T>(int copies, params RecordReference[] primaryRecordReferences);
-
-        public abstract RecordReference<T> Add<T>(params RecordReference[] primaryRecordReferences);
-
-        public abstract void Extend(Type type, HandledTypeValueGetter valueGetter);
-
-        public abstract IValueGenerator ValueGenerator { get; }
-
-        public abstract void Clear();
     }
 }

@@ -19,11 +19,11 @@
 
 using System;
 using log4net;
-using TestDataFramework.Logger;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
 using TestDataFramework.Helpers.Concrete;
 using TestDataFramework.Helpers.Interfaces;
+using TestDataFramework.Logger;
 using TestDataFramework.ValueProvider.Interfaces;
 
 namespace TestDataFramework.ValueProvider.Concrete
@@ -31,14 +31,15 @@ namespace TestDataFramework.ValueProvider.Concrete
     public class StandardRandomizer : IValueProvider
     {
         private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(RandomSymbolStringGenerator));
+        private readonly DateTimeProvider dateProvider;
+        private readonly long dateTimeMaxValue;
+        private readonly long dateTimeMinValue;
 
         private readonly Random random;
         private readonly IRandomSymbolStringGenerator stringRandomizer;
-        private readonly DateTimeProvider dateProvider;
-        private readonly long dateTimeMinValue;
-        private readonly long dateTimeMaxValue;
 
-        public StandardRandomizer(Random random, IRandomSymbolStringGenerator stringRandomizer, DateTimeProvider dateProvider, long dateTimeMinValue, long dateTimeMaxValue)
+        public StandardRandomizer(Random random, IRandomSymbolStringGenerator stringRandomizer,
+            DateTimeProvider dateProvider, long dateTimeMinValue, long dateTimeMaxValue)
         {
             StandardRandomizer.Logger.Debug("Entering constructor");
 
@@ -59,7 +60,7 @@ namespace TestDataFramework.ValueProvider.Concrete
 
             StandardRandomizer.Logger.Debug("max = " + max);
 
-            int result = this.random.Next(max.Value);
+            var result = this.random.Next(max.Value);
 
             StandardRandomizer.Logger.Debug($"Exiting GetInteger. result: {result}");
             return result;
@@ -69,7 +70,7 @@ namespace TestDataFramework.ValueProvider.Concrete
         {
             StandardRandomizer.Logger.Debug("Entering GetLongInteger");
 
-            long workingMax = max ?? long.MaxValue;
+            var workingMax = max ?? long.MaxValue;
 
             StandardRandomizer.Logger.Debug("workingMax = " + workingMax);
 
@@ -77,16 +78,14 @@ namespace TestDataFramework.ValueProvider.Concrete
 
             var lowerMaxWord = (int) (workingMax & wordMask);
             if (lowerMaxWord == 0)
-            {
                 lowerMaxWord = 0x10000;
-            }
 
             long result = this.random.Next(lowerMaxWord);
 
             for (var i = 0; i < 3; i++)
             {
                 workingMax >>= 16;
-                int maxRandom = (int)(workingMax & wordMask) + 1;
+                var maxRandom = (int) (workingMax & wordMask) + 1;
                 long randomValue = this.random.Next(maxRandom);
                 randomValue <<= 16 * (i + 1);
                 result |= randomValue;
@@ -104,17 +103,17 @@ namespace TestDataFramework.ValueProvider.Concrete
 
             StandardRandomizer.Logger.Debug("max = " + max);
 
-            int result = this.random.Next(max.Value);
+            var result = this.random.Next(max.Value);
 
             StandardRandomizer.Logger.Debug($"Exiting GetShortInteger. result: {result}");
-            return (short)result;
+            return (short) result;
         }
 
         public virtual string GetString(int? length)
         {
             StandardRandomizer.Logger.Debug($"Entering GetString. length: {length}");
 
-            string result = this.stringRandomizer.GetRandomString(length);
+            var result = this.stringRandomizer.GetRandomString(length);
 
             StandardRandomizer.Logger.Debug($"Exiting GetString. result: {result}");
             return result;
@@ -124,9 +123,9 @@ namespace TestDataFramework.ValueProvider.Concrete
         {
             StandardRandomizer.Logger.Debug("Entering GetCharacter");
 
-            int letterCode = this.random.Next(26);
+            var letterCode = this.random.Next(26);
 
-            var result = (char)(letterCode + 65);
+            var result = (char) (letterCode + 65);
 
             StandardRandomizer.Logger.Debug($"Exiting GetCharacter. result: {result}");
             return result;
@@ -149,15 +148,16 @@ namespace TestDataFramework.ValueProvider.Concrete
         {
             StandardRandomizer.Logger.Debug("Entering GetBoolean");
 
-            int value = this.random.Next(2);
+            var value = this.random.Next(2);
 
-            bool result = value == 1;
+            var result = value == 1;
 
             StandardRandomizer.Logger.Debug($"Exiting GetBoolean. result: {result}");
             return result;
         }
 
-        public virtual DateTime GetDateTime(PastOrFuture? pastOrFuture, Func<long?, long> longIntegerGetter, long? min, long? max)
+        public virtual DateTime GetDateTime(PastOrFuture? pastOrFuture, Func<long?, long> longIntegerGetter, long? min,
+            long? max)
         {
             StandardRandomizer.Logger.Debug($"Entering GetDateTime. pastOrFuture: {pastOrFuture}");
 
@@ -197,7 +197,7 @@ namespace TestDataFramework.ValueProvider.Concrete
 
             this.random.NextBytes(array);
 
-            byte result = array[0];
+            var result = array[0];
 
             StandardRandomizer.Logger.Debug($"Exiting GetByte. result: {result}");
             return result;
@@ -210,7 +210,7 @@ namespace TestDataFramework.ValueProvider.Concrete
 
             precision = precision ?? 2;
 
-            double result = this.GetReal(precision.Value);
+            var result = this.GetReal(precision.Value);
 
             StandardRandomizer.Logger.Debug($"Exiting GetDouble. result: {result}");
             return result;
@@ -224,11 +224,10 @@ namespace TestDataFramework.ValueProvider.Concrete
             precision = precision ?? 2;
 
             if (precision.Value > 7)
-            {
-                throw new ArgumentOutOfRangeException(nameof(precision), precision.Value, Messages.FloatPrecisionOutOfRange);
-            }
+                throw new ArgumentOutOfRangeException(nameof(precision), precision.Value,
+                    Messages.FloatPrecisionOutOfRange);
 
-            var result = (float)this.GetReal(precision.Value, (int) Math.Pow(10, 7 - precision.Value));
+            var result = (float) this.GetReal(precision.Value, (int) Math.Pow(10, 7 - precision.Value));
 
             StandardRandomizer.Logger.Debug($"Exiting GetFloat. result: {result}");
             return result;
@@ -238,8 +237,8 @@ namespace TestDataFramework.ValueProvider.Concrete
         {
             StandardRandomizer.Logger.Debug("Entering GetEmailAddress");
 
-            string namePart = this.stringRandomizer.GetRandomString(10).ToLower();
-            string result = namePart + "@domain.com";
+            var namePart = this.stringRandomizer.GetRandomString(10).ToLower();
+            var result = namePart + "@domain.com";
 
             StandardRandomizer.Logger.Debug($"Exiting GetEmailAddress. result: {result}");
             return result;
@@ -248,24 +247,23 @@ namespace TestDataFramework.ValueProvider.Concrete
         public virtual Enum GetEnum(Type enumType)
         {
             Array enumValues = enumType.GetEnumValues();
-            int valueIndex = this.random.Next(enumValues.Length);
-            Enum result = (Enum)enumValues.GetValue(valueIndex);
+            var valueIndex = this.random.Next(enumValues.Length);
+            var result = (Enum) enumValues.GetValue(valueIndex);
             return result;
         }
 
         private double GetReal(int precision, int maxValue = int.MaxValue)
         {
             if (precision < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(precision), precision, Messages.PrecisionMustBeNonNegative);
-            }
+                throw new ArgumentOutOfRangeException(nameof(precision), precision,
+                    Messages.PrecisionMustBeNonNegative);
 
-            int wholePart = this.random.Next(maxValue);
-            double decimalPart = this.random.NextDouble();
-            double result = wholePart + decimalPart;
+            var wholePart = this.random.Next(maxValue);
+            var decimalPart = this.random.NextDouble();
+            var result = wholePart + decimalPart;
             result = Math.Round(result, precision);
 
             return result;
         }
-    };
+    }
 }

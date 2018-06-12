@@ -36,14 +36,15 @@ namespace CommonIntegrationTests.TestModels
         public const int Precision = 4;
         public const long Max = 55;
 
-        public int Getter { get { throw new NotImplementedException();} }
-        public int Setter { set { throw new NotImplementedException();} }
+        public int Getter => throw new NotImplementedException();
+
+        public int Setter
+        {
+            set => throw new NotImplementedException();
+        }
 
         [PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Manual)]
         public int Key { get; set; }
-
-        [PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Manual)]
-        public Guid GuidKey { get; set; }
 
         public int Integer { get; set; }
 
@@ -103,6 +104,9 @@ namespace CommonIntegrationTests.TestModels
         public Guid AGuid { get; set; }
 
         public string GetterOnly { get; }
+
+        [PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Manual)]
+        public Guid GuidKey { get; set; }
     }
 
     public class ForeignSubjectClass
@@ -120,7 +124,7 @@ namespace CommonIntegrationTests.TestModels
 
         public override string ToString()
         {
-            string result =
+            var result =
                 $"Key \t\t\t{this.Key}\r\n" +
                 $"ForeignIntKey \t{this.ForeignIntKey}\r\n" +
                 $"ForeignGuidKey \t{this.ForeignGuidKey}\r\n" +
@@ -149,7 +153,6 @@ namespace CommonIntegrationTests.TestModels
     {
         private ClassWithoutADefaultConstructor()
         {
-            
         }
     }
 

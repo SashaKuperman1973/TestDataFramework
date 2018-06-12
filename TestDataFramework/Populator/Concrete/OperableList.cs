@@ -23,7 +23,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using TestDataFramework.ListOperations;
-using TestDataFramework.Populator.Interfaces;
 
 namespace TestDataFramework.Populator.Concrete
 {
@@ -37,9 +36,9 @@ namespace TestDataFramework.Populator.Concrete
     public class OperableList<T> : Populatable, IList<RecordReference<T>>
     {
         internal readonly List<GuaranteedValues> GuaranteedValues = new List<GuaranteedValues>();
-        protected internal List<RecordReference<T>> InternalList;
-        protected readonly ValueGuaranteePopulator ValueGuaranteePopulator;
         protected readonly BasePopulator Populator;
+        protected readonly ValueGuaranteePopulator ValueGuaranteePopulator;
+        protected internal List<RecordReference<T>> InternalList;
 
         public OperableList(ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator)
         {
@@ -48,77 +47,88 @@ namespace TestDataFramework.Populator.Concrete
             this.Populator = populator;
         }
 
-        public OperableList(IEnumerable<RecordReference<T>> input, ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator)
-        {            
+        public OperableList(IEnumerable<RecordReference<T>> input, ValueGuaranteePopulator valueGuaranteePopulator,
+            BasePopulator populator)
+        {
             this.InternalList = new List<RecordReference<T>>(input);
             this.ValueGuaranteePopulator = valueGuaranteePopulator;
             this.Populator = populator;
         }
 
-        public virtual OperableList<T> GuaranteeByPercentageOfTotal<TValue>(IEnumerable<TValue> guaranteedValues, int frequencyPercentage = 10)
+        public virtual IEnumerable<T> RecordObjects
+        {
+            get
+            {
+                IEnumerable<T> result = this.InternalList.Select(reference => reference.RecordObject);
+                return result;
+            }
+        }
+
+        public virtual OperableList<T> GuaranteeByPercentageOfTotal<TValue>(IEnumerable<TValue> guaranteedValues,
+            int frequencyPercentage = 10)
         {
             this.GuaranteedValues.Add(new GuaranteedValues
             {
                 FrequencyPercentage = frequencyPercentage,
-                Values = guaranteedValues.Cast<object>(),
+                Values = guaranteedValues.Cast<object>()
             });
 
             return this;
         }
 
-        public virtual OperableList<T> GuaranteeByPercentageOfTotal(IEnumerable<Func<T>> guaranteedValues, int frequencyPercentage = 10)
+        public virtual OperableList<T> GuaranteeByPercentageOfTotal(IEnumerable<Func<T>> guaranteedValues,
+            int frequencyPercentage = 10)
         {
             this.GuaranteedValues.Add(new GuaranteedValues
             {
                 FrequencyPercentage = frequencyPercentage,
-                Values = guaranteedValues,
+                Values = guaranteedValues
             });
 
             return this;
         }
 
-        public virtual OperableList<T> GuaranteeByPercentageOfTotal(IEnumerable<T> guaranteedValues, int frequencyPercentage = 10)
+        public virtual OperableList<T> GuaranteeByPercentageOfTotal(IEnumerable<T> guaranteedValues,
+            int frequencyPercentage = 10)
         {
             this.GuaranteedValues.Add(new GuaranteedValues
             {
                 FrequencyPercentage = frequencyPercentage,
-                Values = guaranteedValues.Cast<object>(),
+                Values = guaranteedValues.Cast<object>()
             });
 
             return this;
         }
 
-        public virtual OperableList<T> GuaranteeByFixedQuantity<TValue>(IEnumerable<TValue> guaranteedValues, int fixedQuantity = 0)
+        public virtual OperableList<T> GuaranteeByFixedQuantity<TValue>(IEnumerable<TValue> guaranteedValues,
+            int fixedQuantity = 0)
         {
             guaranteedValues = guaranteedValues.ToList();
 
             if (fixedQuantity == 0)
-            {
                 fixedQuantity = guaranteedValues.Count();
-            }
 
             this.GuaranteedValues.Add(new GuaranteedValues
             {
                 TotalFrequency = fixedQuantity,
-                Values = guaranteedValues.Cast<object>(),
+                Values = guaranteedValues.Cast<object>()
             });
 
             return this;
         }
 
-        public virtual OperableList<T> GuaranteeByFixedQuantity(IEnumerable<Func<T>> guaranteedValues, int fixedQuantity = 0)
+        public virtual OperableList<T> GuaranteeByFixedQuantity(IEnumerable<Func<T>> guaranteedValues,
+            int fixedQuantity = 0)
         {
             guaranteedValues = guaranteedValues.ToList();
 
             if (fixedQuantity == 0)
-            {
                 fixedQuantity = guaranteedValues.Count();
-            }
 
             this.GuaranteedValues.Add(new GuaranteedValues
             {
                 TotalFrequency = fixedQuantity,
-                Values = guaranteedValues,
+                Values = guaranteedValues
             });
 
             return this;
@@ -129,14 +139,12 @@ namespace TestDataFramework.Populator.Concrete
             guaranteedValues = guaranteedValues.ToList();
 
             if (fixedQuantity == 0)
-            {
                 fixedQuantity = guaranteedValues.Count();
-            }
 
             this.GuaranteedValues.Add(new GuaranteedValues
             {
                 TotalFrequency = fixedQuantity,
-                Values = guaranteedValues.Cast<object>(),
+                Values = guaranteedValues.Cast<object>()
             });
 
             return this;
@@ -150,14 +158,10 @@ namespace TestDataFramework.Populator.Concrete
         protected internal override void Populate()
         {
             if (this.IsPopulated)
-            {
                 return;
-            }
 
             if (this.GuaranteedValues.Any())
-            {
                 this.ValueGuaranteePopulator.Bind(this, this.GuaranteedValues);
-            }
 
             this.InternalList.ForEach(recordReference => recordReference.Populate());
             this.IsPopulated = true;
@@ -182,15 +186,6 @@ namespace TestDataFramework.Populator.Concrete
             return result;
         }
 
-        public virtual IEnumerable<T> RecordObjects
-        {
-            get
-            {
-                IEnumerable<T> result = this.InternalList.Select(reference => reference.RecordObject);
-                return result;
-            }
-        }
-
         #region IList<> members
 
         public IEnumerator<RecordReference<T>> GetEnumerator()
@@ -198,7 +193,7 @@ namespace TestDataFramework.Populator.Concrete
             return this.InternalList.GetEnumerator();
         }
 
-        IEnumerator IEnumerable.GetEnumerator() 
+        IEnumerator IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();
         }
@@ -206,12 +201,11 @@ namespace TestDataFramework.Populator.Concrete
         public void Add(RecordReference<T> item)
         {
             this.InternalList.Add(item);
-
         }
 
         public int Count => this.InternalList.Count;
 
-        public bool IsReadOnly => ((IList)this.InternalList).IsReadOnly;
+        public bool IsReadOnly => ((IList) this.InternalList).IsReadOnly;
 
         public void Clear()
         {

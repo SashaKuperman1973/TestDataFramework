@@ -20,18 +20,17 @@
 using System;
 using System.Reflection;
 using log4net;
-using TestDataFramework.Logger;
-using TestDataFramework.AttributeDecorator;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Helpers;
+using TestDataFramework.Logger;
 using TestDataFramework.PropertyValueAccumulator;
 
 namespace TestDataFramework.UniqueValueGenerator.Concrete
 {
     public class MemoryUniqueValueGenerator : BaseUniqueValueGenerator
     {
-        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof (MemoryUniqueValueGenerator));
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(MemoryUniqueValueGenerator));
 
         private readonly IAttributeDecorator attributeDecorator;
 
@@ -44,9 +43,10 @@ namespace TestDataFramework.UniqueValueGenerator.Concrete
 
         public override object GetValue(PropertyInfo propertyInfo)
         {
-            MemoryUniqueValueGenerator.Logger.Debug($"Entering GetValue. propertyInfo: {propertyInfo.GetExtendedMemberInfoString()}");
+            MemoryUniqueValueGenerator.Logger.Debug(
+                $"Entering GetValue. propertyInfo: {propertyInfo.GetExtendedMemberInfoString()}");
 
-            if (propertyInfo.PropertyType == typeof (Guid))
+            if (propertyInfo.PropertyType == typeof(Guid))
             {
                 MemoryUniqueValueGenerator.Logger.Debug("Property type is Guid. Returning new Guid.");
                 Guid result = Guid.NewGuid();

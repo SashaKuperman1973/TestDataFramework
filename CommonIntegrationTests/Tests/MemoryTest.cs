@@ -17,12 +17,12 @@
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-using CommonIntegrationTests.TestModels;
-using log4net.Config;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CommonIntegrationTests.TestModels;
+using log4net.Config;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Factories;
 using TestDataFramework.Populator.Concrete;
@@ -56,7 +56,7 @@ namespace CommonIntegrationTests.Tests
         {
             IPopulator populator = this.factory.CreateMemoryPopulator();
 
-            var reference = populator.Add<AClassWithAStructOnConstructor>();
+            RecordReference<AClassWithAStructOnConstructor> reference = populator.Add<AClassWithAStructOnConstructor>();
             populator.Bind();
 
             Assert.IsNotNull(reference.RecordObject.AStruct.AValue);
@@ -67,7 +67,7 @@ namespace CommonIntegrationTests.Tests
         {
             IPopulator populator = this.factory.CreateMemoryPopulator();
 
-            var reference = populator.Add<AClassWithAnEnumOnConstructor>();
+            RecordReference<AClassWithAnEnumOnConstructor> reference = populator.Add<AClassWithAnEnumOnConstructor>();
             populator.Bind();
 
             Console.WriteLine(reference.RecordObject.AnEnum);
@@ -100,7 +100,8 @@ namespace CommonIntegrationTests.Tests
 
             Assert.IsNotNull(result.OneParameterConstructor.DefaultConstructor);
             Assert.IsNotNull(result.OneParameterConstructor.DefaultConstructorReference);
-            Assert.AreNotEqual(result.OneParameterConstructor.DefaultConstructorReference, result.OneParameterConstructor.DefaultConstructor);
+            Assert.AreNotEqual(result.OneParameterConstructor.DefaultConstructorReference,
+                result.OneParameterConstructor.DefaultConstructor);
         }
 
         [TestMethod]
@@ -109,7 +110,8 @@ namespace CommonIntegrationTests.Tests
             IPopulator populator = this.factory.CreateMemoryPopulator();
 
             IList<RecordReference<SubjectClass>> subjectReference = populator.Add<SubjectClass>(2);
-            RecordReference<ForeignSubjectClass> foreignReference = populator.Add<ForeignSubjectClass>(subjectReference[1]);
+            RecordReference<ForeignSubjectClass> foreignReference =
+                populator.Add<ForeignSubjectClass>(subjectReference[1]);
             populator.Bind();
 
             Helpers.Dump(subjectReference[0].RecordObject);
@@ -153,9 +155,7 @@ namespace CommonIntegrationTests.Tests
             IDictionary<KeyValuePair<int, string>, object> dictionary = recordReference.RecordObject.ADictionary;
 
             foreach (KeyValuePair<KeyValuePair<int, string>, object> item in dictionary)
-            {
                 Console.WriteLine(item.Key);
-            }
         }
 
         [TestMethod]
@@ -171,21 +171,24 @@ namespace CommonIntegrationTests.Tests
                         new ForeignSubjectClass {SecondInteger = 777},
                         //(Func<ForeignSubjectClass>)
                         //(() => new ForeignSubjectClass {SecondInteger = subjectReference[1].RecordObject.IntegerWithMax}),
-                        new ForeignSubjectClass {SecondInteger = 999},
+                        new ForeignSubjectClass {SecondInteger = 999}
                     }, 50)
                     .GuaranteeByFixedQuantity(new object[]
                     {
                         new ForeignSubjectClass {SecondInteger = 111},
                         (Func<ForeignSubjectClass>)
-                        (() => new ForeignSubjectClass {SecondInteger = subjectReference[0].RecordObject.IntegerWithMax}),
-                        new ForeignSubjectClass {SecondInteger = 222},
+                        (() => new ForeignSubjectClass
+                        {
+                            SecondInteger = subjectReference[0].RecordObject.IntegerWithMax
+                        }),
+                        new ForeignSubjectClass {SecondInteger = 222}
                     }, 5);
 
             populator.Bind();
 
             Console.WriteLine("SubjectClass[1].IntegerWithMax: " + subjectReference[1].RecordObject.IntegerWithMax);
             Console.WriteLine("SubjectClass[0].IntegerWithMax: " + subjectReference[0].RecordObject.IntegerWithMax);
-            int i = 1;
+            var i = 1;
             foreignReference.ToList().ForEach(r => Console.WriteLine(i++ + ".\r\n" + r.RecordObject.ToString()));
         }
 
@@ -201,7 +204,7 @@ namespace CommonIntegrationTests.Tests
                         new ForeignSubjectClass {SecondInteger = 111},
                         (Func<ForeignSubjectClass>)
                         (() => new ForeignSubjectClass {SecondInteger = 222}),
-                        new ForeignSubjectClass {SecondInteger = 333},
+                        new ForeignSubjectClass {SecondInteger = 333}
                     }, 21);
 
             global::Tests.Helpers.ExceptionTest(() => populator.Bind(), typeof(ValueGuaranteeException),
@@ -220,7 +223,7 @@ namespace CommonIntegrationTests.Tests
                         new ForeignSubjectClass {SecondInteger = 111},
                         (Func<ForeignSubjectClass>)
                         (() => new ForeignSubjectClass {SecondInteger = 222}),
-                        new ForeignSubjectClass {SecondInteger = 333},
+                        new ForeignSubjectClass {SecondInteger = 333}
                     }, 105);
 
             global::Tests.Helpers.ExceptionTest(() => populator.Bind(), typeof(ValueGuaranteeException),
@@ -232,29 +235,24 @@ namespace CommonIntegrationTests.Tests
         {
             IPopulator populator = this.factory.CreateMemoryPopulator();
 
-                populator.Add<ForeignSubjectClass>(20)
-                    .GuaranteeByPercentageOfTotal(new object[]
-                    {
-                        new ForeignSubjectClass {SecondInteger = 777},
-                        (Func<ForeignSubjectClass>)
-                        (() => new ForeignSubjectClass {SecondInteger = 888}),
-                        new ForeignSubjectClass {SecondInteger = 999},
-                    }, 80)
-                    .GuaranteeByFixedQuantity(new object[]
-                    {
-                        new ForeignSubjectClass {SecondInteger = 111},
-                        (Func<ForeignSubjectClass>)
-                        (() => new ForeignSubjectClass {SecondInteger = 222}),
-                        new ForeignSubjectClass {SecondInteger = 333},
-                    }, 5);
+            populator.Add<ForeignSubjectClass>(20)
+                .GuaranteeByPercentageOfTotal(new object[]
+                {
+                    new ForeignSubjectClass {SecondInteger = 777},
+                    (Func<ForeignSubjectClass>)
+                    (() => new ForeignSubjectClass {SecondInteger = 888}),
+                    new ForeignSubjectClass {SecondInteger = 999}
+                }, 80)
+                .GuaranteeByFixedQuantity(new object[]
+                {
+                    new ForeignSubjectClass {SecondInteger = 111},
+                    (Func<ForeignSubjectClass>)
+                    (() => new ForeignSubjectClass {SecondInteger = 222}),
+                    new ForeignSubjectClass {SecondInteger = 333}
+                }, 5);
 
             global::Tests.Helpers.ExceptionTest(() => populator.Bind(), typeof(ValueGuaranteeException),
                 Messages.TooFewReferencesForValueGuarantee);
-        }
-
-        private class ClassWithDictionary
-        {
-            public Dictionary<string, string> ADictionary { get; set; }
         }
 
         [TestMethod]
@@ -272,7 +270,8 @@ namespace CommonIntegrationTests.Tests
 
             OperableList<SubjectClass> subjectReferences = populator.Add<SubjectClass>(4)
                 .GuaranteeByPercentageOfTotal(
-                    new[] {new SubjectClass {AnEmailAddress = "myemailAddress@here.com", Text = "Guaranteed Text"}}, 75);
+                    new[] {new SubjectClass {AnEmailAddress = "myemailAddress@here.com", Text = "Guaranteed Text"}},
+                    75);
 
             subjectReferences[1].Set(p => p.Text, "Hello");
 
@@ -373,10 +372,8 @@ namespace CommonIntegrationTests.Tests
 
             // Assert that objects populated by BindAndMake are not repopulated/reprocessed during Bind().
             Assert.AreEqual(singleSubjectBeforeBind, singleSubjectReferenceBeforeBind.RecordObject);
-            for (int i = 0; i < subjectSetBeforeBind.Count(); i++)
-            {
+            for (var i = 0; i < subjectSetBeforeBind.Count(); i++)
                 Assert.AreEqual(subjectSetBeforeBind.ElementAt(i), subjectReferenceSetBeforeBind[i].RecordObject);
-            }
 
             // Assert that RecordRefernces that are not populated after BindAndMake() are populated after Bind().
             Assert.IsNotNull(singleSubjectAfterBind.RecordObject);
@@ -476,15 +473,16 @@ namespace CommonIntegrationTests.Tests
             RecordReference<ListSetterBaseType> listSetterBaseTypeReference = populator.Add<ListSetterBaseType>();
 
             listSetterBaseTypeReference.SetList(p => p.B.WithCollection.ElementList, 5)
-
-            .Set(p => p.SubElement.AString, "Me", 2, 4)
-            .Set(p => p.AString, "Hello", 0, 2, 4)
-            .Set(p => p.SubElement.AnInt, 7, new Range(2, 4));
+                .Set(p => p.SubElement.AString, "Me", 2, 4)
+                .Set(p => p.AString, "Hello", 0, 2, 4)
+                .Set(p => p.SubElement.AnInt, 7, new Range(2, 4));
 
             populator.Bind();
 
-            Assert.AreEqual("Me", listSetterBaseTypeReference.RecordObject.B.WithCollection.ElementList[2].SubElement.AString);
-            Assert.AreEqual("Me", listSetterBaseTypeReference.RecordObject.B.WithCollection.ElementList[4].SubElement.AString);
+            Assert.AreEqual("Me",
+                listSetterBaseTypeReference.RecordObject.B.WithCollection.ElementList[2].SubElement.AString);
+            Assert.AreEqual("Me",
+                listSetterBaseTypeReference.RecordObject.B.WithCollection.ElementList[4].SubElement.AString);
         }
 
         [TestMethod]
@@ -495,15 +493,16 @@ namespace CommonIntegrationTests.Tests
             RecordReference<ListSetterBaseType> listSetterBaseTypeReference = populator.Add<ListSetterBaseType>();
 
             listSetterBaseTypeReference.SetList(p => p.B.WithCollection.ElementArray, 5)
-
-            .Set(p => p.SubElement.AString, "Me", 2, 4)
-            .Set(p => p.AString, "Hello", 0, 2, 4)
-            .Set(p => p.SubElement.AnInt, 7, new Range(2, 4));
+                .Set(p => p.SubElement.AString, "Me", 2, 4)
+                .Set(p => p.AString, "Hello", 0, 2, 4)
+                .Set(p => p.SubElement.AnInt, 7, new Range(2, 4));
 
             populator.Bind();
 
-            Assert.AreEqual("Me", listSetterBaseTypeReference.RecordObject.B.WithCollection.ElementArray[2].SubElement.AString);
-            Assert.AreEqual("Me", listSetterBaseTypeReference.RecordObject.B.WithCollection.ElementArray[4].SubElement.AString);
+            Assert.AreEqual("Me",
+                listSetterBaseTypeReference.RecordObject.B.WithCollection.ElementArray[2].SubElement.AString);
+            Assert.AreEqual("Me",
+                listSetterBaseTypeReference.RecordObject.B.WithCollection.ElementArray[4].SubElement.AString);
         }
 
         [TestMethod]
@@ -528,6 +527,11 @@ namespace CommonIntegrationTests.Tests
             populator.Add<ListSetterBaseTypeB>().Set(p => p.WithCollection.ElementList, new List<ListElementType>());
 
             populator.Bind();
+        }
+
+        private class ClassWithDictionary
+        {
+            public Dictionary<string, string> ADictionary { get; set; }
         }
     }
 }

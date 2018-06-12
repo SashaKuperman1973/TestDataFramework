@@ -17,12 +17,12 @@
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-using log4net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using log4net;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.Exceptions;
@@ -30,18 +30,20 @@ using TestDataFramework.Helpers;
 using TestDataFramework.Helpers.FieldExpressionValidator.Concrete;
 using TestDataFramework.Logger;
 using TestDataFramework.RepositoryOperations.Model;
+using PropertyAttributes = TestDataFramework.RepositoryOperations.Model.PropertyAttributes;
 
 namespace TestDataFramework.AttributeDecorator.Concrete
 {
     public class StandardAttributeDecorator : StandardAttributeDecoratorBase, IAttributeDecorator
     {
         private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(StandardAttributeDecorator));
+        private readonly AssemblyWrapper callingAssembly;
 
-        private readonly AddAttributeFieldExpressionValidator fieldExpressionValidator = new AddAttributeFieldExpressionValidator();
+        private readonly AddAttributeFieldExpressionValidator fieldExpressionValidator =
+            new AddAttributeFieldExpressionValidator();
 
         private readonly StandardTableTypeCache tableTypeCache;
-        private readonly AssemblyWrapper callingAssembly;
-        
+
         public StandardAttributeDecorator(StandardTableTypeCache tableTypeCache,
             AssemblyWrapper callingAssembly, Schema defaultSchema) : base(defaultSchema)
         {
@@ -49,13 +51,15 @@ namespace TestDataFramework.AttributeDecorator.Concrete
             this.callingAssembly = callingAssembly;
         }
 
-        public virtual void DecorateMember<T, TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression, Attribute attribute)
+        public virtual void DecorateMember<T, TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression,
+            Attribute attribute)
         {
             StandardAttributeDecorator.Logger.Debug($"Entering DecorateMember. Attribute: {attribute}");
 
-            MemberInfo memberInfo = this.fieldExpressionValidator.ValidateMemberAccessExpression(fieldExpression).Member;
+            MemberInfo memberInfo = this.fieldExpressionValidator.ValidateMemberAccessExpression(fieldExpression)
+                .Member;
 
-            this.MemberAttributeDicitonary.AddOrUpdate(memberInfo, new List<Attribute> { attribute },
+            this.MemberAttributeDicitonary.AddOrUpdate(memberInfo, new List<Attribute> {attribute},
                 (mi, list) =>
                 {
                     list.Add(attribute);
@@ -89,7 +93,8 @@ namespace TestDataFramework.AttributeDecorator.Concrete
 
         public virtual PropertyAttribute<T> GetPropertyAttribute<T>(PropertyInfo propertyInfo) where T : Attribute
         {
-            StandardAttributeDecorator.Logger.Debug($"Entering GetPropertyAttribute. T: {typeof(T)} propertyInfo: {propertyInfo.GetExtendedMemberInfoString()}");
+            StandardAttributeDecorator.Logger.Debug(
+                $"Entering GetPropertyAttribute. T: {typeof(T)} propertyInfo: {propertyInfo.GetExtendedMemberInfoString()}");
 
             var result = new PropertyAttribute<T>
             {
@@ -113,15 +118,15 @@ namespace TestDataFramework.AttributeDecorator.Concrete
             return result;
         }
 
-        public virtual IEnumerable<RepositoryOperations.Model.PropertyAttributes> GetPropertyAttributes(Type type)
+        public virtual IEnumerable<PropertyAttributes> GetPropertyAttributes(Type type)
         {
             StandardAttributeDecorator.Logger.Debug($"Entering GetPropertyAttributes. type: {type}");
 
-            IEnumerable<RepositoryOperations.Model.PropertyAttributes> result =
+            IEnumerable<PropertyAttributes> result =
                 type.GetPropertiesHelper()
                     .Select(
                         pi =>
-                            new RepositoryOperations.Model.PropertyAttributes
+                            new PropertyAttributes
                             {
                                 Attributes = this.GetCustomAttributes(pi).ToArray(),
                                 PropertyInfo = pi
@@ -133,7 +138,8 @@ namespace TestDataFramework.AttributeDecorator.Concrete
 
         public virtual T GetCustomAttribute<T>(MemberInfo memberInfo) where T : Attribute
         {
-            StandardAttributeDecorator.Logger.Debug($"Entering GetCustomAttribute<T>. T: {typeof(T)}. MemberInfo: {memberInfo}");
+            StandardAttributeDecorator.Logger.Debug(
+                $"Entering GetCustomAttribute<T>. T: {typeof(T)}. MemberInfo: {memberInfo}");
 
             T result = this.GetCustomAttributes<T>(memberInfo).FirstOrDefault();
 
@@ -157,11 +163,13 @@ namespace TestDataFramework.AttributeDecorator.Concrete
             if (!this.tableTypeCache.IsAssemblyCachePopulated(this.callingAssembly))
             {
                 StandardAttributeDecorator.Logger.Debug("Populating table-type cache with calling assembly");
-                this.tableTypeCache.PopulateAssemblyCache(this.callingAssembly, this.GetSingleAttribute<TableAttribute>, this.DefaultSchema);
+                this.tableTypeCache.PopulateAssemblyCache(this.callingAssembly, this.GetSingleAttribute<TableAttribute>,
+                    this.DefaultSchema);
             }
 
-            TypeInfoWrapper cachedType = this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType, this.callingAssembly,
-                this.GetSingleAttribute<TableAttribute>, canScanAllCachedAssemblies: true);
+            TypeInfoWrapper cachedType = this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType,
+                this.callingAssembly,
+                this.GetSingleAttribute<TableAttribute>, true);
 
             if (cachedType != null)
             {
@@ -171,10 +179,8 @@ namespace TestDataFramework.AttributeDecorator.Concrete
             }
 
             if (this.tableTypeCache.IsAssemblyCachePopulated(foreignType.Assembly))
-            {
                 throw new AttributeDecoratorException(Messages.CannotResolveForeignKey, foreignAttribute,
                     foreignType);
-            }
 
             StandardAttributeDecorator.Logger.Debug("Populating table-type cache with foreign type's assembly.");
 
@@ -182,13 +188,11 @@ namespace TestDataFramework.AttributeDecorator.Concrete
                 this.DefaultSchema);
 
             cachedType = this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType, foreignType.Assembly,
-                this.GetSingleAttribute<TableAttribute>, canScanAllCachedAssemblies: false);
+                this.GetSingleAttribute<TableAttribute>, false);
 
             if (cachedType == null)
-            {
                 throw new AttributeDecoratorException(Messages.CannotResolveForeignKey, foreignAttribute,
                     foreignType);
-            }
 
             StandardAttributeDecorator.Logger.Debug(
                 $"Cache hit based on call with foreign type's assembly. Returning {cachedType}.");

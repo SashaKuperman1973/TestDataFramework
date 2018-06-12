@@ -16,6 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 namespace TestDataFramework.Exceptions
 {
     public static class Messages
@@ -38,16 +39,19 @@ namespace TestDataFramework.Exceptions
         public const string NoForeignKeys = "No foreign keys in type {0}";
 
         public const string NoReferentialIntegrity =
-            "Referential integrity error in schema between primary type {0} and foreign type {1}. Can also happen if foreign->primary keys are different types.";
+                "Referential integrity error in schema between primary type {0} and foreign type {1}. Can also happen if foreign->primary keys are different types."
+            ;
 
         public const string NotInATransaction =
-            "Ambient tranactions being enforced and persitence code not running in one. Possibly committing to underlying data source unintentionally. You can specify that you want to skip transaction checking in the API.";
+                "Ambient tranactions being enforced and persitence code not running in one. Possibly committing to underlying data source unintentionally. You can specify that you want to skip transaction checking in the API."
+            ;
 
         public const string StringGeneratorOverflow = "input {0} resulted in overflow for string length {1}";
 
         public const string UnknownPastOrFutureEnumValue = "Unrecognized PastOrFuture enum value";
 
-        public const string DeferredValueGeneratorExecuted = "Cannot invoke Deferred value generator again after Execute method called";
+        public const string DeferredValueGeneratorExecuted =
+            "Cannot invoke Deferred value generator again after Execute method called";
 
         public const string UnexpectedHandlerType =
             "Unexpected type fetching value from DB. Property: {0}, Actual value: {1}";
@@ -56,7 +60,7 @@ namespace TestDataFramework.Exceptions
 
         public const string UpdatePropertyNotFound = "Count key for update not found. Key property: {0}";
 
-        public const string PropertyKeyNotFound =  "Property type not handled: {0}";
+        public const string PropertyKeyNotFound = "Property type not handled: {0}";
 
         public const string Underflow = "Underflow";
 
@@ -69,9 +73,11 @@ namespace TestDataFramework.Exceptions
         public const string SetExpressionNotAssignment =
             "Set expression must be an assignment expression (and not a +=, etc. type of expression)";
 
-        public const string PropertySetExpressionMustBePropertyAccess = "Set operation expression must be a property access expression";
+        public const string PropertySetExpressionMustBePropertyAccess =
+            "Set operation expression must be a property access expression";
 
-        public const string AddAttributeExpressionMustBePropertyAccess = "Add attribute expression must be a property access expression";
+        public const string AddAttributeExpressionMustBePropertyAccess =
+            "Add attribute expression must be a property access expression";
 
         public const string NoSetter = "The property given has no setter";
 
@@ -92,15 +98,18 @@ namespace TestDataFramework.Exceptions
 
         public const string PrecisionMustBeNonNegative = "Precision must be non-negative";
 
-        public const string AutoKeyMustBeInteger = "Only integral integer types can be used as Auto increment keys. {0}";
+        public const string AutoKeyMustBeInteger =
+            "Only integral integer types can be used as Auto increment keys. {0}";
 
-        public const string TypeTooNarrow = "Type too narrow attempting to set property {0} to result from database: {1}";
+        public const string TypeTooNarrow =
+            "Type too narrow attempting to set property {0} to result from database: {1}";
 
         public const string CannotResolveForeignKey =
             "Cannot resolve foreign key. Foreign Key Attribute: {0}, foreign type: {1}";
 
         public const string DuplicateTableName =
-            "Attempted to add a type that resolves to an existing type's table definition. You can use TableAttribute to differentiate table names for identically named types in different namespaces. Types involved: {0}";
+                "Attempted to add a type that resolves to an existing type's table definition. You can use TableAttribute to differentiate table names for identically named types in different namespaces. Types involved: {0}"
+            ;
 
         public const string ErrorGettingDefinedType =
             "Internal Error. Attimpted to get defined type from dictionary. Table variable: {0}";
@@ -111,13 +120,16 @@ namespace TestDataFramework.Exceptions
             "Cannot have catalogue specified without a schema given. Catalogue: {0}, Table name: {1}";
 
         public const string AmbigousTableSearchConditions =
-            "Ambigous type match when attempting to resolve primary-foreign type/table reference. Foreign Table object used: [{0}], Types involved in the collision: [{1}], [{2}]";
+                "Ambigous type match when attempting to resolve primary-foreign type/table reference. Foreign Table object used: [{0}], Types involved in the collision: [{1}], [{2}]"
+            ;
 
         public const string ForeignKeyRecordWithNoPrimaryKeyRecord =
-            "Foreign key in record found without corresponding record/primary key assigned. Foreign type: {0}, Property name: {1}";
+                "Foreign key in record found without corresponding record/primary key assigned. Foreign type: {0}, Property name: {1}"
+            ;
 
         public const string TooFewReferencesForValueGuarantee =
-            "Number of guaranteed values would exceed number of given references minus number of referneces with explicit properties";
+                "Number of guaranteed values would exceed number of given references minus number of referneces with explicit properties"
+            ;
 
         public const string NeitherPercentageNorTotalGiven =
             "Internal error: Neither a percentage or a fix value given for gauranteed value quantity";

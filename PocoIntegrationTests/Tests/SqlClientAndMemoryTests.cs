@@ -67,7 +67,8 @@ namespace PocoIntegrationTests.Tests
             SqlClientAndMemoryTests.PrimaryKeyForeignKeyTest(populator, new PocoGeneratorIntegrationTest());
         }
 
-        private static void PrimaryKeyForeignKeyTest(IPopulator populator, ICodeGeneratorIntegration codeGeneratorIntegration)
+        private static void PrimaryKeyForeignKeyTest(IPopulator populator,
+            ICodeGeneratorIntegration codeGeneratorIntegration)
         {
             IList<RecordReference<ManualKeyPrimaryTableClass>> primaries = populator.Add<ManualKeyPrimaryTableClass>(2);
 
@@ -79,7 +80,8 @@ namespace PocoIntegrationTests.Tests
 
             codeGeneratorIntegration.AddTypes(populator, foreignSet1, foreignSet2);
 
-            primaries[0].Set(o => o.ADecimal, 112233.445566m).Set(o => o.AString, "AAXX").Set(o => o.Key1, "HummHummHumm");
+            primaries[0].Set(o => o.ADecimal, 112233.445566m).Set(o => o.AString, "AAXX")
+                .Set(o => o.Key1, "HummHummHumm");
 
             foreignSet2[1].Set(o => o.ALong, 11111L).Set(o => o.AShort, (short) 1234);
 
@@ -88,7 +90,7 @@ namespace PocoIntegrationTests.Tests
                     new TransactionOptions {IsolationLevel = IsolationLevel.ReadCommitted}))
             {
                 populator.Bind();
-                
+
                 //transactionScope.Complete();
             }
 

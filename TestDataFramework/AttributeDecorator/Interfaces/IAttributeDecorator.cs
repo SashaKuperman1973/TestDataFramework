@@ -21,9 +21,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
-using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.RepositoryOperations.Model;
+using PropertyAttributes = TestDataFramework.RepositoryOperations.Model.PropertyAttributes;
 
 namespace TestDataFramework.AttributeDecorator.Interfaces
 {
@@ -37,7 +37,7 @@ namespace TestDataFramework.AttributeDecorator.Interfaces
 
         IEnumerable<PropertyAttribute<T>> GetPropertyAttributes<T>(Type type) where T : Attribute;
 
-        IEnumerable<RepositoryOperations.Model.PropertyAttributes> GetPropertyAttributes(Type type);
+        IEnumerable<PropertyAttributes> GetPropertyAttributes(Type type);
 
         IEnumerable<T> GetCustomAttributes<T>(MemberInfo memberInfo) where T : Attribute;
 

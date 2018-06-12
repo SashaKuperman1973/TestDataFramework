@@ -18,40 +18,36 @@
 */
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Threading;
 using log4net;
-using TestDataFramework.Logger;
-using TestDataFramework.AttributeDecorator;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeepSetting;
 using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.ListOperations;
-using TestDataFramework.Persistence.Interfaces;
+using TestDataFramework.Logger;
 using TestDataFramework.TypeGenerator.Interfaces;
 
 namespace TestDataFramework.Populator.Concrete
 {
     public class RecordReference<T> : RecordReference
     {
-        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof (RecordReference<T>));
-
-        protected BasePopulator Populator;
-
-        private readonly IObjectGraphService objectGraphService;
-        private readonly ValueGuaranteePopulator valueGuaranteePopulator;
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(RecordReference<T>));
         private readonly DeepCollectionSettingConverter deepCollectionSettingConverter;
 
         protected internal readonly List<ExplicitPropertySetters> ExplicitPropertySetters =
             new List<ExplicitPropertySetters>();
 
+        private readonly IObjectGraphService objectGraphService;
+        private readonly ValueGuaranteePopulator valueGuaranteePopulator;
+
+        protected BasePopulator Populator;
+
         public RecordReference(ITypeGenerator typeGenerator, IAttributeDecorator attributeDecorator,
-            BasePopulator populator, IObjectGraphService objectGraphService, ValueGuaranteePopulator valueGuaranteePopulator,
+            BasePopulator populator, IObjectGraphService objectGraphService,
+            ValueGuaranteePopulator valueGuaranteePopulator,
             DeepCollectionSettingConverter deepCollectionSettingConverter) : base(typeGenerator, attributeDecorator)
         {
             RecordReference<T>.Logger.Debug($"Entering constructor. T: {typeof(T)}");
@@ -74,7 +70,7 @@ namespace TestDataFramework.Populator.Concrete
         {
             RecordReference<T>.Logger.Debug($"Entering IsExplicitlySet. propertyInfo: {propertyInfo}");
 
-            bool result = this.ExplicitPropertySetters.Any(setter =>
+            var result = this.ExplicitPropertySetters.Any(setter =>
                 setter.PropertyChain.FirstOrDefault()?.Name.Equals(propertyInfo.Name) ?? false);
 
             RecordReference<T>.Logger.Debug("Exiting IsExplicitlySet");
@@ -97,7 +93,8 @@ namespace TestDataFramework.Populator.Concrete
             RecordReference<T>.Logger.Debug("Exiting Populate");
         }
 
-        public virtual RecordReference<T> Set<TBasePropertyValue, TPropertyValue>(Expression<Func<T, TBasePropertyValue>> fieldExpression, TPropertyValue value)
+        public virtual RecordReference<T> Set<TBasePropertyValue, TPropertyValue>(
+            Expression<Func<T, TBasePropertyValue>> fieldExpression, TPropertyValue value)
             where TPropertyValue : TBasePropertyValue
         {
             RecordReference<T>.Logger.Debug(
@@ -109,7 +106,8 @@ namespace TestDataFramework.Populator.Concrete
             return result;
         }
 
-        public virtual RecordReference<T> Set<TBasePropertyValue, TPropertyValue>(Expression<Func<T, TBasePropertyValue>> fieldExpression, Func<TPropertyValue> valueFactory)
+        public virtual RecordReference<T> Set<TBasePropertyValue, TPropertyValue>(
+            Expression<Func<T, TBasePropertyValue>> fieldExpression, Func<TPropertyValue> valueFactory)
             where TPropertyValue : TBasePropertyValue
         {
             RecordReference<T>.Logger.Debug(
@@ -121,17 +119,20 @@ namespace TestDataFramework.Populator.Concrete
             return this;
         }
 
-        public virtual RangeOperableList<TListElement> SetList<TListElement>(Expression<Func<T, IEnumerable<TListElement>>> listFieldExpression, int size)
+        public virtual RangeOperableList<TListElement> SetList<TListElement>(
+            Expression<Func<T, IEnumerable<TListElement>>> listFieldExpression, int size)
         {
             List<PropertyInfo> objectPropertyGraph = this.objectGraphService.GetObjectGraph(listFieldExpression);
 
             var operableList = new RangeOperableList<TListElement>(size, this.valueGuaranteePopulator, this.Populator,
-                this.TypeGenerator, this.AttributeDecorator, this.objectGraphService, this.deepCollectionSettingConverter);
+                this.TypeGenerator, this.AttributeDecorator, this.objectGraphService,
+                this.deepCollectionSettingConverter);
 
             this.AddToExplicitPropertySetters(listFieldExpression, () =>
             {
                 operableList.Populate();
-                IEnumerable<TListElement> setterResult = this.deepCollectionSettingConverter.Convert(operableList.RecordObjects, objectPropertyGraph.Last());
+                IEnumerable<TListElement> setterResult =
+                    this.deepCollectionSettingConverter.Convert(operableList.RecordObjects, objectPropertyGraph.Last());
                 return setterResult;
             });
 
@@ -156,7 +157,8 @@ namespace TestDataFramework.Populator.Concrete
             RecordReference<T>.Logger.Debug(
                 $"Entering SetRange(fieldExpression, rangeFactory). TPropertyValue: {typeof(TPropertyValue)}, fieldExpression: {fieldExpression}, valueFactory: {rangeFactory}");
 
-            this.AddToExplicitPropertySetters(fieldExpression, () => RecordReference<T>.ChooseElementInRange(rangeFactory()));
+            this.AddToExplicitPropertySetters(fieldExpression,
+                () => RecordReference<T>.ChooseElementInRange(rangeFactory()));
 
             RecordReference<T>.Logger.Debug("Exiting SetRange(fieldExpression, rangeFactory)");
             return this;
@@ -192,23 +194,25 @@ namespace TestDataFramework.Populator.Concrete
         private static TPropertyValue ChooseElementInRange<TPropertyValue>(IEnumerable<TPropertyValue> elements)
         {
             elements = elements.ToList();
-            int index = new Random().Next(elements.Count());
+            var index = new Random().Next(elements.Count());
             TPropertyValue result = elements.ElementAt(index);
             return result;
         }
 
-        private void AddToExplicitPropertySetters<TBasePropertyValue, TPropertyValue>(Expression<Func<T, TBasePropertyValue>> fieldExpression, Func<TPropertyValue> valueFactory)
+        private void AddToExplicitPropertySetters<TBasePropertyValue, TPropertyValue>(
+            Expression<Func<T, TBasePropertyValue>> fieldExpression, Func<TPropertyValue> valueFactory)
         {
             object ObjectValueFactory()
             {
-                var objectValueFactoryResult = valueFactory();
+                TPropertyValue objectValueFactoryResult = valueFactory();
                 return objectValueFactoryResult;
             }
 
             this.AddToExplicitPropertySetters(fieldExpression, ObjectValueFactory);
         }
 
-        private void AddToExplicitPropertySetters<TPropertyValue>(Expression<Func<T, TPropertyValue>> fieldExpression, Func<object> valueFactory)
+        private void AddToExplicitPropertySetters<TPropertyValue>(Expression<Func<T, TPropertyValue>> fieldExpression,
+            Func<object> valueFactory)
         {
             List<PropertyInfo> setterObjectGraph = this.objectGraphService.GetObjectGraph(fieldExpression);
 
@@ -217,14 +221,13 @@ namespace TestDataFramework.Populator.Concrete
                 object value = valueFactory();
 
                 if (value is ExplicitlyIgnoredValue)
-                {
                     return;
-                }
 
                 setterObjectGraph.Last().SetValue(@object, value);
             }
 
-            this.ExplicitPropertySetters.Add(new ExplicitPropertySetters { PropertyChain = setterObjectGraph, Action = Setter });
+            this.ExplicitPropertySetters.Add(
+                new ExplicitPropertySetters {PropertyChain = setterObjectGraph, Action = Setter});
         }
     }
 }

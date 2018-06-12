@@ -23,8 +23,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Transactions;
-using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService;
-using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.RepositoryOperations;
 using TestDataFramework.RepositoryOperations.Model;
@@ -35,9 +33,24 @@ namespace TestDataFramework.Helpers
 
     public static class Helper
     {
+        private static readonly List<Type> SpecialTypes = new List<Type>
+        {
+            typeof(Variable)
+        };
+
         public static ulong DefaultInitalCount => 1;
 
         public static DateTime Now => DateTime.Now;
+
+        public static bool InAmbientTransaction
+        {
+            get
+            {
+                Transaction transaction = Transaction.Current;
+
+                return transaction?.TransactionInformation.Status == TransactionStatus.Active;
+            }
+        }
 
         public static TableName GetTableName(Type recordType, IAttributeDecorator attributeDecorator)
         {
@@ -45,9 +58,7 @@ namespace TestDataFramework.Helpers
                 attributeDecorator.GetCustomAttributes<TableAttribute>(recordType)?.ToList();
 
             if (attrs == null || !(attrs = attrs.ToList()).Any())
-            {
                 return new TableName(recordType.Name);
-            }
 
             TableAttribute tableAttribute = attrs.First();
 
@@ -58,16 +69,14 @@ namespace TestDataFramework.Helpers
         {
             var columnAttribute = attributeDecorator.GetCustomAttribute<ColumnAttribute>(propertyInfo);
 
-            string result = columnAttribute?.Name ?? propertyInfo.Name;
+            var result = columnAttribute?.Name ?? propertyInfo.Name;
             return result;
         }
 
         public static string DumpObject(object objectValue)
         {
             if (objectValue == null)
-            {
                 return "null reference";
-            }
 
             var sb = new StringBuilder();
 
@@ -90,14 +99,9 @@ namespace TestDataFramework.Helpers
             return type.ToString();
         }
 
-        private static readonly List<Type> SpecialTypes = new List<Type>
-        {
-            typeof(Variable),
-        };
-
         public static bool IsSpecialType(this object value)
         {
-            bool result = Helper.SpecialTypes.Any(st => st.IsInstanceOfType(value));
+            var result = Helper.SpecialTypes.Any(st => st.IsInstanceOfType(value));
             return result;
         }
 
@@ -112,20 +116,10 @@ namespace TestDataFramework.Helpers
             return results;
         }
 
-        public static bool InAmbientTransaction
-        {
-            get
-            {
-                Transaction transaction = Transaction.Current;
-
-                return transaction?.TransactionInformation.Status == TransactionStatus.Active;
-            }
-        }
-
         public static bool IsGuid(this Type type)
         {
-            bool result = (Nullable.GetUnderlyingType(type) ?? type) ==
-                          typeof(Guid);
+            var result = (Nullable.GetUnderlyingType(type) ?? type) ==
+                         typeof(Guid);
 
             return result;
         }
@@ -137,7 +131,7 @@ namespace TestDataFramework.Helpers
 
         public static bool IsValueLikeType(this Type type)
         {
-            bool result = type.IsValueType || type == typeof(string);
+            var result = type.IsValueType || type == typeof(string);
             return result;
         }
 

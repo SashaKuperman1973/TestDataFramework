@@ -21,8 +21,8 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using log4net;
-using TestDataFramework.Logger;
 using TestDataFramework.Helpers;
+using TestDataFramework.Logger;
 using TestDataFramework.ValueGenerator.Interfaces;
 
 namespace TestDataFramework.HandledTypeGenerator
@@ -31,20 +31,6 @@ namespace TestDataFramework.HandledTypeGenerator
 
     public class StandardHandledTypeGenerator : IHandledTypeGenerator
     {
-        #region Fields
-
-        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(StandardHandledTypeGenerator));
-
-        public delegate IValueGenerator CreateAccumulatorValueGeneratorDelegate();
-
-        public IDictionary<Type, HandledTypeValueGetter> HandledTypeValueGetterDictionary { get; }
-
-        private readonly IValueGenerator valueGenerator;
-        private readonly CreateAccumulatorValueGeneratorDelegate getAccumulatorValueGenerator;
-        private readonly int collectionElementCount;
-
-        #endregion Fields
-
         public StandardHandledTypeGenerator(IValueGenerator valueGenerator,
             CreateAccumulatorValueGeneratorDelegate getAccumulatorValueGenerator,
             int collectionElementCount = 5)
@@ -57,16 +43,16 @@ namespace TestDataFramework.HandledTypeGenerator
 
             this.HandledTypeValueGetterDictionary = new Dictionary<Type, HandledTypeValueGetter>
             {
-                {typeof (KeyValuePair<,>), this.GetKeyValuePair},
-                {typeof (IDictionary<,>), this.GetDictionary},
-                {typeof (Dictionary<,>), this.GetDictionary},
-                {typeof (IEnumerable<>), this.GetList},
-                {typeof (ICollection<>), this.GetList},
-                {typeof (List<>), this.GetList},
-                {typeof (IList<>), this.GetList},
-                {typeof (Tuple<>), this.GetTuple },
-                {typeof (Tuple<,>), this.GetTuple },
-                {typeof (Tuple<,,>), this.GetTuple },
+                {typeof(KeyValuePair<,>), this.GetKeyValuePair},
+                {typeof(IDictionary<,>), this.GetDictionary},
+                {typeof(Dictionary<,>), this.GetDictionary},
+                {typeof(IEnumerable<>), this.GetList},
+                {typeof(ICollection<>), this.GetList},
+                {typeof(List<>), this.GetList},
+                {typeof(IList<>), this.GetList},
+                {typeof(Tuple<>), this.GetTuple},
+                {typeof(Tuple<,>), this.GetTuple},
+                {typeof(Tuple<,,>), this.GetTuple}
             };
 
             StandardHandledTypeGenerator.Logger.Debug("Exiting constructor");
@@ -103,21 +89,33 @@ namespace TestDataFramework.HandledTypeGenerator
 
             MethodInfo add = targetType.GetMethod("Add");
 
-            int actualCollectionElementCount = collectionElementCountOverride ?? this.collectionElementCount;
+            var actualCollectionElementCount = collectionElementCountOverride ?? this.collectionElementCount;
 
-            for (int i = 0; i < actualCollectionElementCount; i++)
+            for (var i = 0; i < actualCollectionElementCount; i++)
             {
                 object[] parameters = genericCollectionValueGenerator(genericArgumentTypes);
                 if (parameters == null)
-                {
                     return collection;
-                }
                 add.Invoke(collection, parameters);
             }
 
             StandardHandledTypeGenerator.Logger.Debug($"Exiting GetGenericCollection. Result collection: {collection}");
             return collection;
         }
+
+        #region Fields
+
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(StandardHandledTypeGenerator));
+
+        public delegate IValueGenerator CreateAccumulatorValueGeneratorDelegate();
+
+        public IDictionary<Type, HandledTypeValueGetter> HandledTypeValueGetterDictionary { get; }
+
+        private readonly IValueGenerator valueGenerator;
+        private readonly CreateAccumulatorValueGeneratorDelegate getAccumulatorValueGenerator;
+        private readonly int collectionElementCount;
+
+        #endregion Fields
 
         #region Type getters
 
@@ -143,11 +141,11 @@ namespace TestDataFramework.HandledTypeGenerator
 
             Type[] genericArgumentTypes = forType.GetGenericArguments();
             Array keyEnumValues = null;
-            int keyIndex = 0;
+            var keyIndex = 0;
 
             if (typeof(Enum).IsAssignableFrom(genericArgumentTypes[0]))
             {
-                var enumType = genericArgumentTypes[0];
+                Type enumType = genericArgumentTypes[0];
                 keyEnumValues = enumType.GetEnumValues();
             }
 
@@ -158,22 +156,14 @@ namespace TestDataFramework.HandledTypeGenerator
                 object key;
 
                 if (typeof(Enum).IsAssignableFrom(typeArray[0]))
-                {
                     if (keyIndex < keyEnumValues.Length)
-                    {
                         key = keyEnumValues.GetValue(keyIndex++);
-                    }
                     else
-                    {
                         return null;
-                    }
-                }
                 else
-                {
                     key = this.GenerateCollectionKey(typeArray);
-                }
 
-                var value = this.valueGenerator.GetValue(null, typeArray[1]);
+                object value = this.valueGenerator.GetValue(null, typeArray[1]);
 
                 StandardHandledTypeGenerator.Logger.Debug($"genericCollectionValueGenerator result: {key}, {value}");
                 return new[] {key, value};
@@ -211,7 +201,8 @@ namespace TestDataFramework.HandledTypeGenerator
             {
                 object valueGeneratorResult = this.valueGenerator.GetValue(null, typeArray[0]);
 
-                StandardHandledTypeGenerator.Logger.Debug($"genericCollectionValueGenerator valueGeneratorResult: {valueGeneratorResult}");
+                StandardHandledTypeGenerator.Logger.Debug(
+                    $"genericCollectionValueGenerator valueGeneratorResult: {valueGeneratorResult}");
                 return new[] {valueGeneratorResult};
             };
 
@@ -231,10 +222,8 @@ namespace TestDataFramework.HandledTypeGenerator
 
             var argumentValues = new object[genericArgumentTypes.Length];
 
-            for (int i = 0; i < argumentValues.Length; i++)
-            {
+            for (var i = 0; i < argumentValues.Length; i++)
                 argumentValues[i] = this.valueGenerator.GetValue(null, genericArgumentTypes[i]);
-            }
 
             object result = constructor.Invoke(argumentValues);
 

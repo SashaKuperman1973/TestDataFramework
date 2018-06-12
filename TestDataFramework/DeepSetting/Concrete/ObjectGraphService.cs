@@ -9,7 +9,8 @@ namespace TestDataFramework.DeepSetting.Concrete
 {
     public class ObjectGraphService : IObjectGraphService
     {
-        private readonly PropertySetFieldExpressionValidator fieldExpressionValidator = new PropertySetFieldExpressionValidator();
+        private readonly PropertySetFieldExpressionValidator fieldExpressionValidator =
+            new PropertySetFieldExpressionValidator();
 
         public List<PropertyInfo> GetObjectGraph<T, TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression)
         {
@@ -22,14 +23,13 @@ namespace TestDataFramework.DeepSetting.Concrete
         private void GetMemberInfo(ICollection<PropertyInfo> list, Expression expression)
         {
             if (expression.NodeType == ExpressionType.Parameter || expression.NodeType == ExpressionType.Convert)
-            {
                 return;
-            }
 
-            MemberExpression memberExpression = this.fieldExpressionValidator.ValidateMemberAccessExpression(expression);
+            MemberExpression memberExpression =
+                this.fieldExpressionValidator.ValidateMemberAccessExpression(expression);
 
             this.GetMemberInfo(list, memberExpression.Expression);
-            list.Add((PropertyInfo)memberExpression.Member);
+            list.Add((PropertyInfo) memberExpression.Member);
         }
     }
 }

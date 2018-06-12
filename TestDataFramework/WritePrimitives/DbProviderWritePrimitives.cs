@@ -24,9 +24,9 @@ using System.Data.Common;
 using System.Linq;
 using System.Text;
 using log4net;
-using TestDataFramework.Logger;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
+using TestDataFramework.Logger;
 using TestDataFramework.RepositoryOperations.Model;
 using TestDataFramework.ValueFormatter.Interfaces;
 using TestDataFramework.WritePrimitives.Concrete;
@@ -36,17 +36,17 @@ namespace TestDataFramework.WritePrimitives
 {
     public abstract class DbProviderWritePrimitives : IWritePrimitives
     {
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(DbProviderWritePrimitives));
+        private readonly NameValueCollection configuration;
         private readonly string connectionStringWithDefaultCatalogue;
         private readonly DbProviderFactory dbProviderFactory;
-        private readonly bool mustBeInATransaction;
-        private readonly NameValueCollection configuration;
         private readonly IValueFormatter formatter;
+        private readonly bool mustBeInATransaction;
 
         protected StringBuilder ExecutionStatements = new StringBuilder();
 
-        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(DbProviderWritePrimitives));        
-
-        protected DbProviderWritePrimitives(string connectionStringWithDefaultCatalogue, DbProviderFactory dbProviderFactory,
+        protected DbProviderWritePrimitives(string connectionStringWithDefaultCatalogue,
+            DbProviderFactory dbProviderFactory,
             IValueFormatter formatter, bool mustBeInATransaction, NameValueCollection configuration)
         {
             DbProviderWritePrimitives.Logger.Debug("Entering constructor");
@@ -69,7 +69,7 @@ namespace TestDataFramework.WritePrimitives
             DbProviderWritePrimitives.Logger.Debug(
                 $"Entering Insert. tableName: {tableName}. schema: {schema ?? "<null>"}. catalogueName: {catalogueName ?? "<null>"} columns: {Helper.ToCompositeString(columns)}");
 
-            string insertStatement = this.BuildInsertStatement(catalogueName, schema, tableName, columns);
+            var insertStatement = this.BuildInsertStatement(catalogueName, schema, tableName, columns);
             DbProviderWritePrimitives.Logger.Debug($"insertStatement: {insertStatement}");
 
             this.ExecutionStatements.AppendLine(insertStatement);
@@ -93,9 +93,7 @@ namespace TestDataFramework.WritePrimitives
             DbProviderWritePrimitives.Logger.Debug("Entering Execute");
 
             if (this.mustBeInATransaction && !Helper.InAmbientTransaction)
-            {
                 throw new NotInATransactionException();
-            }
 
             var result = new List<object>();
 
@@ -104,15 +102,13 @@ namespace TestDataFramework.WritePrimitives
             command.Connection = this.dbProviderFactory.CreateConnection();
             command.Connection.ConnectionString = this.connectionStringWithDefaultCatalogue;
 
-            string commands = this.ExecutionStatements.ToString();
+            var commands = this.ExecutionStatements.ToString();
 
-            bool dumpSqlInput = false;
+            var dumpSqlInput = false;
             bool.TryParse(this.configuration["TestDataFramework_DumpSqlInput"], out dumpSqlInput);
 
             if (dumpSqlInput)
-            {
                 LogManager.GetLogger(typeof(DbProviderWritePrimitives)).Debug("\r\n" + commands);
-            }
 
             command.CommandText = commands;
 
@@ -140,26 +136,27 @@ namespace TestDataFramework.WritePrimitives
             return result.ToArray();
         }
 
-        private string BuildInsertStatement(string catalogueName, string schema, string tableName, IEnumerable<Column> columns)
+        public abstract object SelectIdentity(string columnName);
+
+        public abstract object WriteGuid(string columnName);
+
+        private string BuildInsertStatement(string catalogueName, string schema, string tableName,
+            IEnumerable<Column> columns)
         {
             columns = columns.ToList();
-            string parameterList = SqlClientWritePrimitives.BuildParameterListText(columns);
-            string valueList = this.BuildValueListText(columns);
+            var parameterList = SqlClientWritePrimitives.BuildParameterListText(columns);
+            var valueList = this.BuildValueListText(columns);
 
-            string fullTableName = SqlClientWritePrimitives.BuildFullTableName(catalogueName, schema, tableName);
+            var fullTableName = SqlClientWritePrimitives.BuildFullTableName(catalogueName, schema, tableName);
 
-            string result = $"insert into {fullTableName} " + parameterList + " values " + valueList + ";";
+            var result = $"insert into {fullTableName} " + parameterList + " values " + valueList + ";";
             return result;
         }
 
         private string BuildValueListText(IEnumerable<Column> columns)
         {
-            string result = "(" + string.Join(", ", columns.Select(c => this.formatter.Format(c.Value))) + ")";
+            var result = "(" + string.Join(", ", columns.Select(c => this.formatter.Format(c.Value))) + ")";
             return result;
         }
-
-        public abstract object SelectIdentity(string columnName);
-
-        public abstract object WriteGuid(string columnName);
     }
 }

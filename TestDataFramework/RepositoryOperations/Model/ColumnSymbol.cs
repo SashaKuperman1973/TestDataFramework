@@ -29,9 +29,8 @@ namespace TestDataFramework.RepositoryOperations.Model
 
         public override string ToString()
         {
-            string result = $"TableType: {this.TableType}, ColumnName: {this.ColumnName}, Value: {this.Value}";
+            var result = $"TableType: {this.TableType}, ColumnName: {this.ColumnName}, Value: {this.Value}";
             return result;
         }
     }
 }
-

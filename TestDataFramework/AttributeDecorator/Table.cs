@@ -17,9 +17,6 @@
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-using System;
-using System.Reflection;
-using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.Helpers;
 
@@ -68,31 +65,29 @@ namespace TestDataFramework.AttributeDecorator
 
         public override int GetHashCode()
         {
-            int result = (this.Schema?.GetHashCode() ?? 0) ^ this.TableName.GetHashCode();
+            var result = (this.Schema?.GetHashCode() ?? 0) ^ this.TableName.GetHashCode();
 
             return result;
         }
 
         /// <summary>
-        /// Equals only operates on TableName and Schema
+        ///     Equals only operates on TableName and Schema
         /// </summary>
         public bool BasicFieldsEqual(object obj)
         {
             var table = obj as Table;
 
-            bool result = table != null &&
-
-                          (table.Schema == null && this.Schema == null ||
-                           (table.Schema?.Equals(this.Schema) ?? false)) &&
-
-                           table.TableName.Equals(this.TableName);
+            var result = table != null &&
+                         (table.Schema == null && this.Schema == null ||
+                          (table.Schema?.Equals(this.Schema) ?? false)) &&
+                         table.TableName.Equals(this.TableName);
 
             return result;
         }
 
         public override string ToString()
         {
-            string result =
+            var result =
                 $"Schema: {this.Schema ?? "<null>"}, TableName: {this.TableName}, CatalogueName: {this.CatalogueName ?? "<null>"}, HasTableAttribute: {this.HasTableAttribute}";
 
             return result;

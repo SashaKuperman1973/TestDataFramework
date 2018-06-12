@@ -22,12 +22,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using log4net;
-using TestDataFramework.Logger;
-using TestDataFramework.AttributeDecorator;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
+using TestDataFramework.Logger;
 using TestDataFramework.Populator;
 using TestDataFramework.RepositoryOperations.Model;
 using TestDataFramework.WritePrimitives.Interfaces;
@@ -37,43 +36,17 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
     public class InsertRecordService
     {
         private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(InsertRecordService));
-
-        private readonly RecordReference recordReference;
         private readonly IAttributeDecorator attributeDecorator;
         private readonly bool enforceKeyReferenceCheck;
 
+        private readonly RecordReference recordReference;
+
         private PrimaryKeyAttribute.KeyTypeEnum? keyType;
-        public PrimaryKeyAttribute.KeyTypeEnum KeyType
-        {
-            get
-            {
-                PrimaryKeyAttribute.KeyTypeEnum result = (this.keyType ?? (this.keyType = this.DetermineKeyType())).Value;
-                return result;
-            }
-        }
-
-        private PrimaryKeyAttribute.KeyTypeEnum DetermineKeyType()
-        {
-            IEnumerable<PrimaryKeyAttribute> pkAttributes =
-                this.attributeDecorator.GetUniqueAttributes<PrimaryKeyAttribute>(this.recordReference.RecordType).ToList();
-
-            if (!pkAttributes.Any())
-            {
-                return PrimaryKeyAttribute.KeyTypeEnum.None;
-            }
-
-            if (pkAttributes.Count() > 1)
-            {
-                return PrimaryKeyAttribute.KeyTypeEnum.Manual;
-            }
-
-            PrimaryKeyAttribute.KeyTypeEnum result = pkAttributes.First().KeyType;
-            return result;
-        }
 
         #region Constructor
 
-        public InsertRecordService(RecordReference recordReference, IAttributeDecorator attributeDecorator, bool enforceKeyReferenceCheck)
+        public InsertRecordService(RecordReference recordReference, IAttributeDecorator attributeDecorator,
+            bool enforceKeyReferenceCheck)
         {
             InsertRecordService.Logger.Debug("Entering constructor");
 
@@ -85,6 +58,32 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
         }
 
         #endregion Constructor
+
+        public PrimaryKeyAttribute.KeyTypeEnum KeyType
+        {
+            get
+            {
+                PrimaryKeyAttribute.KeyTypeEnum result =
+                    (this.keyType ?? (this.keyType = this.DetermineKeyType())).Value;
+                return result;
+            }
+        }
+
+        private PrimaryKeyAttribute.KeyTypeEnum DetermineKeyType()
+        {
+            IEnumerable<PrimaryKeyAttribute> pkAttributes =
+                this.attributeDecorator.GetUniqueAttributes<PrimaryKeyAttribute>(this.recordReference.RecordType)
+                    .ToList();
+
+            if (!pkAttributes.Any())
+                return PrimaryKeyAttribute.KeyTypeEnum.None;
+
+            if (pkAttributes.Count() > 1)
+                return PrimaryKeyAttribute.KeyTypeEnum.Manual;
+
+            PrimaryKeyAttribute.KeyTypeEnum result = pkAttributes.First().KeyType;
+            return result;
+        }
 
         public virtual IEnumerable<InsertRecord> GetPrimaryKeyOperations(IEnumerable<AbstractRepositoryOperation> peers)
         {
@@ -99,12 +98,11 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                 {
                     var pkRecord = peer as InsertRecord;
 
-                    bool peerResult = pkRecord != null
-                                  && this.recordReference.PrimaryKeyReferences.Any(
-                                      primaryKeyReference => primaryKeyReference == pkRecord.RecordReference);
+                    var peerResult = pkRecord != null
+                                     && this.recordReference.PrimaryKeyReferences.Any(
+                                         primaryKeyReference => primaryKeyReference == pkRecord.RecordReference);
 
                     return peerResult;
-
                 }).Cast<InsertRecord>().ToList();
 
             InsertRecordService.Logger.Debug(
@@ -113,7 +111,8 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             return result;
         }
 
-        public virtual void WritePrimaryKeyOperations(IWritePrimitives writer, IEnumerable<AbstractRepositoryOperation> primaryKeyOperations,
+        public virtual void WritePrimaryKeyOperations(IWritePrimitives writer,
+            IEnumerable<AbstractRepositoryOperation> primaryKeyOperations,
             CircularReferenceBreaker breaker, Counter order, AbstractRepositoryOperation[] orderedOperations)
         {
             InsertRecordService.Logger.Debug("Entering WritePrimaryKeyOperations");
@@ -130,9 +129,34 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             InsertRecordService.Logger.Debug("Exiting WritePrimaryKeyOperations");
         }
 
+        public virtual void CopyPrimaryToForeignKeyColumns(IEnumerable<Column> foreignKeyColumns)
+        {
+            InsertRecordService.Logger.Debug("Entering PopulatePrimaryKeyValues");
+
+            foreignKeyColumns.ToList().ForEach(c =>
+            {
+                InsertRecordService.Logger.Debug($"foreignKeyColumn: {c}");
+
+                if (c.Value.IsSpecialType())
+                    return;
+
+                PropertyInfo targetProperty =
+                    this.recordReference.RecordType.GetPropertiesHelper().First(p =>
+                        Helper.GetColumnName(p, this.attributeDecorator).Equals(c.Name)
+                    );
+
+                InsertRecordService.Logger.Debug($"targetProperty: {targetProperty.GetExtendedMemberInfoString()}");
+
+                targetProperty.SetValue(this.recordReference.RecordObject, c.Value);
+            });
+
+            InsertRecordService.Logger.Debug("Exiting PopulatePrimaryKeyValues");
+        }
+
         #region GetColumnData
 
-        public virtual IEnumerable<ExtendedColumnSymbol> GetForeignKeyColumns(IEnumerable<InsertRecord> primaryKeyOperations)
+        public virtual IEnumerable<ExtendedColumnSymbol> GetForeignKeyColumns(
+            IEnumerable<InsertRecord> primaryKeyOperations)
         {
             InsertRecordService.Logger.Debug("Entering GetForeignKeyVariables");
 
@@ -144,7 +168,8 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             List<IEnumerable<ColumnSymbol>> keyTableList =
                 primaryKeyOperations.Select(o => o.GetPrimaryKeySymbols()).ToList();
 
-            InsertRecordService.Logger.Debug($"keyTableList: {Helper.ToCompositeString(keyTableList.Select(kt => string.Join(", ", kt)))}");
+            InsertRecordService.Logger.Debug(
+                $"keyTableList: {Helper.ToCompositeString(keyTableList.Select(kt => string.Join(", ", kt)))}");
 
             IEnumerable<PropertyAttribute<ForeignKeyAttribute>> foreignKeyPropertyAttributes =
                 this.attributeDecorator.GetPropertyAttributes<ForeignKeyAttribute>(this.recordReference.RecordType);
@@ -156,10 +181,8 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                 ColumnSymbol pkColumnMatch = null;
 
 
-                bool isForeignKeyPrimaryKeyMatch = keyTableList.Any(pkTable =>
-
+                var isForeignKeyPrimaryKeyMatch = keyTableList.Any(pkTable =>
                     pkTable.Any(pk =>
-
                         this.attributeDecorator.GetTableType(fkpa.Attribute,
                             new TypeInfoWrapper(this.recordReference.RecordType.GetTypeInfo())) ==
                         (pkColumnMatch = pk).TableType
@@ -167,10 +190,9 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                     )
                 );
 
-                bool isExplicitlySet = this.recordReference.IsExplicitlySet(fkpa.PropertyInfo);
+                var isExplicitlySet = this.recordReference.IsExplicitlySet(fkpa.PropertyInfo);
 
                 if (!isExplicitlySet)
-                {
                     if (this.enforceKeyReferenceCheck && !isForeignKeyPrimaryKeyMatch)
                     {
                         InsertRecordService.Logger.Debug(
@@ -179,22 +201,16 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                         throw new InserRecordServiceException(Messages.ForeignKeyRecordWithNoPrimaryKeyRecord,
                             fkpa.PropertyInfo.DeclaringType.FullName, fkpa.PropertyInfo.Name);
                     }
-                }
 
                 return
                     new
                     {
                         PkColumnValue =
-
-                            isExplicitlySet
-
-                                ? fkpa.PropertyInfo.GetValue(this.recordReference.RecordObject)
-
-                                : isForeignKeyPrimaryKeyMatch
-
-                                    ? pkColumnMatch.Value
-
-                                    : Helper.GetDefaultValue(fkpa.PropertyInfo.PropertyType),
+                        isExplicitlySet
+                            ? fkpa.PropertyInfo.GetValue(this.recordReference.RecordObject)
+                            : isForeignKeyPrimaryKeyMatch
+                                ? pkColumnMatch.Value
+                                : Helper.GetDefaultValue(fkpa.PropertyInfo.PropertyType),
 
                         FkPropertyAttribute = fkpa
                     };
@@ -206,12 +222,14 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                         new ExtendedColumnSymbol
                         {
                             TableType = fk.FkPropertyAttribute.PropertyInfo.DeclaringType,
-                            ColumnName = Helper.GetColumnName(fk.FkPropertyAttribute.PropertyInfo, this.attributeDecorator),
+                            ColumnName =
+                                Helper.GetColumnName(fk.FkPropertyAttribute.PropertyInfo, this.attributeDecorator),
                             Value = fk.PkColumnValue,
-                            PropertyAttribute = fk.FkPropertyAttribute,
+                            PropertyAttribute = fk.FkPropertyAttribute
                         }).ToList();
 
-            InsertRecordService.Logger.Debug($"Entering GetForeignKeyVariables. Result: {Helper.ToCompositeString(result)}");
+            InsertRecordService.Logger.Debug(
+                $"Entering GetForeignKeyVariables. Result: {Helper.ToCompositeString(result)}");
             return result;
         }
 
@@ -225,12 +243,9 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                     {
                         PrimaryKeyAttribute pka;
 
-                        bool filter =
-
+                        var filter =
                             this.attributeDecorator.GetSingleAttribute<ForeignKeyAttribute>(p) == null
-
                             &&
-
                             ((pka = this.attributeDecorator.GetSingleAttribute<PrimaryKeyAttribute>(p)) == null ||
                              pka.KeyType != PrimaryKeyAttribute.KeyTypeEnum.Auto);
 
@@ -239,18 +254,15 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                     .Select(
                         p =>
                         {
-                            string columnName = Helper.GetColumnName(p, this.attributeDecorator);
+                            var columnName = Helper.GetColumnName(p, this.attributeDecorator);
 
                             var column = new Column
                             {
                                 Name = columnName,
 
                                 Value =
-
                                     p.PropertyType.IsGuid() && !this.recordReference.IsExplicitlySet(p)
-
                                         ? writer.WriteGuid(columnName)
-
                                         : p.GetValue(this.recordReference.RecordObject)
                             };
 
@@ -267,7 +279,8 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
         #region WritePrimitives
 
-        public virtual void WritePrimitives(IWritePrimitives writer, string catalogueName, string schema, string tableName, IEnumerable<Column> columns, List<ColumnSymbol> primaryKeyValues)
+        public virtual void WritePrimitives(IWritePrimitives writer, string catalogueName, string schema,
+            string tableName, IEnumerable<Column> columns, List<ColumnSymbol> primaryKeyValues)
         {
             InsertRecordService.Logger.Debug("Entering WritePrimitives");
 
@@ -282,7 +295,8 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             InsertRecordService.Logger.Debug("Exiting WritePrimitives");
         }
 
-        private void PopulatePrimaryKeyValues(IWritePrimitives writer, List<ColumnSymbol> primaryKeyValues, IEnumerable<Column> columns)
+        private void PopulatePrimaryKeyValues(IWritePrimitives writer, List<ColumnSymbol> primaryKeyValues,
+            IEnumerable<Column> columns)
         {
             InsertRecordService.Logger.Debug("Entering PopulatePrimaryKeyValues");
 
@@ -295,24 +309,20 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
             IEnumerable<ColumnSymbol> result = pkPropertyAttributes.Select(pa =>
             {
-                string columnName = Helper.GetColumnName(pa.PropertyInfo, this.attributeDecorator);
+                var columnName = Helper.GetColumnName(pa.PropertyInfo, this.attributeDecorator);
 
                 Column sourceColumn = columns.FirstOrDefault(c => c.Name.Equals(columnName, StringComparison.Ordinal));
 
                 if (sourceColumn == null)
                 {
                     if (pa.Attribute.KeyType != PrimaryKeyAttribute.KeyTypeEnum.Auto)
-                    {
                         throw new PopulatePrimaryKeyException(Messages.ColumnNotInInputList, pa.PropertyInfo);
-                    }
 
                     if (
                         !new[]
-                        {typeof (int), typeof (short), typeof (long), typeof (uint), typeof (ushort), typeof (ulong),}
+                                {typeof(int), typeof(short), typeof(long), typeof(uint), typeof(ushort), typeof(ulong)}
                             .Contains(pa.PropertyInfo.PropertyType.GetUnderLyingType()))
-                    {
                         throw new PopulatePrimaryKeyException(Messages.AutoKeyMustBeInteger, pa.PropertyInfo);
-                    }
 
                     sourceColumn = new Column {Name = columnName, Value = writer.SelectIdentity(columnName)};
                 }
@@ -323,44 +333,18 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
                     TableType = this.recordReference.RecordType,
 
-                    Value = sourceColumn.Value,
+                    Value = sourceColumn.Value
                 };
 
                 return symbol;
             }).ToList();
 
-            InsertRecordService.Logger.Debug($"Exiting PopulatePrimaryKeyValues. result: {Helper.ToCompositeString(result)}");
+            InsertRecordService.Logger.Debug(
+                $"Exiting PopulatePrimaryKeyValues. result: {Helper.ToCompositeString(result)}");
 
             primaryKeyValues.AddRange(result);
         }
 
         #endregion WritePrimitives
-
-        public virtual void CopyPrimaryToForeignKeyColumns(IEnumerable<Column> foreignKeyColumns)
-        {
-            InsertRecordService.Logger.Debug("Entering PopulatePrimaryKeyValues");
-
-            foreignKeyColumns.ToList().ForEach(c =>
-            {
-                InsertRecordService.Logger.Debug($"foreignKeyColumn: {c}");
-
-                if (c.Value.IsSpecialType())
-                {
-                    return;
-                }
-
-                PropertyInfo targetProperty =
-
-                    this.recordReference.RecordType.GetPropertiesHelper().First(p =>
-                        Helper.GetColumnName(p, this.attributeDecorator).Equals(c.Name)
-                        );
-
-                InsertRecordService.Logger.Debug($"targetProperty: {targetProperty.GetExtendedMemberInfoString()}");
-
-                targetProperty.SetValue(this.recordReference.RecordObject, c.Value);
-            });
-
-            InsertRecordService.Logger.Debug("Exiting PopulatePrimaryKeyValues");
-        }
     }
 }

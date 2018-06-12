@@ -29,17 +29,19 @@ namespace TestDataFramework.RepositoryOperations
     {
         protected IEnumerable<AbstractRepositoryOperation> Peers;
 
-        public abstract void Write(CircularReferenceBreaker breaker, IWritePrimitives writer, Counter order, AbstractRepositoryOperation[] orderedOperations);
-        public abstract void Read(Counter readStreamPointer, object[] data);
-
         protected bool IsWriteDone { get; set; }
         protected long Order { get; set; }
 
         public RecordReference RecordReference { get; protected set; }
 
+        public abstract void Write(CircularReferenceBreaker breaker, IWritePrimitives writer, Counter order,
+            AbstractRepositoryOperation[] orderedOperations);
+
+        public abstract void Read(Counter readStreamPointer, object[] data);
+
         public override string ToString()
         {
-            string result =
+            var result =
                 $"IsWriteDone: {this.IsWriteDone}, Order: {this.Order}. Record object: {Helper.DumpObject(this.RecordReference.RecordObject)}";
 
             return result;

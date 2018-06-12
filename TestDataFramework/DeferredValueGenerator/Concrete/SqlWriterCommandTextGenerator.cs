@@ -19,10 +19,9 @@
 
 using System.Reflection;
 using log4net;
-using TestDataFramework.Logger;
-using TestDataFramework.AttributeDecorator;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.Helpers;
+using TestDataFramework.Logger;
 using TestDataFramework.WritePrimitives.Concrete;
 
 namespace TestDataFramework.DeferredValueGenerator.Concrete
@@ -36,10 +35,10 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
             SqlWriterCommandText.Logger.Debug(
                 $"Entering GetStringSelect. catalogueName: {catalogueName}, schema: {schema}, tableName: {tableName}, columnName: {columnName}");
 
-            string fullTableName = SqlClientWritePrimitives.BuildFullTableName(catalogueName, schema, tableName);
+            var fullTableName = SqlClientWritePrimitives.BuildFullTableName(catalogueName, schema, tableName);
             columnName = "[" + columnName + "]";
 
-            string result =
+            var result =
                 $"Select Max({columnName}) from {fullTableName} where {columnName} not like '%[^A-Z]%' And LEN({columnName}) = (Select Max(Len({columnName})) From {fullTableName} where {columnName} not like '%[^A-Z]%' );";
 
             SqlWriterCommandText.Logger.Debug("Exiting GetStringSelect");
@@ -51,9 +50,9 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
             SqlWriterCommandText.Logger.Debug(
                 $"Entering GetNumberSelect. catalogueName: {catalogueName}, schema: {schema}, tableName: {tableName}, columnName: {columnName}");
 
-            string fullTableName = SqlClientWritePrimitives.BuildFullTableName(catalogueName, schema, tableName);
+            var fullTableName = SqlClientWritePrimitives.BuildFullTableName(catalogueName, schema, tableName);
 
-            string result = $"Select MAX([{columnName}]) From {fullTableName};";
+            var result = $"Select MAX([{columnName}]) From {fullTableName};";
 
             SqlWriterCommandText.Logger.Debug("Exiting GetNumberSelect");
             return result;
@@ -67,7 +66,8 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
         private readonly IAttributeDecorator attributeDecorator;
         private readonly SqlWriterCommandText sqlWriterCommandText;
 
-        public SqlWriterCommandTextGenerator(IAttributeDecorator attributeDecorator, SqlWriterCommandText sqlWriterCommandText)
+        public SqlWriterCommandTextGenerator(IAttributeDecorator attributeDecorator,
+            SqlWriterCommandText sqlWriterCommandText)
         {
             this.attributeDecorator = attributeDecorator;
             this.sqlWriterCommandText = sqlWriterCommandText;
@@ -77,7 +77,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
         {
             SqlWriterCommandTextGenerator.Logger.Debug("Entering WriteString");
 
-            string result = this.Write(propertyInfo, this.sqlWriterCommandText.GetStringSelect);
+            var result = this.Write(propertyInfo, this.sqlWriterCommandText.GetStringSelect);
 
             SqlWriterCommandTextGenerator.Logger.Debug("Exiting WriteString");
             return result;
@@ -87,7 +87,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
         {
             SqlWriterCommandTextGenerator.Logger.Debug("Entering WriteNumber");
 
-            string result = this.Write(propertyInfo, this.sqlWriterCommandText.GetNumberSelect);
+            var result = this.Write(propertyInfo, this.sqlWriterCommandText.GetNumberSelect);
 
             SqlWriterCommandTextGenerator.Logger.Debug("Exiting WriteNumber");
             return result;
@@ -95,12 +95,13 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
 
         private string Write(PropertyInfo propertyInfo, GetSelectDelegate getSelectDelegate)
         {
-            SqlWriterCommandTextGenerator.Logger.Debug("Entering Write. propertyInfo: " + propertyInfo.GetExtendedMemberInfoString());
+            SqlWriterCommandTextGenerator.Logger.Debug("Entering Write. propertyInfo: " +
+                                                       propertyInfo.GetExtendedMemberInfoString());
 
             TableName tableName = Helper.GetTableName(propertyInfo.DeclaringType, this.attributeDecorator);
-            string columnName = Helper.GetColumnName(propertyInfo, this.attributeDecorator);
+            var columnName = Helper.GetColumnName(propertyInfo, this.attributeDecorator);
 
-            string result = getSelectDelegate(tableName.CatalogueName, tableName.Schema, tableName.Name, columnName);
+            var result = getSelectDelegate(tableName.CatalogueName, tableName.Schema, tableName.Name, columnName);
 
             SqlWriterCommandTextGenerator.Logger.Debug($"Result statement: {result}");
 

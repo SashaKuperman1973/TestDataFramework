@@ -45,7 +45,7 @@ namespace Tests.Tests.ImmediateTests
         {
             XmlConfigurator.Configure();
 
-            this.attributeDecorator = new StandardAttributeDecorator(null, new AssemblyWrapper(null), new Schema());
+            this.attributeDecorator = new StandardAttributeDecorator(null, new AssemblyWrapper(), new Schema());
 
             this.propertyValueAccumulatorMock = new Mock<IPropertyValueAccumulator>();
             this.deferredValueGeneratorMock = new Mock<IDeferredValueGenerator<LargeInteger>>();

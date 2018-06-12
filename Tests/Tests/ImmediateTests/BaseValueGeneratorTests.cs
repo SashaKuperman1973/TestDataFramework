@@ -100,7 +100,7 @@ namespace Tests.Tests.ImmediateTests
 
             this.valueGenerator = new ValueGenerator(this.randomizerMock.Object, () => this.typeGeneratorMock.Object,
                 () => this.arrayRandomizerMock.Object, this.uniqueValueGeneratorMock.Object,
-                new StandardAttributeDecorator(null, new AssemblyWrapper(null), new Schema()));
+                new StandardAttributeDecorator(null, new AssemblyWrapper(), new Schema()));
         }
 
         [TestMethod]

@@ -5,7 +5,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wr
 {
     public class AssemblyNameWrapper
     {
-        public virtual AssemblyName Name { get; private set; }
+        public virtual AssemblyName Name { get; }
 
         public AssemblyNameWrapper(AssemblyName assemblyName)
         {

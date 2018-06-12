@@ -57,7 +57,7 @@ namespace Tests.Tests.ImmediateTests.TableTypeCacheServiceTests
 
             // Assert
 
-            Assert.AreEqual(typeof(SubjectClass), result);
+            Assert.AreEqual(new TypeInfoWrapper(typeof(SubjectClass)), result);
 
             this.VerifyGetTableTypeByCriteria(TableTypeCriteria.CompleteMatchCriteria);
 
@@ -95,7 +95,7 @@ namespace Tests.Tests.ImmediateTests.TableTypeCacheServiceTests
 
             // Assert
 
-            Assert.AreEqual(typeof(SubjectClass), result);
+            Assert.AreEqual(new TypeInfoWrapper(typeof(SubjectClass)), result);
 
             this.VerifyGetTableTypeByCriteria(TableTypeCriteria.CompleteMatchCriteria);
 
@@ -137,7 +137,7 @@ namespace Tests.Tests.ImmediateTests.TableTypeCacheServiceTests
 
             // Assert
 
-            Assert.AreEqual(typeof(SubjectClass), result);
+            Assert.AreEqual(new TypeInfoWrapper(typeof(SubjectClass)), result);
 
             this.VerifyGetTableTypeByCriteria(TableTypeCriteria.CompleteMatchCriteria);
 
@@ -183,7 +183,7 @@ namespace Tests.Tests.ImmediateTests.TableTypeCacheServiceTests
 
             // Assert
 
-            Assert.AreEqual(typeof(SubjectClass), result);
+            Assert.AreEqual(new TypeInfoWrapper(typeof(SubjectClass)), result);
 
             this.VerifyGetTableTypeByCriteria(TableTypeCriteria.CompleteMatchCriteria);
 

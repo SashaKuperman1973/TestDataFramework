@@ -65,6 +65,8 @@
     <Compile Include="AttributeDecorator\AssemblyLookupContext.cs" />
     <Compile Include="AttributeDecorator\Concrete\TableTypeCacheService\Delegates.cs" />
     <Compile Include="AttributeDecorator\Concrete\TableTypeCacheService\Wrappers\AssemblyNameWrapper.cs" />
+    <Compile Include="AttributeDecorator\Concrete\TableTypeCacheService\Wrappers\EqualityHelper.cs" />
+    <Compile Include="AttributeDecorator\Concrete\TableTypeCacheService\Wrappers\IWrapper.cs" />
     <Compile Include="AttributeDecorator\Interfaces\IAttributeDecoratorBase.cs" />
     <Compile Include="AttributeDecorator\Concrete\StandardAttributeDecoratorBase.cs" />
     <Compile Include="AttributeDecorator\Concrete\TableTypeCacheService\TableTypeCriteria.cs" />

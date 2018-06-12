@@ -48,7 +48,7 @@ namespace Tests.Tests.ImmediateTests
         {
             XmlConfigurator.Configure();
 
-            this.attributeDecorator = new StandardAttributeDecorator(null, new AssemblyWrapper(null), new Schema());
+            this.attributeDecorator = new StandardAttributeDecorator(null, new AssemblyWrapper(), new Schema());
         }
 
         [TestMethod]

@@ -63,7 +63,7 @@ namespace Tests.Tests.ImmediateTests
             this.foreignKeyTable = new ForeignTable();
 
             this.objectGraphServiceMock = new Mock<IObjectGraphService>();
-            this.attributeDecorator = new StandardAttributeDecorator(null, new AssemblyWrapper(null), new Schema());
+            this.attributeDecorator = new StandardAttributeDecorator(null, new AssemblyWrapper(), new Schema());
             this.typeGeneratorMock = Helpers.GetTypeGeneratorMock(this.foreignKeyTable);
             this.recordReference = new RecordReference<ForeignTable>(this.typeGeneratorMock.Object,
                 this.attributeDecorator, null, this.objectGraphServiceMock.Object, null, null);

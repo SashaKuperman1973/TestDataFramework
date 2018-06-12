@@ -47,7 +47,7 @@ namespace Tests.Tests.ImmediateTests
             this.deferredValueGeneratorMock = new Mock<IDeferredValueGenerator<LargeInteger>>();
 
             this.generator = new KeyTypeUniqueValueGenerator(this.propertyValueAccumulatorMock.Object,
-                new StandardAttributeDecorator(null, new AssemblyWrapper(null), new Schema()),
+                new StandardAttributeDecorator(null, new AssemblyWrapper(), new Schema()),
                 this.deferredValueGeneratorMock.Object,
                 false);
         }

@@ -5,52 +5,43 @@ using System.Reflection;
 
 namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers
 {
-    public class AssemblyWrapper
+    public class AssemblyWrapper : IWrapper<Assembly>
     {
-        internal readonly Assembly Assembly;
+        private readonly Guid id = Guid.NewGuid();
 
         public AssemblyWrapper(Assembly assembly)
         {
-            if (assembly == null)
-            {
-                throw new ArgumentNullException(nameof(assembly));
-            }
-
-            this.Assembly = assembly;
+            this.Wrapped = assembly ?? throw new ArgumentNullException(nameof(assembly));
         }
 
         public AssemblyWrapper()
         {            
         }
 
-        public virtual IEnumerable<TypeInfoWrapper> DefinedTypes => this.Assembly.DefinedTypes
+        public Assembly Wrapped { get; }
+
+        public virtual IEnumerable<TypeInfoWrapper> DefinedTypes => this.Wrapped.DefinedTypes
             .Select(typeInfo => new TypeInfoWrapper(typeInfo));
 
-        public virtual AssemblyNameWrapper[] GetReferencedAssemblies() => this.Assembly.GetReferencedAssemblies()
+        public virtual AssemblyNameWrapper[] GetReferencedAssemblies() => this.Wrapped.GetReferencedAssemblies()
             .Select(assembly => new AssemblyNameWrapper(assembly)).ToArray();
 
-        public virtual AssemblyNameWrapper GetName() => new AssemblyNameWrapper(this.Assembly.GetName());
+        public virtual AssemblyNameWrapper GetName() => new AssemblyNameWrapper(this.Wrapped.GetName());
 
         public override bool Equals(object obj)
         {
-            if (this.Assembly == null || obj == null)
-            {
-                return false;
-            }
-
-            var toCompare = obj as AssemblyWrapper;
-
-            return toCompare != null && this.Assembly.Equals(toCompare.Assembly);
+            bool result = EqualityHelper<AssemblyWrapper, Assembly>.Equals(this, obj);
+            return result;
         }
 
         public override int GetHashCode()
         {
-            return this.Assembly? .GetHashCode() ?? 0;
+            return this.Wrapped?.GetHashCode() ?? 0;
         }
 
         public override string ToString()
         {
-            return this.Assembly?.ToString() ?? "Empty Assembly Wrapper";
+            return this.Wrapped?.ToString() ?? $"Empty Assembly Wrapper. ID: {this.id}";
         }
     }
 }

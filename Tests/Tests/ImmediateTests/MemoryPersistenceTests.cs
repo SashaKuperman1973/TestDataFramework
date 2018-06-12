@@ -41,7 +41,7 @@ namespace Tests.Tests.ImmediateTests
         [TestInitialize]
         public void Initialize()
         {
-            this.attributeDecorator = new StandardAttributeDecorator(null, new AssemblyWrapper(null), new Schema());
+            this.attributeDecorator = new StandardAttributeDecorator(null, new AssemblyWrapper(), new Schema());
         }
 
         [TestMethod]

@@ -511,16 +511,16 @@ namespace Tests.Tests.ImmediateTests
         {
             // Arrange
 
-            Type foreignType = typeof(ForeignClass);
+            var foreignType = new TypeInfoWrapper(typeof(ForeignClass));
 
             var foreignKeyAtribute = new ForeignKeyAttribute("PrimaryClass", null);
 
-            this.tableTypeCacheMock.Setup(m => m.IsAssemblyCachePopulated(new AssemblyWrapper(null))).Returns(true);
+            this.tableTypeCacheMock.Setup(m => m.IsAssemblyCachePopulated(new AssemblyWrapper())).Returns(true);
 
             // Act
             // Assert
 
-            Helpers.ExceptionTest(() => this.attributeDecorator.GetTableType(foreignKeyAtribute, null),
+            Helpers.ExceptionTest(() => this.attributeDecorator.GetTableType(foreignKeyAtribute, foreignType),
                 typeof(AttributeDecoratorException),
                 string.Format(Messages.CannotResolveForeignKey, foreignKeyAtribute, foreignType));
         }
@@ -606,9 +606,9 @@ namespace Tests.Tests.ImmediateTests
 
             var foreignKeyAtribute = new ForeignKeyAttribute("PrimaryClass", null);
 
-            Type returnedType = typeof(PrimaryClass);
+            Type cachedTableType = typeof(PrimaryClass);
             var returnedTypeMock = new Mock<TypeInfoWrapper>();
-            returnedTypeMock.SetupGet(m => m.Type).Returns(returnedType);
+            returnedTypeMock.SetupGet(m => m.Type).Returns(cachedTableType);
 
             this.tableTypeCacheMock.Setup(m => m.IsAssemblyCachePopulated(assembly)).Returns(true);
 
@@ -627,7 +627,7 @@ namespace Tests.Tests.ImmediateTests
                 m => m.PopulateAssemblyCache(assembly, this.attributeDecorator.GetSingleAttribute<TableAttribute>,
                     this.schema.Value), Times.Never);
 
-            Assert.AreEqual(foreignType, result);
+            Assert.AreEqual(cachedTableType, result);
         }
 
         #endregion GetTableType tests

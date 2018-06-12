@@ -75,10 +75,12 @@ namespace Tests.Tests.ImmediateTests
         {
             // Act
 
+            var initialAssemblyToScan = new AssemblyWrapper();
+
             Helpers.ExceptionTest(
-                () => this.tableTypeCache.GetCachedTableType(null, null, new AssemblyWrapper(), null),
+                () => this.tableTypeCache.GetCachedTableType(null, null, initialAssemblyToScan, null),
                 typeof(TableTypeLookupException),
-                string.Format(Messages.AssemblyCacheNotPopulated, this.GetType().Assembly));
+                string.Format(Messages.AssemblyCacheNotPopulated, initialAssemblyToScan));
         }
     }
 }

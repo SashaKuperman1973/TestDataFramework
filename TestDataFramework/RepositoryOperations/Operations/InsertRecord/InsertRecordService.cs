@@ -24,6 +24,7 @@ using System.Reflection;
 using log4net;
 using TestDataFramework.Logger;
 using TestDataFramework.AttributeDecorator;
+using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
@@ -154,12 +155,13 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
                 ColumnSymbol pkColumnMatch = null;
 
-                
+
                 bool isForeignKeyPrimaryKeyMatch = keyTableList.Any(pkTable =>
 
                     pkTable.Any(pk =>
 
-                        this.attributeDecorator.GetTableType(fkpa.Attribute, this.recordReference.RecordType) ==
+                        this.attributeDecorator.GetTableType(fkpa.Attribute,
+                            new TypeInfoWrapper(this.recordReference.RecordType.GetTypeInfo())) ==
                         (pkColumnMatch = pk).TableType
                         && fkpa.Attribute.PrimaryKeyName.Equals(pk.ColumnName, StringComparison.Ordinal)
                     )

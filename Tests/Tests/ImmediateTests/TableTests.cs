@@ -21,6 +21,7 @@ using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework;
 using TestDataFramework.AttributeDecorator;
+using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using Tests.TestModels;
 
 namespace Tests.Tests.ImmediateTests
@@ -93,7 +94,7 @@ namespace Tests.Tests.ImmediateTests
 
             // Act
 
-            var table = new Table(typeof(SubjectClass), defaultSchema);
+            var table = new Table(new TypeInfoWrapper(typeof(SubjectClass)), defaultSchema);
 
             // Assert
 
@@ -139,7 +140,7 @@ namespace Tests.Tests.ImmediateTests
         {
             String s = "ABCD";
 
-            var table = new Table(typeof(SubjectClass), null);
+            var table = new Table(new TypeInfoWrapper(typeof(SubjectClass)), null);
 
             Assert.IsFalse(table.BasicFieldsEqual(s));
         }
@@ -147,8 +148,8 @@ namespace Tests.Tests.ImmediateTests
         [TestMethod]
         public void NoSchemaInput_NoCatalogueInput_Equals_Test()
         {
-            var table1 = new Table(typeof(SubjectClass), null);
-            var table2 = new Table(typeof(SubjectClass), null);
+            var table1 = new Table(new TypeInfoWrapper(typeof(SubjectClass)), null);
+            var table2 = new Table(new TypeInfoWrapper(typeof(SubjectClass)), null);
 
             Assert.IsTrue(table1.BasicFieldsEqual(table2));
         }

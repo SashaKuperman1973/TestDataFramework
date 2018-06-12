@@ -24,6 +24,7 @@ using System.Reflection;
 using log4net;
 using TestDataFramework.Logger;
 using TestDataFramework.AttributeDecorator;
+using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
@@ -71,8 +72,6 @@ namespace TestDataFramework.Populator
             RecordReference.Logger.Debug("Exiting AddPrimaryRecordReference(RecordReference)");
         }
 
-        public virtual bool IsPopulated { get; protected internal set; }
-
         protected internal virtual Type RecordType { get; protected set; }
 
         protected internal readonly IEnumerable<RecordReference> PrimaryKeyReferences = new List<RecordReference>();
@@ -93,7 +92,7 @@ namespace TestDataFramework.Populator
                             foreignKeyPropertyAttributes.Any(
                                 fkPa =>
                                     pkPa.PropertyInfo.DeclaringType ==
-                                    this.AttributeDecorator.GetTableType(fkPa.Attribute, this.RecordType)
+                                    this.AttributeDecorator.GetTableType(fkPa.Attribute, new TypeInfoWrapper(this.RecordType.GetTypeInfo()))
                                     &&
                                     Helper.GetColumnName(pkPa.PropertyInfo, this.AttributeDecorator)
                                         .Equals(fkPa.Attribute.PrimaryKeyName, StringComparison.Ordinal)

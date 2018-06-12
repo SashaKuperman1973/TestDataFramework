@@ -5,6 +5,7 @@ using TestDataFramework;
 using TestDataFramework.AttributeDecorator;
 using TestDataFramework.AttributeDecorator.Concrete;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService;
+using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using Tests.TestModels;
 
 namespace Tests.Tests.ImmediateTests.TableTypeCacheServiceTests
@@ -26,8 +27,7 @@ namespace Tests.Tests.ImmediateTests.TableTypeCacheServiceTests
         public void Initialize()
         {
             this.tableTypeLookupMock = new Mock<TableTypeLookup>(null);
-            this.service = new StandardTableTypeCacheService(null);
-            //this.service = new StandardTableTypeCacheService(this.tableTypeLookupMock.Object);
+            this.service = new StandardTableTypeCacheService(this.tableTypeLookupMock.Object);
 
             this.foreignKeyAttribute = new ForeignKeyAttribute("schema", "primaryTableName", "primaryKeyName");
             this.tableAttribute = new TableAttribute("catalogueName", "schema", "tableName");
@@ -51,11 +51,11 @@ namespace Tests.Tests.ImmediateTests.TableTypeCacheServiceTests
             this.tableTypeLookupMock.Setup(m => m.GetTableTypeByCriteria(It.IsAny<Table>(),
                 It.Is<TypeDictionaryEqualityComparer.EqualsCriteriaDelegate>(
                     func => func == TableTypeCriteria.CompleteMatchCriteria), this.assemblyLookupContext))
-                    .Returns(typeof(SubjectClass));
+                    .Returns(new TypeInfoWrapper(typeof(SubjectClass)));
 
             // Act
 
-            Type result = this.service.GetCachedTableType(this.foreignKeyAttribute, this.tableAttribute,
+            TypeInfoWrapper result = this.service.GetCachedTableType(this.foreignKeyAttribute, this.tableAttribute,
                 this.assemblyLookupContext);
 
             // Assert
@@ -84,15 +84,15 @@ namespace Tests.Tests.ImmediateTests.TableTypeCacheServiceTests
             this.tableTypeLookupMock.Setup(m => m.GetTableTypeByCriteria(It.IsAny<Table>(),
                     It.Is<TypeDictionaryEqualityComparer.EqualsCriteriaDelegate>(
                         func => func == TableTypeCriteria.CompleteMatchCriteria), this.assemblyLookupContext))
-                .Returns((Type)null);
+                .Returns((TypeInfoWrapper)null);
 
             this.tableTypeLookupMock
                 .Setup(m => m.GetTableTypeWithCatalogue(It.IsAny<Table>(), this.assemblyLookupContext))
-                .Returns(typeof(SubjectClass));
+                .Returns(new TypeInfoWrapper(typeof(SubjectClass)));
 
             // Act
 
-            Type result = this.service.GetCachedTableType(this.foreignKeyAttribute, this.tableAttribute,
+            TypeInfoWrapper result = this.service.GetCachedTableType(this.foreignKeyAttribute, this.tableAttribute,
                 this.assemblyLookupContext);
 
 
@@ -122,20 +122,20 @@ namespace Tests.Tests.ImmediateTests.TableTypeCacheServiceTests
             this.tableTypeLookupMock.Setup(m => m.GetTableTypeByCriteria(It.IsAny<Table>(),
                     It.Is<TypeDictionaryEqualityComparer.EqualsCriteriaDelegate>(
                         func => func == TableTypeCriteria.CompleteMatchCriteria), this.assemblyLookupContext))
-                .Returns((Type)null);
+                .Returns((TypeInfoWrapper)null);
 
             this.tableTypeLookupMock
                 .Setup(m => m.GetTableTypeWithCatalogue(It.IsAny<Table>(), this.assemblyLookupContext))
-                .Returns((Type)null);
+                .Returns((TypeInfoWrapper)null);
 
             this.tableTypeLookupMock.Setup(m => m.GetTableTypeByCriteria(It.IsAny<Table>(),
                     It.Is<TypeDictionaryEqualityComparer.EqualsCriteriaDelegate>(
                         func => func == TableTypeCriteria.MatchOnWhatIsDecorated), this.assemblyLookupContext))
-                .Returns(typeof(SubjectClass));
+                .Returns(new TypeInfoWrapper(typeof(SubjectClass)));
 
             // Act
 
-            Type result = this.service.GetCachedTableType(this.foreignKeyAttribute, this.tableAttribute,
+            TypeInfoWrapper result = this.service.GetCachedTableType(this.foreignKeyAttribute, this.tableAttribute,
                 this.assemblyLookupContext);
 
             // Assert
@@ -162,25 +162,26 @@ namespace Tests.Tests.ImmediateTests.TableTypeCacheServiceTests
             this.tableTypeLookupMock.Setup(m => m.GetTableTypeByCriteria(It.IsAny<Table>(),
                     It.Is<TypeDictionaryEqualityComparer.EqualsCriteriaDelegate>(
                         func => func == TableTypeCriteria.CompleteMatchCriteria), this.assemblyLookupContext))
-                .Returns((Type)null);
+                .Returns((TypeInfoWrapper)null);
 
             this.tableTypeLookupMock
                 .Setup(m => m.GetTableTypeWithCatalogue(It.IsAny<Table>(), this.assemblyLookupContext))
-                .Returns((Type)null);
+                .Returns((TypeInfoWrapper)null);
 
             this.tableTypeLookupMock.Setup(m => m.GetTableTypeByCriteria(It.IsAny<Table>(),
                     It.Is<TypeDictionaryEqualityComparer.EqualsCriteriaDelegate>(
                         func => func == TableTypeCriteria.MatchOnWhatIsDecorated), this.assemblyLookupContext))
-                .Returns((Type)null);
+                .Returns((TypeInfoWrapper)null);
 
             this.tableTypeLookupMock.Setup(m => m.GetTableTypeByCriteria(It.IsAny<Table>(),
                     It.Is<TypeDictionaryEqualityComparer.EqualsCriteriaDelegate>(
-                        func => func == TableTypeCriteria.MatchOnEverythingNotAlreadyTried), this.assemblyLookupContext))
-                .Returns(typeof(SubjectClass));
+                        func => func == TableTypeCriteria.MatchOnEverythingNotAlreadyTried),
+                    this.assemblyLookupContext))
+                .Returns(new TypeInfoWrapper(typeof(SubjectClass)));
 
             // Act
 
-            Type result = this.service.GetCachedTableType(this.foreignKeyAttribute, this.tableAttribute,
+            TypeInfoWrapper result = this.service.GetCachedTableType(this.foreignKeyAttribute, this.tableAttribute,
                 this.assemblyLookupContext);
 
             // Assert
@@ -205,25 +206,25 @@ namespace Tests.Tests.ImmediateTests.TableTypeCacheServiceTests
             this.tableTypeLookupMock.Setup(m => m.GetTableTypeByCriteria(It.IsAny<Table>(),
                     It.Is<TypeDictionaryEqualityComparer.EqualsCriteriaDelegate>(
                         func => func == TableTypeCriteria.CompleteMatchCriteria), this.assemblyLookupContext))
-                .Returns((Type)null);
+                .Returns((TypeInfoWrapper)null);
 
             this.tableTypeLookupMock
                 .Setup(m => m.GetTableTypeWithCatalogue(It.IsAny<Table>(), this.assemblyLookupContext))
-                .Returns((Type)null);
+                .Returns((TypeInfoWrapper)null);
 
             this.tableTypeLookupMock.Setup(m => m.GetTableTypeByCriteria(It.IsAny<Table>(),
                     It.Is<TypeDictionaryEqualityComparer.EqualsCriteriaDelegate>(
                         func => func == TableTypeCriteria.MatchOnWhatIsDecorated), this.assemblyLookupContext))
-                .Returns((Type)null);
+                .Returns((TypeInfoWrapper)null);
 
             this.tableTypeLookupMock.Setup(m => m.GetTableTypeByCriteria(It.IsAny<Table>(),
                     It.Is<TypeDictionaryEqualityComparer.EqualsCriteriaDelegate>(
                         func => func == TableTypeCriteria.MatchOnEverythingNotAlreadyTried), this.assemblyLookupContext))
-                .Returns((Type)null);
+                .Returns((TypeInfoWrapper)null);
 
             // Act
 
-            Type result = this.service.GetCachedTableType(this.foreignKeyAttribute, this.tableAttribute,
+            TypeInfoWrapper result = this.service.GetCachedTableType(this.foreignKeyAttribute, this.tableAttribute,
                 this.assemblyLookupContext);
 
             // Assert

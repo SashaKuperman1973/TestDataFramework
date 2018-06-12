@@ -24,6 +24,7 @@ using System.Reflection;
 using log4net;
 using TestDataFramework.Logger;
 using TestDataFramework.AttributeDecorator;
+using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
@@ -154,7 +155,8 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
                 InsertRecord primaryKeyOperation = this.primaryKeyOperations.First(selectedPrimaryKeyOperation =>
                     selectedPrimaryKeyOperation.RecordReference.RecordType ==
-                    this.attributeDecorator.GetTableType(fkColumn.PropertyAttribute.Attribute, fkColumn.TableType));
+                    this.attributeDecorator.GetTableType(fkColumn.PropertyAttribute.Attribute,
+                        new TypeInfoWrapper(fkColumn.TableType.GetTypeInfo())));
 
                 InsertRecord.Logger.Debug($"primaryKeyOperation: {primaryKeyOperation}");
 

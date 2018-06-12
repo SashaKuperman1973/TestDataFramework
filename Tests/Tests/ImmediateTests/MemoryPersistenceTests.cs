@@ -23,6 +23,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.AttributeDecorator;
 using TestDataFramework.AttributeDecorator.Concrete;
+using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Helpers;
@@ -41,7 +42,7 @@ namespace Tests.Tests.ImmediateTests
         [TestInitialize]
         public void Initialize()
         {
-            this.attributeDecorator = new StandardAttributeDecorator(null, null);
+            this.attributeDecorator = new StandardAttributeDecorator(null, new AssemblyWrapper(null), new Schema());
         }
 
         [TestMethod]

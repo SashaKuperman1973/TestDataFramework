@@ -27,6 +27,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.AttributeDecorator;
 using TestDataFramework.AttributeDecorator.Concrete;
+using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.Exceptions;
@@ -66,7 +67,7 @@ namespace Tests.Tests.ImmediateTests
             this.foreignKeyTable = new ForeignTable();
 
             this.objectGraphServiceMock = new Mock<IObjectGraphService>();
-            this.attributeDecorator = new StandardAttributeDecorator(null, null);
+            this.attributeDecorator = new StandardAttributeDecorator(null, new AssemblyWrapper(null), new Schema());
             this.typeGeneratorMock = Helpers.GetTypeGeneratorMock(this.foreignKeyTable);
             this.recordReference = new RecordReference<ForeignTable>(this.typeGeneratorMock.Object,
                 this.attributeDecorator, null, this.objectGraphServiceMock.Object, null, null);

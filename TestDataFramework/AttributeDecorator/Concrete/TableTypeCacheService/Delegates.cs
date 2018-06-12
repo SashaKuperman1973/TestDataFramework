@@ -1,8 +1,10 @@
-﻿namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
-{
-    public delegate TableAttribute GetTableAttribute(TestDataTypeInfo typeInfo);
+﻿using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 
-    public delegate void TryAssociateTypeToTable(TestDataTypeInfo definedType,
+namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
+{
+    public delegate TableAttribute GetTableAttribute(TypeInfoWrapper typeInfo);
+
+    public delegate void TryAssociateTypeToTable(TypeInfoWrapper definedType,
         AssemblyLookupContext assemblyLookupContext, GetTableAttribute getTableAttibute,
         string defaultSchema);
 }

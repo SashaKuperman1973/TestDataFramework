@@ -1,23 +1,21 @@
 ﻿using System;
-using System.Reflection;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService;
+using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 
 namespace TestDataFramework.AttributeDecorator.Interfaces
 {
     public interface ITableTypeCacheService
     {
-        Type GetCachedTableType(ForeignKeyAttribute foreignAttribute, TableAttribute tableAttribute,
+        TypeInfoWrapper GetCachedTableType(ForeignKeyAttribute foreignAttribute, TableAttribute tableAttribute,
             AssemblyLookupContext assemblyLookupContext);
 
-        TestDataAppDomain CreateDomain();
+        AppDomainWrapper CreateDomain();
 
-        void UnloadDomain(TestDataAppDomain domain);
-
-        void TryAssociateTypeToTable(TestDataTypeInfo definedType,
+        void TryAssociateTypeToTable(TypeInfoWrapper definedType,
             AssemblyLookupContext assemblyLookupContext, GetTableAttribute getTableAttibute,
             string defaultSchema);
 
-        void PopulateAssemblyCache(TestDataAppDomain domain, AssemblyName assemblyName,
+        void PopulateAssemblyCache(AppDomainWrapper domain, AssemblyNameWrapper assemblyName,
             GetTableAttribute getTableAttibute, string defaultSchema,
             TryAssociateTypeToTable tryAssociateTypeToTable,
             AssemblyLookupContext assemblyLookupContext);

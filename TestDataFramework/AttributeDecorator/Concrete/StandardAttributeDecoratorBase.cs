@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using log4net;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService;
+using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
@@ -21,14 +22,14 @@ namespace TestDataFramework.AttributeDecorator.Concrete
 
         protected string DefaultSchema;
 
-        public StandardAttributeDecoratorBase(string defaultSchema)
+        public StandardAttributeDecoratorBase()
         {
-            this.DefaultSchema = defaultSchema;
+            this.DefaultSchema = null;
         }
 
-        public virtual T GetSingleAttribute<T>(TestDataTypeInfo testDataTypeInfo) where T : Attribute
+        public StandardAttributeDecoratorBase(Schema defaultSchema)
         {
-            return this.GetSingleAttribute<T>(testDataTypeInfo.TypeInfo);
+            this.DefaultSchema = defaultSchema.Value;
         }
 
         public virtual T GetSingleAttribute<T>(MemberInfo memberInfo) where T : Attribute

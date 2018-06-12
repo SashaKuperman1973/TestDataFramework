@@ -18,7 +18,9 @@
 */
 
 using System;
+using System.Reflection;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService;
+using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.Helpers;
 
 namespace TestDataFramework.AttributeDecorator
@@ -37,12 +39,7 @@ namespace TestDataFramework.AttributeDecorator
         }
 
         // Constructs a value to add to dictionary when type has no TableAttribute.
-        public Table(TestDataTypeInfo type, string defaultSchema) : this(type.TypeInfo, defaultSchema)
-        {            
-        }
-
-        // Constructs a value to add to dictionary when type has no TableAttribute.
-        public Table(Type type, string defaultSchema)
+        public Table(TypeInfoWrapper type, string defaultSchema)
         {
             type.IsNotNull(nameof(type));
 

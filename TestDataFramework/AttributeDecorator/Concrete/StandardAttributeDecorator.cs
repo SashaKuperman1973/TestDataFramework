@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
@@ -39,15 +40,10 @@ namespace TestDataFramework.AttributeDecorator.Concrete
         private readonly AddAttributeFieldExpressionValidator fieldExpressionValidator = new AddAttributeFieldExpressionValidator();
 
         private readonly StandardTableTypeCache tableTypeCache;
-        private readonly Assembly callingAssembly;
+        private readonly AssemblyWrapper callingAssembly;
         
         public StandardAttributeDecorator(StandardTableTypeCache tableTypeCache,
-            Assembly callingAssembly) : this(tableTypeCache, callingAssembly, null)
-        {
-        }
-
-        public StandardAttributeDecorator(StandardTableTypeCache tableTypeCache,
-            Assembly callingAssembly, string defaultSchema) : base(defaultSchema)
+            AssemblyWrapper callingAssembly, Schema defaultSchema) : base(defaultSchema)
         {
             this.tableTypeCache = tableTypeCache;
             this.callingAssembly = callingAssembly;
@@ -145,7 +141,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete
             return result;
         }
 
-        public virtual Type GetTableType(ForeignKeyAttribute foreignAttribute, Type foreignType)
+        public virtual Type GetTableType(ForeignKeyAttribute foreignAttribute, TypeInfoWrapper foreignType)
         {
             StandardAttributeDecorator.Logger.Debug(
                 $"Entering GetTableType. ForeignAttribute : {foreignAttribute}. ForeignType: {foreignType}");
@@ -164,14 +160,14 @@ namespace TestDataFramework.AttributeDecorator.Concrete
                 this.tableTypeCache.PopulateAssemblyCache(this.callingAssembly, this.GetSingleAttribute<TableAttribute>, this.DefaultSchema);
             }
 
-            Type cachedType = this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType, this.callingAssembly,
+            TypeInfoWrapper cachedType = this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType, this.callingAssembly,
                 this.GetSingleAttribute<TableAttribute>, canScanAllCachedAssemblies: true);
 
             if (cachedType != null)
             {
                 StandardAttributeDecorator.Logger.Debug(
                     $"Cache hit based on call with calling assembly. Returning {cachedType}.");
-                return cachedType;
+                return cachedType.Type;
             }
 
             if (this.tableTypeCache.IsAssemblyCachePopulated(foreignType.Assembly))
@@ -196,7 +192,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete
 
             StandardAttributeDecorator.Logger.Debug(
                 $"Cache hit based on call with foreign type's assembly. Returning {cachedType}.");
-            return cachedType;
+            return cachedType.Type;
         }
     }
 }

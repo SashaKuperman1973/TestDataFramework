@@ -24,6 +24,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.AttributeDecorator;
 using TestDataFramework.AttributeDecorator.Concrete;
+using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.Helpers;
 using TestDataFramework.PropertyValueAccumulator;
 using Tests.TestModels;
@@ -43,7 +44,7 @@ namespace Tests.Tests.ImmediateTests
 
             this.stringGeneratorMock = new Mock<LetterEncoder>();
             this.accumulator = new StandardPropertyValueAccumulator(this.stringGeneratorMock.Object,
-                new StandardAttributeDecorator(null, null));
+                new StandardAttributeDecorator(null, new AssemblyWrapper(), new Schema()));
         }
 
         [TestMethod]

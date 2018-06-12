@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService;
+using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.RepositoryOperations.Model;
 
 namespace TestDataFramework.AttributeDecorator.Interfaces
@@ -40,8 +41,6 @@ namespace TestDataFramework.AttributeDecorator.Interfaces
 
         IEnumerable<T> GetCustomAttributes<T>(MemberInfo memberInfo) where T : Attribute;
 
-        T GetSingleAttribute<T>(TestDataTypeInfo testDataTypeInfo) where T : Attribute;
-
         T GetCustomAttribute<T>(MemberInfo memberInfo) where T : Attribute;
 
         IEnumerable<Attribute> GetCustomAttributes(MemberInfo memberInfo);
@@ -50,6 +49,6 @@ namespace TestDataFramework.AttributeDecorator.Interfaces
 
         void DecorateType(Type type, Attribute attribute);
 
-        Type GetTableType(ForeignKeyAttribute foreignAttribute, Type foreignType);
+        Type GetTableType(ForeignKeyAttribute foreignAttribute, TypeInfoWrapper foreignType);
     }
 }

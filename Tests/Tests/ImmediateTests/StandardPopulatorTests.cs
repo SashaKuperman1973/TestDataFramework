@@ -17,24 +17,21 @@
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using TestDataFramework.AttributeDecorator;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using TestDataFramework.AttributeDecorator.Concrete;
+using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.HandledTypeGenerator;
-using TestDataFramework.ListOperations;
+using TestDataFramework.Helpers;
 using TestDataFramework.Persistence.Interfaces;
 using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete;
-using TestDataFramework.Populator.Interfaces;
 using TestDataFramework.TypeGenerator.Interfaces;
-using TestDataFramework.ValueGenerator.Interfaces;
 using Tests.Mocks;
 using Tests.TestModels;
 
@@ -55,7 +52,7 @@ namespace Tests.Tests.ImmediateTests
         {
             XmlConfigurator.Configure();
 
-            this.attributeDecorator = new StandardAttributeDecorator(null, null);
+            this.attributeDecorator = new StandardAttributeDecorator(null, new AssemblyWrapper(), new Schema());
             this.persistenceMock = new Mock<IPersistence>();
             this.typeGeneratorMock = new Mock<ITypeGenerator>();
             this.handledTypeGeneratorMock = new Mock<IHandledTypeGenerator>();

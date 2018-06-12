@@ -33,6 +33,7 @@ using TestDataFramework.ArrayRandomizer;
 using TestDataFramework.AttributeDecorator;
 using TestDataFramework.AttributeDecorator.Concrete;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService;
+using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeepSetting.Concrete;
 using TestDataFramework.DeepSetting.Interfaces;
@@ -118,8 +119,9 @@ namespace TestDataFramework.Factories
                 );
 
             IWindsorContainer iocContainer = this.GetSqlClientPopulatorContainer(connectionStringWithDefaultCatalogue,
-                mustBeInATransaction, defaultSchema, enforceKeyReferenceCheck, throwIfUnhandledPrimaryKeyType, Assembly.GetCallingAssembly(), deepCollectionSettingConverter);
-
+                mustBeInATransaction, new Schema { Value = defaultSchema}, enforceKeyReferenceCheck,
+                throwIfUnhandledPrimaryKeyType, new AssemblyWrapper(Assembly.GetCallingAssembly()),
+                deepCollectionSettingConverter);
             var result = iocContainer.Resolve<IPopulator>();
 
             PopulatorFactory.Logger.Debug("Exiting CreateSqlClientPopulator");
@@ -130,7 +132,9 @@ namespace TestDataFramework.Factories
         {
             PopulatorFactory.Logger.Debug($"Entering CreateMemoryPopulator. throwIfUnhandledPrimaryKeyType: {throwIfUnhandledPrimaryKeyType}, defaultSchema: {defaultSchema}");
 
-            IWindsorContainer iocContainer = this.GetMemoryPopulatorContainer(Assembly.GetCallingAssembly(), throwIfUnhandledPrimaryKeyType, defaultSchema, deepCollectionSettingConverter);
+            IWindsorContainer iocContainer =
+                this.GetMemoryPopulatorContainer(new AssemblyWrapper(Assembly.GetCallingAssembly()),
+                    throwIfUnhandledPrimaryKeyType, new Schema { Value = defaultSchema}, deepCollectionSettingConverter);
 
             var result = iocContainer.Resolve<IPopulator>();
 
@@ -151,8 +155,8 @@ namespace TestDataFramework.Factories
             var q = lazyStandardTypeGenerator.Value;
         }
 
-        private IWindsorContainer GetSqlClientPopulatorContainer(string connectionStringWithDefaultCatalogue, bool mustBeInATransaction, string defaultSchema,
-            bool enforceKeyReferenceCheck, bool throwIfUnhandledPrimaryKeyType, Assembly callingAssembly, DeepCollectionSettingConverter deepCollectionSettingConverter = null)
+        private IWindsorContainer GetSqlClientPopulatorContainer(string connectionStringWithDefaultCatalogue, bool mustBeInATransaction, Schema defaultSchema,
+            bool enforceKeyReferenceCheck, bool throwIfUnhandledPrimaryKeyType, AssemblyWrapper callingAssembly, DeepCollectionSettingConverter deepCollectionSettingConverter = null)
         {
             PopulatorFactory.Logger.Debug("Entering GetSqlClientPopulatorContainer");
 
@@ -210,7 +214,7 @@ namespace TestDataFramework.Factories
             return this.SqlClientPopulatorContainer.Container;
         }
 
-        private IWindsorContainer GetMemoryPopulatorContainer(Assembly callingAssembly, bool throwIfUnhandledPrimaryKeyType, string defaultSchema, 
+        private IWindsorContainer GetMemoryPopulatorContainer(AssemblyWrapper callingAssembly, bool throwIfUnhandledPrimaryKeyType, Schema defaultSchema, 
             DeepCollectionSettingConverter deepCollectionSettingConverter = null)
         {
             PopulatorFactory.Logger.Debug("Entering GetMemoryPopulatorContainer");
@@ -257,7 +261,7 @@ namespace TestDataFramework.Factories
             return this.MemoryPopulatorContainer.Container;
         }
 
-        private static IWindsorContainer GetCommonContainer(Assembly callingAssembly, string defaultSchema, DeepCollectionSettingConverter deepCollectionSettingConverter)
+        private static IWindsorContainer GetCommonContainer(AssemblyWrapper callingAssembly, Schema defaultSchema, DeepCollectionSettingConverter deepCollectionSettingConverter)
         {
             if (deepCollectionSettingConverter == null)
             {
@@ -272,7 +276,7 @@ namespace TestDataFramework.Factories
 
             commonContainer.Register(
 
-                #region Common Region
+            #region Common Region
 
                 Component.For<DeepCollectionSettingConverter>().Instance(deepCollectionSettingConverter),
 
@@ -326,9 +330,9 @@ namespace TestDataFramework.Factories
 
                 Component.For<TableTypeLookup>().ImplementedBy<TableTypeLookup>(),
 
-                #endregion Common Region
+            #endregion Common Region
 
-                #region Handled Type Generator
+            #region Handled Type Generator
 
                 Component.For<IHandledTypeGenerator>()
                     .ImplementedBy<StandardHandledTypeGenerator>()
@@ -369,28 +373,17 @@ namespace TestDataFramework.Factories
 
                 Component.For<StandardTableTypeCache>().ImplementedBy<StandardTableTypeCache>(),
 
-                Component.For<IAttributeDecoratorBase>().ImplementedBy<StandardAttributeDecoratorBase>()
-                    .DependsOn(Dependency.OnValue("defaultSchema", defaultSchema))
+                Component.For<IAttributeDecorator>().ImplementedBy<StandardAttributeDecorator>(),
 
-                #endregion Handled Type Generator
+                Component.For<IAttributeDecoratorBase>().ImplementedBy<StandardAttributeDecoratorBase>(),
+
+                Component.For<AssemblyWrapper>().Instance(callingAssembly),
+
+                Component.For<Schema>().Instance(defaultSchema)
+
+            #endregion Handled Type Generator
 
             );
-
-            if (defaultSchema != null)
-            {
-                commonContainer.Register(
-                    Component.For<IAttributeDecorator>().ImplementedBy<StandardAttributeDecorator>()
-                        .DependsOn(Dependency.OnValue("defaultSchema", defaultSchema))
-                        .DependsOn(Dependency.OnValue("callingAssembly", callingAssembly))
-                        );
-            }
-            else
-            {
-                commonContainer.Register(
-                    Component.For<IAttributeDecorator>().ImplementedBy<StandardAttributeDecorator>()
-                        .DependsOn(Dependency.OnValue("callingAssembly", callingAssembly))
-                        );
-            }
 
             return commonContainer;
         }

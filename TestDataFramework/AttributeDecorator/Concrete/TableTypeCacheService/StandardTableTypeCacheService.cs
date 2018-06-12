@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using log4net;
+using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Logger;
@@ -20,12 +21,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
             this.tableTypeLookup = tableAttribute;
         }
 
-        //public StandardTableTypeCacheService(TableTypeLookup tableTypeLookup)
-        //{
-        //    this.tableTypeLookup = tableTypeLookup;
-        //}
-
-        public virtual Type GetCachedTableType(ForeignKeyAttribute foreignAttribute, TableAttribute tableAttribute, AssemblyLookupContext assemblyLookupContext)
+        public virtual TypeInfoWrapper GetCachedTableType(ForeignKeyAttribute foreignAttribute, TableAttribute tableAttribute, AssemblyLookupContext assemblyLookupContext)
         {
             StandardTableTypeCacheService.Logger.Debug("Entering GetCachedTableType");
 
@@ -35,7 +31,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
             // with the result of comparing input and dictionary collection
             // schema and table.
 
-            Type result;
+            TypeInfoWrapper result;
 
             // 1.
             // Test for a complete match
@@ -73,19 +69,14 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
             return null;
         }
 
-        public virtual TestDataAppDomain CreateDomain()
+        public virtual AppDomainWrapper CreateDomain()
         {
             AppDomain domain = AppDomain.CreateDomain("TestDataFramework_" + Guid.NewGuid(), null, AppDomain.CurrentDomain.SetupInformation);
-            var result = new TestDataAppDomain(domain);
+            var result = new AppDomainWrapper(domain);
             return result;
         }
 
-        public virtual void UnloadDomain(TestDataAppDomain domain)
-        {
-            AppDomain.Unload(domain.AppDomain);
-        }
-
-        public virtual void TryAssociateTypeToTable(TestDataTypeInfo definedType,
+        public virtual void TryAssociateTypeToTable(TypeInfoWrapper definedType,
             AssemblyLookupContext assemblyLookupContext, GetTableAttribute getTableAttibute,
             string defaultSchema)
         {
@@ -99,15 +90,13 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
 
             // Note: If HasCatlogueName then HasTableAttribute
 
-            TypeDictionaryEqualityComparer.EqualsCriteriaDelegate equalsCriteria =
-                (fromSet, input) =>
+            bool EqualsCriteria(Table fromSet, Table input) => fromSet.HasCatalogueName &&
+                                                               fromSet.CatalogueName.Equals(input.CatalogueName) ||
+                                                               fromSet.HasTableAttribute && input.HasTableAttribute &&
+                                                               !fromSet.HasCatalogueName && !input.HasCatalogueName ||
+                                                               !fromSet.HasTableAttribute && !input.HasTableAttribute;
 
-                    fromSet.HasCatalogueName && fromSet.CatalogueName.Equals(input.CatalogueName) ||
-                    fromSet.HasTableAttribute && input.HasTableAttribute && !fromSet.HasCatalogueName &&
-                    !input.HasCatalogueName ||
-                    !fromSet.HasTableAttribute && !input.HasTableAttribute;
-
-            assemblyLookupContext.TypeDictionaryEqualityComparer.SetEqualsCriteria(equalsCriteria);
+            assemblyLookupContext.TypeDictionaryEqualityComparer.SetEqualsCriteria(EqualsCriteria);
 
             bool tryAddResult = assemblyLookupContext.TypeDictionary.TryAdd(table, definedType);
 
@@ -119,7 +108,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
 
             StandardTableTypeCacheService.Logger.Debug($"Table class collision detected. Table object: {table}");
 
-            assemblyLookupContext.CollisionDictionary.AddOrUpdate(table, new List<TestDataTypeInfo>
+            assemblyLookupContext.CollisionDictionary.AddOrUpdate(table, new List<TypeInfoWrapper>
                 {
                     // first item of collision to add to list
 
@@ -145,12 +134,12 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
             StandardTableTypeCacheService.Logger.Debug("Exiting TryAdd");
         }
 
-        public virtual void PopulateAssemblyCache(TestDataAppDomain domain, AssemblyName assemblyName,
+        public virtual void PopulateAssemblyCache(AppDomainWrapper domain, AssemblyNameWrapper assemblyName,
             GetTableAttribute getTableAttibute, string defaultSchema,
             TryAssociateTypeToTable tryAssociateTypeToTable,
             AssemblyLookupContext assemblyLookupContext)
         {
-            TestDataAssembly loadedAssembly;
+            AssemblyWrapper loadedAssembly;
 
             try
             {
@@ -163,7 +152,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
                 return;
             }
 
-            List<TestDataTypeInfo> loadedAssemblyTypes;
+            List<TypeInfoWrapper> loadedAssemblyTypes;
 
             try
             {

@@ -19,9 +19,11 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using log4net;
 using TestDataFramework.Logger;
 using TestDataFramework.AttributeDecorator;
+using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Helpers;
@@ -84,8 +86,10 @@ namespace TestDataFramework.Persistence.Concrete
                 var primaryKey =
                     primaryKeys.FirstOrDefault(
                         pk =>
-                            pk.PkProperty.DeclaringType == this.attributeDecorator.GetTableType(fkpa.Attribute, recordReference.RecordType) &&
-                            Helper.GetColumnName(pk.PkProperty, this.attributeDecorator) == fkpa.Attribute.PrimaryKeyName);
+                            pk.PkProperty.DeclaringType == this.attributeDecorator.GetTableType(fkpa.Attribute,
+                                new TypeInfoWrapper(recordReference.RecordType.GetTypeInfo())) &&
+                            Helper.GetColumnName(pk.PkProperty, this.attributeDecorator) ==
+                            fkpa.Attribute.PrimaryKeyName);
 
                 if (primaryKey?.Object == null)
                 {

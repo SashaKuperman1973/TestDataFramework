@@ -19,13 +19,14 @@
 
 using System;
 using System.Reflection;
-using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using TestDataFramework;
 using TestDataFramework.AttributeDecorator;
 using TestDataFramework.AttributeDecorator.Concrete;
+using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
+using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.Exceptions;
-using TestDataFramework.Helpers;
 
 namespace Tests.Tests.ImmediateTests
 {
@@ -34,20 +35,21 @@ namespace Tests.Tests.ImmediateTests
     {
         private StandardTableTypeCache tableTypeCache;
 
+        private Mock<ITableTypeCacheService> tableTypeServicedMock;
+        
         [TestInitialize]
         public void Initialize()
         {
-            this.tableTypeCache = new StandardTableTypeCache(null);
+            this.tableTypeServicedMock = new Mock<ITableTypeCacheService>();
+            this.tableTypeCache = new StandardTableTypeCache(this.tableTypeServicedMock.Object);
         }
-
-        #region IsAssemblyCachePopulated tests
 
         [TestMethod]
         public void IsAssemblyCachePopulated_No_Test()
         {
             // Act
 
-            bool result = this.tableTypeCache.IsAssemblyCachePopulated(this.GetType().Assembly);
+            bool result = this.tableTypeCache.IsAssemblyCachePopulated(new AssemblyWrapper());
 
             // Assert
 
@@ -58,205 +60,29 @@ namespace Tests.Tests.ImmediateTests
         public void IsAssemblyCachePopulated_Yes_Test()
         {
             // Arrange
-            Type foreignType = typeof(TestModels.Foreign.ForeignClass);
-            this.tableTypeCache.PopulateAssemblyCache(foreignType.Assembly, type => (TableAttribute)type.GetCustomAttribute(typeof(TableAttribute)), null);
+
+            var assembly = new AssemblyWrapper();
+            this.tableTypeCache.TableTypeDictionary.TryAdd(assembly, new AssemblyLookupContext());
 
             // Act
 
-            bool result = this.tableTypeCache.IsAssemblyCachePopulated(foreignType.Assembly);
+            bool result = this.tableTypeCache.IsAssemblyCachePopulated(assembly);
 
             // Assert
 
             Assert.IsTrue(result);
         }
 
-        #endregion IsAssemblyCachePopulated tests
-
-        #region GetCachedTableType non collision tests
-
         [TestMethod]
         public void GetCachedTableType_AssembyCacheNotPopulated_Test()
         {
             // Act
 
-            Helpers.ExceptionTest(() => this.tableTypeCache.GetCachedTableType(null, this.GetType(), this.GetType().Assembly, CustomAttributeExtensions.GetCustomAttribute<TableAttribute>),
-                typeof (TableTypeLookupException),
+            Helpers.ExceptionTest(
+                () => this.tableTypeCache.GetCachedTableType(null, null, new AssemblyWrapper(), null),
+
+                typeof(TableTypeLookupException),
                 string.Format(Messages.AssemblyCacheNotPopulated, this.GetType().Assembly));
         }
-
-        [TestMethod]
-        public void GetCachedTableType_GetCached_DecoratedTableType_WithNonDecoratedInCache_Test()
-        {
-            // Arrange
-
-            Type foreignType = typeof (TestModels.Foreign.ForeignClass);
-
-            var foreignAttribute =
-                foreignType.GetProperty("TableName_ForeignKey").GetCustomAttribute<ForeignKeyAttribute>();
-
-            this.tableTypeCache.PopulateAssemblyCache(foreignType.Assembly, type => (TableAttribute)type.GetCustomAttribute(typeof(TableAttribute)), null);
-
-            // Act
-
-            Type result = this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType, this.GetType().Assembly, CustomAttributeExtensions.GetCustomAttribute<TableAttribute>);
-
-            // Assert
-
-            Assert.AreEqual(typeof(TestModels.A.TableNameClass), result);
-        }
-
-        [TestMethod]
-        public void GetCachedTableType_GetCached_UndecoratedType_Test()
-        {
-            // Arrange
-
-            Type foreignType = typeof(TestModels.Simple.ForeignClass);
-
-            var foreignAttribute =
-                foreignType.GetProperty("ForeignKey").GetCustomAttribute<ForeignKeyAttribute>();
-
-            this.tableTypeCache.PopulateAssemblyCache(foreignType.Assembly, type => (TableAttribute)type.GetCustomAttribute(typeof(TableAttribute)), null);
-
-            // Act
-
-            Type result = this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType, this.GetType().Assembly, CustomAttributeExtensions.GetCustomAttribute<TableAttribute>);
-
-            // Assert
-
-            Assert.AreEqual(typeof(TestModels.Simple.PrimaryClass), result);
-        }
-
-        [TestMethod]
-        public void GetCachedTableType_GetCached_UndecoratedType_Repeated_Test()
-        {
-            // Arrange
-
-            Type foreignType = typeof(TestModels.Simple.ForeignClass);
-
-            var foreignAttribute =
-                foreignType.GetProperty("ForeignKey").GetCustomAttribute<ForeignKeyAttribute>();
-
-            this.tableTypeCache.PopulateAssemblyCache(foreignType.Assembly, type => (TableAttribute)type.GetCustomAttribute(typeof(TableAttribute)), null);
-
-            // Act
-
-            Type result1 = this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType, this.GetType().Assembly, CustomAttributeExtensions.GetCustomAttribute<TableAttribute>);
-            Type result2 = this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType, this.GetType().Assembly, CustomAttributeExtensions.GetCustomAttribute<TableAttribute>);
-
-            // Assert
-
-            Assert.AreEqual(typeof(TestModels.Simple.PrimaryClass), result1);
-            Assert.AreEqual(typeof(TestModels.Simple.PrimaryClass), result2);
-        }
-
-        #endregion GetCachedTableType non collision tests
-
-        #region GetCachedTableType collision tests
-
-        [TestMethod]
-        public void GetCachedTableType_GetCached_DecoratedType_Two_Item_Collision_Test()
-        {
-            // Arrange
-
-            Type foreignType = typeof (TestModels.Foreign.ForeignClass);
-
-            var foreignAttribute =
-                foreignType.GetProperty("DecoratedCollision_ForeignKey").GetCustomAttribute<ForeignKeyAttribute>();
-
-            this.tableTypeCache.PopulateAssemblyCache(foreignType.Assembly, type => (TableAttribute)type.GetCustomAttribute(typeof(TableAttribute)), null);
-
-            // Act
-
-            Helpers.ExceptionTest(
-                () => this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType, this.GetType().Assembly,
-                    CustomAttributeExtensions.GetCustomAttribute<TableAttribute>),
-                typeof(TableTypeCacheException), string.Format(Messages.DuplicateTableName,
-                    string.Join(", ", new object[]
-                        {
-                            typeof(TestModels.DecoratedCollision.B.DecoratedCollisionClass),
-                            typeof(TestModels.DecoratedCollision.A.DecoratedCollisionClass)
-                        }
-                    )));
-        }
-
-        [TestMethod]
-        public void GetCachedTableType_GetCached_DecoratedType_Three_Item_Collision_Test()
-        {
-            // Arrange
-
-            Type foreignType = typeof(TestModels.Foreign.ForeignClass);
-
-            var foreignAttribute =
-                foreignType.GetProperty("DecoratedCollision3Way_ForeignKey").GetCustomAttribute<ForeignKeyAttribute>();
-
-            this.tableTypeCache.PopulateAssemblyCache(foreignType.Assembly, type => (TableAttribute)type.GetCustomAttribute(typeof(TableAttribute)), null);
-
-            // Act
-
-            Helpers.ExceptionTest(() => this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType, this.GetType().Assembly, CustomAttributeExtensions.GetCustomAttribute<TableAttribute>),
-                typeof (TableTypeCacheException), string.Format(Messages.DuplicateTableName,
-                    string.Join(", ", new object[]
-                    {
-                        typeof (TestModels.DecoratedCollision.ThreeWay.DecoratedCollisionClass3Way),
-                        typeof (TestModels.DecoratedCollision.B.DecoratedCollisionClass3Way),
-                        typeof (TestModels.DecoratedCollision.A.DecoratedCollisionClass3Way)
-                    }
-                        )));
-        }
-
-        [TestMethod]
-        public void GetCachedTableType_GetCached_DecoratedTypes_With_DifferentClassNames_Two_Item_Collision_Test()
-        {
-            // Arrange
-
-            Type foreignType = typeof(TestModels.Foreign.ForeignClass);
-
-            var foreignAttribute =
-                foreignType.GetProperty("DecoratedCollisionWithDifferentClassName_ForeignKey").GetCustomAttribute<ForeignKeyAttribute>();
-
-            this.tableTypeCache.PopulateAssemblyCache(foreignType.Assembly, type => (TableAttribute)type.GetCustomAttribute(typeof(TableAttribute)), null);
-
-            // Act
-
-            Helpers.ExceptionTest(() => this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType, this.GetType().Assembly, CustomAttributeExtensions.GetCustomAttribute<TableAttribute>),
-                typeof (TableTypeCacheException), string.Format(Messages.DuplicateTableName,
-                    string.Join(", ", new object[]
-                    {
-                        typeof (
-                            TestModels.DecoratedCollisionWithDifferentClassName.B.
-                                DecoratedCollisionWithDifferentClassName_B),
-                        typeof (
-                            TestModels.DecoratedCollisionWithDifferentClassName.A.
-                                DecoratedCollisionWithDifferentClassName_A)
-                    }
-                        )));
-        }
-
-        [TestMethod]
-        public void GetCachedTableType_GetCached_DecoratedTypes_With_DifferentClassNames_Three_Item_Collision_Test()
-        {
-            // Arrange
-
-            Type foreignType = typeof(TestModels.Foreign.ForeignClass);
-
-            var foreignAttribute =
-                foreignType.GetProperty("DecoratedCollisionWithDifferentClassName3Way_ForeignKey").GetCustomAttribute<ForeignKeyAttribute>();
-
-            this.tableTypeCache.PopulateAssemblyCache(foreignType.Assembly, type => (TableAttribute)type.GetCustomAttribute(typeof(TableAttribute)), null);
-
-            // Act
-
-            Helpers.ExceptionTest(() => this.tableTypeCache.GetCachedTableType(foreignAttribute, foreignType, this.GetType().Assembly, CustomAttributeExtensions.GetCustomAttribute<TableAttribute>),
-                typeof(TableTypeCacheException), string.Format(Messages.DuplicateTableName,
-                    string.Join(", ", new object[]
-                    {
-                        typeof (TestModels.DecoratedCollisionWithDifferentClassName.ThreeWay.DecoratedCollisionWithDifferentClassName_3Way_ThreeWay),
-                        typeof (TestModels.DecoratedCollisionWithDifferentClassName.B.DecoratedCollisionWithDifferentClassName_3Way_B),
-                        typeof (TestModels.DecoratedCollisionWithDifferentClassName.A.DecoratedCollisionWithDifferentClassName_3Way_A)
-                    }
-                        )));
-        }
-
-        #endregion GetCachedTableType collision tests
     }
 }

@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using TestDataFramework.AttributeDecorator;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService;
+using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.Helpers;
 
 namespace TestDataFramework.Exceptions
@@ -123,7 +124,7 @@ namespace TestDataFramework.Exceptions
 
     public class AttributeDecoratorException : ApplicationException
     {
-        public AttributeDecoratorException(string cannotResolveForeignTableMessage, ForeignKeyAttribute foreignAttribute, Type foreignType)
+        public AttributeDecoratorException(string cannotResolveForeignTableMessage, ForeignKeyAttribute foreignAttribute, TypeInfoWrapper foreignType)
             : base(string.Format(cannotResolveForeignTableMessage, foreignAttribute, foreignType))
         {
         }
@@ -131,7 +132,7 @@ namespace TestDataFramework.Exceptions
 
     public class TableTypeLookupException : ApplicationException
     {
-        public TableTypeLookupException(string assemblyCacheNotPopulatedMessage, Assembly assembly)
+        public TableTypeLookupException(string assemblyCacheNotPopulatedMessage, AssemblyWrapper assembly)
             : base(string.Format(assemblyCacheNotPopulatedMessage, assembly))
         {            
         }
@@ -139,7 +140,7 @@ namespace TestDataFramework.Exceptions
 
     public class TableTypeCacheException : ApplicationException
     {
-        public TableTypeCacheException(string duplicateTableNameMessage, IEnumerable<TestDataTypeInfo> typesInvolved)
+        public TableTypeCacheException(string duplicateTableNameMessage, IEnumerable<TypeInfoWrapper> typesInvolved)
             : base(string.Format(duplicateTableNameMessage, string.Join(", ", typesInvolved)))
         {
         }
@@ -149,8 +150,8 @@ namespace TestDataFramework.Exceptions
         {
         }
 
-        public TableTypeCacheException(string ambigousTableSearchConditionsMessage, Table table, TestDataTypeInfo ambigousType1,
-            TestDataTypeInfo ambigousType2)
+        public TableTypeCacheException(string ambigousTableSearchConditionsMessage, Table table, TypeInfoWrapper ambigousType1,
+            TypeInfoWrapper ambigousType2)
             : base(string.Format(ambigousTableSearchConditionsMessage, table, ambigousType1, ambigousType2))
         {
         }

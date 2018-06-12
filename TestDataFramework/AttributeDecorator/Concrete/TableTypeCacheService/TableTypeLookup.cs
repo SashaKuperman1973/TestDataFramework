@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using log4net;
+using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Logger;
@@ -18,12 +20,12 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
             this.attributeDecorator = attributeDecorator;
         }
 
-        public virtual Type GetTableTypeByCriteria(Table table, TypeDictionaryEqualityComparer.EqualsCriteriaDelegate matchCriteria, AssemblyLookupContext assemblyLookupContext)
+        public virtual TypeInfoWrapper GetTableTypeByCriteria(Table table, TypeDictionaryEqualityComparer.EqualsCriteriaDelegate matchCriteria, AssemblyLookupContext assemblyLookupContext)
         {
             TableTypeLookup.Logger.Debug("Entering GetTableTypeByCriteria.");
 
-            TestDataTypeInfo result;
-            List<TestDataTypeInfo> collisionTypes;
+            TypeInfoWrapper result;
+            List<TypeInfoWrapper> collisionTypes;
 
             assemblyLookupContext.TypeDictionaryEqualityComparer.SetEqualsCriteria(matchCriteria);
 
@@ -33,10 +35,10 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
             }
 
             TableTypeLookup.Logger.Debug("Exiting GetTableTypeByCriteria.");
-            return assemblyLookupContext.TypeDictionary.TryGetValue(table, out result) ? result.TypeInfo : null;
+            return assemblyLookupContext.TypeDictionary.TryGetValue(table, out result) ? result : null;
         }
 
-        public virtual Type GetTableTypeWithCatalogue(Table table, AssemblyLookupContext assemblyLookupContext)
+        public virtual TypeInfoWrapper GetTableTypeWithCatalogue(Table table, AssemblyLookupContext assemblyLookupContext)
         {
             TableTypeLookup.Logger.Debug("Entering GetTableTypeWithCatalogue.");
 
@@ -46,7 +48,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
                 return null;
             }
 
-            TestDataTypeInfo result;
+            TypeInfoWrapper result;
 
             assemblyLookupContext.TypeDictionaryEqualityComparer.SetEqualsCriteria((fromSet, input) => fromSet.HasCatalogueName);
 
@@ -63,7 +65,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
                     !fromSet.CatalogueName.Equals(resultTableAttribute.CatalogueName)
             );
 
-            TestDataTypeInfo abmigousConditionType;
+            TypeInfoWrapper abmigousConditionType;
 
             if (assemblyLookupContext.TypeDictionary.TryGetValue(table, out abmigousConditionType))
             {
@@ -72,7 +74,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
             }
 
             TableTypeLookup.Logger.Debug("Exiting GetTableTypeWithCatalogue.");
-            return result.TypeInfo;
+            return result;
         }
     }
 }

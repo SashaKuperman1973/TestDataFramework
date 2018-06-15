@@ -17,6 +17,8 @@
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework;
@@ -150,6 +152,45 @@ namespace Tests.Tests.ImmediateTests
                 m => m.GetCachedTableType(foreignKeyAttribute, tableAttribute, assemblyLookupContext));
 
             return result;
+        }
+
+        [TestMethod]
+        public void PopulateAssemblyCache_Test()
+        {
+            // Arrange
+
+            var assemblyMock = new Mock<AssemblyWrapper>();
+            GetTableAttribute getTableAttribute = type => null;
+            string defaultSchema = "DefaultSchema";
+
+            var assemblyNames = new[]
+                {new AssemblyNameWrapper(), new AssemblyNameWrapper(), new AssemblyNameWrapper()};
+
+            assemblyMock.Setup(m => m.GetReferencedAssemblies())
+                .Returns(assemblyNames.Take(2).ToArray());
+
+            assemblyMock.Setup(m => m.GetName()).Returns(assemblyNames.Skip(2).Take(1).First());
+
+            var domainMock = new Mock<AppDomainWrapper>();
+
+            this.tableTypeCacheServiceMock.Setup(m => m.CreateDomain()).Returns(domainMock.Object);
+
+            // Act
+
+            this.tableTypeCache.PopulateAssemblyCache(assemblyMock.Object, getTableAttribute, defaultSchema);
+
+            // Assert
+
+            KeyValuePair<AssemblyWrapper, AssemblyLookupContext> typeDictionaryEntry = this.tableTypeCache.TableTypeDictionary.Single();
+            Assert.AreEqual(assemblyMock.Object, typeDictionaryEntry.Key);
+            Assert.IsInstanceOfType(typeDictionaryEntry.Value, typeof(AssemblyLookupContext));
+
+            assemblyNames.ToList()
+                .ForEach(assemblyName => this.tableTypeCacheServiceMock.Verify(m => m.PopulateAssemblyCache(domainMock.Object,
+                    assemblyName, getTableAttribute, defaultSchema,
+                    this.tableTypeCacheServiceMock.Object.TryAssociateTypeToTable, typeDictionaryEntry.Value)));
+
+            domainMock.Verify(m => m.Unload());
         }
     }
 }

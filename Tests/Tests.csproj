@@ -121,6 +121,7 @@
     <Compile Include="Tests\ImmediateTests\SqlClientInitialCountGeneratorTests.cs" />
     <Compile Include="Tests\ImmediateTests\MemoryPersistenceTests.cs" />
     <Compile Include="Tests\ImmediateTests\StaticPopulatorFactoryTests.cs" />
+    <Compile Include="Tests\ImmediateTests\TableTypeCacheServiceTests\EqualityHelperTests.cs" />
     <Compile Include="Tests\ImmediateTests\TableTypeCacheServiceTests\StandardTableTypeCacheServiceTests.cs" />
     <Compile Include="Tests\ImmediateTests\TableTypeCacheServiceTests\TableTypeLookupTests.cs" />
     <Compile Include="Tests\ImmediateTests\ValueGuaranteePopulatorTests.cs" />

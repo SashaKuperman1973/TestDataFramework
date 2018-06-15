@@ -62,7 +62,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wr
 
         public override bool Equals(object obj)
         {
-            var result = EqualityHelper<TypeInfoWrapper, TypeInfo>.Equals(this, obj);
+            var result = EqualityHelper.Equals<TypeInfoWrapper, TypeInfo>(this, obj);
             return result;
         }
 

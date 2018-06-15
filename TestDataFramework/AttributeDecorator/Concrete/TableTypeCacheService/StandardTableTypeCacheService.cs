@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -97,7 +98,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
                 ? new Table(tableAttribute)
                 : new Table(definedType, defaultSchema);
 
-            // Note: If HasCatlogueName then HasTableAttribute
+            // Note: If HasCatalogueName then HasTableAttribute
 
             bool EqualsCriteria(Table fromSet, Table input)
             {
@@ -120,26 +121,37 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
 
             StandardTableTypeCacheService.Logger.Debug($"Table class collision detected. Table object: {table}");
 
-            assemblyLookupContext.CollisionDictionary.AddOrUpdate(table, new List<TypeInfoWrapper>
-                {
-                    // first item of collision to add to list
+            assemblyLookupContext.CollisionDictionary.AddOrUpdate(table,
+                
+                // Add
+                StandardTableTypeCacheService.AddToTypeDictionary(assemblyLookupContext, table, definedType),
 
-                    assemblyLookupContext.TypeDictionary.GetOrAdd(table,
-                        t => { throw new TableTypeCacheException(Messages.ErrorGettingDefinedType, table); }),
-
-                    // second item of collision to add to list
-
-                    definedType
-                },
-
-                // collision key already exists. update collision list with newly attempted type.
-                (tbl, list) =>
+                // Update
+                // Collision key already exists. Update collision list with newly attempted type.
+                (tablePlaceholder, list) =>
                 {
                     list.Add(definedType);
                     return list;
                 });
 
             StandardTableTypeCacheService.Logger.Debug("Exiting TryAdd");
+        }
+
+        private static IList<TypeInfoWrapper> AddToTypeDictionary(AssemblyLookupContext assemblyLookupContext, Table table, TypeInfoWrapper definedType)
+        {
+            var result = new List<TypeInfoWrapper>()
+            {
+                // first item of collision to add to list
+
+                assemblyLookupContext.TypeDictionary.GetOrAdd(table,
+                    t => throw new TableTypeCacheException(Messages.ErrorGettingDefinedType, table)),
+
+                // second item of collision to add to list
+
+                definedType
+            };
+
+            return result;
         }
 
         public virtual void PopulateAssemblyCache(AppDomainWrapper domain, AssemblyNameWrapper assemblyName,
@@ -175,6 +187,25 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
 
             loadedAssemblyTypes.ForEach(definedType => tryAssociateTypeToTable(definedType, assemblyLookupContext,
                 getTableAttibute, defaultSchema));
+        }
+
+        public virtual TypeInfoWrapper GetCachedTableTypeUsingAllAssemblies(ForeignKeyAttribute foreignKeyAttribute,
+            TableAttribute tableAttribute, GetCachedTableType getCachedTableType,
+            ConcurrentDictionary<AssemblyWrapper, AssemblyLookupContext> tableTypeDictionary)
+        {
+            StandardTableTypeCacheService.Logger.Debug("Entering GetCachedTableTypeUsingAllAssemblies");
+
+            foreach (KeyValuePair<AssemblyWrapper, AssemblyLookupContext> tableTypeKvp in tableTypeDictionary)
+            {
+                TypeInfoWrapper result =
+                    getCachedTableType(foreignKeyAttribute, tableAttribute, tableTypeKvp.Value);
+
+                if (result != null)
+                    return result;
+            }
+
+            StandardTableTypeCacheService.Logger.Debug("Exiting GetCachedTableTypeUsingAllAssemblies");
+            return null;
         }
     }
 }

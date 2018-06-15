@@ -17,7 +17,6 @@
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -56,7 +55,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete
 
         public virtual TypeInfoWrapper GetCachedTableType(ForeignKeyAttribute foreignKeyAttribute,
             TypeInfoWrapper foreignType,
-            AssemblyWrapper initialAssemblyToScan, Func<TypeInfoWrapper, TableAttribute> getTableAttibute,
+            AssemblyWrapper initialAssemblyToScan, GetTableAttribute getTableAttibute,
             bool canScanAllCachedAssemblies = true)
         {
             StandardTableTypeCache.Logger.Debug("Entering GetCachedTableType");
@@ -73,9 +72,12 @@ namespace TestDataFramework.AttributeDecorator.Concrete
             if (result != null)
                 return result;
 
-            result = canScanAllCachedAssemblies
-                ? this.GetCachedTableTypeUsingAllAssemblies(foreignKeyAttribute, tableAttribute)
-                : null;
+            if (canScanAllCachedAssemblies)
+            {
+                result = this.tableTypeCacheService.GetCachedTableTypeUsingAllAssemblies(foreignKeyAttribute,
+                    tableAttribute,
+                    this.tableTypeCacheService.GetCachedTableType, this.TableTypeDictionary);
+            }
 
             StandardTableTypeCache.Logger.Debug("Exiting GetCachedTableType");
             return result;
@@ -104,25 +106,6 @@ namespace TestDataFramework.AttributeDecorator.Concrete
             domain.Unload();
 
             StandardTableTypeCache.Logger.Debug("Exiting PopulateAssemblyCache");
-        }
-
-        private TypeInfoWrapper GetCachedTableTypeUsingAllAssemblies(ForeignKeyAttribute foreignKeyAttribute,
-            TableAttribute tableAttribute)
-        {
-            StandardTableTypeCache.Logger.Debug("Entering GetCachedTableTypeUsingAllAssemblies");
-
-            foreach (KeyValuePair<AssemblyWrapper, AssemblyLookupContext> tableTypeKvp in this.TableTypeDictionary)
-            {
-                TypeInfoWrapper result =
-                    this.tableTypeCacheService.GetCachedTableType(foreignKeyAttribute, tableAttribute,
-                        tableTypeKvp.Value);
-
-                if (result != null)
-                    return result;
-            }
-
-            StandardTableTypeCache.Logger.Debug("Exiting GetCachedTableTypeUsingAllAssemblies");
-            return null;
         }
     }
 }

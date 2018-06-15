@@ -1,4 +1,5 @@
-﻿using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService;
+﻿using System.Collections.Concurrent;
+using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 
 namespace TestDataFramework.AttributeDecorator.Interfaces
@@ -18,5 +19,9 @@ namespace TestDataFramework.AttributeDecorator.Interfaces
             GetTableAttribute getTableAttibute, string defaultSchema,
             TryAssociateTypeToTable tryAssociateTypeToTable,
             AssemblyLookupContext assemblyLookupContext);
+
+        TypeInfoWrapper GetCachedTableTypeUsingAllAssemblies(ForeignKeyAttribute foreignKeyAttribute,
+            TableAttribute tableAttribute, GetCachedTableType getCachedTableType,
+            ConcurrentDictionary<AssemblyWrapper, AssemblyLookupContext> tableTypeDictionary);
     }
 }

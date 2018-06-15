@@ -511,18 +511,81 @@ namespace Tests.Tests.ImmediateTests
         {
             // Arrange
 
-            var foreignType = new TypeInfoWrapper(typeof(ForeignClass));
+            var foreignTypeMock = new Mock<TypeInfoWrapper>();
+            var foreignTypeAssembly = new AssemblyWrapper();
+            foreignTypeMock.SetupGet(m => m.Assembly).Returns(foreignTypeAssembly);
 
-            var foreignKeyAtribute = new ForeignKeyAttribute("PrimaryClass", null);
+            var foreignKeyAtribute = new ForeignKeyAttribute("PlaceHolder", null);
 
-            this.tableTypeCacheMock.Setup(m => m.IsAssemblyCachePopulated(new AssemblyWrapper())).Returns(true);
+            this.tableTypeCacheMock.Setup(m => m.IsAssemblyCachePopulated(this.callingAssemblyWrapperMock.Object))
+                .Returns(true).Verifiable();
+
+            this.tableTypeCacheMock.Setup(m => m.IsAssemblyCachePopulated(foreignTypeAssembly))
+                .Returns(false).Verifiable();
+
+            this.tableTypeCacheMock.Setup(m => m.GetCachedTableType(foreignKeyAtribute, foreignTypeMock.Object,
+                this.callingAssemblyWrapperMock.Object, this.attributeDecorator.GetSingleAttribute<TableAttribute>,
+                true)).Returns((TypeInfoWrapper)null).Verifiable();
+
+            this.tableTypeCacheMock.Setup(m => m.GetCachedTableType(foreignKeyAtribute, foreignTypeMock.Object,
+                foreignTypeAssembly, this.attributeDecorator.GetSingleAttribute<TableAttribute>,
+                false)).Returns((TypeInfoWrapper)null).Verifiable();
 
             // Act
             // Assert
 
-            Helpers.ExceptionTest(() => this.attributeDecorator.GetTableType(foreignKeyAtribute, foreignType),
+            Helpers.ExceptionTest(() => this.attributeDecorator.GetTableType(foreignKeyAtribute, foreignTypeMock.Object),
                 typeof(AttributeDecoratorException),
-                string.Format(Messages.CannotResolveForeignKey, foreignKeyAtribute, foreignType));
+                string.Format(Messages.CannotResolveForeignKey, foreignKeyAtribute, foreignTypeMock.Object));
+
+            this.tableTypeCacheMock.Verify();
+
+            this.tableTypeCacheMock.Verify(m => m.PopulateAssemblyCache(this.callingAssemblyWrapperMock.Object,
+                this.attributeDecorator.GetSingleAttribute<TableAttribute>, this.schema.Value), Times.Never);
+
+            this.tableTypeCacheMock.Verify(m => m.PopulateAssemblyCache(foreignTypeAssembly,
+                this.attributeDecorator.GetSingleAttribute<TableAttribute>, this.schema.Value), Times.Once);
+        }
+
+        [TestMethod]
+        public void GetTableType_TableTypeCache_Is_Populated_ButCannot_Resolve_ForeignKey_Test()
+        {
+            // Arrange
+
+            var foreignTypeMock = new Mock<TypeInfoWrapper>();
+            var foreignTypeAssembly = new AssemblyWrapper();
+            foreignTypeMock.SetupGet(m => m.Assembly).Returns(foreignTypeAssembly);
+
+            var foreignKeyAtribute = new ForeignKeyAttribute("PlaceHolder", null);
+
+            this.tableTypeCacheMock.Setup(m => m.IsAssemblyCachePopulated(this.callingAssemblyWrapperMock.Object))
+                .Returns(true).Verifiable();
+
+            this.tableTypeCacheMock.Setup(m => m.IsAssemblyCachePopulated(foreignTypeAssembly))
+                .Returns(true).Verifiable();
+
+            this.tableTypeCacheMock.Setup(m => m.GetCachedTableType(foreignKeyAtribute, foreignTypeMock.Object,
+                this.callingAssemblyWrapperMock.Object, this.attributeDecorator.GetSingleAttribute<TableAttribute>,
+                true)).Returns((TypeInfoWrapper)null).Verifiable();
+
+            // Act
+            // Assert
+
+            Helpers.ExceptionTest(() => this.attributeDecorator.GetTableType(foreignKeyAtribute, foreignTypeMock.Object),
+                typeof(AttributeDecoratorException),
+                string.Format(Messages.CannotResolveForeignKey, foreignKeyAtribute, foreignTypeMock.Object));
+
+            this.tableTypeCacheMock.Verify();
+
+            this.tableTypeCacheMock.Verify(m => m.PopulateAssemblyCache(this.callingAssemblyWrapperMock.Object,
+                this.attributeDecorator.GetSingleAttribute<TableAttribute>, this.schema.Value), Times.Never);
+
+            this.tableTypeCacheMock.Verify(m => m.PopulateAssemblyCache(foreignTypeAssembly,
+                this.attributeDecorator.GetSingleAttribute<TableAttribute>, this.schema.Value), Times.Never);
+
+            this.tableTypeCacheMock.Verify(m => m.GetCachedTableType(foreignKeyAtribute, foreignTypeMock.Object,
+                foreignTypeAssembly, this.attributeDecorator.GetSingleAttribute<TableAttribute>,
+                false), Times.Never());
         }
 
         [TestMethod]

@@ -7,4 +7,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
     public delegate void TryAssociateTypeToTable(TypeInfoWrapper definedType,
         AssemblyLookupContext assemblyLookupContext, GetTableAttribute getTableAttibute,
         string defaultSchema);
+
+    public delegate TypeInfoWrapper GetCachedTableType(ForeignKeyAttribute foreignAttribute,
+        TableAttribute tableAttribute, AssemblyLookupContext assemblyLookupContext);
 }

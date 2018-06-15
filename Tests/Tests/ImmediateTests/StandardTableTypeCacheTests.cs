@@ -19,8 +19,10 @@
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using TestDataFramework;
 using TestDataFramework.AttributeDecorator;
 using TestDataFramework.AttributeDecorator.Concrete;
+using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.Exceptions;
@@ -32,13 +34,13 @@ namespace Tests.Tests.ImmediateTests
     {
         private StandardTableTypeCache tableTypeCache;
 
-        private Mock<ITableTypeCacheService> tableTypeServicedMock;
+        private Mock<ITableTypeCacheService> tableTypeCacheServiceMock;
 
         [TestInitialize]
         public void Initialize()
         {
-            this.tableTypeServicedMock = new Mock<ITableTypeCacheService>();
-            this.tableTypeCache = new StandardTableTypeCache(this.tableTypeServicedMock.Object);
+            this.tableTypeCacheServiceMock = new Mock<ITableTypeCacheService>();
+            this.tableTypeCache = new StandardTableTypeCache(this.tableTypeCacheServiceMock.Object);
         }
 
         [TestMethod]
@@ -81,6 +83,73 @@ namespace Tests.Tests.ImmediateTests
                 () => this.tableTypeCache.GetCachedTableType(null, null, initialAssemblyToScan, null),
                 typeof(TableTypeLookupException),
                 string.Format(Messages.AssemblyCacheNotPopulated, initialAssemblyToScan));
+        }
+
+        [TestMethod]
+        public void GetCachedTableType_Test()
+        {
+            TypeInfoWrapper result;
+
+            var computedResultFromInitialAssemblyToScan = new TypeInfoWrapper();
+
+            result = this.GetCachedTableType_Test(false, computedResultFromInitialAssemblyToScan);
+            Assert.AreEqual(computedResultFromInitialAssemblyToScan, result);
+            this.tableTypeCacheServiceMock.VerifyNoOtherCalls();
+            this.tableTypeCacheServiceMock.ResetCalls();
+
+            result = this.GetCachedTableType_Test(true, computedResultFromInitialAssemblyToScan);
+            Assert.AreEqual(computedResultFromInitialAssemblyToScan, result);
+            this.tableTypeCacheServiceMock.VerifyNoOtherCalls();
+            this.tableTypeCacheServiceMock.ResetCalls();
+
+            var computedResultFromAllAssemblies = new TypeInfoWrapper();
+
+            result = this.GetCachedTableType_Test(true, null, computedResultFromAllAssemblies);
+            Assert.AreEqual(computedResultFromAllAssemblies, result);
+            this.tableTypeCacheServiceMock.Verify();
+            this.tableTypeCacheServiceMock.ResetCalls();
+
+            result = this.GetCachedTableType_Test(false, null, computedResultFromAllAssemblies);
+            Assert.IsNull(result);
+            this.tableTypeCacheServiceMock.VerifyNoOtherCalls();
+            this.tableTypeCacheServiceMock.ResetCalls();
+        }
+
+        private TypeInfoWrapper GetCachedTableType_Test(bool canScanAllAssemblies, TypeInfoWrapper computedResultFromInitialAssemblyToScan,
+            TypeInfoWrapper computedResultFromAllAssemblies = null)
+        {
+            // Arrange
+
+            var initialAssemblyToScan = new AssemblyWrapper();
+            var assemblyLookupContext = new AssemblyLookupContext();
+
+            this.tableTypeCache.TableTypeDictionary.TryAdd(initialAssemblyToScan, assemblyLookupContext);
+
+            var foreignKeyAttribute = new ForeignKeyAttribute("tableName", "keyName");
+            var tableAttribute = new TableAttribute("name");
+            var foreignType = new TypeInfoWrapper();
+            var getTableAttibuteMock = new Mock<GetTableAttribute>();
+
+            getTableAttibuteMock.Setup(m => m(foreignType)).Returns(tableAttribute);
+
+            this.tableTypeCacheServiceMock.Setup(
+                    m => m.GetCachedTableType(foreignKeyAttribute, tableAttribute, assemblyLookupContext))
+                .Returns(computedResultFromInitialAssemblyToScan);
+
+            this.tableTypeCacheServiceMock.Setup(m => m.GetCachedTableTypeUsingAllAssemblies(foreignKeyAttribute,
+                tableAttribute, this.tableTypeCacheServiceMock.Object.GetCachedTableType,
+                this.tableTypeCache.TableTypeDictionary)).Returns(computedResultFromAllAssemblies).Verifiable();
+
+            // Act
+
+            TypeInfoWrapper result = this.tableTypeCache.GetCachedTableType(foreignKeyAttribute, foreignType,
+                initialAssemblyToScan,
+                getTableAttibuteMock.Object, canScanAllAssemblies);
+
+            this.tableTypeCacheServiceMock.Verify(
+                m => m.GetCachedTableType(foreignKeyAttribute, tableAttribute, assemblyLookupContext));
+
+            return result;
         }
     }
 }

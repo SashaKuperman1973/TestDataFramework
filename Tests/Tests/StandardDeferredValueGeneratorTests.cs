@@ -1,0 +1,94 @@
+﻿/*
+    Copyright 2016, 2017 Alexander Kuperman
+
+    This file is part of TestDataFramework.
+
+    TestDataFramework is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    TestDataFramework is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+using System.Collections.Generic;
+using log4net.Config;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
+using TestDataFramework.AttributeDecorator.Concrete;
+using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
+using TestDataFramework.AttributeDecorator.Interfaces;
+using TestDataFramework.DeepSetting;
+using TestDataFramework.DeferredValueGenerator.Concrete;
+using TestDataFramework.DeferredValueGenerator.Interfaces;
+using TestDataFramework.Helpers;
+using TestDataFramework.Populator;
+using TestDataFramework.Populator.Concrete;
+using TestDataFramework.TypeGenerator.Interfaces;
+using Tests.TestModels;
+
+namespace Tests.Tests
+{
+    [TestClass]
+    public class StandardDeferredValueGeneratorTests
+    {
+        private IAttributeDecorator attributeDecorator;
+
+        [TestInitialize]
+        public void Initialize()
+        {
+            XmlConfigurator.Configure();
+
+            this.attributeDecorator = new StandardAttributeDecorator(null, new AssemblyWrapper(), new Schema());
+        }
+
+        [TestMethod]
+        public void DeferredValueGenerator_Test()
+        {
+            // Arrange
+
+            var typeGeneratorMock = new Mock<ITypeGenerator>();
+
+            typeGeneratorMock.Setup(
+                    m => m.GetObject<PrimaryTable>(It.IsAny<IEnumerable<ExplicitPropertySetters>>()))
+                .Returns(new PrimaryTable());
+
+            typeGeneratorMock.Setup(
+                    m => m.GetObject<ForeignTable>(It.IsAny<IEnumerable<ExplicitPropertySetters>>()))
+                .Returns(new ForeignTable());
+
+            var recordObject1 = new RecordReference<PrimaryTable>(typeGeneratorMock.Object, this.attributeDecorator,
+                null, null, null, null);
+            var recordObject2 = new RecordReference<ForeignTable>(typeGeneratorMock.Object, this.attributeDecorator,
+                null, null, null, null);
+
+            var dataSource = new Mock<IPropertyDataGenerator<LargeInteger>>();
+            var generator = new StandardDeferredValueGenerator<LargeInteger>(dataSource.Object);
+
+            // Act
+
+            recordObject1.Populate();
+            recordObject2.Populate();
+
+            generator.AddDelegate(recordObject1.RecordType.GetProperty("Text"), ul => "A");
+            generator.AddDelegate(recordObject1.RecordType.GetProperty("Integer"), ul => 1);
+            generator.AddDelegate(recordObject2.RecordType.GetProperty("Text"), ul => "B");
+            generator.AddDelegate(recordObject2.RecordType.GetProperty("Integer"), ul => 2);
+
+            generator.Execute(new RecordReference[] {recordObject2, recordObject1});
+
+            // Assert
+
+            Assert.AreEqual("A", recordObject1.RecordObject.Text);
+            Assert.AreEqual(1, recordObject1.RecordObject.Integer);
+            Assert.AreEqual("B", recordObject2.RecordObject.Text);
+            Assert.AreEqual(2, recordObject2.RecordObject.Integer);
+        }
+    }
+}

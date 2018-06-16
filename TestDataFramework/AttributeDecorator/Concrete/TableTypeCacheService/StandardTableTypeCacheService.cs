@@ -38,7 +38,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
 
             // 1.
             // Test for a complete match
-            if ((result = this.tableTypeLookup.GetTableTypeByCriteria(table, TableTypeCriteria.CompleteMatchCriteria,
+            if ((result = this.tableTypeLookup.GetTableTypeByCriteria(table, TableTypeCriteria.CompleteCatalogueMatchCriteria,
                     assemblyLookupContext)) != null)
             {
                 StandardTableTypeCacheService.Logger.Debug("Complete match found. Exiting GetCachedTableType.");
@@ -124,7 +124,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
             assemblyLookupContext.CollisionDictionary.AddOrUpdate(table,
                 
                 // Add
-                StandardTableTypeCacheService.AddToTypeDictionary(assemblyLookupContext, table, definedType),
+                tableToAdd => StandardTableTypeCacheService.AddToTypeDictionary(assemblyLookupContext, tableToAdd, definedType),
 
                 // Update
                 // Collision key already exists. Update collision list with newly attempted type.
@@ -137,7 +137,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
             StandardTableTypeCacheService.Logger.Debug("Exiting TryAdd");
         }
 
-        private static IList<TypeInfoWrapper> AddToTypeDictionary(AssemblyLookupContext assemblyLookupContext, Table table, TypeInfoWrapper definedType)
+        private static List<TypeInfoWrapper> AddToTypeDictionary(AssemblyLookupContext assemblyLookupContext, Table table, TypeInfoWrapper definedType)
         {
             var result = new List<TypeInfoWrapper>()
             {

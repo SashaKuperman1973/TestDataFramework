@@ -4,7 +4,7 @@
     {
         // Note: If HasCatlogueName then HasTableAttribute
 
-        internal static bool CompleteMatchCriteria(Table fromSet, Table input)
+        internal static bool CompleteCatalogueMatchCriteria(Table fromSet, Table input)
         {
             return fromSet.HasCatalogueName && input.HasCatalogueName &&
                    fromSet.CatalogueName.Equals(input.CatalogueName);

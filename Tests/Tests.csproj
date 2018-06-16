@@ -124,6 +124,7 @@
     <Compile Include="Tests\ImmediateTests\TableTypeCacheServiceTests\EqualityHelperTests.cs" />
     <Compile Include="Tests\ImmediateTests\TableTypeCacheServiceTests\StandardTableTypeCacheServiceTests.cs" />
     <Compile Include="Tests\ImmediateTests\TableTypeCacheServiceTests\TableTypeLookupTests.cs" />
+    <Compile Include="Tests\ImmediateTests\TableTypeCriteriaTests.cs" />
     <Compile Include="Tests\ImmediateTests\ValueGuaranteePopulatorTests.cs" />
     <Compile Include="Tests\ImmediateTests\GenericRecordReferenceTests.cs" />
     <Compile Include="Tests\ImmediateTests\OperableListTests.cs" />

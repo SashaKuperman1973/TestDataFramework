@@ -95,7 +95,7 @@ namespace Tests.Tests.ImmediateTests.TableTypeCacheServiceTests
             var typeInfoWrapper = new TypeInfoWrapper();
 
             var assemblyLookupContext = new AssemblyLookupContext();
-            assemblyLookupContext.CollisionDictionary.TryAdd(tableOfSet, new[] {typeInfoWrapper});
+            assemblyLookupContext.CollisionDictionary.TryAdd(tableOfSet, new List<TypeInfoWrapper> {typeInfoWrapper});
 
             bool EqualsCriteria(Table fromSet, Table input) => true;
 
@@ -132,7 +132,7 @@ namespace Tests.Tests.ImmediateTests.TableTypeCacheServiceTests
             var typeInfoWrapper = new TypeInfoWrapper();
 
             var assemblyLookupContext = new AssemblyLookupContext();
-            assemblyLookupContext.CollisionDictionary.TryAdd(tableOfSet, new[] {typeInfoWrapper});
+            assemblyLookupContext.CollisionDictionary.TryAdd(tableOfSet, new List<TypeInfoWrapper> {typeInfoWrapper});
 
             bool EqualsCriteria(Table fromSet, Table input) => criteriaCheckResult;
 

@@ -25,7 +25,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
             TableTypeLookup.Logger.Debug("Entering GetTableTypeByCriteria.");
 
             TypeInfoWrapper result;
-            IList<TypeInfoWrapper> collisionTypes;
+            List<TypeInfoWrapper> collisionTypes;
 
             assemblyLookupContext.TypeDictionaryEqualityComparer.SetEqualsCriteria(matchCriteria);
 

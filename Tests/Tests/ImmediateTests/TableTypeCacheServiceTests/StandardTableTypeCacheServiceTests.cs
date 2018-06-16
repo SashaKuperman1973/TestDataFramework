@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -53,7 +54,7 @@ namespace Tests.Tests.ImmediateTests.TableTypeCacheServiceTests
 
             this.tableTypeLookupMock.Setup(m => m.GetTableTypeByCriteria(It.IsAny<Table>(),
                     It.Is<TypeDictionaryEqualityComparer.EqualsCriteriaDelegate>(
-                        func => func == TableTypeCriteria.CompleteMatchCriteria), this.assemblyLookupContext))
+                        func => func == TableTypeCriteria.CompleteCatalogueMatchCriteria), this.assemblyLookupContext))
                 .Returns(new TypeInfoWrapper(typeof(SubjectClass)));
 
             // Act
@@ -65,7 +66,7 @@ namespace Tests.Tests.ImmediateTests.TableTypeCacheServiceTests
 
             Assert.AreEqual(new TypeInfoWrapper(typeof(SubjectClass)), result);
 
-            this.VerifyGetTableTypeByCriteria(TableTypeCriteria.CompleteMatchCriteria);
+            this.VerifyGetTableTypeByCriteria(TableTypeCriteria.CompleteCatalogueMatchCriteria);
 
             this.tableTypeLookupMock.Verify(
                 m => m.GetTableTypeWithCatalogue(It.IsAny<Table>(), It.IsAny<AssemblyLookupContext>()), Times.Never);
@@ -86,7 +87,7 @@ namespace Tests.Tests.ImmediateTests.TableTypeCacheServiceTests
 
             this.tableTypeLookupMock.Setup(m => m.GetTableTypeByCriteria(It.IsAny<Table>(),
                     It.Is<TypeDictionaryEqualityComparer.EqualsCriteriaDelegate>(
-                        func => func == TableTypeCriteria.CompleteMatchCriteria), this.assemblyLookupContext))
+                        func => func == TableTypeCriteria.CompleteCatalogueMatchCriteria), this.assemblyLookupContext))
                 .Returns((TypeInfoWrapper) null);
 
             this.tableTypeLookupMock
@@ -103,7 +104,7 @@ namespace Tests.Tests.ImmediateTests.TableTypeCacheServiceTests
 
             Assert.AreEqual(new TypeInfoWrapper(typeof(SubjectClass)), result);
 
-            this.VerifyGetTableTypeByCriteria(TableTypeCriteria.CompleteMatchCriteria);
+            this.VerifyGetTableTypeByCriteria(TableTypeCriteria.CompleteCatalogueMatchCriteria);
 
             this.tableTypeLookupMock.Verify(
                 m => m.GetTableTypeWithCatalogue(It.IsAny<Table>(), It.IsAny<AssemblyLookupContext>()), Times.Once);
@@ -124,7 +125,7 @@ namespace Tests.Tests.ImmediateTests.TableTypeCacheServiceTests
 
             this.tableTypeLookupMock.Setup(m => m.GetTableTypeByCriteria(It.IsAny<Table>(),
                     It.Is<TypeDictionaryEqualityComparer.EqualsCriteriaDelegate>(
-                        func => func == TableTypeCriteria.CompleteMatchCriteria), this.assemblyLookupContext))
+                        func => func == TableTypeCriteria.CompleteCatalogueMatchCriteria), this.assemblyLookupContext))
                 .Returns((TypeInfoWrapper) null);
 
             this.tableTypeLookupMock
@@ -145,7 +146,7 @@ namespace Tests.Tests.ImmediateTests.TableTypeCacheServiceTests
 
             Assert.AreEqual(new TypeInfoWrapper(typeof(SubjectClass)), result);
 
-            this.VerifyGetTableTypeByCriteria(TableTypeCriteria.CompleteMatchCriteria);
+            this.VerifyGetTableTypeByCriteria(TableTypeCriteria.CompleteCatalogueMatchCriteria);
 
             this.tableTypeLookupMock.Verify(
                 m => m.GetTableTypeWithCatalogue(It.IsAny<Table>(), It.IsAny<AssemblyLookupContext>()), Times.Once);
@@ -164,7 +165,7 @@ namespace Tests.Tests.ImmediateTests.TableTypeCacheServiceTests
 
             this.tableTypeLookupMock.Setup(m => m.GetTableTypeByCriteria(It.IsAny<Table>(),
                     It.Is<TypeDictionaryEqualityComparer.EqualsCriteriaDelegate>(
-                        func => func == TableTypeCriteria.CompleteMatchCriteria), this.assemblyLookupContext))
+                        func => func == TableTypeCriteria.CompleteCatalogueMatchCriteria), this.assemblyLookupContext))
                 .Returns((TypeInfoWrapper) null);
 
             this.tableTypeLookupMock
@@ -191,7 +192,7 @@ namespace Tests.Tests.ImmediateTests.TableTypeCacheServiceTests
 
             Assert.AreEqual(new TypeInfoWrapper(typeof(SubjectClass)), result);
 
-            this.VerifyGetTableTypeByCriteria(TableTypeCriteria.CompleteMatchCriteria);
+            this.VerifyGetTableTypeByCriteria(TableTypeCriteria.CompleteCatalogueMatchCriteria);
 
             this.tableTypeLookupMock.Verify(
                 m => m.GetTableTypeWithCatalogue(It.IsAny<Table>(), It.IsAny<AssemblyLookupContext>()), Times.Once);
@@ -208,7 +209,7 @@ namespace Tests.Tests.ImmediateTests.TableTypeCacheServiceTests
 
             this.tableTypeLookupMock.Setup(m => m.GetTableTypeByCriteria(It.IsAny<Table>(),
                     It.Is<TypeDictionaryEqualityComparer.EqualsCriteriaDelegate>(
-                        func => func == TableTypeCriteria.CompleteMatchCriteria), this.assemblyLookupContext))
+                        func => func == TableTypeCriteria.CompleteCatalogueMatchCriteria), this.assemblyLookupContext))
                 .Returns((TypeInfoWrapper) null);
 
             this.tableTypeLookupMock
@@ -235,7 +236,7 @@ namespace Tests.Tests.ImmediateTests.TableTypeCacheServiceTests
 
             Assert.IsNull(result);
 
-            this.VerifyGetTableTypeByCriteria(TableTypeCriteria.CompleteMatchCriteria);
+            this.VerifyGetTableTypeByCriteria(TableTypeCriteria.CompleteCatalogueMatchCriteria);
 
             this.tableTypeLookupMock.Verify(
                 m => m.GetTableTypeWithCatalogue(It.IsAny<Table>(), It.IsAny<AssemblyLookupContext>()), Times.Once);
@@ -269,8 +270,10 @@ namespace Tests.Tests.ImmediateTests.TableTypeCacheServiceTests
         }
 
         [TestMethod]
-        public void TryAssociateTypeToTable_NoCollision_AddsTo_CollisionDictionary_Test()
+        public void TryAssociateTypeToTable_NoMatchingEntriesIn_CollisionDictionary_AddsTo_CollisionDictionary_Test()
         {
+            // Arrange
+
             var definedType = new TypeInfoWrapper(typeof(SubjectClass));
             TableAttribute GetTableAttibute(TypeInfoWrapper type) => null;
 
@@ -295,13 +298,115 @@ namespace Tests.Tests.ImmediateTests.TableTypeCacheServiceTests
             var table = new Table(definedType, defaultSchema: null);
 
             this.assemblyLookupContext.CollisionDictionary.TryGetValue(table,
-                out IList<TypeInfoWrapper> collisionTypes);
+                out List<TypeInfoWrapper> collisionTypes);
 
             Assert.IsNotNull(collisionTypes);
             Assert.AreEqual(2, collisionTypes.Count);
 
             Assert.AreEqual(definedType, collisionTypes[0]);
             Assert.AreEqual(definedType, collisionTypes[1]);
+        }
+
+        [TestMethod]
+        public void TryAssociateTypeToTable_MatchingEntry_InCollisionDictionary_UpdatesTheDictionary_Test()
+        {
+            // Arrange
+
+            var definedType = new TypeInfoWrapper(typeof(SubjectClass));
+            TableAttribute GetTableAttibute(TypeInfoWrapper type) => null;
+
+            var table = new Table(definedType, defaultSchema: null);
+            this.assemblyLookupContext.TypeDictionary.TryAdd(table, definedType);
+            var collidedType = new TypeInfoWrapper(typeof(SecondClass));
+            this.assemblyLookupContext.CollisionDictionary.TryAdd(table, new List<TypeInfoWrapper> {collidedType});
+
+            // Act
+
+            this.service.TryAssociateTypeToTable(definedType, this.assemblyLookupContext, GetTableAttibute,
+                defaultSchema: null);
+
+            // Assert
+
+            KeyValuePair<Table, List<TypeInfoWrapper>> collisionDictionaryEntry =
+                this.assemblyLookupContext.CollisionDictionary.Single();
+
+            Assert.AreEqual(table, collisionDictionaryEntry.Key);
+            Assert.AreEqual(2, collisionDictionaryEntry.Value.Count);
+            Assert.IsTrue(collisionDictionaryEntry.Value.Contains(definedType));
+            Assert.IsTrue(collisionDictionaryEntry.Value.Contains(collidedType));
+        }
+
+        [TestMethod]
+        public void GetCachedTableTypeUsingAllAssemblies_ReturnsType_Test()
+        {
+            // Arrange
+
+            var getCachedTableTypeMock = new Mock<GetCachedTableType>();
+            var assemblyLookupContext1 = new AssemblyLookupContext();
+            var assemblyLookupContext2 = new AssemblyLookupContext();
+            var type = new TypeInfoWrapper();
+
+            // Act
+
+            TypeInfoWrapper result = this.GetCachedTableTypeUsingAllAssemblies_Test(getCachedTableTypeMock, assemblyLookupContext1, assemblyLookupContext2, type);
+
+            // Assert
+
+            getCachedTableTypeMock.Verify(m => m(this.foreignKeyAttribute, this.tableAttribute,
+                It.IsAny<AssemblyLookupContext>()), Times.Once());
+
+            Assert.AreEqual(type, result);
+        }
+
+        [TestMethod]
+        public void GetCachedTableTypeUsingAllAssemblies_NoCacheHits_ReturnsNull_Test()
+        {
+            // Arrange
+
+            var getCachedTableTypeMock = new Mock<GetCachedTableType>();
+            var assemblyLookupContext1 = new AssemblyLookupContext();
+            var assemblyLookupContext2 = new AssemblyLookupContext();
+
+            // Act
+
+            TypeInfoWrapper result = this.GetCachedTableTypeUsingAllAssemblies_Test(getCachedTableTypeMock,
+                assemblyLookupContext1, assemblyLookupContext2, null);
+
+            // Assert
+
+            getCachedTableTypeMock.Verify(m => m(this.foreignKeyAttribute, this.tableAttribute,
+                assemblyLookupContext1), Times.Once());
+
+            getCachedTableTypeMock.Verify(m => m(this.foreignKeyAttribute, this.tableAttribute,
+                assemblyLookupContext2), Times.Once());
+
+            getCachedTableTypeMock.VerifyNoOtherCalls();
+
+            Assert.IsNull(result);
+        }
+
+        private TypeInfoWrapper GetCachedTableTypeUsingAllAssemblies_Test(
+            Mock<GetCachedTableType> getCachedTableTypeMock,
+            AssemblyLookupContext assemblyLookupContext1,
+            AssemblyLookupContext assemblyLookupContext2,
+            TypeInfoWrapper type)
+        {
+            // Arrange
+
+            var tableTypeDictionary = new ConcurrentDictionary<AssemblyWrapper, AssemblyLookupContext>();
+
+            tableTypeDictionary.TryAdd(new AssemblyWrapper(), assemblyLookupContext1);
+            tableTypeDictionary.TryAdd(new AssemblyWrapper(), assemblyLookupContext2);
+
+            getCachedTableTypeMock.Setup(m => m(this.foreignKeyAttribute, this.tableAttribute, It.IsAny<AssemblyLookupContext>()))
+                .Returns(type);
+
+            // Act
+
+            TypeInfoWrapper result = this.service.GetCachedTableTypeUsingAllAssemblies(this.foreignKeyAttribute,
+                this.tableAttribute, getCachedTableTypeMock.Object, tableTypeDictionary);
+
+            return result;
         }
 
         [TestMethod]

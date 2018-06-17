@@ -89,12 +89,15 @@
     <Compile Include="TestModels\PrimaryForeignReferenceSubjectClasses.cs" />
     <Compile Include="TestModels\SubjectClasses.cs" />
     <Compile Include="Tests\CircularReferenceBreakerTests.cs" />
+    <Compile Include="Tests\ColumnAttributeTests.cs" />
     <Compile Include="Tests\DbProviderWritePrimitivesTests.cs" />
     <Compile Include="Tests\DeepCollectionSettingConverterTests.cs" />
     <Compile Include="Tests\ExplicitlyIgnoredValueTests.cs" />
     <Compile Include="Tests\FieldExpressionTests.cs" />
     <Compile Include="Tests\FieldExpressionValidatorTests.cs" />
+    <Compile Include="Tests\MaxAttributeTests.cs" />
     <Compile Include="Tests\MemoryValueGeneratorTests.cs" />
+    <Compile Include="Tests\MinAttributeTests.cs" />
     <Compile Include="Tests\ObjectGraphServiceTest.cs" />
     <Compile Include="Tests\RangeOperableListTests.cs" />
     <Compile Include="Tests\RangeTests.cs" />

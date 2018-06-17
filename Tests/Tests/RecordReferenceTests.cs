@@ -139,7 +139,7 @@ namespace Tests.Tests
 
             // Assert
 
-            List<ExplicitPropertySetters> setters = recordReference.ExplicitPropertySetters;
+            List<ExplicitPropertySetter> setters = recordReference.ExplicitPropertySetters;
             var testRecord = new PrimaryTable();
 
             Assert.AreEqual(intPropertyInfo.Name, setters[0].PropertyChain[0].Name);
@@ -181,7 +181,7 @@ namespace Tests.Tests
 
             // Assert
 
-            ExplicitPropertySetters propertySetter = recordReference.ExplicitPropertySetters.First();
+            ExplicitPropertySetter propertySetter = recordReference.ExplicitPropertySetters.First();
 
             Assert.AreEqual(setterObjectGraph, propertySetter.PropertyChain);
 

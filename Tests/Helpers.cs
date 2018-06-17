@@ -77,7 +77,7 @@ namespace Tests
         public static void SetupTypeGeneratorMock<T>(Mock<ITypeGenerator> typeGeneratorMock, T returnObject)
         {
             typeGeneratorMock.Setup(
-                    m => m.GetObject<T>(It.IsAny<IEnumerable<ExplicitPropertySetters>>()))
+                    m => m.GetObject<T>(It.IsAny<IEnumerable<ExplicitPropertySetter>>()))
                 .Returns(returnObject);
         }
 
@@ -104,8 +104,8 @@ namespace Tests
             params string[] propertyNamesToSet)
         {
             typeGeneratorMock.Setup(
-                    m => m.GetObject<T>(It.IsAny<IEnumerable<ExplicitPropertySetters>>()))
-                .Callback<IEnumerable<ExplicitPropertySetters>>(
+                    m => m.GetObject<T>(It.IsAny<IEnumerable<ExplicitPropertySetter>>()))
+                .Callback<IEnumerable<ExplicitPropertySetter>>(
                     setters =>
                     {
                         propertyNamesToSet.ToList().ForEach(propertyName =>

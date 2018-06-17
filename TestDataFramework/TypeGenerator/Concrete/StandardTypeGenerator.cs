@@ -72,13 +72,13 @@ namespace TestDataFramework.TypeGenerator.Concrete
 
         private readonly Stack<Type> complexTypeProcessingRecursionGuard = new Stack<Type>();
 
-        private List<ExplicitPropertySetters> explicitPropertySetters;
+        private List<ExplicitPropertySetter> explicitPropertySetters;
 
         #endregion Fields
 
         #region Private methods
 
-        private object ConstructObject(Type forType, Action<object> fillObject)
+        private object ConstructObject(Type forType, ObjectGraphNode objectGraphNode)
         {
             StandardTypeGenerator.Logger.Debug("Entering ConstructObject");
 
@@ -104,7 +104,7 @@ namespace TestDataFramework.TypeGenerator.Concrete
                 return objectToFillResult;
             }
 
-            fillObject(objectToFillResult);
+            this.FillObject(objectToFillResult, objectGraphNode);
             this.complexTypeProcessingRecursionGuard.Pop();
 
             StandardTypeGenerator.Logger.Debug("Exiting ConstructObject");
@@ -176,9 +176,9 @@ namespace TestDataFramework.TypeGenerator.Concrete
                     ? new ObjectGraphNode(targetPropertyInfo, objectGraphNode)
                     : null;
 
-                IEnumerable<ExplicitPropertySetters> setters =
+                IEnumerable<ExplicitPropertySetter> setters =
                     this.typeGeneratorService
-                        .IsPropertyExplicitlySet(this.explicitPropertySetters, propertyObjectGraphNode)
+                        .GetExplicitlySetPropertySetters(this.explicitPropertySetters, propertyObjectGraphNode)
                         .ToList();
 
                 if (setters.Any())
@@ -206,7 +206,7 @@ namespace TestDataFramework.TypeGenerator.Concrete
 
         #region Public methods
 
-        public virtual object GetObject<T>(IEnumerable<ExplicitPropertySetters> explicitProperySetters)
+        public virtual object GetObject<T>(IEnumerable<ExplicitPropertySetter> explicitProperySetters)
         {
             StandardTypeGenerator.Logger.Debug($"Entering GetObject. T: {typeof(T)}");
 
@@ -219,8 +219,7 @@ namespace TestDataFramework.TypeGenerator.Concrete
 
             var parentObjectGraphNode = new ObjectGraphNode(null, null);
 
-            object result = this.ConstructObject(typeof(T),
-                objectToFill => this.FillObject(objectToFill, parentObjectGraphNode));
+            object result = this.ConstructObject(typeof(T), parentObjectGraphNode);
 
             StandardTypeGenerator.Logger.Debug($"Exiting GetObject. result: {result}");
             return result;
@@ -230,8 +229,7 @@ namespace TestDataFramework.TypeGenerator.Concrete
         {
             StandardTypeGenerator.Logger.Debug($"Entering GetObject. forType: {forType}");
 
-            object result = this.ConstructObject(forType,
-                objectToFill => this.FillObject(objectToFill, objectGraphNode));
+            object result = this.ConstructObject(forType, objectGraphNode);
 
             StandardTypeGenerator.Logger.Debug($"Exiting GetObject. result: {result}");
             return result;

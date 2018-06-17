@@ -39,7 +39,7 @@ namespace Tests.Tests
         private Mock<IHandledTypeGenerator> handledTypeGeneratorMock;
         private StandardTypeGenerator typeGenerator;
         private Mock<IValueGenerator> valueGeneratorMock;
-        private Mock<ITypeGeneratorService> typeGeneratorService;
+        private Mock<ITypeGeneratorService> typeGeneratorServiceMock;
 
         [TestInitialize]
         public void Initialize()
@@ -48,10 +48,10 @@ namespace Tests.Tests
 
             this.valueGeneratorMock = new Mock<IValueGenerator>();
             this.handledTypeGeneratorMock = new Mock<IHandledTypeGenerator>();
-            this.typeGeneratorService = new Mock<ITypeGeneratorService>();
+            this.typeGeneratorServiceMock = new Mock<ITypeGeneratorService>();
 
             this.typeGenerator = new StandardTypeGenerator(this.valueGeneratorMock.Object,
-                this.handledTypeGeneratorMock.Object, this.typeGeneratorService.Object);
+                this.handledTypeGeneratorMock.Object, this.typeGeneratorServiceMock.Object);
         }
 
         [TestMethod]
@@ -66,7 +66,7 @@ namespace Tests.Tests
                     It.IsAny<ObjectGraphNode>()))
                 .Returns(expected);
 
-            var explicitPropertySetters = new List<ExplicitPropertySetters>();
+            var explicitPropertySetters = new List<ExplicitPropertySetter>();
 
             // Act
 
@@ -98,7 +98,7 @@ namespace Tests.Tests
                 .Returns<PropertyInfo, ObjectGraphNode>((pi, objectGraphNode) =>
                     this.typeGenerator.GetObject(types[i++], null));
 
-            var explicitPropertySetters = new List<ExplicitPropertySetters>();
+            var explicitPropertySetters = new List<ExplicitPropertySetter>();
 
             var result =
                 this.typeGenerator.GetObject<InfiniteRecursiveClass1>(explicitPropertySetters) as
@@ -114,17 +114,24 @@ namespace Tests.Tests
 
             const int expected = 7;
 
-            var explicitProperySetters = new List<ExplicitPropertySetters>();
+            var explicitProperySetters = new List<ExplicitPropertySetter>();
 
-            PropertyInfo propertyInfo = typeof(SecondClass).GetProperty("SecondInteger");
+            PropertyInfo propertyInfo = typeof(SecondClass).GetProperty(nameof(SecondClass.SecondInteger));
 
             Action<object> setter = @object => propertyInfo.SetValue(@object, expected);
 
-            explicitProperySetters.Add(new ExplicitPropertySetters
+            explicitProperySetters.Add(new ExplicitPropertySetter
             {
                 Action = setter,
                 PropertyChain = new List<PropertyInfo> {propertyInfo}
             });
+
+            this.typeGeneratorServiceMock.Setup(m => m.GetExplicitlySetPropertySetters(explicitProperySetters,
+                It.Is<ObjectGraphNode>(node => node.PropertyInfo.Name == propertyInfo.Name))).Returns(explicitProperySetters);
+
+            this.typeGeneratorServiceMock.Setup(m => m.GetExplicitlySetPropertySetters(explicitProperySetters,
+                    It.Is<ObjectGraphNode>(node => node.PropertyInfo.Name != propertyInfo.Name)))
+                .Returns(Enumerable.Empty<ExplicitPropertySetter>());
 
             // Act
 
@@ -140,7 +147,7 @@ namespace Tests.Tests
         {
             // Act
 
-            object result = this.typeGenerator.GetObject<AStruct>(new List<ExplicitPropertySetters>());
+            object result = this.typeGenerator.GetObject<AStruct>(new List<ExplicitPropertySetter>());
 
             // Assert
 
@@ -180,7 +187,7 @@ namespace Tests.Tests
             // Act
 
             object resultObject =
-                this.typeGenerator.GetObject<WithUninstantiatableDependency>(new List<ExplicitPropertySetters>());
+                this.typeGenerator.GetObject<WithUninstantiatableDependency>(new List<ExplicitPropertySetter>());
 
             // Assert
 
@@ -201,7 +208,7 @@ namespace Tests.Tests
 
             // Act
 
-            object result = this.typeGenerator.GetObject<ClassWithConstructor>(new List<ExplicitPropertySetters>());
+            object result = this.typeGenerator.GetObject<ClassWithConstructor>(new List<ExplicitPropertySetter>());
 
             // Assert
 

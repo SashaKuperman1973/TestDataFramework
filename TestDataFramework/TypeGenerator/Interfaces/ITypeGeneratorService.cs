@@ -5,8 +5,8 @@ namespace TestDataFramework.TypeGenerator.Interfaces
 {
     public interface ITypeGeneratorService
     {
-        IEnumerable<ExplicitPropertySetters> IsPropertyExplicitlySet(
-            IEnumerable<ExplicitPropertySetters> explicitPropertySetters,
+        IEnumerable<ExplicitPropertySetter> GetExplicitlySetPropertySetters(
+            IEnumerable<ExplicitPropertySetter> explicitPropertySetters,
             ObjectGraphNode objectGraphNode);
     }
 }

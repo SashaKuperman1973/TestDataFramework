@@ -604,7 +604,7 @@ namespace Tests.Tests
 
             // Assert
 
-            typeGeneratorMock.Verify(m => m.GetObject<SubjectClass>(It.IsAny<List<ExplicitPropertySetters>>()),
+            typeGeneratorMock.Verify(m => m.GetObject<SubjectClass>(It.IsAny<List<ExplicitPropertySetter>>()),
                 Times.Exactly(2));
             valueGuaranteePopulatorMock.Verify(
                 m => m.Bind(It.IsAny<OperableList<SubjectClass>>(), It.IsAny<List<GuaranteedValues>>()), Times.Never);
@@ -650,7 +650,7 @@ namespace Tests.Tests
 
             // Assert
 
-            typeGeneratorMock.Verify(m => m.GetObject<SubjectClass>(It.IsAny<IEnumerable<ExplicitPropertySetters>>()),
+            typeGeneratorMock.Verify(m => m.GetObject<SubjectClass>(It.IsAny<IEnumerable<ExplicitPropertySetter>>()),
                 Times.Once);
         }
 

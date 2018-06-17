@@ -37,8 +37,8 @@ namespace TestDataFramework.Populator.Concrete
         private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(RecordReference<T>));
         private readonly DeepCollectionSettingConverter deepCollectionSettingConverter;
 
-        protected internal readonly List<ExplicitPropertySetters> ExplicitPropertySetters =
-            new List<ExplicitPropertySetters>();
+        protected internal readonly List<ExplicitPropertySetter> ExplicitPropertySetters =
+            new List<ExplicitPropertySetter>();
 
         private readonly IObjectGraphService objectGraphService;
         private readonly ValueGuaranteePopulator valueGuaranteePopulator;
@@ -70,7 +70,7 @@ namespace TestDataFramework.Populator.Concrete
         {
             RecordReference<T>.Logger.Debug($"Entering IsExplicitlySet. propertyInfo: {propertyInfo}");
 
-            var result = this.ExplicitPropertySetters.Any(setter =>
+            bool result = this.ExplicitPropertySetters.Any(setter =>
                 setter.PropertyChain.FirstOrDefault()?.Name.Equals(propertyInfo.Name) ?? false);
 
             RecordReference<T>.Logger.Debug("Exiting IsExplicitlySet");
@@ -227,7 +227,7 @@ namespace TestDataFramework.Populator.Concrete
             }
 
             this.ExplicitPropertySetters.Add(
-                new ExplicitPropertySetters {PropertyChain = setterObjectGraph, Action = Setter});
+                new ExplicitPropertySetter {PropertyChain = setterObjectGraph, Action = Setter});
         }
     }
 }

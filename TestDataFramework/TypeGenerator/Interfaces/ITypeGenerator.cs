@@ -25,7 +25,7 @@ namespace TestDataFramework.TypeGenerator.Interfaces
 {
     public interface ITypeGenerator
     {
-        object GetObject<T>(IEnumerable<ExplicitPropertySetters> explicitProperySetters);
+        object GetObject<T>(IEnumerable<ExplicitPropertySetter> explicitProperySetters);
 
         object GetObject(Type forType, ObjectGraphNode objectGraphNode);
     }

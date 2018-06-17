@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace TestDataFramework.DeepSetting
 {
-    public class ExplicitPropertySetters
+    public class ExplicitPropertySetter
     {
         public List<PropertyInfo> PropertyChain { get; set; }
 

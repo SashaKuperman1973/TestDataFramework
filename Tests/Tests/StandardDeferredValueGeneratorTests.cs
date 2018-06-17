@@ -56,11 +56,11 @@ namespace Tests.Tests
             var typeGeneratorMock = new Mock<ITypeGenerator>();
 
             typeGeneratorMock.Setup(
-                    m => m.GetObject<PrimaryTable>(It.IsAny<IEnumerable<ExplicitPropertySetters>>()))
+                    m => m.GetObject<PrimaryTable>(It.IsAny<IEnumerable<ExplicitPropertySetter>>()))
                 .Returns(new PrimaryTable());
 
             typeGeneratorMock.Setup(
-                    m => m.GetObject<ForeignTable>(It.IsAny<IEnumerable<ExplicitPropertySetters>>()))
+                    m => m.GetObject<ForeignTable>(It.IsAny<IEnumerable<ExplicitPropertySetter>>()))
                 .Returns(new ForeignTable());
 
             var recordObject1 = new RecordReference<PrimaryTable>(typeGeneratorMock.Object, this.attributeDecorator,

@@ -9,32 +9,32 @@ namespace TestDataFramework.TypeGenerator.Concrete
 {
     public class StandardTypeGeneratorService : ITypeGeneratorService
     {
-        public IEnumerable<ExplicitPropertySetters> IsPropertyExplicitlySet(
-            IEnumerable<ExplicitPropertySetters> explicitPropertySetters,
+        public IEnumerable<ExplicitPropertySetter> GetExplicitlySetPropertySetters(
+            IEnumerable<ExplicitPropertySetter> explicitPropertySetters,
             ObjectGraphNode objectGraphNode)
         {
             if (objectGraphNode == null)
-                return Enumerable.Empty<ExplicitPropertySetters>();
+                return Enumerable.Empty<ExplicitPropertySetter>();
 
-            IEnumerable<ExplicitPropertySetters> result =
+            IEnumerable<ExplicitPropertySetter> result =
                 explicitPropertySetters.Where(
-                    setters => StandardTypeGeneratorService.IsPropertyExplicitlySet(setters, objectGraphNode));
+                    setter => StandardTypeGeneratorService.IsPropertyExplicitlySet(setter, objectGraphNode));
             return result;
         }
 
-        private static bool IsPropertyExplicitlySet(ExplicitPropertySetters explicitPropertySetters,
+        private static bool IsPropertyExplicitlySet(ExplicitPropertySetter explicitPropertySetter,
             ObjectGraphNode objectGraphNode)
         {
-            var stack = new Stack<PropertyInfo>(explicitPropertySetters.PropertyChain);
+            var stack = new Stack<PropertyInfo>(explicitPropertySetter.PropertyChain);
 
-            while (objectGraphNode.PropertyInfo != null)
+            while (objectGraphNode?.PropertyInfo != null)
             {
                 if (!stack.Any())
                     return false;
 
-                PropertyInfo setters = stack.Pop();
+                PropertyInfo setterProperty = stack.Pop();
 
-                if (!objectGraphNode.PropertyInfo.Name.Equals(setters.Name, StringComparison.Ordinal))
+                if (!objectGraphNode.PropertyInfo.Name.Equals(setterProperty.Name, StringComparison.Ordinal))
                     return false;
 
                 objectGraphNode = objectGraphNode.Parent;

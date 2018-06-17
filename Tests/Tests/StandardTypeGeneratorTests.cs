@@ -135,29 +135,13 @@ namespace Tests.Tests
         [TestMethod]
         public void GetObject_ValueType_Test()
         {
-            // Arrange
-
-            var expected = new AStruct();
-
-            this.valueGeneratorMock.Setup(m => m.GetValue(
-                    It.Is<PropertyInfo>(p => p.PropertyType == typeof(AStruct)),
-                    It.IsAny<ObjectGraphNode>()))
-                .Returns(expected);
-
             // Act
 
-            object result = this.typeGenerator.GetObject<SecondClass>(new List<ExplicitPropertySetters>());
+            object result = this.typeGenerator.GetObject<AStruct>(new List<ExplicitPropertySetters>());
 
             // Assert
 
-            var secondClassObject = result as SecondClass;
-            Assert.IsNotNull(secondClassObject);
-
-            Assert.AreEqual(expected, secondClassObject.AStruct);
-
-            this.valueGeneratorMock.Verify(
-                m => m.GetValue(It.Is<PropertyInfo>(p => p.PropertyType == typeof(AStruct)), It.IsAny<ObjectGraphNode>()),
-                Times.Once);
+            Assert.IsTrue(result is AStruct);
         }
 
         [TestMethod]
@@ -198,6 +182,35 @@ namespace Tests.Tests
             // Assert
 
             Assert.IsNull(resultObject);
+        }
+
+        [TestMethod]
+        public void GetObject_NonEmpty_Constructor_Test()
+        {
+            // Arrange
+
+            var expected = new SecondClass();
+
+            this.valueGeneratorMock.Setup(m => m.GetValue(
+                    null,
+                    It.Is<Type>(p => p == typeof(SecondClass))))
+                .Returns(expected);
+
+            // Act
+
+            object result = this.typeGenerator.GetObject<ClassWithConstructor>(new List<ExplicitPropertySetters>());
+
+            // Assert
+
+            var secondClassObject = result as ClassWithConstructor;
+            Assert.IsNotNull(secondClassObject);
+
+            Assert.AreEqual(expected, secondClassObject.SecondClass);
+
+            this.valueGeneratorMock.Verify(
+                m => m.GetValue(null,
+                        It.Is<Type>(p => p == typeof(SecondClass)))
+                , Times.Once);
         }
     }
 }

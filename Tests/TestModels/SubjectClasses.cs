@@ -120,8 +120,16 @@ namespace Tests.TestModels
     public class SecondClass
     {
         public int SecondInteger { get; set; }
+    }
 
-        public AStruct AStruct { get; set; }
+    public class ClassWithConstructor
+    {
+        public ClassWithConstructor(SecondClass constructorParameter)
+        {
+            this.SecondClass = constructorParameter;
+        }
+
+        public SecondClass SecondClass;
     }
 
     public class InfiniteRecursiveClass1

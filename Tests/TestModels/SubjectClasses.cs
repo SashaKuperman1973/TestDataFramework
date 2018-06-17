@@ -120,6 +120,8 @@ namespace Tests.TestModels
     public class SecondClass
     {
         public int SecondInteger { get; set; }
+
+        public AStruct AStruct { get; set; }
     }
 
     public class InfiniteRecursiveClass1
@@ -281,5 +283,10 @@ namespace Tests.TestModels
     {
         SymbolA,
         SymbolB
+    }
+
+    public struct AStruct
+    {
+        public int AnInt { get; set; }
     }
 }

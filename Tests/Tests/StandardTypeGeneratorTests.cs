@@ -19,6 +19,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -129,6 +130,34 @@ namespace Tests.Tests
             // Assert
 
             Assert.AreEqual(expected, result.SecondInteger);
+        }
+
+        [TestMethod]
+        public void GetObject_ValueType_Test()
+        {
+            // Arrange
+
+            var expected = new AStruct();
+
+            this.valueGeneratorMock.Setup(m => m.GetValue(
+                    It.Is<PropertyInfo>(p => p.PropertyType == typeof(AStruct)),
+                    It.IsAny<ObjectGraphNode>()))
+                .Returns(expected);
+
+            // Act
+
+            object result = this.typeGenerator.GetObject<SecondClass>(new List<ExplicitPropertySetters>());
+
+            // Assert
+
+            var secondClassObject = result as SecondClass;
+            Assert.IsNotNull(secondClassObject);
+
+            Assert.AreEqual(expected, secondClassObject.AStruct);
+
+            this.valueGeneratorMock.Verify(
+                m => m.GetValue(It.Is<PropertyInfo>(p => p.PropertyType == typeof(AStruct)), It.IsAny<ObjectGraphNode>()),
+                Times.Once);
         }
 
         [TestMethod]

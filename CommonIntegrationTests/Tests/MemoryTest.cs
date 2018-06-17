@@ -529,6 +529,18 @@ namespace CommonIntegrationTests.Tests
             populator.Bind();
         }
 
+        [TestMethod]
+        public void ValueType_DirectRequest_Test()
+        {
+            IPopulator populator = this.factory.CreateMemoryPopulator();
+
+            RecordReference<int> resultRecord = populator.Add<int>();
+            populator.Bind();
+            int result = resultRecord.RecordObject;
+
+            Assert.IsTrue(result != 0);
+        }
+
         private class ClassWithDictionary
         {
             public Dictionary<string, string> ADictionary { get; set; }

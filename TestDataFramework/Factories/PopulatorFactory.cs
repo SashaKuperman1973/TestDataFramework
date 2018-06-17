@@ -317,6 +317,7 @@ namespace TestDataFramework.Factories
                 Component.For<IObjectGraphService>().ImplementedBy<ObjectGraphService>(),
                 Component.For<ITableTypeCacheService>().ImplementedBy<StandardTableTypeCacheService>(),
                 Component.For<TableTypeLookup>().ImplementedBy<TableTypeLookup>(),
+                Component.For<ITypeGeneratorService>().ImplementedBy<StandardTypeGeneratorService>(),
 
                 #endregion Common Region
 

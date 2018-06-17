@@ -130,7 +130,9 @@
     <Compile Include="Populator\Concrete\StandardPopulator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RepositoryOperations\Model\ExtendedColumnSymbol.cs" />
+    <Compile Include="TypeGenerator\Concrete\StandardTypeGeneratorService.cs" />
     <Compile Include="TypeGenerator\Concrete\UniqueValueTypeGenerator.cs" />
+    <Compile Include="TypeGenerator\Interfaces\ITypeGeneratorService.cs" />
     <Compile Include="ValueGenerator\Concrete\MemoryValueGenerator.cs" />
     <Compile Include="ValueGenerator\Concrete\SqlClientValueGenerator.cs" />
     <Compile Include="ValueProvider\Interfaces\IValueProvider.cs" />

@@ -27,6 +27,7 @@ using Moq;
 using TestDataFramework.DeepSetting;
 using TestDataFramework.HandledTypeGenerator;
 using TestDataFramework.TypeGenerator.Concrete;
+using TestDataFramework.TypeGenerator.Interfaces;
 using TestDataFramework.ValueGenerator.Interfaces;
 using Tests.TestModels;
 
@@ -38,6 +39,7 @@ namespace Tests.Tests
         private Mock<IHandledTypeGenerator> handledTypeGeneratorMock;
         private StandardTypeGenerator typeGenerator;
         private Mock<IValueGenerator> valueGeneratorMock;
+        private Mock<ITypeGeneratorService> typeGeneratorService;
 
         [TestInitialize]
         public void Initialize()
@@ -46,9 +48,10 @@ namespace Tests.Tests
 
             this.valueGeneratorMock = new Mock<IValueGenerator>();
             this.handledTypeGeneratorMock = new Mock<IHandledTypeGenerator>();
+            this.typeGeneratorService = new Mock<ITypeGeneratorService>();
 
             this.typeGenerator = new StandardTypeGenerator(this.valueGeneratorMock.Object,
-                this.handledTypeGeneratorMock.Object);
+                this.handledTypeGeneratorMock.Object, this.typeGeneratorService.Object);
         }
 
         [TestMethod]
@@ -211,6 +214,12 @@ namespace Tests.Tests
                 m => m.GetValue(null,
                         It.Is<Type>(p => p == typeof(SecondClass)))
                 , Times.Once);
+        }
+
+        [TestMethod]
+        public void GetObject_NoPropertySetters_Test()
+        {
+            
         }
     }
 }

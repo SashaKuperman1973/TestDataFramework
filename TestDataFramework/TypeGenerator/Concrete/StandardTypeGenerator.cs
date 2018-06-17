@@ -35,12 +35,14 @@ namespace TestDataFramework.TypeGenerator.Concrete
     {
         private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(StandardTypeGenerator));
 
-        public StandardTypeGenerator(IValueGenerator valueGenerator, IHandledTypeGenerator handledTypeGenerator)
+        public StandardTypeGenerator(IValueGenerator valueGenerator, IHandledTypeGenerator handledTypeGenerator,
+            ITypeGeneratorService typeGeneratorService)
         {
             StandardTypeGenerator.Logger.Debug("Entering constructor");
 
             this.valueGenerator = valueGenerator;
             this.handledTypeGenerator = handledTypeGenerator;
+            this.typeGeneratorService = typeGeneratorService;
 
             StandardTypeGenerator.Logger.Debug("Exiting constructor");
         }
@@ -66,6 +68,7 @@ namespace TestDataFramework.TypeGenerator.Concrete
 
         private readonly IValueGenerator valueGenerator;
         private readonly IHandledTypeGenerator handledTypeGenerator;
+        private readonly ITypeGeneratorService typeGeneratorService;
 
         private readonly Stack<Type> complexTypeProcessingRecursionGuard = new Stack<Type>();
 
@@ -174,7 +177,8 @@ namespace TestDataFramework.TypeGenerator.Concrete
                     : null;
 
                 IEnumerable<ExplicitPropertySetters> setters =
-                    StandardTypeGenerator.IsPropertyExplicitlySet(this.explicitPropertySetters, propertyObjectGraphNode)
+                    this.typeGeneratorService
+                        .IsPropertyExplicitlySet(this.explicitPropertySetters, propertyObjectGraphNode)
                         .ToList();
 
                 if (setters.Any())
@@ -190,40 +194,6 @@ namespace TestDataFramework.TypeGenerator.Concrete
             }
 
             StandardTypeGenerator.Logger.Debug("Exiting FillObject<T>");
-        }
-
-        private static IEnumerable<ExplicitPropertySetters> IsPropertyExplicitlySet(
-            IEnumerable<ExplicitPropertySetters> explicitPropertySetters,
-            ObjectGraphNode objectGraphNode)
-        {
-            if (objectGraphNode == null)
-                return Enumerable.Empty<ExplicitPropertySetters>();
-
-            IEnumerable<ExplicitPropertySetters> result =
-                explicitPropertySetters.Where(
-                    setters => StandardTypeGenerator.IsPropertyExplicitlySet(setters, objectGraphNode));
-            return result;
-        }
-
-        private static bool IsPropertyExplicitlySet(ExplicitPropertySetters explicitPropertySetters,
-            ObjectGraphNode objectGraphNode)
-        {
-            var stack = new Stack<PropertyInfo>(explicitPropertySetters.PropertyChain);
-
-            while (objectGraphNode.PropertyInfo != null)
-            {
-                if (!stack.Any())
-                    return false;
-
-                PropertyInfo setters = stack.Pop();
-
-                if (!objectGraphNode.PropertyInfo.Name.Equals(setters.Name, StringComparison.Ordinal))
-                    return false;
-
-                objectGraphNode = objectGraphNode.Parent;
-            }
-
-            return !stack.Any();
         }
 
         private static PropertyInfo[] GetProperties(object objectToFill)

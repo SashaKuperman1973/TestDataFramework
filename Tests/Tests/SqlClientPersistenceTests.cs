@@ -99,11 +99,11 @@ namespace Tests.Tests
             Assert.IsNotNull(primaryTableColumns);
             Assert.AreEqual(4, primaryTableColumns.Count);
 
-            Assert.AreEqual("Text", primaryTableColumns[0].Name);
-            Assert.AreEqual(primaryTable.Text, primaryTableColumns[0].Value);
+            var textColumn = primaryTableColumns.Single(col => col.Name == "Text");
+            Assert.AreEqual(primaryTable.Text, textColumn.Value);
 
-            Assert.AreEqual("Integer", primaryTableColumns[1].Name);
-            Assert.AreEqual(primaryTable.Integer, primaryTableColumns[1].Value);
+            var integerColumn = primaryTableColumns.Single(col => col.Name == "Integer");
+            Assert.AreEqual(primaryTable.Integer, integerColumn.Value);
         }
 
         [TestMethod]

@@ -122,6 +122,12 @@ namespace Tests.TestModels
         public int SecondInteger { get; set; }
     }
 
+    public class ClassWithValueAndRefernceTypeProperties
+    {
+        public int AnInteger { get; set; }
+        public object ARefernce { get; set; }
+    }
+
     public class ClassWithConstructor
     {
         public ClassWithConstructor(SecondClass constructorParameter)

@@ -18,6 +18,7 @@
 */
 
 using System;
+using System.Linq;
 using System.Reflection;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -95,6 +96,20 @@ namespace Tests.Tests
                 Assert.IsNull(actual);
             else
                 Assert.AreEqual(Convert.ChangeType(expected, actual.GetType()), actual);
+        }
+
+        [TestMethod]
+        public void IsTypeHandled_Test()
+        {
+            var included = new[]
+            {
+                typeof(string),
+                typeof(byte), typeof(int), typeof(short), typeof(long),
+                typeof(uint), typeof(ushort), typeof(ulong)
+            };
+
+            included.ToList().ForEach(type => Assert.IsTrue(this.accumulator.IsTypeHandled(type)));
+            Assert.IsFalse(this.accumulator.IsTypeHandled(typeof(float)));
         }
     }
 }

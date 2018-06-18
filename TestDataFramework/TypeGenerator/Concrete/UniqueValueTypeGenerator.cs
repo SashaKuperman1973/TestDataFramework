@@ -53,11 +53,13 @@ namespace TestDataFramework.TypeGenerator.Concrete
 
             if (!targetPropertyInfo.PropertyType.IsValueLikeType())
             {
-                UniqueValueTypeGenerator.Logger.Debug("Property type is value like. Calling base.");
+                UniqueValueTypeGenerator.Logger.Debug("Property type is not value like. Calling base.");
 
                 base.SetProperty(objectToFill, targetPropertyInfo, objectGraphNode);
                 return;
             }
+
+            UniqueValueTypeGenerator.Logger.Debug("Property type is value like. Calling accumulator value generator.");
 
             object targetPropertyValue = this.accumulatorValueGenerator.GetValue(targetPropertyInfo, objectGraphNode);
             UniqueValueTypeGenerator.Logger.Debug($"targetPropertyValue: {targetPropertyValue}");

@@ -66,11 +66,9 @@ namespace Tests.Tests
                     It.IsAny<ObjectGraphNode>()))
                 .Returns(expected);
 
-            var explicitPropertySetters = new List<ExplicitPropertySetter>();
-
             // Act
 
-            object result = this.typeGenerator.GetObject<SecondClass>(explicitPropertySetters);
+            object result = this.typeGenerator.GetObject<SecondClass>(new List<ExplicitPropertySetter>());
 
             // Assert
 
@@ -221,12 +219,6 @@ namespace Tests.Tests
                 m => m.GetValue(null,
                         It.Is<Type>(p => p == typeof(SecondClass)))
                 , Times.Once);
-        }
-
-        [TestMethod]
-        public void GetObject_NoPropertySetters_Test()
-        {
-            
         }
     }
 }

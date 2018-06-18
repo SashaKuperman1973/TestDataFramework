@@ -130,6 +130,7 @@
     <Compile Include="Tests\TableTypeCacheServiceTests\StandardTableTypeCacheServiceTests.cs" />
     <Compile Include="Tests\TableTypeCacheServiceTests\TableTypeLookupTests.cs" />
     <Compile Include="Tests\TableTypeCriteriaTests.cs" />
+    <Compile Include="Tests\UniqueValueTypeGeneratorTests.cs" />
     <Compile Include="Tests\ValueGuaranteePopulatorTests.cs" />
     <Compile Include="Tests\GenericRecordReferenceTests.cs" />
     <Compile Include="Tests\OperableListTests.cs" />

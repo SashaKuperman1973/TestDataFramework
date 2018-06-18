@@ -15,12 +15,11 @@ namespace Tests.Tests
     [TestClass]
     public class UniqueValueTypeGeneratorTests
     {
-        private UniqueValueTypeGenerator uniqueValueTypeGenerator;
-
         private Mock<IValueGenerator> accumulatorValueGeneratorMock;
-        private Mock<IValueGenerator> valueGeneratorMock;
         private Mock<IHandledTypeGenerator> handledTypeGeneratorMock;
         private Mock<ITypeGeneratorService> typeGeneratorServiceMock;
+        private UniqueValueTypeGenerator uniqueValueTypeGenerator;
+        private Mock<IValueGenerator> valueGeneratorMock;
 
         [TestInitialize]
         public void Initialize()
@@ -32,8 +31,8 @@ namespace Tests.Tests
 
             this.uniqueValueTypeGenerator = new UniqueValueTypeGenerator(
                 typeGenerator => this.accumulatorValueGeneratorMock.Object,
-                this.valueGeneratorMock.Object, 
-                this.handledTypeGeneratorMock.Object, 
+                this.valueGeneratorMock.Object,
+                this.handledTypeGeneratorMock.Object,
                 this.typeGeneratorServiceMock.Object);
         }
 

@@ -9,7 +9,8 @@ namespace TestDataFramework.AttributeDecorator
         public AssemblyLookupContext()
         {
             this.TypeDictionaryEqualityComparer = new TypeDictionaryEqualityComparer();
-            this.CollisionDictionary = new ConcurrentDictionary<Table, List<TypeInfoWrapper>>(this.TypeDictionaryEqualityComparer);
+            this.CollisionDictionary =
+                new ConcurrentDictionary<Table, List<TypeInfoWrapper>>(this.TypeDictionaryEqualityComparer);
             this.TypeDictionary = new ConcurrentDictionary<Table, TypeInfoWrapper>(this.TypeDictionaryEqualityComparer);
         }
 

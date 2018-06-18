@@ -30,7 +30,7 @@ namespace TestDataFramework.RepositoryOperations.Model
 
         public override string ToString()
         {
-            var result =
+            string result =
                 $"PropertyInfo: {this.PropertyInfo.GetExtendedMemberInfoString()}. Attribute: {this.Attribute}";
 
             return result;

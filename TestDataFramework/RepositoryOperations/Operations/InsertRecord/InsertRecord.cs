@@ -124,7 +124,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
             while (propertiesForRead.Any())
             {
-                var columnName = (string) data[readStreamPointer.Value++];
+                string columnName = (string) data[readStreamPointer.Value++];
 
                 PropertyInfo property = propertiesForRead.First(
                     p => Helper.GetColumnName(p, this.attributeDecorator).Equals(columnName, StringComparison.Ordinal)

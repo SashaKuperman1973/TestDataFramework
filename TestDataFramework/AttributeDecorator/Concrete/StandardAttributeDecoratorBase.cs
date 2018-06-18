@@ -46,7 +46,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete
                 return firstOrDefaultResult;
             }
 
-            var message =
+            string message =
                 memberInfo.MemberType == MemberTypes.Property
                     ? Messages.AmbigousPropertyAttributeMatch
                     : memberInfo.MemberType == MemberTypes.TypeInfo || memberInfo.MemberType == MemberTypes.NestedType

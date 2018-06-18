@@ -86,7 +86,7 @@ namespace Tests.Tests
             var regularColumns = new List<Column>();
             var foreignKeyColumns = new List<ExtendedColumnSymbol>();
             IEnumerable<Column> columnList = regularColumns.Concat(Helpers.ColumnSymbolToColumn(foreignKeyColumns));
-            var tableName = typeof(SubjectClass).Name;
+            string tableName = typeof(SubjectClass).Name;
 
             this.serviceMock.Setup(m => m.GetPrimaryKeyOperations(this.peers)).Returns(primaryKeyOperations);
             this.serviceMock.Setup(m => m.GetRegularColumns(this.writePrimitivesMock.Object)).Returns(regularColumns);

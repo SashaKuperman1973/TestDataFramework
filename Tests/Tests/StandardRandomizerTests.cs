@@ -63,7 +63,7 @@ namespace Tests.Tests
 
             // Act
 
-            var result = this.randomizer.GetInteger(null);
+            int result = this.randomizer.GetInteger(null);
 
             // Assert
 
@@ -81,7 +81,7 @@ namespace Tests.Tests
 
             // Act
 
-            var result = this.randomizer.GetInteger(maximum);
+            int result = this.randomizer.GetInteger(maximum);
 
             // Assert
 
@@ -99,7 +99,7 @@ namespace Tests.Tests
 
             // Act
 
-            var result = this.randomizer.GetLongInteger(0x10000);
+            long result = this.randomizer.GetLongInteger(0x10000);
 
             // Assert
 
@@ -113,8 +113,8 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var maxValue = long.MaxValue - new Random().Next() - 1;
-            var expected = maxValue - new Random().Next();
+            long maxValue = long.MaxValue - new Random().Next() - 1;
+            long expected = maxValue - new Random().Next();
 
             if ((maxValue & 0xffff) == 0)
                 maxValue--;
@@ -133,7 +133,7 @@ namespace Tests.Tests
 
             // Act
 
-            var result = this.randomizer.GetLongInteger(maxValue);
+            long result = this.randomizer.GetLongInteger(maxValue);
 
             // Assert
 
@@ -150,7 +150,7 @@ namespace Tests.Tests
 
             // Act
 
-            var result = this.randomizer.GetLongInteger(null);
+            long result = this.randomizer.GetLongInteger(null);
 
             // Assert
 
@@ -173,7 +173,7 @@ namespace Tests.Tests
 
             // Act
 
-            var result = this.randomizer.GetLongInteger(null);
+            long result = this.randomizer.GetLongInteger(null);
 
             // Assert
 
@@ -191,7 +191,7 @@ namespace Tests.Tests
 
             // Act
 
-            var result = this.randomizer.GetShortInteger(max);
+            short result = this.randomizer.GetShortInteger(max);
 
             // Assert
 
@@ -209,7 +209,7 @@ namespace Tests.Tests
 
             // Act
 
-            var result = this.randomizer.GetShortInteger(null);
+            short result = this.randomizer.GetShortInteger(null);
 
             // Assert
 
@@ -227,7 +227,7 @@ namespace Tests.Tests
 
             // Act
 
-            var result = this.randomizer.GetString(5);
+            string result = this.randomizer.GetString(5);
 
             // Assert
 
@@ -238,11 +238,11 @@ namespace Tests.Tests
         public void GetCharacter_Test()
         {
             // 26 letters in the alphabet
-            for (var code = 0; code < 26; code++)
+            for (int code = 0; code < 26; code++)
             {
                 this.randomMock.Setup(m => m.Next(It.Is<int>(i => i == 26))).Returns(code);
 
-                var result = this.randomizer.GetCharacter();
+                char result = this.randomizer.GetCharacter();
 
                 // 65 is ASCII code of "A".
                 Assert.AreEqual((char) (code + 65), result);
@@ -261,7 +261,7 @@ namespace Tests.Tests
 
             // Act
 
-            var result = this.randomizer.GetDecimal(null);
+            decimal result = this.randomizer.GetDecimal(null);
 
             // Assert
 
@@ -287,7 +287,7 @@ namespace Tests.Tests
 
             // Act
 
-            var result = this.randomizer.GetDecimal(4);
+            decimal result = this.randomizer.GetDecimal(4);
 
             // Assert
 
@@ -306,7 +306,7 @@ namespace Tests.Tests
 
             // Act
 
-            var result = this.randomizer.GetDouble(null);
+            double result = this.randomizer.GetDouble(null);
 
             // Assert
 
@@ -325,7 +325,7 @@ namespace Tests.Tests
 
             // Act
 
-            var result = this.randomizer.GetDouble(4);
+            double result = this.randomizer.GetDouble(4);
 
             // Assert
 
@@ -341,7 +341,7 @@ namespace Tests.Tests
 
             // Act
 
-            var result = this.randomizer.GetBoolean();
+            bool result = this.randomizer.GetBoolean();
 
             // Assert
 
@@ -358,7 +358,7 @@ namespace Tests.Tests
 
             // Act
 
-            var result = this.randomizer.GetBoolean();
+            bool result = this.randomizer.GetBoolean();
 
             // Assert
 
@@ -371,7 +371,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var ticks = this.randomizeLongInteger();
+            long ticks = this.randomizeLongInteger();
 
             DateTime expected = this.now.AddTicks(-ticks);
 
@@ -391,7 +391,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var ticks = this.randomizeLongInteger();
+            long ticks = this.randomizeLongInteger();
 
             DateTime expected = this.now.AddTicks(ticks);
 
@@ -414,7 +414,7 @@ namespace Tests.Tests
 
             // Act
 
-            var result = this.randomizer.GetByte();
+            byte result = this.randomizer.GetByte();
 
             // Assert
 
@@ -430,7 +430,7 @@ namespace Tests.Tests
 
             // Act
 
-            var result = this.randomizer.GetEmailAddress();
+            string result = this.randomizer.GetEmailAddress();
 
             // Assert
 
@@ -449,7 +449,7 @@ namespace Tests.Tests
 
             // Act
 
-            var result = this.randomizer.GetFloat(null);
+            float result = this.randomizer.GetFloat(null);
 
             // Assert
 
@@ -469,7 +469,7 @@ namespace Tests.Tests
 
             // Act
 
-            var result = this.randomizer.GetFloat(4);
+            float result = this.randomizer.GetFloat(4);
 
             // Assert
 
@@ -489,7 +489,7 @@ namespace Tests.Tests
 
             // Act
 
-            var result = this.randomizer.GetFloat(7);
+            float result = this.randomizer.GetFloat(7);
 
             // Assert
 
@@ -509,7 +509,7 @@ namespace Tests.Tests
 
             // Act
 
-            var result = this.randomizer.GetFloat(0);
+            float result = this.randomizer.GetFloat(0);
 
             // Assert
 

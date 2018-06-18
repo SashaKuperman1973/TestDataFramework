@@ -127,7 +127,7 @@ namespace Tests.Tests
         {
             Assert.IsNotNull(result);
 
-            var rank = result.Rank;
+            int rank = result.Rank;
 
             var index = new int[rank];
 

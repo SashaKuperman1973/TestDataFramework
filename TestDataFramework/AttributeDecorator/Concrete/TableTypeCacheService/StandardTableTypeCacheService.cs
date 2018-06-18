@@ -38,7 +38,8 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
 
             // 1.
             // Test for a complete match
-            if ((result = this.tableTypeLookup.GetTableTypeByCriteria(table, TableTypeCriteria.CompleteCatalogueMatchCriteria,
+            if ((result = this.tableTypeLookup.GetTableTypeByCriteria(table,
+                    TableTypeCriteria.CompleteCatalogueMatchCriteria,
                     assemblyLookupContext)) != null)
             {
                 StandardTableTypeCacheService.Logger.Debug("Complete match found. Exiting GetCachedTableType.");
@@ -111,7 +112,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
 
             assemblyLookupContext.TypeDictionaryEqualityComparer.SetEqualsCriteria(EqualsCriteria);
 
-            var tryAddResult = assemblyLookupContext.TypeDictionary.TryAdd(table, definedType);
+            bool tryAddResult = assemblyLookupContext.TypeDictionary.TryAdd(table, definedType);
 
             if (tryAddResult)
             {
@@ -122,9 +123,10 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
             StandardTableTypeCacheService.Logger.Debug($"Table class collision detected. Table object: {table}");
 
             assemblyLookupContext.CollisionDictionary.AddOrUpdate(table,
-                
+
                 // Add
-                tableToAdd => StandardTableTypeCacheService.AddToTypeDictionary(assemblyLookupContext, tableToAdd, definedType),
+                tableToAdd => StandardTableTypeCacheService.AddToTypeDictionary(assemblyLookupContext, tableToAdd,
+                    definedType),
 
                 // Update
                 // Collision key already exists. Update collision list with newly attempted type.
@@ -135,23 +137,6 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
                 });
 
             StandardTableTypeCacheService.Logger.Debug("Exiting TryAdd");
-        }
-
-        private static List<TypeInfoWrapper> AddToTypeDictionary(AssemblyLookupContext assemblyLookupContext, Table table, TypeInfoWrapper definedType)
-        {
-            var result = new List<TypeInfoWrapper>()
-            {
-                // first item of collision to add to list
-
-                assemblyLookupContext.TypeDictionary.GetOrAdd(table,
-                    t => throw new TableTypeCacheException(Messages.ErrorGettingDefinedType, table)),
-
-                // second item of collision to add to list
-
-                definedType
-            };
-
-            return result;
         }
 
         public virtual void PopulateAssemblyCache(AppDomainWrapper domain, AssemblyNameWrapper assemblyName,
@@ -206,6 +191,24 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
 
             StandardTableTypeCacheService.Logger.Debug("Exiting GetCachedTableTypeUsingAllAssemblies");
             return null;
+        }
+
+        private static List<TypeInfoWrapper> AddToTypeDictionary(AssemblyLookupContext assemblyLookupContext,
+            Table table, TypeInfoWrapper definedType)
+        {
+            var result = new List<TypeInfoWrapper>
+            {
+                // first item of collision to add to list
+
+                assemblyLookupContext.TypeDictionary.GetOrAdd(table,
+                    t => throw new TableTypeCacheException(Messages.ErrorGettingDefinedType, table)),
+
+                // second item of collision to add to list
+
+                definedType
+            };
+
+            return result;
         }
     }
 }

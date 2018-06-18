@@ -182,7 +182,7 @@ namespace Tests.Tests
             List<int?> subjectValues = operableList.Where(reference => reference.RecordObject != default(int))
                 .Select(reference => (int?) reference.RecordObject).ToList();
 
-            var found = 0;
+            int found = 0;
             int index;
             values.ForEach(value =>
             {

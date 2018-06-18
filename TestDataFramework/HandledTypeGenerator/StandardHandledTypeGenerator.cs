@@ -89,9 +89,9 @@ namespace TestDataFramework.HandledTypeGenerator
 
             MethodInfo add = targetType.GetMethod("Add");
 
-            var actualCollectionElementCount = collectionElementCountOverride ?? this.collectionElementCount;
+            int actualCollectionElementCount = collectionElementCountOverride ?? this.collectionElementCount;
 
-            for (var i = 0; i < actualCollectionElementCount; i++)
+            for (int i = 0; i < actualCollectionElementCount; i++)
             {
                 object[] parameters = genericCollectionValueGenerator(genericArgumentTypes);
                 if (parameters == null)
@@ -141,7 +141,7 @@ namespace TestDataFramework.HandledTypeGenerator
 
             Type[] genericArgumentTypes = forType.GetGenericArguments();
             Array keyEnumValues = null;
-            var keyIndex = 0;
+            int keyIndex = 0;
 
             if (typeof(Enum).IsAssignableFrom(genericArgumentTypes[0]))
             {
@@ -222,7 +222,7 @@ namespace TestDataFramework.HandledTypeGenerator
 
             var argumentValues = new object[genericArgumentTypes.Length];
 
-            for (var i = 0; i < argumentValues.Length; i++)
+            for (int i = 0; i < argumentValues.Length; i++)
                 argumentValues[i] = this.valueGenerator.GetValue(null, genericArgumentTypes[i]);
 
             object result = constructor.Invoke(argumentValues);

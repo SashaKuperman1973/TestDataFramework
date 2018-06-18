@@ -50,7 +50,7 @@ namespace Tests.Tests
         {
             // Act
 
-            var result = this.tableTypeCache.IsAssemblyCachePopulated(new AssemblyWrapper());
+            bool result = this.tableTypeCache.IsAssemblyCachePopulated(new AssemblyWrapper());
 
             // Assert
 
@@ -67,7 +67,7 @@ namespace Tests.Tests
 
             // Act
 
-            var result = this.tableTypeCache.IsAssemblyCachePopulated(assembly);
+            bool result = this.tableTypeCache.IsAssemblyCachePopulated(assembly);
 
             // Assert
 
@@ -117,7 +117,8 @@ namespace Tests.Tests
             this.tableTypeCacheServiceMock.ResetCalls();
         }
 
-        private TypeInfoWrapper GetCachedTableType_Test(bool canScanAllAssemblies, TypeInfoWrapper computedResultFromInitialAssemblyToScan,
+        private TypeInfoWrapper GetCachedTableType_Test(bool canScanAllAssemblies,
+            TypeInfoWrapper computedResultFromInitialAssemblyToScan,
             TypeInfoWrapper computedResultFromAllAssemblies = null)
         {
             // Arrange
@@ -181,12 +182,14 @@ namespace Tests.Tests
 
             // Assert
 
-            KeyValuePair<AssemblyWrapper, AssemblyLookupContext> typeDictionaryEntry = this.tableTypeCache.TableTypeDictionary.Single();
+            KeyValuePair<AssemblyWrapper, AssemblyLookupContext> typeDictionaryEntry =
+                this.tableTypeCache.TableTypeDictionary.Single();
             Assert.AreEqual(assemblyMock.Object, typeDictionaryEntry.Key);
             Assert.IsInstanceOfType(typeDictionaryEntry.Value, typeof(AssemblyLookupContext));
 
             assemblyNames.ToList()
-                .ForEach(assemblyName => this.tableTypeCacheServiceMock.Verify(m => m.PopulateAssemblyCache(domainMock.Object,
+                .ForEach(assemblyName => this.tableTypeCacheServiceMock.Verify(m => m.PopulateAssemblyCache(
+                    domainMock.Object,
                     assemblyName, getTableAttribute, defaultSchema,
                     this.tableTypeCacheServiceMock.Object.TryAssociateTypeToTable, typeDictionaryEntry.Value)));
 

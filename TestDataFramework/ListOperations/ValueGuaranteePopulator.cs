@@ -43,7 +43,7 @@ namespace TestDataFramework.ListOperations
                     .Select(
                         valueSet =>
                         {
-                            var quantity = (int) ((float) references.Count * valueSet.FrequencyPercentage.Value / 100f);
+                            int quantity = (int) ((float) references.Count * valueSet.FrequencyPercentage.Value / 100f);
 
                             quantity = quantity >= 1 ? quantity : 1;
 
@@ -63,7 +63,7 @@ namespace TestDataFramework.ListOperations
                     .Select(valueSet => new Tuple<List<object>, int>(valueSet.Item1.ToList(), valueSet.Item2))
                     .ToList();
 
-            var totalQuantityOfGuaranteedValues =
+            int totalQuantityOfGuaranteedValues =
                 allValues.Sum(tuple => tuple.Item2);
 
             if (totalQuantityOfGuaranteedValues > workingList.Count)
@@ -72,9 +72,9 @@ namespace TestDataFramework.ListOperations
             var random = new Random();
 
             foreach (Tuple<List<object>, int> valueAndPopulationQuantity in allValues)
-                for (var valueIndex = 0; valueIndex < valueAndPopulationQuantity.Item2; valueIndex++)
+                for (int valueIndex = 0; valueIndex < valueAndPopulationQuantity.Item2; valueIndex++)
                 {
-                    var referenceIndex = random.Next(workingList.Count);
+                    int referenceIndex = random.Next(workingList.Count);
                     RecordReference reference = workingList[referenceIndex];
 
                     object subject =

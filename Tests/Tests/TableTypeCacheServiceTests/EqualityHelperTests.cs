@@ -7,11 +7,6 @@ namespace Tests.Tests.TableTypeCacheServiceTests
     [TestClass]
     public class EqualityHelperTests
     {
-        private class Wrapper : IWrapper<string>
-        {
-            public string Wrapped { get; set; }
-        }
-
         [TestMethod]
         public void Wrapper_Null_Returns_False_Test()
         {
@@ -34,7 +29,7 @@ namespace Tests.Tests.TableTypeCacheServiceTests
         public void Are_Equal_Test()
         {
             var left = new Wrapper {Wrapped = "aString"};
-            var right = new Wrapper {Wrapped = "aString" };
+            var right = new Wrapper {Wrapped = "aString"};
 
             bool result = EqualityHelper.Equals<Wrapper, string>(left, right);
 
@@ -44,8 +39,8 @@ namespace Tests.Tests.TableTypeCacheServiceTests
         [TestMethod]
         public void Left_Wrapped_Is_Null_Test()
         {
-            var left = new Wrapper { Wrapped = null };
-            var right = new Wrapper { Wrapped = "aString" };
+            var left = new Wrapper {Wrapped = null};
+            var right = new Wrapper {Wrapped = "aString"};
 
             bool result = EqualityHelper.Equals<Wrapper, string>(left, right);
 
@@ -55,8 +50,8 @@ namespace Tests.Tests.TableTypeCacheServiceTests
         [TestMethod]
         public void Right_Wrapped_Is_Null_Test()
         {
-            var left = new Wrapper { Wrapped = "aString" };
-            var right = new Wrapper { Wrapped = null };
+            var left = new Wrapper {Wrapped = "aString"};
+            var right = new Wrapper {Wrapped = null};
 
             bool result = EqualityHelper.Equals<Wrapper, string>(left, right);
 
@@ -82,7 +77,11 @@ namespace Tests.Tests.TableTypeCacheServiceTests
             bool result = EqualityHelper.Equals<Wrapper, string>(left, right);
 
             Assert.IsFalse(result);
+        }
 
+        private class Wrapper : IWrapper<string>
+        {
+            public string Wrapped { get; set; }
         }
     }
 }

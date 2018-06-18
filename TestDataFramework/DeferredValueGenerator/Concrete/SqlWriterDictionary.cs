@@ -104,7 +104,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
             SqlWriterDictionary.Logger.Debug("Entering WriteNumberCommand. propertyInfo: " +
                                              propertyInfo.GetExtendedMemberInfoString());
 
-            var commandText = this.commandTextGenerator.WriteNumber(propertyInfo);
+            string commandText = this.commandTextGenerator.WriteNumber(propertyInfo);
 
             this.writePrimitives.AddSqlCommand(commandText);
 
@@ -140,7 +140,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
             SqlWriterDictionary.Logger.Debug("Entering WriteStringCommand. propertyInfo: " +
                                              propertyInfo.GetExtendedMemberInfoString());
 
-            var commandText = this.commandTextGenerator.WriteString(propertyInfo);
+            string commandText = this.commandTextGenerator.WriteString(propertyInfo);
 
             this.writePrimitives.AddSqlCommand(commandText);
 

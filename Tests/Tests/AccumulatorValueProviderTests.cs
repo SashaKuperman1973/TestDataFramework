@@ -41,8 +41,8 @@ namespace Tests.Tests
         {
             // Act
 
-            var result1 = this.valueProvider.GetInteger(null);
-            var result2 = this.valueProvider.GetInteger(null);
+            int result1 = this.valueProvider.GetInteger(null);
+            int result2 = this.valueProvider.GetInteger(null);
 
             // Assert
 
@@ -55,8 +55,8 @@ namespace Tests.Tests
         {
             // Act
 
-            var result1 = this.valueProvider.GetLongInteger(null);
-            var result2 = this.valueProvider.GetLongInteger(null);
+            long result1 = this.valueProvider.GetLongInteger(null);
+            long result2 = this.valueProvider.GetLongInteger(null);
 
             // Assert
 
@@ -69,8 +69,8 @@ namespace Tests.Tests
         {
             // Act
 
-            var result1 = this.valueProvider.GetShortInteger(null);
-            var result2 = this.valueProvider.GetShortInteger(null);
+            short result1 = this.valueProvider.GetShortInteger(null);
+            short result2 = this.valueProvider.GetShortInteger(null);
 
             // Assert
 
@@ -83,8 +83,8 @@ namespace Tests.Tests
         {
             // Act
 
-            var result1 = this.valueProvider.GetString(5);
-            var result2 = this.valueProvider.GetString(7);
+            string result1 = this.valueProvider.GetString(5);
+            string result2 = this.valueProvider.GetString(7);
 
             // Assert
 
@@ -95,7 +95,7 @@ namespace Tests.Tests
         [TestMethod]
         public void GetString_DefaultLength_Test()
         {
-            var result = this.valueProvider.GetString(null);
+            string result = this.valueProvider.GetString(null);
 
             Assert.AreEqual("B+++++++++", result);
         }
@@ -105,8 +105,8 @@ namespace Tests.Tests
         {
             // Act
 
-            var result1 = this.valueProvider.GetCharacter();
-            var result2 = this.valueProvider.GetCharacter();
+            char result1 = this.valueProvider.GetCharacter();
+            char result2 = this.valueProvider.GetCharacter();
 
             // Assert
 
@@ -119,8 +119,8 @@ namespace Tests.Tests
         {
             // Act
 
-            var result1 = this.valueProvider.GetDecimal(null);
-            var result2 = this.valueProvider.GetDecimal(null);
+            decimal result1 = this.valueProvider.GetDecimal(null);
+            decimal result2 = this.valueProvider.GetDecimal(null);
 
             // Assert
 
@@ -133,9 +133,9 @@ namespace Tests.Tests
         {
             // Act
 
-            var result1 = this.valueProvider.GetBoolean();
-            var result2 = this.valueProvider.GetBoolean();
-            var result3 = this.valueProvider.GetBoolean();
+            bool result1 = this.valueProvider.GetBoolean();
+            bool result2 = this.valueProvider.GetBoolean();
+            bool result3 = this.valueProvider.GetBoolean();
 
             // Assert
 
@@ -163,8 +163,8 @@ namespace Tests.Tests
         {
             // Act
 
-            var result1 = this.valueProvider.GetByte();
-            var result2 = this.valueProvider.GetByte();
+            byte result1 = this.valueProvider.GetByte();
+            byte result2 = this.valueProvider.GetByte();
 
             // Assert
 
@@ -177,8 +177,8 @@ namespace Tests.Tests
         {
             // Act
 
-            var result1 = this.valueProvider.GetDouble(null);
-            var result2 = this.valueProvider.GetDouble(null);
+            double result1 = this.valueProvider.GetDouble(null);
+            double result2 = this.valueProvider.GetDouble(null);
 
             // Assert
 
@@ -191,8 +191,8 @@ namespace Tests.Tests
         {
             // Act
 
-            var result1 = this.valueProvider.GetFloat(null);
-            var result2 = this.valueProvider.GetFloat(null);
+            float result1 = this.valueProvider.GetFloat(null);
+            float result2 = this.valueProvider.GetFloat(null);
 
             // Assert
 

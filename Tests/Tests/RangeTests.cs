@@ -28,12 +28,12 @@ namespace Tests.Tests
 
             Helpers.ExceptionTest(() =>
             {
-                var x = range.EndPosition;
+                int x = range.EndPosition;
             }, typeof(InvalidOperationException));
 
             Helpers.ExceptionTest(() =>
             {
-                var x = range.Length;
+                int x = range.Length;
             }, typeof(InvalidOperationException));
         }
 
@@ -46,12 +46,12 @@ namespace Tests.Tests
 
             Helpers.ExceptionTest(() =>
             {
-                var x = range.StartPosition;
+                int x = range.StartPosition;
             }, typeof(InvalidOperationException));
 
             Helpers.ExceptionTest(() =>
             {
-                var x = range.Length;
+                int x = range.Length;
             }, typeof(InvalidOperationException));
         }
 
@@ -64,12 +64,12 @@ namespace Tests.Tests
 
             Helpers.ExceptionTest(() =>
             {
-                var x = range.StartPosition;
+                int x = range.StartPosition;
             }, typeof(InvalidOperationException));
 
             Helpers.ExceptionTest(() =>
             {
-                var x = range.EndPosition;
+                int x = range.EndPosition;
             }, typeof(InvalidOperationException));
         }
 

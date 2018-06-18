@@ -194,7 +194,7 @@ namespace TestDataFramework.ValueGenerator
 
             int? length = lengthAttribute?.Length;
 
-            var result = this.ValueProvider.GetString(length);
+            string result = this.ValueProvider.GetString(length);
 
             BaseValueGenerator.Logger.Debug("Exiting GetString");
             return result;
@@ -210,7 +210,7 @@ namespace TestDataFramework.ValueGenerator
 
             int? precision = precisionAttribute?.Precision;
 
-            var result = this.ValueProvider.GetDecimal(precision);
+            decimal result = this.ValueProvider.GetDecimal(precision);
 
             BaseValueGenerator.Logger.Debug("Exiting GetDecimal");
             return result;
@@ -226,7 +226,7 @@ namespace TestDataFramework.ValueGenerator
 
             int? precision = precisionAttribute?.Precision;
 
-            var result = this.ValueProvider.GetDouble(precision);
+            double result = this.ValueProvider.GetDouble(precision);
 
             BaseValueGenerator.Logger.Debug("Exiting GetDouble");
             return result;
@@ -242,7 +242,7 @@ namespace TestDataFramework.ValueGenerator
 
             int? precision = precisionAttribute?.Precision;
 
-            var result = this.ValueProvider.GetFloat(precision);
+            float result = this.ValueProvider.GetFloat(precision);
 
             BaseValueGenerator.Logger.Debug("Exiting GetFloat");
             return result;
@@ -265,7 +265,7 @@ namespace TestDataFramework.ValueGenerator
                 throw new ArgumentOutOfRangeException(string.Format(Messages.MaxAttributeOutOfRange, "int"),
                     (Exception) null);
 
-            var result = this.ValueProvider.GetInteger((int?) max);
+            int result = this.ValueProvider.GetInteger((int?) max);
 
             BaseValueGenerator.Logger.Debug("Exiting GetInteger");
             return result;
@@ -274,7 +274,7 @@ namespace TestDataFramework.ValueGenerator
         private object GetUnsignedInteger(PropertyInfo propertyInfo)
         {
             object integer = this.GetInteger(propertyInfo);
-            var result = Convert.ToUInt32(integer);
+            uint result = Convert.ToUInt32(integer);
             return result;
         }
 
@@ -291,7 +291,7 @@ namespace TestDataFramework.ValueGenerator
             if (max < 0)
                 throw new ArgumentOutOfRangeException(Messages.MaxAttributeLessThanZero, (Exception) null);
 
-            var result = this.ValueProvider.GetLongInteger(max);
+            long result = this.ValueProvider.GetLongInteger(max);
 
             BaseValueGenerator.Logger.Debug("Exiting GetLong");
             return result;
@@ -300,7 +300,7 @@ namespace TestDataFramework.ValueGenerator
         private object GetUnsignedLong(PropertyInfo propertyInfo)
         {
             object integer = this.GetLong(propertyInfo);
-            var result = Convert.ToUInt64(integer);
+            ulong result = Convert.ToUInt64(integer);
             return result;
         }
 
@@ -321,7 +321,7 @@ namespace TestDataFramework.ValueGenerator
                 throw new ArgumentOutOfRangeException(string.Format(Messages.MaxAttributeOutOfRange, "short"),
                     (Exception) null);
 
-            var result = this.ValueProvider.GetShortInteger((short?) max);
+            short result = this.ValueProvider.GetShortInteger((short?) max);
 
             BaseValueGenerator.Logger.Debug("Exiting GetShort");
             return result;
@@ -330,7 +330,7 @@ namespace TestDataFramework.ValueGenerator
         private object GetUnsignedShort(PropertyInfo propertyInfo)
         {
             object integer = this.GetShort(propertyInfo);
-            var result = Convert.ToUInt16(integer);
+            ushort result = Convert.ToUInt16(integer);
             return result;
         }
 

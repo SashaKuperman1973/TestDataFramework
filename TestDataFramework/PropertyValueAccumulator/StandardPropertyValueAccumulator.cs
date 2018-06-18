@@ -66,7 +66,7 @@ namespace TestDataFramework.PropertyValueAccumulator
         {
             StandardPropertyValueAccumulator.Logger.Debug("Entering IsTypeHandled");
 
-            var result = new[]
+            bool result = new[]
             {
                 typeof(string),
                 typeof(byte), typeof(int), typeof(short), typeof(long),
@@ -104,7 +104,7 @@ namespace TestDataFramework.PropertyValueAccumulator
             }.Contains(type))
             {
                 StandardPropertyValueAccumulator.Logger.Debug("Property type integral numeric");
-                var value = (ulong) this.GetCount(propertyInfo);
+                ulong value = (ulong) this.GetCount(propertyInfo);
                 result = Convert.ChangeType(value, type);
             }
 
@@ -128,9 +128,9 @@ namespace TestDataFramework.PropertyValueAccumulator
 
             var stringLengthAttribute = this.attributeDecorator.GetCustomAttribute<StringLengthAttribute>(propertyInfo);
 
-            var stringLength = stringLengthAttribute?.Length ?? defaultStringLength;
+            int stringLength = stringLengthAttribute?.Length ?? defaultStringLength;
 
-            var result = this.stringGenerator.Encode(count, stringLength);
+            string result = this.stringGenerator.Encode(count, stringLength);
 
             return result;
         }

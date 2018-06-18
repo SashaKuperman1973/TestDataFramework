@@ -43,7 +43,7 @@ namespace Tests.Tests
             this.attributeDecoratorMock.Setup(m => m.GetCustomAttributes<TableAttribute>(typeof(PrimaryTable)))
                 .Returns(new[] {tableAttribute});
 
-            var result = this.textGenerator.WriteString(propertyInfo);
+            string result = this.textGenerator.WriteString(propertyInfo);
 
             Assert.AreEqual(testString, result);
         }
@@ -65,7 +65,7 @@ namespace Tests.Tests
             this.attributeDecoratorMock.Setup(m => m.GetCustomAttributes<TableAttribute>(typeof(PrimaryTable)))
                 .Returns(new[] {tableAttribute});
 
-            var result = this.textGenerator.WriteNumber(propertyInfo);
+            string result = this.textGenerator.WriteNumber(propertyInfo);
 
             Assert.AreEqual(testString, result);
         }

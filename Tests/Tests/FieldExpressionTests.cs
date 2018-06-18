@@ -5,31 +5,29 @@ using System.Linq.Expressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.Populator.Concrete;
+using Range = TestDataFramework.Populator.Concrete.Range;
 
 namespace Tests.Tests
 {
     [TestClass]
     public class FieldExpressionTests
     {
-        public class ElementType
-        {
-            public class PropertyType { }
-
-            public PropertyType AProperty { get; set; }
-        }
+        private Expression<Func<ElementType, ElementType.PropertyType>> expression;
 
         private FieldExpression<ElementType, ElementType.PropertyType> fieldExpression;
 
         private Mock<RangeOperableList<ElementType>> rangeOperableListMock;
-        private Expression<Func<ElementType, ElementType.PropertyType>> expression;
 
         [TestInitialize]
         public void Initialize()
         {
-            this.rangeOperableListMock = new Mock<RangeOperableList<ElementType>>(null, null, null, null, null, null, null);
+            this.rangeOperableListMock =
+                new Mock<RangeOperableList<ElementType>>(null, null, null, null, null, null, null);
             this.expression = element => element.AProperty;
 
-            this.fieldExpression = new FieldExpression<ElementType, ElementType.PropertyType>(this.expression, this.rangeOperableListMock.Object);
+            this.fieldExpression =
+                new FieldExpression<ElementType, ElementType.PropertyType>(this.expression,
+                    this.rangeOperableListMock.Object);
         }
 
         [TestMethod]
@@ -83,7 +81,8 @@ namespace Tests.Tests
             // Arrange
 
             var values = new object[] {new ElementType(), (Func<ElementType>) (() => new ElementType())};
-            this.rangeOperableListMock.Setup(m => m.GuaranteeByFixedQuantity(values, 5)).Returns(this.rangeOperableListMock.Object);
+            this.rangeOperableListMock.Setup(m => m.GuaranteeByFixedQuantity(values, 5))
+                .Returns(this.rangeOperableListMock.Object);
 
             // Act
 
@@ -100,12 +99,13 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var values = new Func<ElementType>[] { () => new ElementType(), () => new ElementType() };
-            this.rangeOperableListMock.Setup(m => m.GuaranteeByFixedQuantity(values, 5)).Returns(this.rangeOperableListMock.Object);
+            var values = new Func<ElementType>[] {() => new ElementType(), () => new ElementType()};
+            this.rangeOperableListMock.Setup(m => m.GuaranteeByFixedQuantity(values, 5))
+                .Returns(this.rangeOperableListMock.Object);
 
             // Act
 
-            OperableList<ElementType> result =  this.fieldExpression.GuaranteeByFixedQuantity(values, 5);
+            OperableList<ElementType> result = this.fieldExpression.GuaranteeByFixedQuantity(values, 5);
 
             // Assert
 
@@ -137,7 +137,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var values = new[] {new ElementType(), new ElementType(),};
+            var values = new[] {new ElementType(), new ElementType()};
             this.rangeOperableListMock.Setup(m => m.GuaranteeByPercentageOfTotal(values, 5))
                 .Returns(this.rangeOperableListMock.Object);
             // Act
@@ -155,7 +155,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var values = new object[] { new ElementType(), (Func<ElementType>)(() => new ElementType()) };
+            var values = new object[] {new ElementType(), (Func<ElementType>) (() => new ElementType())};
 
             this.rangeOperableListMock.Setup(m => m.GuaranteeByPercentageOfTotal(values, 5))
                 .Returns(this.rangeOperableListMock.Object);
@@ -175,7 +175,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var values = new Func<ElementType>[] {() => new ElementType(), () => new ElementType(),};
+            var values = new Func<ElementType>[] {() => new ElementType(), () => new ElementType()};
             this.rangeOperableListMock.Setup(m => m.GuaranteeByPercentageOfTotal(values, 5))
                 .Returns(this.rangeOperableListMock.Object);
 
@@ -194,7 +194,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var values = new[] {new ElementType(), new ElementType(),};
+            var values = new[] {new ElementType(), new ElementType()};
             this.rangeOperableListMock.Setup(m => m.GuaranteeByPercentageOfTotal(values, 5))
                 .Returns(this.rangeOperableListMock.Object);
 
@@ -232,7 +232,7 @@ namespace Tests.Tests
 
             Expression<Func<ElementType, ElementType.PropertyType>> expression = element => element.AProperty;
             var value = new ElementType.PropertyType();
-            var range = new TestDataFramework.Populator.Concrete.Range();
+            var range = new Range();
 
             this.rangeOperableListMock.Setup(m => m.Set(expression, value, range))
                 .Returns(this.rangeOperableListMock.Object);
@@ -254,7 +254,7 @@ namespace Tests.Tests
 
             Expression<Func<ElementType, ElementType.PropertyType>> expression = element => element.AProperty;
             Func<ElementType.PropertyType> value = () => new ElementType.PropertyType();
-            var range = new TestDataFramework.Populator.Concrete.Range();
+            var range = new Range();
 
             this.rangeOperableListMock.Setup(m => m.Set(expression, value, range))
                 .Returns(this.rangeOperableListMock.Object);
@@ -296,7 +296,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var range = new TestDataFramework.Populator.Concrete.Range();
+            var range = new Range();
             var value = new ElementType.PropertyType();
 
             // Act
@@ -315,7 +315,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var range = new TestDataFramework.Populator.Concrete.Range();
+            var range = new Range();
             Func<ElementType.PropertyType> valueFunc = () => new ElementType.PropertyType();
 
             // Act
@@ -327,6 +327,15 @@ namespace Tests.Tests
 
             this.rangeOperableListMock.Verify(m => m.Set(this.expression, valueFunc, range));
             Assert.AreEqual(this.fieldExpression, result);
+        }
+
+        public class ElementType
+        {
+            public PropertyType AProperty { get; set; }
+
+            public class PropertyType
+            {
+            }
         }
     }
 }

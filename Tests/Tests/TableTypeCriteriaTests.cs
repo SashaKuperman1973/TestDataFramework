@@ -9,51 +9,6 @@ namespace Tests.Tests
     [TestClass]
     public class TableTypeCriteriaTests
     {
-        private class Assertor
-        {
-            public class TableAttributeWrapper
-            {
-                public TableAttributeWrapper(string catalogueName)
-                {
-                    this.TableAttribute = new TableAttribute(catalogueName, "schema", "name");
-                }
-
-                public TableAttribute TableAttribute { get; }
-            }
-
-            public void CompleteCatalogueMatchCriteria_Assert(string fromSetCatalogueName, string inputCatalogueName, Action<bool> assert)
-            {
-                Table fromSet = new Table(Assertor.GetTableAttribute(fromSetCatalogueName));
-                Table input = new Table(Assertor.GetTableAttribute(inputCatalogueName));
-
-                assert(TableTypeCriteria.CompleteCatalogueMatchCriteria(fromSet, input));
-            }
-
-            public void MatchOnWhatIsDecorated_Assert(TableAttributeWrapper fromSetTableAttributeWrapper, string inputCatalogueName, Action<bool> assert)
-            {
-                Table fromSet = fromSetTableAttributeWrapper == null
-                    ? new Table(new ForeignKeyAttribute("tableName", "keyName"), null)
-                    : new Table(fromSetTableAttributeWrapper.TableAttribute);
-                    
-                var input = new Table(Assertor.GetTableAttribute(inputCatalogueName));
-
-                assert(TableTypeCriteria.MatchOnWhatIsDecorated(fromSet, input));
-            }
-
-            public void MatchOnEverythingNotAlreadyTried_Assert(string fromSetCatalogueName, string inputCatalogueName, Action<bool> assert)
-            {
-                Table fromSet = new Table(Assertor.GetTableAttribute(fromSetCatalogueName));
-                Table input = new Table(Assertor.GetTableAttribute(inputCatalogueName));
-
-                assert(TableTypeCriteria.MatchOnEverythingNotAlreadyTried(fromSet, input));
-            }
-
-            private static TableAttribute GetTableAttribute(string catalogueName)
-            {
-                return new TableAttribute(catalogueName, "schema", Guid.NewGuid().ToString());
-            }
-        }
-
         [TestMethod]
         public void CompleteCatalogueMatchCriteria_Test()
         {
@@ -89,6 +44,54 @@ namespace Tests.Tests
             assertor.MatchOnEverythingNotAlreadyTried_Assert("A", null, Assert.IsTrue);
             assertor.MatchOnEverythingNotAlreadyTried_Assert(null, "B", Assert.IsTrue);
             assertor.MatchOnEverythingNotAlreadyTried_Assert(null, null, Assert.IsTrue);
+        }
+
+        private class Assertor
+        {
+            public void CompleteCatalogueMatchCriteria_Assert(string fromSetCatalogueName, string inputCatalogueName,
+                Action<bool> assert)
+            {
+                var fromSet = new Table(Assertor.GetTableAttribute(fromSetCatalogueName));
+                var input = new Table(Assertor.GetTableAttribute(inputCatalogueName));
+
+                assert(TableTypeCriteria.CompleteCatalogueMatchCriteria(fromSet, input));
+            }
+
+            public void MatchOnWhatIsDecorated_Assert(TableAttributeWrapper fromSetTableAttributeWrapper,
+                string inputCatalogueName, Action<bool> assert)
+            {
+                Table fromSet = fromSetTableAttributeWrapper == null
+                    ? new Table(new ForeignKeyAttribute("tableName", "keyName"), null)
+                    : new Table(fromSetTableAttributeWrapper.TableAttribute);
+
+                var input = new Table(Assertor.GetTableAttribute(inputCatalogueName));
+
+                assert(TableTypeCriteria.MatchOnWhatIsDecorated(fromSet, input));
+            }
+
+            public void MatchOnEverythingNotAlreadyTried_Assert(string fromSetCatalogueName, string inputCatalogueName,
+                Action<bool> assert)
+            {
+                var fromSet = new Table(Assertor.GetTableAttribute(fromSetCatalogueName));
+                var input = new Table(Assertor.GetTableAttribute(inputCatalogueName));
+
+                assert(TableTypeCriteria.MatchOnEverythingNotAlreadyTried(fromSet, input));
+            }
+
+            private static TableAttribute GetTableAttribute(string catalogueName)
+            {
+                return new TableAttribute(catalogueName, "schema", Guid.NewGuid().ToString());
+            }
+
+            public class TableAttributeWrapper
+            {
+                public TableAttributeWrapper(string catalogueName)
+                {
+                    this.TableAttribute = new TableAttribute(catalogueName, "schema", "name");
+                }
+
+                public TableAttribute TableAttribute { get; }
+            }
         }
     }
 }

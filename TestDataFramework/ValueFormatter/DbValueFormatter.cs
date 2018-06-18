@@ -45,7 +45,7 @@ namespace TestDataFramework.ValueFormatter
             if (!DbValueFormatter.FormatterDictionary.TryGetValue(type, out formatter))
                 throw new NotSupportedException(string.Format(Messages.InsertionDoesNotSupportType, type, value));
 
-            var result = formatter(value);
+            string result = formatter(value);
 
             DbValueFormatter.Logger.Debug($"Exiting Format. result: {result}");
             return result;
@@ -76,49 +76,49 @@ namespace TestDataFramework.ValueFormatter
         private static string IntFormatter(object value)
         {
             DbValueFormatter.Logger.Debug("Executing IntFormatter");
-            var result = value.ToString();
+            string result = value.ToString();
             return result;
         }
 
         private static string StringFormatter(object value)
         {
             DbValueFormatter.Logger.Debug("Executing StringFormatter");
-            var result = "'" + (string) value + "'";
+            string result = "'" + (string) value + "'";
             return result;
         }
 
         private static string CharFormatter(object value)
         {
             DbValueFormatter.Logger.Debug("Executing CharFormatter");
-            var result = "'" + (char) value + "'";
+            string result = "'" + (char) value + "'";
             return result;
         }
 
         private static string DecimalFomatter(object value)
         {
             DbValueFormatter.Logger.Debug("Executing DecimalFomatter");
-            var result = ((decimal) value).ToString(NumberFormatInfo.InvariantInfo);
+            string result = ((decimal) value).ToString(NumberFormatInfo.InvariantInfo);
             return result;
         }
 
         private static string DoubleFomatter(object value)
         {
             DbValueFormatter.Logger.Debug("Executing DoubleFomatter");
-            var result = ((double) value).ToString(NumberFormatInfo.InvariantInfo);
+            string result = ((double) value).ToString(NumberFormatInfo.InvariantInfo);
             return result;
         }
 
         private static string FloatFomatter(object value)
         {
             DbValueFormatter.Logger.Debug("Executing FloatFomatter");
-            var result = ((float) value).ToString(NumberFormatInfo.InvariantInfo);
+            string result = ((float) value).ToString(NumberFormatInfo.InvariantInfo);
             return result;
         }
 
         private static string BoolFormatter(object value)
         {
             DbValueFormatter.Logger.Debug("Executing BoolFormatter");
-            var result = (bool) value ? "1" : "0";
+            string result = (bool) value ? "1" : "0";
             return result;
         }
 
@@ -127,7 +127,7 @@ namespace TestDataFramework.ValueFormatter
             DbValueFormatter.Logger.Debug("Executing DateTimeFormatter");
 
             var dateTime = (DateTime) value;
-            var result = "'" + dateTime.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff") + "'";
+            string result = "'" + dateTime.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff") + "'";
 
             return result;
         }

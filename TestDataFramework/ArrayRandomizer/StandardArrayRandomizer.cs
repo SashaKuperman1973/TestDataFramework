@@ -52,7 +52,7 @@ namespace TestDataFramework.ArrayRandomizer
 
             Array resultArray;
 
-            var rank = type.GetArrayRank();
+            int rank = type.GetArrayRank();
             Type basicType = type.GetElementType();
 
             if (rank > 1)
@@ -61,7 +61,7 @@ namespace TestDataFramework.ArrayRandomizer
 
                 var dimensionSizes = new int[rank];
 
-                for (var i = 0; i < dimensionSizes.Length; i++)
+                for (int i = 0; i < dimensionSizes.Length; i++)
                 {
                     StandardArrayRandomizer.Logger.Debug($"dimensionSize {i}: {dimensionSizes[i]}");
                     dimensionSizes[i] = this.random.Next(StandardArrayRandomizer.MaxDimensionLength) + 1;
@@ -83,11 +83,11 @@ namespace TestDataFramework.ArrayRandomizer
             {
                 StandardArrayRandomizer.Logger.Debug($"rank <= 1: {rank}");
 
-                var dimensionLength = this.random.Next(StandardArrayRandomizer.MaxDimensionLength) + 1;
+                int dimensionLength = this.random.Next(StandardArrayRandomizer.MaxDimensionLength) + 1;
                 ConstructorInfo constructor = type.GetConstructor(new[] {typeof(int)});
                 resultArray = (Array) constructor.Invoke(new object[] {dimensionLength});
 
-                for (var i = 0; i < dimensionLength; i++)
+                for (int i = 0; i < dimensionLength; i++)
                 {
                     object value = this.valueGenerator.GetValue(propertyInfo, basicType);
                     StandardArrayRandomizer.Logger.Debug($"Element value: {value}");
@@ -102,10 +102,10 @@ namespace TestDataFramework.ArrayRandomizer
 
         private static EmptyArrayResult GetEmptyArray(Type arrayType, int[] dimensionSizes)
         {
-            var rank = arrayType.GetArrayRank();
+            int rank = arrayType.GetArrayRank();
             var indexTypes = new Type[rank];
 
-            for (var i = 0; i < indexTypes.Length; i++)
+            for (int i = 0; i < indexTypes.Length; i++)
                 indexTypes[i] = typeof(int);
 
             ConstructorInfo constructor = arrayType.GetConstructor(indexTypes);
@@ -142,7 +142,7 @@ namespace TestDataFramework.ArrayRandomizer
 
             public static IntArrayCounter operator ++(IntArrayCounter counter)
             {
-                var i = 0;
+                int i = 0;
                 bool go;
                 counter.Overflow = false;
                 do
@@ -153,7 +153,7 @@ namespace TestDataFramework.ArrayRandomizer
                     if (counter.Value[i] < counter.indexSizes[i])
                         continue;
 
-                    for (var j = 0; j <= i; j++)
+                    for (int j = 0; j <= i; j++)
                         counter.Value[j] = 0;
 
                     i++;

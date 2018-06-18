@@ -65,7 +65,7 @@ namespace TestDataFramework.AttributeDecorator
 
         public override int GetHashCode()
         {
-            var result = (this.Schema?.GetHashCode() ?? 0) ^ this.TableName.GetHashCode();
+            int result = (this.Schema?.GetHashCode() ?? 0) ^ this.TableName.GetHashCode();
 
             return result;
         }
@@ -77,17 +77,17 @@ namespace TestDataFramework.AttributeDecorator
         {
             var table = obj as Table;
 
-            var result = table != null &&
-                         (table.Schema == null && this.Schema == null ||
-                          (table.Schema?.Equals(this.Schema) ?? false)) &&
-                         table.TableName.Equals(this.TableName);
+            bool result = table != null &&
+                          (table.Schema == null && this.Schema == null ||
+                           (table.Schema?.Equals(this.Schema) ?? false)) &&
+                          table.TableName.Equals(this.TableName);
 
             return result;
         }
 
         public override string ToString()
         {
-            var result =
+            string result =
                 $"Schema: {this.Schema ?? "<null>"}, TableName: {this.TableName}, CatalogueName: {this.CatalogueName ?? "<null>"}, HasTableAttribute: {this.HasTableAttribute}";
 
             return result;

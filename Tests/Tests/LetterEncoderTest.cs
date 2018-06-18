@@ -44,7 +44,7 @@ namespace Tests.Tests
 
             var generator = new LetterEncoder();
 
-            var result = generator.Encode(input, stringLength);
+            string result = generator.Encode(input, stringLength);
 
             Assert.AreEqual(expected, result);
         }
@@ -64,7 +64,7 @@ namespace Tests.Tests
         [TestMethod]
         public void OverflowException_Test()
         {
-            var input = (ulong) Math.Pow(26, 2) + 2 * 26 + 3;
+            ulong input = (ulong) Math.Pow(26, 2) + 2 * 26 + 3;
             const string stringValueOfInput = "ABCD";
 
             var generator = new LetterEncoder();

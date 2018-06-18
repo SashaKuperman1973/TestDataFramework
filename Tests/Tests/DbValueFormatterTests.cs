@@ -40,7 +40,7 @@ namespace Tests.Tests
         [TestMethod]
         public void Null_Input_Test()
         {
-            var result = this.formatter.Format(null);
+            string result = this.formatter.Format(null);
             Assert.IsNull(result);
         }
 
@@ -48,7 +48,7 @@ namespace Tests.Tests
         public void Int_Test()
         {
             const int input = 5;
-            var result = this.formatter.Format(input);
+            string result = this.formatter.Format(input);
             Assert.AreEqual("5", result);
         }
 
@@ -56,7 +56,7 @@ namespace Tests.Tests
         public void Short_Test()
         {
             const short input = 5;
-            var result = this.formatter.Format(input);
+            string result = this.formatter.Format(input);
             Assert.AreEqual("5", result);
         }
 
@@ -64,7 +64,7 @@ namespace Tests.Tests
         public void Long_Test()
         {
             const long input = 5;
-            var result = this.formatter.Format(input);
+            string result = this.formatter.Format(input);
             Assert.AreEqual("5", result);
         }
 
@@ -72,7 +72,7 @@ namespace Tests.Tests
         public void UInt_Test()
         {
             const uint input = 5;
-            var result = this.formatter.Format(input);
+            string result = this.formatter.Format(input);
             Assert.AreEqual("5", result);
         }
 
@@ -80,7 +80,7 @@ namespace Tests.Tests
         public void UShort_Test()
         {
             const ushort input = 5;
-            var result = this.formatter.Format(input);
+            string result = this.formatter.Format(input);
             Assert.AreEqual("5", result);
         }
 
@@ -88,7 +88,7 @@ namespace Tests.Tests
         public void ULong_Test()
         {
             const ulong input = 5;
-            var result = this.formatter.Format(input);
+            string result = this.formatter.Format(input);
             Assert.AreEqual("5", result);
         }
 
@@ -96,7 +96,7 @@ namespace Tests.Tests
         public void String_Test()
         {
             const string input = "Abcd";
-            var result = this.formatter.Format(input);
+            string result = this.formatter.Format(input);
             Assert.AreEqual("'Abcd'", result);
         }
 
@@ -104,7 +104,7 @@ namespace Tests.Tests
         public void Char_Test()
         {
             const char input = 'A';
-            var result = this.formatter.Format(input);
+            string result = this.formatter.Format(input);
             Assert.AreEqual("'A'", result);
         }
 
@@ -112,7 +112,7 @@ namespace Tests.Tests
         public void Decimal_Test()
         {
             const decimal input = 12345.678m;
-            var result = this.formatter.Format(input);
+            string result = this.formatter.Format(input);
             Assert.AreEqual("12345.678", result);
         }
 
@@ -120,7 +120,7 @@ namespace Tests.Tests
         public void Bool_True_Test()
         {
             const bool input = true;
-            var result = this.formatter.Format(input);
+            string result = this.formatter.Format(input);
             Assert.AreEqual("1", result);
         }
 
@@ -128,7 +128,7 @@ namespace Tests.Tests
         public void Bool_False_Test()
         {
             const bool input = false;
-            var result = this.formatter.Format(input);
+            string result = this.formatter.Format(input);
             Assert.AreEqual("0", result);
         }
 
@@ -136,7 +136,7 @@ namespace Tests.Tests
         public void DateTime_Test()
         {
             DateTime input = DateTime.Parse("January 1, 2016 1:30 PM");
-            var result = this.formatter.Format(input);
+            string result = this.formatter.Format(input);
             Assert.AreEqual("'2016-01-01T13:30:00.000'", result);
         }
 
@@ -144,7 +144,7 @@ namespace Tests.Tests
         public void Byte_Test()
         {
             const byte input = (byte) 5;
-            var result = this.formatter.Format(input);
+            string result = this.formatter.Format(input);
             Assert.AreEqual("5", result);
         }
 
@@ -152,7 +152,7 @@ namespace Tests.Tests
         public void Double_Test()
         {
             const double input = 5.489;
-            var result = this.formatter.Format(input);
+            string result = this.formatter.Format(input);
             Assert.AreEqual("5.489", result);
         }
 
@@ -160,7 +160,7 @@ namespace Tests.Tests
         public void Float_Test()
         {
             const float input = 5.587f;
-            var result = this.formatter.Format(input);
+            string result = this.formatter.Format(input);
             Assert.AreEqual("5.587", result);
         }
 
@@ -168,7 +168,7 @@ namespace Tests.Tests
         public void Guid_Test()
         {
             var input = new Guid("fe3fbecb-f023-48df-8b18-88b7c8282553");
-            var result = this.formatter.Format(input);
+            string result = this.formatter.Format(input);
             Assert.AreEqual("'fe3fbecb-f023-48df-8b18-88b7c8282553'", result);
         }
 

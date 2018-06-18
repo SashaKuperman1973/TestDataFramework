@@ -35,7 +35,7 @@ namespace TestDataFramework.Exceptions
 
         private static string GetStackMessage(Type currentType, IEnumerable<Type> stack)
         {
-            var message = string.Format(Messages.TypeRecursion,
+            string message = string.Format(Messages.TypeRecursion,
                 string.Join(" -> ", stack), Helper.PrintType(currentType));
 
             return message;

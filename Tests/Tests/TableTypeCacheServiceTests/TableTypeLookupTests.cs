@@ -15,9 +15,8 @@ namespace Tests.Tests.TableTypeCacheServiceTests
     [TestClass]
     public class TableTypeLookupTests
     {
-        private TableTypeLookup tableTypeLookup;
-
         private Mock<IAttributeDecoratorBase> attributeDecoratorBaseMock;
+        private TableTypeLookup tableTypeLookup;
 
         [TestInitialize]
         public void Initialize()
@@ -38,7 +37,10 @@ namespace Tests.Tests.TableTypeCacheServiceTests
             var assemblyLookupContext = new AssemblyLookupContext();
             assemblyLookupContext.TypeDictionary.TryAdd(tableOfSet, typeInfoWrapper);
 
-            bool EqualsCriteria(Table fromSet, Table input) => true;
+            bool EqualsCriteria(Table fromSet, Table input)
+            {
+                return true;
+            }
 
             // Act
 
@@ -56,9 +58,9 @@ namespace Tests.Tests.TableTypeCacheServiceTests
             Type matchesSet = typeof(SubjectClass);
             Type doesNotMatchSet = typeof(SecondClass);
 
-            this.Criteria_And_BasicTableFieldsCheck_ShouldFail(inputType: matchesSet, criteriaCheckResult: false);
-            this.Criteria_And_BasicTableFieldsCheck_ShouldFail(inputType: doesNotMatchSet, criteriaCheckResult: true);
-            this.Criteria_And_BasicTableFieldsCheck_ShouldFail(inputType: doesNotMatchSet, criteriaCheckResult: false);
+            this.Criteria_And_BasicTableFieldsCheck_ShouldFail(matchesSet, false);
+            this.Criteria_And_BasicTableFieldsCheck_ShouldFail(doesNotMatchSet, true);
+            this.Criteria_And_BasicTableFieldsCheck_ShouldFail(doesNotMatchSet, false);
         }
 
         private void Criteria_And_BasicTableFieldsCheck_ShouldFail(Type inputType, bool criteriaCheckResult)
@@ -72,7 +74,10 @@ namespace Tests.Tests.TableTypeCacheServiceTests
             var assemblyLookupContext = new AssemblyLookupContext();
             assemblyLookupContext.TypeDictionary.TryAdd(tableOfSet, typeInfoWrapper);
 
-            bool EqualsCriteria(Table fromSet, Table input) => criteriaCheckResult;
+            bool EqualsCriteria(Table fromSet, Table input)
+            {
+                return criteriaCheckResult;
+            }
 
             // Act
 
@@ -96,7 +101,10 @@ namespace Tests.Tests.TableTypeCacheServiceTests
             var assemblyLookupContext = new AssemblyLookupContext();
             assemblyLookupContext.CollisionDictionary.TryAdd(tableOfSet, new List<TypeInfoWrapper> {typeInfoWrapper});
 
-            bool EqualsCriteria(Table fromSet, Table input) => true;
+            bool EqualsCriteria(Table fromSet, Table input)
+            {
+                return true;
+            }
 
             // Act
             // Assert
@@ -114,11 +122,11 @@ namespace Tests.Tests.TableTypeCacheServiceTests
             Type doesNotMatchSet = typeof(SecondClass);
 
             this.GetTableTypeByCriteria_Criteria_And_BasicTableFieldsCheck_ShouldNotCauseCollision(
-                inputType: matchesSet, criteriaCheckResult: false);
+                matchesSet, false);
             this.GetTableTypeByCriteria_Criteria_And_BasicTableFieldsCheck_ShouldNotCauseCollision(
-                inputType: doesNotMatchSet, criteriaCheckResult: true);
+                doesNotMatchSet, true);
             this.GetTableTypeByCriteria_Criteria_And_BasicTableFieldsCheck_ShouldNotCauseCollision(
-                inputType: doesNotMatchSet, criteriaCheckResult: false);
+                doesNotMatchSet, false);
         }
 
         private void GetTableTypeByCriteria_Criteria_And_BasicTableFieldsCheck_ShouldNotCauseCollision(Type inputType,
@@ -133,7 +141,10 @@ namespace Tests.Tests.TableTypeCacheServiceTests
             var assemblyLookupContext = new AssemblyLookupContext();
             assemblyLookupContext.CollisionDictionary.TryAdd(tableOfSet, new List<TypeInfoWrapper> {typeInfoWrapper});
 
-            bool EqualsCriteria(Table fromSet, Table input) => criteriaCheckResult;
+            bool EqualsCriteria(Table fromSet, Table input)
+            {
+                return criteriaCheckResult;
+            }
 
             // Act
 

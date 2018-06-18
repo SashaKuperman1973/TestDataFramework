@@ -25,7 +25,7 @@ namespace TestDataFramework.RepositoryOperations.Model
 
         public override string ToString()
         {
-            var result = base.ToString() + ", " + this.PropertyAttribute;
+            string result = base.ToString() + ", " + this.PropertyAttribute;
             return result;
         }
     }

@@ -10,7 +10,7 @@ namespace TestDataFramework.AttributeDecorator
 
         public bool Equals(Table fromSet, Table input)
         {
-            var result = this.equalsCriteria(fromSet, input) && fromSet.BasicFieldsEqual(input);
+            bool result = this.equalsCriteria(fromSet, input) && fromSet.BasicFieldsEqual(input);
             return result;
         }
 

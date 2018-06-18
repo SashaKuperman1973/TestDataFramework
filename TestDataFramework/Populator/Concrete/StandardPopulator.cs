@@ -83,7 +83,7 @@ namespace TestDataFramework.Populator.Concrete
             var result = new OperableList<T>(this.valueGuaranteePopulator, this);
             this.populatables.Add(result);
 
-            for (var i = 0; i < copies; i++)
+            for (int i = 0; i < copies; i++)
                 result.Add(this.Add<T>(primaryRecordReferences));
 
             StandardPopulator.Logger.Debug("Exiting Add");

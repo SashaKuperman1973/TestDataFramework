@@ -26,7 +26,7 @@ namespace TestDataFramework.RepositoryOperations.Model
 
         public override string ToString()
         {
-            var result = $"Name: {this.Name}, Value: {this.Value}";
+            string result = $"Name: {this.Name}, Value: {this.Value}";
             return result;
         }
     }

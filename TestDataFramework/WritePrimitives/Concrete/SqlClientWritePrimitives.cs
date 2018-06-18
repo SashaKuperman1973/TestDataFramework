@@ -53,7 +53,7 @@ namespace TestDataFramework.WritePrimitives.Concrete
         {
             SqlClientWritePrimitives.Logger.Debug($"Entering SelectIdentity. columnName: {columnName}");
 
-            var symbol = this.symbolGenerator.GetRandomString(10);
+            string symbol = this.symbolGenerator.GetRandomString(10);
             SqlClientWritePrimitives.Logger.Debug($"symbol: {symbol}");
 
             this.ExecutionStatements.AppendLine($"declare @{symbol} bigint;");
@@ -72,7 +72,7 @@ namespace TestDataFramework.WritePrimitives.Concrete
         {
             SqlClientWritePrimitives.Logger.Debug($"Entering WriteGuid. columnName: {columnName}");
 
-            var symbol = this.symbolGenerator.GetRandomString(10);
+            string symbol = this.symbolGenerator.GetRandomString(10);
             SqlClientWritePrimitives.Logger.Debug($"symbol: {symbol}");
 
             this.ExecutionStatements.AppendLine($"declare @{symbol} uniqueidentifier;");
@@ -91,7 +91,7 @@ namespace TestDataFramework.WritePrimitives.Concrete
         {
             SqlClientWritePrimitives.Logger.Debug("Entering BuildFullTableName");
 
-            var result = $"[{tableName}]";
+            string result = $"[{tableName}]";
 
             if (schema != null)
             {
@@ -113,7 +113,7 @@ namespace TestDataFramework.WritePrimitives.Concrete
         {
             SqlClientWritePrimitives.Logger.Debug("Entering BuildParameterListText");
 
-            var result = "(" + string.Join(", ", columns.Select(c => "[" + c.Name + "]")) + ")";
+            string result = "(" + string.Join(", ", columns.Select(c => "[" + c.Name + "]")) + ")";
 
             SqlClientWritePrimitives.Logger.Debug("Exiting BuildParameterListText");
             return result;

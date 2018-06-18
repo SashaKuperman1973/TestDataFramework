@@ -137,7 +137,7 @@ namespace Tests.Tests
         [TestMethod]
         public void Different_Object_Equals_Test()
         {
-            var s = "ABCD";
+            string s = "ABCD";
 
             var table = new Table(new TypeInfoWrapper(typeof(SubjectClass)), null);
 

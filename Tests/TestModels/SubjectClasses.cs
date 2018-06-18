@@ -130,12 +130,12 @@ namespace Tests.TestModels
 
     public class ClassWithConstructor
     {
+        public SecondClass SecondClass;
+
         public ClassWithConstructor(SecondClass constructorParameter)
         {
             this.SecondClass = constructorParameter;
         }
-
-        public SecondClass SecondClass;
     }
 
     public class InfiniteRecursiveClass1

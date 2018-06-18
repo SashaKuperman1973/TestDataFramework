@@ -82,7 +82,7 @@ namespace TestDataFramework.Populator
             IEnumerable<PropertyAttribute<ForeignKeyAttribute>> foreignKeyPropertyAttributes =
                 this.AttributeDecorator.GetPropertyAttributes<ForeignKeyAttribute>(this.RecordType).ToList();
 
-            var result =
+            bool result =
                 this.AttributeDecorator.GetPropertyAttributes<PrimaryKeyAttribute>(primaryRecordReference.RecordType)
                     .All(
                         pkPa =>

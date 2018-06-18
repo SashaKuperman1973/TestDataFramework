@@ -40,7 +40,7 @@ namespace TestDataFramework.ValueFormatter.Concrete
             }
 
             SqlClientValueFormatter.Logger.Debug("Value is not a Variable. Calling base.Format.");
-            var result = base.Format(value);
+            string result = base.Format(value);
 
             SqlClientValueFormatter.Logger.Debug($"Exiting Format. Result: {result ?? "<Null>"}");
             return result ?? "null";

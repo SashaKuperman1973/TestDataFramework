@@ -41,7 +41,7 @@ namespace TestDataFramework.RepositoryOperations
 
         public override string ToString()
         {
-            var result =
+            string result =
                 $"IsWriteDone: {this.IsWriteDone}, Order: {this.Order}. Record object: {Helper.DumpObject(this.RecordReference.RecordObject)}";
 
             return result;

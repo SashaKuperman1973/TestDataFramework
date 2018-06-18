@@ -161,7 +161,7 @@ namespace Tests.Tests
             // Arrange
 
             var guids = new Guid[5];
-            for (var i = 0; i < guids.Length; i++)
+            for (int i = 0; i < guids.Length; i++)
                 guids[i] = Guid.NewGuid();
 
             var objectGraphServiceMock = new Mock<IObjectGraphService>();

@@ -62,13 +62,13 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wr
 
         public override bool Equals(object obj)
         {
-            var result = EqualityHelper.Equals<TypeInfoWrapper, TypeInfo>(this, obj);
+            bool result = EqualityHelper.Equals<TypeInfoWrapper, TypeInfo>(this, obj);
             return result;
         }
 
         public override int GetHashCode()
         {
-            var result = this.Wrapped == null ? 0 : this.Wrapped.GetHashCode();
+            int result = this.Wrapped == null ? 0 : this.Wrapped.GetHashCode();
             return result;
         }
     }

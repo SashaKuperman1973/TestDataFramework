@@ -96,7 +96,7 @@ namespace TestDataFramework.TypeGenerator.Concrete
 
             this.complexTypeProcessingRecursionGuard.Push(forType);
 
-            var canBeConstructed = this.InvokeConstructor(forType, out object objectToFillResult);
+            bool canBeConstructed = this.InvokeConstructor(forType, out object objectToFillResult);
 
             if (!canBeConstructed)
             {
@@ -126,7 +126,7 @@ namespace TestDataFramework.TypeGenerator.Concrete
 
                 constructorArguments = new List<object>();
 
-                var parametersFound = true;
+                bool parametersFound = true;
                 foreach (ParameterInfo parameterInfo in parameterInfos)
                 {
                     object argument = this.valueGenerator.GetValue(null, parameterInfo.ParameterType);

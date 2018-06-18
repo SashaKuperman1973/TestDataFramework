@@ -17,7 +17,9 @@
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
 
 namespace Tests.Tests
@@ -52,11 +54,44 @@ namespace Tests.Tests
         {
             var largeInteger = new LargeInteger(LargeIntegerTests.MaxValue);
 
-            for (var i = (int) LargeIntegerTests.MaxValue - 1; i >= 0; i--)
+            for (int i = (int) LargeIntegerTests.MaxValue - 1; i >= 0; i--)
             {
                 largeInteger--;
                 Assert.AreEqual((ulong) i, (ulong) largeInteger);
             }
+        }
+
+        [TestMethod]
+        public void Borrow_When_Decrement_Test()
+        {
+            var largeInteger = new LargeInteger(0x100000000);
+            LargeInteger result = --largeInteger;
+
+            Assert.AreEqual(new LargeInteger(0xffffffff), result);
+        }
+
+        [TestMethod]
+        public void Decrement_Underflow_Test()
+        {
+            var largeInteger = new LargeInteger(0);
+
+            Helpers.ExceptionTest(() => { largeInteger--; },
+                typeof(OverflowException),
+                Messages.Underflow);
+        }
+
+        [TestMethod]
+        public void Subtract_Underflow_Test()
+        {
+            var largeInteger = new LargeInteger(5);
+
+            Helpers.ExceptionTest(() =>
+                {
+                    LargeInteger placeHolder = largeInteger - 6;
+                },
+                typeof(OverflowException),
+                Messages.LargeIntegerUnderFlow
+            );
         }
 
         [TestMethod]
@@ -174,7 +209,7 @@ namespace Tests.Tests
         {
             var largeInteger = new LargeInteger(LargeIntegerTests.MaxValue);
 
-            var result = (ulong) largeInteger;
+            ulong result = (ulong) largeInteger;
 
             Assert.AreEqual(LargeIntegerTests.MaxValue, result);
         }
@@ -182,7 +217,7 @@ namespace Tests.Tests
         [TestMethod]
         public void Cast_FromULong_Test()
         {
-            var value = LargeIntegerTests.MaxValue;
+            ulong value = LargeIntegerTests.MaxValue;
 
             var result = (LargeInteger) value;
 
@@ -194,7 +229,7 @@ namespace Tests.Tests
         [TestMethod]
         public void Initializer_Test()
         {
-            var value = LargeIntegerTests.MaxValue;
+            ulong value = LargeIntegerTests.MaxValue;
 
             var result = new LargeInteger(value);
 
@@ -226,7 +261,7 @@ namespace Tests.Tests
         {
             LargeInteger largeInteger = new LargeInteger(uint.MaxValue) * uint.MaxValue * uint.MaxValue;
 
-            var result = largeInteger.ToString();
+            string result = largeInteger.ToString();
             const string expected = "79228162458924105385300197375";
 
             Assert.AreEqual(expected, result);
@@ -237,9 +272,59 @@ namespace Tests.Tests
         {
             LargeInteger largeInteger = 0;
 
-            var result = largeInteger.ToString();
+            string result = largeInteger.ToString();
 
             Assert.AreEqual("0", result);
+        }
+
+        [TestMethod]
+        public void Less_Than_Or_Equal_To_Test()
+        {
+            var left = new LargeInteger(5);
+            var equalRight = new LargeInteger(5);
+
+            bool result = left <= equalRight;
+            Assert.IsTrue(result);
+
+            var greaterRight = new LargeInteger(6);
+            result = left <= greaterRight;
+            Assert.IsTrue(result);
+
+            var lesserRight = new LargeInteger(4);
+            result = left <= lesserRight;
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod]
+        public void Greater_Than_Or_Equal_To_Test()
+        {
+            var left = new LargeInteger(5);
+            var equalRight = new LargeInteger(5);
+
+            bool result = left >= equalRight;
+            Assert.IsTrue(result);
+
+            var lesserRight = new LargeInteger(4);
+            result = left >= lesserRight;
+            Assert.IsTrue(result);
+
+            var greaterRight = new LargeInteger(6);
+            result = left >= greaterRight;
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod]
+        public void UnEqual_Test()
+        {
+            var left = new LargeInteger(5);
+            var unequalRight = new LargeInteger(6);
+
+            bool result = left != unequalRight;
+            Assert.IsTrue(result);
+
+            var equalRight = new LargeInteger(5);
+            result = left != equalRight;
+            Assert.IsFalse(result);
         }
     }
 }

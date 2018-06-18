@@ -47,7 +47,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete
         {
             StandardTableTypeCache.Logger.Debug("Entering IsAssemblyCachePopulated");
 
-            var result = this.TableTypeDictionary.ContainsKey(assembly);
+            bool result = this.TableTypeDictionary.ContainsKey(assembly);
 
             StandardTableTypeCache.Logger.Debug("Exiting IsAssemblyCachePopulated");
             return result;
@@ -73,11 +73,9 @@ namespace TestDataFramework.AttributeDecorator.Concrete
                 return result;
 
             if (canScanAllCachedAssemblies)
-            {
                 result = this.tableTypeCacheService.GetCachedTableTypeUsingAllAssemblies(foreignKeyAttribute,
                     tableAttribute,
                     this.tableTypeCacheService.GetCachedTableType, this.TableTypeDictionary);
-            }
 
             StandardTableTypeCache.Logger.Debug("Exiting GetCachedTableType");
             return result;

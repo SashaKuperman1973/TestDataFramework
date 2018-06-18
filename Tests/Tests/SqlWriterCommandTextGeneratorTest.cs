@@ -35,16 +35,16 @@ namespace Tests.Tests
         {
             var sqlWriterCommandText = new SqlWriterCommandText();
 
-            var result = sqlWriterCommandText.GetStringSelect(SqlWriterCommandTextGeneratorTest.CatalogueName,
+            string result = sqlWriterCommandText.GetStringSelect(SqlWriterCommandTextGeneratorTest.CatalogueName,
                 SqlWriterCommandTextGeneratorTest.Schema, SqlWriterCommandTextGeneratorTest.TableName,
                 SqlWriterCommandTextGeneratorTest.ColumnName);
 
-            var expected = $"Select Max([{SqlWriterCommandTextGeneratorTest.ColumnName}])" +
-                           $" from [{SqlWriterCommandTextGeneratorTest.CatalogueName}].[{SqlWriterCommandTextGeneratorTest.Schema}].[{SqlWriterCommandTextGeneratorTest.TableName}]" +
-                           $" where [{SqlWriterCommandTextGeneratorTest.ColumnName}] not like '%[^A-Z]%' And LEN([{SqlWriterCommandTextGeneratorTest.ColumnName}])" +
-                           $" = (Select Max(Len([{SqlWriterCommandTextGeneratorTest.ColumnName}]))" +
-                           $" From [{SqlWriterCommandTextGeneratorTest.CatalogueName}].[{SqlWriterCommandTextGeneratorTest.Schema}].[{SqlWriterCommandTextGeneratorTest.TableName}]" +
-                           $" where [{SqlWriterCommandTextGeneratorTest.ColumnName}] not like '%[^A-Z]%' );";
+            string expected = $"Select Max([{SqlWriterCommandTextGeneratorTest.ColumnName}])" +
+                              $" from [{SqlWriterCommandTextGeneratorTest.CatalogueName}].[{SqlWriterCommandTextGeneratorTest.Schema}].[{SqlWriterCommandTextGeneratorTest.TableName}]" +
+                              $" where [{SqlWriterCommandTextGeneratorTest.ColumnName}] not like '%[^A-Z]%' And LEN([{SqlWriterCommandTextGeneratorTest.ColumnName}])" +
+                              $" = (Select Max(Len([{SqlWriterCommandTextGeneratorTest.ColumnName}]))" +
+                              $" From [{SqlWriterCommandTextGeneratorTest.CatalogueName}].[{SqlWriterCommandTextGeneratorTest.Schema}].[{SqlWriterCommandTextGeneratorTest.TableName}]" +
+                              $" where [{SqlWriterCommandTextGeneratorTest.ColumnName}] not like '%[^A-Z]%' );";
 
             Assert.AreEqual(expected, result);
         }
@@ -54,12 +54,12 @@ namespace Tests.Tests
         {
             var sqlWriterCommandText = new SqlWriterCommandText();
 
-            var result = sqlWriterCommandText.GetNumberSelect(SqlWriterCommandTextGeneratorTest.CatalogueName,
+            string result = sqlWriterCommandText.GetNumberSelect(SqlWriterCommandTextGeneratorTest.CatalogueName,
                 SqlWriterCommandTextGeneratorTest.Schema, SqlWriterCommandTextGeneratorTest.TableName,
                 SqlWriterCommandTextGeneratorTest.ColumnName);
 
-            var expected = $"Select MAX([{SqlWriterCommandTextGeneratorTest.ColumnName}]) From" +
-                           $" [{SqlWriterCommandTextGeneratorTest.CatalogueName}].[{SqlWriterCommandTextGeneratorTest.Schema}].[{SqlWriterCommandTextGeneratorTest.TableName}];";
+            string expected = $"Select MAX([{SqlWriterCommandTextGeneratorTest.ColumnName}]) From" +
+                              $" [{SqlWriterCommandTextGeneratorTest.CatalogueName}].[{SqlWriterCommandTextGeneratorTest.Schema}].[{SqlWriterCommandTextGeneratorTest.TableName}];";
 
             Assert.AreEqual(expected, result);
         }

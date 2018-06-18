@@ -38,8 +38,8 @@ namespace Tests.Tests
     {
         private Mock<IHandledTypeGenerator> handledTypeGeneratorMock;
         private StandardTypeGenerator typeGenerator;
-        private Mock<IValueGenerator> valueGeneratorMock;
         private Mock<ITypeGeneratorService> typeGeneratorServiceMock;
+        private Mock<IValueGenerator> valueGeneratorMock;
 
         [TestInitialize]
         public void Initialize()
@@ -91,7 +91,7 @@ namespace Tests.Tests
                 typeof(InfiniteRecursiveClass1)
             };
 
-            var i = 0;
+            int i = 0;
             this.valueGeneratorMock.Setup(m => m.GetValue(It.IsAny<PropertyInfo>(), It.IsAny<ObjectGraphNode>()))
                 .Returns<PropertyInfo, ObjectGraphNode>((pi, objectGraphNode) =>
                     this.typeGenerator.GetObject(types[i++], null));
@@ -125,7 +125,8 @@ namespace Tests.Tests
             });
 
             this.typeGeneratorServiceMock.Setup(m => m.GetExplicitlySetPropertySetters(explicitProperySetters,
-                It.Is<ObjectGraphNode>(node => node.PropertyInfo.Name == propertyInfo.Name))).Returns(explicitProperySetters);
+                    It.Is<ObjectGraphNode>(node => node.PropertyInfo.Name == propertyInfo.Name)))
+                .Returns(explicitProperySetters);
 
             this.typeGeneratorServiceMock.Setup(m => m.GetExplicitlySetPropertySetters(explicitProperySetters,
                     It.Is<ObjectGraphNode>(node => node.PropertyInfo.Name != propertyInfo.Name)))
@@ -217,7 +218,7 @@ namespace Tests.Tests
 
             this.valueGeneratorMock.Verify(
                 m => m.GetValue(null,
-                        It.Is<Type>(p => p == typeof(SecondClass)))
+                    It.Is<Type>(p => p == typeof(SecondClass)))
                 , Times.Once);
         }
     }

@@ -69,7 +69,7 @@ namespace TestDataFramework.Helpers
         {
             var columnAttribute = attributeDecorator.GetCustomAttribute<ColumnAttribute>(propertyInfo);
 
-            var result = columnAttribute?.Name ?? propertyInfo.Name;
+            string result = columnAttribute?.Name ?? propertyInfo.Name;
             return result;
         }
 
@@ -101,7 +101,7 @@ namespace TestDataFramework.Helpers
 
         public static bool IsSpecialType(this object value)
         {
-            var result = Helper.SpecialTypes.Any(st => st.IsInstanceOfType(value));
+            bool result = Helper.SpecialTypes.Any(st => st.IsInstanceOfType(value));
             return result;
         }
 
@@ -118,8 +118,8 @@ namespace TestDataFramework.Helpers
 
         public static bool IsGuid(this Type type)
         {
-            var result = (Nullable.GetUnderlyingType(type) ?? type) ==
-                         typeof(Guid);
+            bool result = (Nullable.GetUnderlyingType(type) ?? type) ==
+                          typeof(Guid);
 
             return result;
         }
@@ -131,7 +131,7 @@ namespace TestDataFramework.Helpers
 
         public static bool IsValueLikeType(this Type type)
         {
-            var result = type.IsValueType || type == typeof(string);
+            bool result = type.IsValueType || type == typeof(string);
             return result;
         }
 

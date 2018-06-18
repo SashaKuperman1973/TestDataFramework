@@ -35,7 +35,7 @@ namespace TestDataFramework.Helpers
 
             var sb = new StringBuilder();
 
-            var digitCount = 0;
+            int digitCount = 0;
 
             LargeInteger whole = number;
             while (digitCount++ < maxStringLength)
@@ -51,14 +51,14 @@ namespace TestDataFramework.Helpers
                     break;
                 }
 
-                var ascii = (char) (remainder + 65);
+                char ascii = (char) (remainder + 65);
                 sb.Insert(0, ascii);
             }
 
             if (digitCount > maxStringLength)
                 throw new OverflowException(string.Format(Messages.StringGeneratorOverflow, number, maxStringLength));
 
-            var result = sb.ToString();
+            string result = sb.ToString();
 
             LetterEncoder.Logger.Debug($"Exiting Encode. result : {result}");
             return result;
@@ -70,9 +70,9 @@ namespace TestDataFramework.Helpers
 
             LargeInteger result = 0;
 
-            for (var i = 0; i < value.Length; i++)
+            for (int i = 0; i < value.Length; i++)
             {
-                var ascii = (ulong) value[value.Length - 1 - i];
+                ulong ascii = value[value.Length - 1 - i];
 
                 result += new LargeInteger(26).Pow((ulong) i) * (ascii - 65);
             }

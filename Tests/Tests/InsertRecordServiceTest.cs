@@ -169,7 +169,7 @@ namespace Tests.Tests
             const string identityVariableSymbol = "ABCD";
             const string catalogueName = "catABC";
             const string schema = "schemaABC";
-            var tableName = this.foreignKeyTable.GetType().Name;
+            string tableName = this.foreignKeyTable.GetType().Name;
 
             this.writerMock.Setup(m => m.SelectIdentity(It.IsAny<string>())).Returns(identityVariableSymbol);
 

@@ -19,9 +19,9 @@ namespace Tests.Tests.TableTypeCacheServiceTests
         private AssemblyLookupContext assemblyLookupContext;
 
         private ForeignKeyAttribute foreignKeyAttribute;
-        private StandardTableTypeCacheService service;
 
         private Table foreignKeyAttributeTable;
+        private StandardTableTypeCacheService service;
         private TableAttribute tableAttribute;
         private Mock<TableTypeLookup> tableTypeLookupMock;
 
@@ -43,7 +43,8 @@ namespace Tests.Tests.TableTypeCacheServiceTests
             this.tableTypeLookupMock.Verify(
                 m => m.GetTableTypeByCriteria(
                     It.Is<Table>(table => table.CatalogueName == this.foreignKeyAttributeTable.CatalogueName &&
-                                          table.TableName == this.foreignKeyAttributeTable.TableName && table.Schema == this.foreignKeyAttributeTable.Schema),
+                                          table.TableName == this.foreignKeyAttributeTable.TableName && table.Schema ==
+                                          this.foreignKeyAttributeTable.Schema),
                     matchCriteria, this.assemblyLookupContext), Times.Once);
         }
 
@@ -252,17 +253,21 @@ namespace Tests.Tests.TableTypeCacheServiceTests
             // Arrange
 
             var definedType = new TypeInfoWrapper(typeof(SubjectClass));
-            TableAttribute GetTableAttibute(TypeInfoWrapper type) => null;
+
+            TableAttribute GetTableAttibute(TypeInfoWrapper type)
+            {
+                return null;
+            }
 
             // Act
 
             this.service.TryAssociateTypeToTable(definedType, this.assemblyLookupContext, GetTableAttibute,
-                defaultSchema: null);
+                null);
 
             // Assert
 
             bool containsTheEntry = this.assemblyLookupContext.TypeDictionary.Contains(
-                new KeyValuePair<Table, TypeInfoWrapper>(new Table(definedType, defaultSchema: null), definedType));
+                new KeyValuePair<Table, TypeInfoWrapper>(new Table(definedType, null), definedType));
 
             Assert.IsTrue(containsTheEntry);
 
@@ -275,19 +280,23 @@ namespace Tests.Tests.TableTypeCacheServiceTests
             // Arrange
 
             var definedType = new TypeInfoWrapper(typeof(SubjectClass));
-            TableAttribute GetTableAttibute(TypeInfoWrapper type) => null;
 
-            this.assemblyLookupContext.TypeDictionary.TryAdd(new Table(definedType, defaultSchema: null), definedType);
+            TableAttribute GetTableAttibute(TypeInfoWrapper type)
+            {
+                return null;
+            }
+
+            this.assemblyLookupContext.TypeDictionary.TryAdd(new Table(definedType, null), definedType);
 
             // Act
 
             this.service.TryAssociateTypeToTable(definedType, this.assemblyLookupContext, GetTableAttibute,
-                defaultSchema: null);
+                null);
 
             // Assert
 
             bool containsTheEntry = this.assemblyLookupContext.TypeDictionary.Contains(
-                new KeyValuePair<Table, TypeInfoWrapper>(new Table(definedType, defaultSchema: null), definedType));
+                new KeyValuePair<Table, TypeInfoWrapper>(new Table(definedType, null), definedType));
 
             Assert.IsTrue(containsTheEntry);
             Assert.AreEqual(1, this.assemblyLookupContext.TypeDictionary.Count);
@@ -295,7 +304,7 @@ namespace Tests.Tests.TableTypeCacheServiceTests
             int collisionCount = this.assemblyLookupContext.CollisionDictionary.Count;
             Assert.AreEqual(1, collisionCount);
 
-            var table = new Table(definedType, defaultSchema: null);
+            var table = new Table(definedType, null);
 
             this.assemblyLookupContext.CollisionDictionary.TryGetValue(table,
                 out List<TypeInfoWrapper> collisionTypes);
@@ -313,9 +322,13 @@ namespace Tests.Tests.TableTypeCacheServiceTests
             // Arrange
 
             var definedType = new TypeInfoWrapper(typeof(SubjectClass));
-            TableAttribute GetTableAttibute(TypeInfoWrapper type) => null;
 
-            var table = new Table(definedType, defaultSchema: null);
+            TableAttribute GetTableAttibute(TypeInfoWrapper type)
+            {
+                return null;
+            }
+
+            var table = new Table(definedType, null);
             this.assemblyLookupContext.TypeDictionary.TryAdd(table, definedType);
             var collidedType = new TypeInfoWrapper(typeof(SecondClass));
             this.assemblyLookupContext.CollisionDictionary.TryAdd(table, new List<TypeInfoWrapper> {collidedType});
@@ -323,7 +336,7 @@ namespace Tests.Tests.TableTypeCacheServiceTests
             // Act
 
             this.service.TryAssociateTypeToTable(definedType, this.assemblyLookupContext, GetTableAttibute,
-                defaultSchema: null);
+                null);
 
             // Assert
 
@@ -348,7 +361,8 @@ namespace Tests.Tests.TableTypeCacheServiceTests
 
             // Act
 
-            TypeInfoWrapper result = this.GetCachedTableTypeUsingAllAssemblies_Test(getCachedTableTypeMock, assemblyLookupContext1, assemblyLookupContext2, type);
+            TypeInfoWrapper result = this.GetCachedTableTypeUsingAllAssemblies_Test(getCachedTableTypeMock,
+                assemblyLookupContext1, assemblyLookupContext2, type);
 
             // Assert
 
@@ -398,7 +412,8 @@ namespace Tests.Tests.TableTypeCacheServiceTests
             tableTypeDictionary.TryAdd(new AssemblyWrapper(), assemblyLookupContext1);
             tableTypeDictionary.TryAdd(new AssemblyWrapper(), assemblyLookupContext2);
 
-            getCachedTableTypeMock.Setup(m => m(this.foreignKeyAttribute, this.tableAttribute, It.IsAny<AssemblyLookupContext>()))
+            getCachedTableTypeMock.Setup(m => m(this.foreignKeyAttribute, this.tableAttribute,
+                    It.IsAny<AssemblyLookupContext>()))
                 .Returns(type);
 
             // Act
@@ -417,8 +432,15 @@ namespace Tests.Tests.TableTypeCacheServiceTests
             GetTableAttribute getTableAttribute;
             Table tableOfSet;
 
-            TableAttribute GetTableAttributeWithCatalogue() => new TableAttribute("catalogueName", "schema", "name");
-            TableAttribute GetTableAttributeWithoutCatalogue() => new TableAttribute(null, "schema", "name");
+            TableAttribute GetTableAttributeWithCatalogue()
+            {
+                return new TableAttribute("catalogueName", "schema", "name");
+            }
+
+            TableAttribute GetTableAttributeWithoutCatalogue()
+            {
+                return new TableAttribute(null, "schema", "name");
+            }
 
             getTableAttribute = type => GetTableAttributeWithCatalogue();
             tableOfSet = new Table(GetTableAttributeWithCatalogue());
@@ -449,7 +471,7 @@ namespace Tests.Tests.TableTypeCacheServiceTests
             // Act
 
             this.service.TryAssociateTypeToTable(definedType, this.assemblyLookupContext, getTableAttribute,
-                defaultSchema: "schema");
+                "schema");
 
             // Assert
 

@@ -124,7 +124,7 @@ namespace CommonIntegrationTests.TestModels
 
         public override string ToString()
         {
-            var result =
+            string result =
                 $"Key \t\t\t{this.Key}\r\n" +
                 $"ForeignIntKey \t{this.ForeignIntKey}\r\n" +
                 $"ForeignGuidKey \t{this.ForeignGuidKey}\r\n" +

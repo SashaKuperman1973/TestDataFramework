@@ -51,14 +51,14 @@ namespace TestDataFramework.Helpers.Concrete
 
             var theString = new char[length.Value];
 
-            for (var i = 0; i < length; i++)
+            for (int i = 0; i < length; i++)
             {
-                var ascii = this.random.Next(26);
+                int ascii = this.random.Next(26);
                 ascii += 65;
                 theString[i] = (char) ascii;
             }
 
-            var result = new string(theString);
+            string result = new string(theString);
 
             RandomSymbolStringGenerator.Logger.Debug("Exiting GetRandomString");
 

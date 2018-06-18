@@ -75,19 +75,19 @@ namespace Tests.Tests
 
             // Setup has rows flag to return 2 row for 1st record set and 1 row for second.
             var hasRows = new[] {true, true, false, true, false};
-            var hasRowsPosition = 0;
+            int hasRowsPosition = 0;
 
             this.readerMock.Setup(m => m.HasRows).Returns(() => hasRows[hasRowsPosition++]);
 
             // Setup reader to signal 2 rows in first result set and 1 row in second set.
             var read = new[] {true, true, false, true, false};
-            var readPosition = 0;
+            int readPosition = 0;
 
             this.readerMock.Setup(m => m.Read()).Returns(() => read[readPosition++]);
 
             // Three rows setup (note: in two result sets), 1st with 2 coluns back, 2nd with 3 columns and 3rd with 2 columns.
             var fieldCount = new[] {2, 3, 2};
-            var fieldCountPosition = 0;
+            int fieldCountPosition = 0;
 
             this.readerMock.Setup(m => m.FieldCount).Returns(() => fieldCount[fieldCountPosition++]);
 
@@ -98,11 +98,11 @@ namespace Tests.Tests
                 new object[] {"C", 'K'}
             };
 
-            var rowNumber = 0;
+            int rowNumber = 0;
 
             this.readerMock.Setup(m => m.GetValues(It.IsAny<object[]>())).Callback<object[]>(a =>
             {
-                for (var i = 0; i < a.Length; i++)
+                for (int i = 0; i < a.Length; i++)
                     a[i] = expected[rowNumber][i];
 
                 rowNumber++;
@@ -154,7 +154,7 @@ namespace Tests.Tests
 
             this.formatterMock.Verify();
 
-            var expectedText =
+            string expectedText =
                 new StringBuilder("insert into [xx] ([Row1], [Row2]) values (1st Value, 2nd Value);").AppendLine()
                     .AppendLine()
                     .ToString();
@@ -188,7 +188,7 @@ namespace Tests.Tests
 
             this.formatterMock.Verify();
 
-            var expectedText =
+            string expectedText =
                 new StringBuilder(
                         $"insert into [{schema}].[{tableName}] ([Row1], [Row2]) values (1st Value, 2nd Value);")
                     .AppendLine()
@@ -225,7 +225,7 @@ namespace Tests.Tests
 
             this.formatterMock.Verify();
 
-            var expectedText =
+            string expectedText =
                 new StringBuilder(
                         $"insert into [{catalogueName}].[{schema}].[{tableName}] ([Row1], [Row2]) values (1st Value, 2nd Value);")
                     .AppendLine()

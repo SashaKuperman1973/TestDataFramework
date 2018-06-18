@@ -83,7 +83,7 @@ namespace Tests.Tests
 
             // Assert
 
-            var expectedText =
+            string expectedText =
                 new StringBuilder($"declare @{SqlClientWritePrimitivesTests.VariableSymbol} bigint;").AppendLine()
                     .AppendLine($"select @{SqlClientWritePrimitivesTests.VariableSymbol} = @@identity;")
                     .AppendLine($"select '{SqlClientWritePrimitivesTests.ColumnName}'")
@@ -104,7 +104,7 @@ namespace Tests.Tests
 
             // Assert
 
-            var expectedText =
+            string expectedText =
                 new StringBuilder($"declare @{SqlClientWritePrimitivesTests.VariableSymbol} uniqueidentifier;")
                     .AppendLine()
                     .AppendLine($"select @{SqlClientWritePrimitivesTests.VariableSymbol} = NEWID();")
@@ -119,10 +119,10 @@ namespace Tests.Tests
         [TestMethod]
         public void BuildFullTableName_Test()
         {
-            var result = SqlClientWritePrimitives.BuildFullTableName(SqlClientWritePrimitivesTests.CatalogueName,
+            string result = SqlClientWritePrimitives.BuildFullTableName(SqlClientWritePrimitivesTests.CatalogueName,
                 SqlClientWritePrimitivesTests.Schema, SqlClientWritePrimitivesTests.TableName);
 
-            var expected =
+            string expected =
                 $"[{SqlClientWritePrimitivesTests.CatalogueName}].[{SqlClientWritePrimitivesTests.Schema}].[{SqlClientWritePrimitivesTests.TableName}]";
 
             Assert.AreEqual(expected, result);
@@ -131,10 +131,10 @@ namespace Tests.Tests
         [TestMethod]
         public void BuildFullTableName_Schema_and_TableName_Test()
         {
-            var result = SqlClientWritePrimitives.BuildFullTableName(null, SqlClientWritePrimitivesTests.Schema,
+            string result = SqlClientWritePrimitives.BuildFullTableName(null, SqlClientWritePrimitivesTests.Schema,
                 SqlClientWritePrimitivesTests.TableName);
 
-            var expected = $"[{SqlClientWritePrimitivesTests.Schema}].[{SqlClientWritePrimitivesTests.TableName}]";
+            string expected = $"[{SqlClientWritePrimitivesTests.Schema}].[{SqlClientWritePrimitivesTests.TableName}]";
 
             Assert.AreEqual(expected, result);
         }
@@ -142,10 +142,10 @@ namespace Tests.Tests
         [TestMethod]
         public void BuildFullTableName_TableName_Test()
         {
-            var result =
+            string result =
                 SqlClientWritePrimitives.BuildFullTableName(null, null, SqlClientWritePrimitivesTests.TableName);
 
-            var expected = $"[{SqlClientWritePrimitivesTests.TableName}]";
+            string expected = $"[{SqlClientWritePrimitivesTests.TableName}]";
 
             Assert.AreEqual(expected, result);
         }

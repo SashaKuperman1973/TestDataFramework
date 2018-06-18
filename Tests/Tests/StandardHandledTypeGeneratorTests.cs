@@ -82,7 +82,7 @@ namespace Tests.Tests
 
             // Arrange
 
-            var i = 0;
+            int i = 0;
             string[] s = {"AA", "BB", "CC", "DD"};
 
             this.accumulatorValueGeneratorMock.Setup(m => m.GetValue(null, typeof(int))).Returns(() => ++i);
@@ -111,7 +111,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var i = 0;
+            int i = 0;
             string[] s = {"AA", "BB"};
 
             this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(string))).Returns(() => s[i++]);
@@ -150,7 +150,7 @@ namespace Tests.Tests
 
             // Arrange
 
-            var i = 0;
+            int i = 0;
             object[] o = {new object(), new object(), new object(), new object()};
             string[] s = {"AA", "BB", "CC", "DD"};
 
@@ -199,7 +199,7 @@ namespace Tests.Tests
             // Arrange
 
             SubjectClass[] sc = {new SubjectClass(), new SubjectClass(), new SubjectClass(), new SubjectClass()};
-            var i = 0;
+            int i = 0;
 
             this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(SubjectClass))).Returns(() => sc[i++]);
 

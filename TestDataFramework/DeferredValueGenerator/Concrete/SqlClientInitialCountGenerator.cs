@@ -78,7 +78,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
             if (results.Length != decoders.Count)
                 throw new DataLengthMismatchException(Messages.DataCountsDoNotMatch);
 
-            for (var i = 0; i < results.Length; i++)
+            for (int i = 0; i < results.Length; i++)
             {
                 SqlClientInitialCountGenerator.Logger.Debug(
                     $"PropertyInfo to set: {propertyDataList[i].Key}, Db result: {results[i]}");

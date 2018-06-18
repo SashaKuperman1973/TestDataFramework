@@ -69,7 +69,7 @@ namespace TestDataFramework.WritePrimitives
             DbProviderWritePrimitives.Logger.Debug(
                 $"Entering Insert. tableName: {tableName}. schema: {schema ?? "<null>"}. catalogueName: {catalogueName ?? "<null>"} columns: {Helper.ToCompositeString(columns)}");
 
-            var insertStatement = this.BuildInsertStatement(catalogueName, schema, tableName, columns);
+            string insertStatement = this.BuildInsertStatement(catalogueName, schema, tableName, columns);
             DbProviderWritePrimitives.Logger.Debug($"insertStatement: {insertStatement}");
 
             this.ExecutionStatements.AppendLine(insertStatement);
@@ -102,9 +102,9 @@ namespace TestDataFramework.WritePrimitives
             command.Connection = this.dbProviderFactory.CreateConnection();
             command.Connection.ConnectionString = this.connectionStringWithDefaultCatalogue;
 
-            var commands = this.ExecutionStatements.ToString();
+            string commands = this.ExecutionStatements.ToString();
 
-            var dumpSqlInput = false;
+            bool dumpSqlInput = false;
             bool.TryParse(this.configuration["TestDataFramework_DumpSqlInput"], out dumpSqlInput);
 
             if (dumpSqlInput)
@@ -144,18 +144,18 @@ namespace TestDataFramework.WritePrimitives
             IEnumerable<Column> columns)
         {
             columns = columns.ToList();
-            var parameterList = SqlClientWritePrimitives.BuildParameterListText(columns);
-            var valueList = this.BuildValueListText(columns);
+            string parameterList = SqlClientWritePrimitives.BuildParameterListText(columns);
+            string valueList = this.BuildValueListText(columns);
 
-            var fullTableName = SqlClientWritePrimitives.BuildFullTableName(catalogueName, schema, tableName);
+            string fullTableName = SqlClientWritePrimitives.BuildFullTableName(catalogueName, schema, tableName);
 
-            var result = $"insert into {fullTableName} " + parameterList + " values " + valueList + ";";
+            string result = $"insert into {fullTableName} " + parameterList + " values " + valueList + ";";
             return result;
         }
 
         private string BuildValueListText(IEnumerable<Column> columns)
         {
-            var result = "(" + string.Join(", ", columns.Select(c => this.formatter.Format(c.Value))) + ")";
+            string result = "(" + string.Join(", ", columns.Select(c => this.formatter.Format(c.Value))) + ")";
             return result;
         }
     }

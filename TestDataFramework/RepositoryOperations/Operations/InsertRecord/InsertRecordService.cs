@@ -98,9 +98,9 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                 {
                     var pkRecord = peer as InsertRecord;
 
-                    var peerResult = pkRecord != null
-                                     && this.recordReference.PrimaryKeyReferences.Any(
-                                         primaryKeyReference => primaryKeyReference == pkRecord.RecordReference);
+                    bool peerResult = pkRecord != null
+                                      && this.recordReference.PrimaryKeyReferences.Any(
+                                          primaryKeyReference => primaryKeyReference == pkRecord.RecordReference);
 
                     return peerResult;
                 }).Cast<InsertRecord>().ToList();
@@ -181,7 +181,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                 ColumnSymbol pkColumnMatch = null;
 
 
-                var isForeignKeyPrimaryKeyMatch = keyTableList.Any(pkTable =>
+                bool isForeignKeyPrimaryKeyMatch = keyTableList.Any(pkTable =>
                     pkTable.Any(pk =>
                         this.attributeDecorator.GetTableType(fkpa.Attribute,
                             new TypeInfoWrapper(this.recordReference.RecordType.GetTypeInfo())) ==
@@ -190,7 +190,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                     )
                 );
 
-                var isExplicitlySet = this.recordReference.IsExplicitlySet(fkpa.PropertyInfo);
+                bool isExplicitlySet = this.recordReference.IsExplicitlySet(fkpa.PropertyInfo);
 
                 if (!isExplicitlySet)
                     if (this.enforceKeyReferenceCheck && !isForeignKeyPrimaryKeyMatch)
@@ -243,7 +243,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                     {
                         PrimaryKeyAttribute pka;
 
-                        var filter =
+                        bool filter =
                             this.attributeDecorator.GetSingleAttribute<ForeignKeyAttribute>(p) == null
                             &&
                             ((pka = this.attributeDecorator.GetSingleAttribute<PrimaryKeyAttribute>(p)) == null ||
@@ -254,7 +254,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                     .Select(
                         p =>
                         {
-                            var columnName = Helper.GetColumnName(p, this.attributeDecorator);
+                            string columnName = Helper.GetColumnName(p, this.attributeDecorator);
 
                             var column = new Column
                             {
@@ -309,7 +309,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
             IEnumerable<ColumnSymbol> result = pkPropertyAttributes.Select(pa =>
             {
-                var columnName = Helper.GetColumnName(pa.PropertyInfo, this.attributeDecorator);
+                string columnName = Helper.GetColumnName(pa.PropertyInfo, this.attributeDecorator);
 
                 Column sourceColumn = columns.FirstOrDefault(c => c.Name.Equals(columnName, StringComparison.Ordinal));
 

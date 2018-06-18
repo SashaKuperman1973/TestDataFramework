@@ -145,7 +145,7 @@ namespace TestDataFramework
 
         public override string ToString()
         {
-            var result =
+            string result =
                 string.Format("PrimaryTableType: {0}, PrimaryTableName: {1}, PrimaryKeyName: {2}, Schema: {3}",
                     AttributeHelper.GetStrings(this.PrimaryTableType, this.PrimaryTableName, this.PrimaryKeyName,
                         this.Schema));
@@ -206,18 +206,18 @@ namespace TestDataFramework
         {
             var value = obj as TableAttribute;
 
-            var result = value != null &&
-                         (this.Schema == null && value.Schema == null ||
-                          (this.Schema?.Equals(value.Schema) ?? false)) &&
-                         (this.CatalogueName == null && value.CatalogueName == null ||
-                          (this.CatalogueName?.Equals(value.CatalogueName) ?? false)) &&
-                         this.Name.Equals(value.Name);
+            bool result = value != null &&
+                          (this.Schema == null && value.Schema == null ||
+                           (this.Schema?.Equals(value.Schema) ?? false)) &&
+                          (this.CatalogueName == null && value.CatalogueName == null ||
+                           (this.CatalogueName?.Equals(value.CatalogueName) ?? false)) &&
+                          this.Name.Equals(value.Name);
             return result;
         }
 
         public override string ToString()
         {
-            var result =
+            string result =
                 $"Name: {this.Name}, Schema: {this.Schema ?? "<null>"}, Catalogue: {this.CatalogueName ?? "<null>"}";
             return result;
         }

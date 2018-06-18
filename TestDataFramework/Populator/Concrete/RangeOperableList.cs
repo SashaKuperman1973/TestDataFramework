@@ -61,7 +61,7 @@ namespace TestDataFramework.Populator.Concrete
 
         protected internal override void Populate()
         {
-            for (var i = 0; i < this.InternalList.Count; i++)
+            for (int i = 0; i < this.InternalList.Count; i++)
                 if (this.InternalList[i] == null)
                     this.InternalList[i] = this.CreateRecordReference();
 
@@ -74,8 +74,8 @@ namespace TestDataFramework.Populator.Concrete
             {
                 var range = new int[r.EndPosition + 1 - r.StartPosition];
 
-                var i = 0;
-                for (var j = r.StartPosition; j <= r.EndPosition; j++)
+                int i = 0;
+                for (int j = r.StartPosition; j <= r.EndPosition; j++)
                     range[i++] = j;
 
                 return range;
@@ -87,8 +87,8 @@ namespace TestDataFramework.Populator.Concrete
         private void ValidatePositionBoundaries(IEnumerable<int> positions, string rangesParameterName)
         {
             IOrderedEnumerable<int> orderedPositions = positions.OrderBy(i => i);
-            var highestPosition = orderedPositions.Last();
-            var lowestPosition = orderedPositions.First();
+            int highestPosition = orderedPositions.Last();
+            int lowestPosition = orderedPositions.First();
 
             if (highestPosition >= this.InternalList.Count || lowestPosition < 0)
                 throw new ArgumentOutOfRangeException(rangesParameterName);
@@ -97,7 +97,7 @@ namespace TestDataFramework.Populator.Concrete
         private void SetInternalList<TProperty>(IEnumerable<int> positions,
             Expression<Func<TListElement, TProperty>> fieldExpression, Func<TProperty> valueFactory)
         {
-            foreach (var position in positions)
+            foreach (int position in positions)
             {
                 if (this.InternalList[position] == null)
                     this.InternalList[position] = this.CreateRecordReference();

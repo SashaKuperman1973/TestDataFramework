@@ -56,7 +56,7 @@ namespace TestDataFramework.ValueProvider.Concrete
         public int GetInteger(int? max)
         {
             AccumulatorValueProvider.Logger.Debug("Entering GetInteger");
-            var result = this.Count++;
+            int result = this.Count++;
 
             AccumulatorValueProvider.Logger.Debug($"Exiting GetInteger. result: {result}");
             return result;
@@ -74,7 +74,7 @@ namespace TestDataFramework.ValueProvider.Concrete
         public short GetShortInteger(short? max)
         {
             AccumulatorValueProvider.Logger.Debug("Entering GetShortInteger");
-            var result = (short) (this.Count++ % short.MaxValue);
+            short result = (short) (this.Count++ % short.MaxValue);
 
             AccumulatorValueProvider.Logger.Debug($"Exiting GetShortInteger. result: {result}");
             return result;
@@ -84,9 +84,9 @@ namespace TestDataFramework.ValueProvider.Concrete
         {
             AccumulatorValueProvider.Logger.Debug($"Entering GetString. length: {length}");
 
-            var lengthToUse = length ?? 10;
+            int lengthToUse = length ?? 10;
 
-            var result = AccumulatorValueProvider.LetterEncoder.Encode((ulong) this.Count++, lengthToUse);
+            string result = AccumulatorValueProvider.LetterEncoder.Encode((ulong) this.Count++, lengthToUse);
 
             result = result.PadRight(lengthToUse, '+');
 
@@ -99,7 +99,7 @@ namespace TestDataFramework.ValueProvider.Concrete
             AccumulatorValueProvider.Logger.Debug("Entering GetCharacter");
 
             const int startCode = 33;
-            var result = (char) (startCode + this.characterCount++);
+            char result = (char) (startCode + this.characterCount++);
 
             AccumulatorValueProvider.Logger.Debug($"Exiting GetCharacter. result: {result}");
             return result;
@@ -117,7 +117,7 @@ namespace TestDataFramework.ValueProvider.Concrete
         public bool GetBoolean()
         {
             AccumulatorValueProvider.Logger.Debug("Entering GetBoolean");
-            var result = this.boolean;
+            bool result = this.boolean;
             this.boolean = !this.boolean;
 
             AccumulatorValueProvider.Logger.Debug($"Exiting GetBoolean. result: {result}");
@@ -141,7 +141,7 @@ namespace TestDataFramework.ValueProvider.Concrete
             if (this.byteCount + 1 >= byte.MaxValue)
                 this.byteCount = (byte) Helper.DefaultInitalCount;
 
-            var result = ++this.byteCount;
+            byte result = ++this.byteCount;
 
             AccumulatorValueProvider.Logger.Debug($"Exiting GetByte. result: {result}");
             return result;

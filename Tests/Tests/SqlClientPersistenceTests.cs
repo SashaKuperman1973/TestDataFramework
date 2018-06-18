@@ -70,7 +70,7 @@ namespace Tests.Tests
                     this.attributeDecorator, null, null, null, null);
             primaryRecordReference.Populate();
 
-            var tableName = typeof(PrimaryTable).Name;
+            string tableName = typeof(PrimaryTable).Name;
 
             List<Column> primaryTableColumns = null;
 
@@ -99,10 +99,10 @@ namespace Tests.Tests
             Assert.IsNotNull(primaryTableColumns);
             Assert.AreEqual(4, primaryTableColumns.Count);
 
-            var textColumn = primaryTableColumns.Single(col => col.Name == "Text");
+            Column textColumn = primaryTableColumns.Single(col => col.Name == "Text");
             Assert.AreEqual(primaryTable.Text, textColumn.Value);
 
-            var integerColumn = primaryTableColumns.Single(col => col.Name == "Integer");
+            Column integerColumn = primaryTableColumns.Single(col => col.Name == "Integer");
             Assert.AreEqual(primaryTable.Integer, integerColumn.Value);
         }
 

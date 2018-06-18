@@ -78,7 +78,7 @@ namespace CommonIntegrationTests.Tests
         {
             IPopulator populator = this.factory.CreateMemoryPopulator();
 
-            var aString = populator.Add<string>().Make();
+            string aString = populator.Add<string>().Make();
 
             Console.WriteLine(aString);
         }
@@ -188,7 +188,7 @@ namespace CommonIntegrationTests.Tests
 
             Console.WriteLine("SubjectClass[1].IntegerWithMax: " + subjectReference[1].RecordObject.IntegerWithMax);
             Console.WriteLine("SubjectClass[0].IntegerWithMax: " + subjectReference[0].RecordObject.IntegerWithMax);
-            var i = 1;
+            int i = 1;
             foreignReference.ToList().ForEach(r => Console.WriteLine(i++ + ".\r\n" + r.RecordObject.ToString()));
         }
 
@@ -372,7 +372,7 @@ namespace CommonIntegrationTests.Tests
 
             // Assert that objects populated by BindAndMake are not repopulated/reprocessed during Bind().
             Assert.AreEqual(singleSubjectBeforeBind, singleSubjectReferenceBeforeBind.RecordObject);
-            for (var i = 0; i < subjectSetBeforeBind.Count(); i++)
+            for (int i = 0; i < subjectSetBeforeBind.Count(); i++)
                 Assert.AreEqual(subjectSetBeforeBind.ElementAt(i), subjectReferenceSetBeforeBind[i].RecordObject);
 
             // Assert that RecordRefernces that are not populated after BindAndMake() are populated after Bind().

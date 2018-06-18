@@ -112,7 +112,7 @@ namespace TestDataFramework.Helpers
 
             largeInteger.Ensure();
 
-            var result = LargeInteger.Decode(largeInteger);
+            ulong result = LargeInteger.Decode(largeInteger);
 
             LargeInteger.Logger.Debug($"Exiting ulong(LargeInteger largeInteger). result: {result}");
             return result;
@@ -149,7 +149,7 @@ namespace TestDataFramework.Helpers
                 operand = left;
             }
 
-            var i = 0;
+            int i = 0;
             ulong scratch = 0;
 
             do
@@ -194,12 +194,12 @@ namespace TestDataFramework.Helpers
 
             LargeInteger accumulator = left.Clone();
 
-            var i = 0;
+            int i = 0;
             long borrow = 0;
 
             do
             {
-                var scratch = (long) accumulator.data[i] - operand.data[i] - borrow;
+                long scratch = (long) accumulator.data[i] - operand.data[i] - borrow;
 
                 if (scratch < 0)
                 {
@@ -223,9 +223,9 @@ namespace TestDataFramework.Helpers
                 break;
             } while (true);
 
-            var accumulatorDataLength = accumulator.data.Count;
+            int accumulatorDataLength = accumulator.data.Count;
 
-            for (var j = accumulatorDataLength - 1; j >= 0; j--)
+            for (int j = accumulatorDataLength - 1; j >= 0; j--)
             {
                 if (accumulator.data[j] != 0)
                     break;
@@ -258,14 +258,14 @@ namespace TestDataFramework.Helpers
                 upperOperand = left;
             }
 
-            var i = 0;
-            var j = 0;
+            int i = 0;
+            int j = 0;
 
             do
             {
                 scratch += (ulong) lowerOperand.data[i] * upperOperand.data[j];
 
-                for (var k = 0; k < i + j; k++)
+                for (int k = 0; k < i + j; k++)
                     scratch.data.Insert(0, 0);
 
                 accumulator += scratch;
@@ -315,7 +315,6 @@ namespace TestDataFramework.Helpers
         }
 
 #pragma warning disable CS0661 // Type defines operator == or operator != but does not override Object.GetHashCode()
-
 #pragma warning disable CS0660 // Type defines operator == or operator != but does not override Object.Equals(object o)
         private class QuotienScratchAdjuster
 #pragma warning restore CS0660 // Type defines operator == or operator != but does not override Object.Equals(object o)
@@ -364,12 +363,12 @@ namespace TestDataFramework.Helpers
                     this.memberValue.data.Count == 1 && this.memberValue.data[0] <= 1)
                     return;
 
-                var count = this.memberValue.data.Count;
+                int count = this.memberValue.data.Count;
 
                 uint highBit = 0;
-                for (var i = count - 1; i >= 0; i--)
+                for (int i = count - 1; i >= 0; i--)
                 {
-                    var nextHighBit = this.memberValue.data[i] << 31;
+                    uint nextHighBit = this.memberValue.data[i] << 31;
                     this.memberValue.data[i] >>= 1;
                     this.memberValue.data[i] |= highBit;
                     highBit = nextHighBit;
@@ -400,24 +399,24 @@ namespace TestDataFramework.Helpers
             var quotient = new LargeInteger {data = new List<uint>()};
 
             var testDividend = new LargeInteger {data = new List<uint>()};
-            var dividendPosition = this.data.Count - 1;
+            int dividendPosition = this.data.Count - 1;
 
-            for (var i = 0; i < divisor.data.Count; i++)
+            for (int i = 0; i < divisor.data.Count; i++)
                 testDividend.data.Insert(0, this.data[dividendPosition--]);
             if (testDividend < divisor)
                 testDividend.data.Insert(0, this.data[dividendPosition--]);
 
-            var numberOfPlacesAddedToLastTestDividend = 0;
+            int numberOfPlacesAddedToLastTestDividend = 0;
 
             do
             {
-                var adjusterLength = testDividend.data.Count - divisor.data.Count + 1;
+                int adjusterLength = testDividend.data.Count - divisor.data.Count + 1;
                 QuotienScratchAdjuster adjuster = new LargeInteger
                 {
                     data = new List<uint>(adjusterLength)
                 };
 
-                for (var i = 0; i < adjusterLength; i++)
+                for (int i = 0; i < adjusterLength; i++)
                     ((LargeInteger) adjuster).data.Add(0);
 
                 ((LargeInteger) adjuster).data.Add(1);
@@ -471,13 +470,13 @@ namespace TestDataFramework.Helpers
                     quotient.data.Insert(0, 0);
                 }
 
-                for (var i = quotientScratch.data.Count - 1; i >= 0; i--)
+                for (int i = quotientScratch.data.Count - 1; i >= 0; i--)
                     quotient.data.Insert(0, quotientScratch.data[i]);
 
                 testDividend -= compareDividend;
 
                 numberOfPlacesAddedToLastTestDividend = 0;
-                for (var i = 0; i < divisor.data.Count; i++)
+                for (int i = 0; i < divisor.data.Count; i++)
                 {
                     if (dividendPosition < 0)
                         break;
@@ -518,8 +517,8 @@ namespace TestDataFramework.Helpers
                 $"Entering operator >. left: {left.PrintLargeInteger()}, right: {right.PrintLargeInteger()}");
 
             left.Ensure(ref right);
-            var result = left.data.Count > right.data.Count ||
-                         left.data.Count == right.data.Count && LargeInteger.CompareSameLength(left, right) > 0;
+            bool result = left.data.Count > right.data.Count ||
+                          left.data.Count == right.data.Count && LargeInteger.CompareSameLength(left, right) > 0;
 
             LargeInteger.Logger.Debug($"Exiting operator >. result: {result}");
 
@@ -532,8 +531,8 @@ namespace TestDataFramework.Helpers
                 $"Entering operator <. left: {left.PrintLargeInteger()}, right: {right.PrintLargeInteger()}");
 
             left.Ensure(ref right);
-            var result = left.data.Count < right.data.Count ||
-                         left.data.Count == right.data.Count && LargeInteger.CompareSameLength(left, right) < 0;
+            bool result = left.data.Count < right.data.Count ||
+                          left.data.Count == right.data.Count && LargeInteger.CompareSameLength(left, right) < 0;
 
             LargeInteger.Logger.Debug($"Exiting operator <. result: {result}");
 
@@ -546,7 +545,7 @@ namespace TestDataFramework.Helpers
                 $"Entering operator ==. left: {left.PrintLargeInteger()}, right: {right.PrintLargeInteger()}");
 
             left.Ensure(ref right);
-            var result = left.data.Count == right.data.Count && LargeInteger.CompareSameLength(left, right) == 0;
+            bool result = left.data.Count == right.data.Count && LargeInteger.CompareSameLength(left, right) == 0;
 
             LargeInteger.Logger.Debug($"Exiting operator ==. result: {result}");
             return result;
@@ -558,7 +557,7 @@ namespace TestDataFramework.Helpers
                 $"Entering operator !=. left: {left.PrintLargeInteger()}, right: {right.PrintLargeInteger()}");
 
             left.Ensure(ref right);
-            var result = !(left == right);
+            bool result = !(left == right);
 
             LargeInteger.Logger.Debug($"Exiting operator !=. result: {result}");
             return result;
@@ -569,7 +568,7 @@ namespace TestDataFramework.Helpers
             LargeInteger.Logger.Debug(
                 $"Entering operator >=. left: {left.PrintLargeInteger()}, right: {right.PrintLargeInteger()}");
 
-            var result = left > right || left == right;
+            bool result = left > right || left == right;
 
             LargeInteger.Logger.Debug($"Exiting operator >=. result: {result}");
             return result;
@@ -580,7 +579,7 @@ namespace TestDataFramework.Helpers
             LargeInteger.Logger.Debug(
                 $"Entering operator <=. left: {left.PrintLargeInteger()}, right: {right.PrintLargeInteger()}");
 
-            var result = left < right || left == right;
+            bool result = left < right || left == right;
 
             LargeInteger.Logger.Debug($"Exiting operator <=. result: {result}");
             return result;
@@ -601,7 +600,7 @@ namespace TestDataFramework.Helpers
             var largeInteger = (LargeInteger) obj;
             largeInteger.Ensure();
 
-            var result = this == largeInteger;
+            bool result = this == largeInteger;
 
             LargeInteger.Logger.Debug($"Entering Equals. result: {result}");
             return result;
@@ -612,7 +611,7 @@ namespace TestDataFramework.Helpers
             LargeInteger.Logger.Debug("Entering GetHashCode");
 
             this.Ensure();
-            var result = this.data.GetHashCode();
+            int result = this.data.GetHashCode();
 
             LargeInteger.Logger.Debug($"Exiting GetHashCode. result: {result}");
             return result;
@@ -626,7 +625,7 @@ namespace TestDataFramework.Helpers
 
             LargeInteger result = largeInteger.Clone();
 
-            var position = 0;
+            int position = 0;
 
             while (result.data[position] == uint.MaxValue)
             {
@@ -650,11 +649,11 @@ namespace TestDataFramework.Helpers
 
             LargeInteger result = largeInteger.Clone();
 
-            var position = 0;
+            int position = 0;
 
             while (result.data[position] == 0)
             {
-                result.data[position++] = 0xff;
+                result.data[position++] = 0xffffffff;
 
                 if (result.data.Count == position)
                     throw new OverflowException(Messages.Underflow);
@@ -680,7 +679,7 @@ namespace TestDataFramework.Helpers
 
             var result = new LargeInteger(1);
 
-            for (var i = 0uL; i < power; i++)
+            for (ulong i = 0uL; i < power; i++)
                 result *= this;
 
             LargeInteger.Logger.Debug($"Exiting Pow. result: {result.PrintLargeInteger()}");
@@ -689,8 +688,8 @@ namespace TestDataFramework.Helpers
 
         private static void Encode(ulong value, LargeInteger largeInteger)
         {
-            var lower = (uint) (value & 0xffffffff);
-            var upper = (uint) (value >> 32);
+            uint lower = (uint) (value & 0xffffffff);
+            uint upper = (uint) (value >> 32);
 
             largeInteger.data.Add(lower);
 
@@ -703,7 +702,7 @@ namespace TestDataFramework.Helpers
             if (largeInteger.data.Count > 2)
                 throw new OverflowException();
 
-            var result = LargeInteger.GetULong(largeInteger.data);
+            ulong result = LargeInteger.GetULong(largeInteger.data);
 
             return result;
         }
@@ -712,7 +711,7 @@ namespace TestDataFramework.Helpers
         {
             LargeInteger.Logger.Debug($"Entering GetULong. input: {string.Join(", ", input)}");
 
-            var result = input[0] + (input.Count == 2 ? (ulong) input[1] << 32 : 0);
+            ulong result = input[0] + (input.Count == 2 ? (ulong) input[1] << 32 : 0);
 
             return result;
         }
@@ -727,7 +726,7 @@ namespace TestDataFramework.Helpers
             if (!this.data.Any())
                 return "Internal Buffer is empty";
 
-            for (var i = 0; i < this.data.Count; i++)
+            for (int i = 0; i < this.data.Count; i++)
                 sb.Append($"[{i}] {this.data[i].ToString("x")}, ");
 
             return sb.Remove(sb.Length - 2, 2).ToString();

@@ -39,7 +39,7 @@ namespace TestDataFramework.TypeGenerator.Concrete
         public UniqueValueTypeGenerator(GetAccumulatorValueGenerator getAccumulatorValueGenerator,
             IValueGenerator valueGenerator,
             IHandledTypeGenerator handledTypeGenerator,
-            ITypeGeneratorService typeGeneratorService) 
+            ITypeGeneratorService typeGeneratorService)
             : base(valueGenerator, handledTypeGenerator, typeGeneratorService)
         {
             this.accumulatorValueGenerator = getAccumulatorValueGenerator(this);

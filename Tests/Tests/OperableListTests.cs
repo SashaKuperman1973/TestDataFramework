@@ -389,7 +389,7 @@ namespace Tests.Tests
 
             // Act
 
-            var c = operableList.Count;
+            int c = operableList.Count;
 
             // Assert
 
@@ -466,7 +466,7 @@ namespace Tests.Tests
 
             // Act
 
-            var result = operableList.Contains(reference);
+            bool result = operableList.Contains(reference);
 
             // Assert
 
@@ -482,7 +482,7 @@ namespace Tests.Tests
 
             // Act
 
-            var result = operableList.IsReadOnly;
+            bool result = operableList.IsReadOnly;
 
             // Assert
 
@@ -525,7 +525,7 @@ namespace Tests.Tests
 
             // Act
 
-            var index = operableList.IndexOf(reference2);
+            int index = operableList.IndexOf(reference2);
 
             // Assert
 

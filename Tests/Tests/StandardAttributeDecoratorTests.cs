@@ -232,7 +232,7 @@ namespace Tests.Tests
         {
             Func<MemberInfo, MultiAllowedAttribute> func = this.attributeDecorator
                 .GetSingleAttribute<MultiAllowedAttribute>;
-            var funcMessage = string.Format(message, typeof(MultiAllowedAttribute), memberInfo.Name,
+            string funcMessage = string.Format(message, typeof(MultiAllowedAttribute), memberInfo.Name,
                 memberInfo.DeclaringType);
 
             Helpers.ExceptionTest(
@@ -525,16 +525,17 @@ namespace Tests.Tests
 
             this.tableTypeCacheMock.Setup(m => m.GetCachedTableType(foreignKeyAtribute, foreignTypeMock.Object,
                 this.callingAssemblyWrapperMock.Object, this.attributeDecorator.GetSingleAttribute<TableAttribute>,
-                true)).Returns((TypeInfoWrapper)null).Verifiable();
+                true)).Returns((TypeInfoWrapper) null).Verifiable();
 
             this.tableTypeCacheMock.Setup(m => m.GetCachedTableType(foreignKeyAtribute, foreignTypeMock.Object,
                 foreignTypeAssembly, this.attributeDecorator.GetSingleAttribute<TableAttribute>,
-                false)).Returns((TypeInfoWrapper)null).Verifiable();
+                false)).Returns((TypeInfoWrapper) null).Verifiable();
 
             // Act
             // Assert
 
-            Helpers.ExceptionTest(() => this.attributeDecorator.GetTableType(foreignKeyAtribute, foreignTypeMock.Object),
+            Helpers.ExceptionTest(
+                () => this.attributeDecorator.GetTableType(foreignKeyAtribute, foreignTypeMock.Object),
                 typeof(AttributeDecoratorException),
                 string.Format(Messages.CannotResolveForeignKey, foreignKeyAtribute, foreignTypeMock.Object));
 
@@ -566,12 +567,13 @@ namespace Tests.Tests
 
             this.tableTypeCacheMock.Setup(m => m.GetCachedTableType(foreignKeyAtribute, foreignTypeMock.Object,
                 this.callingAssemblyWrapperMock.Object, this.attributeDecorator.GetSingleAttribute<TableAttribute>,
-                true)).Returns((TypeInfoWrapper)null).Verifiable();
+                true)).Returns((TypeInfoWrapper) null).Verifiable();
 
             // Act
             // Assert
 
-            Helpers.ExceptionTest(() => this.attributeDecorator.GetTableType(foreignKeyAtribute, foreignTypeMock.Object),
+            Helpers.ExceptionTest(
+                () => this.attributeDecorator.GetTableType(foreignKeyAtribute, foreignTypeMock.Object),
                 typeof(AttributeDecoratorException),
                 string.Format(Messages.CannotResolveForeignKey, foreignKeyAtribute, foreignTypeMock.Object));
 

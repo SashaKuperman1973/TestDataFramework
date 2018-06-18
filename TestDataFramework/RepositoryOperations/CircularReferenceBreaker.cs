@@ -61,7 +61,7 @@ namespace TestDataFramework.RepositoryOperations
         {
             CircularReferenceBreaker.Logger.Debug("Entering ToString");
 
-            var result = string.Join("; ", this.callStack);
+            string result = string.Join("; ", this.callStack);
 
             CircularReferenceBreaker.Logger.Debug("Exiting ToString");
             return result;
@@ -74,7 +74,7 @@ namespace TestDataFramework.RepositoryOperations
         private bool IsVisitedDelegate(Delegate operation)
         {
             CircularReferenceBreaker.Logger.Debug($"Entering IsVisitedDelegate. operation: {operation}");
-            var result = this.callStack.Contains(operation);
+            bool result = this.callStack.Contains(operation);
 
             CircularReferenceBreaker.Logger.Debug($"Exiting IsVisitedDelegate. result: {result}");
             return result;

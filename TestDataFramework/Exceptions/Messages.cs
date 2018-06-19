@@ -135,7 +135,7 @@ namespace TestDataFramework.Exceptions
             "Internal error: Neither a percentage or a fix value given for gauranteed value quantity";
 
         public const string GuaranteedTypeNotOfListType =
-            "Guaranteed input type not of collection type. Expected type: {0}, Actual type: {1}, Value: {2}";
+            "Guaranteed input type not of collection type. Expected type: {0}, Actual type: {1}";
 
         public const string TypeNotSupportedForDeepCollectionSetting =
             "Type {0} is not supported for deep collection setting";

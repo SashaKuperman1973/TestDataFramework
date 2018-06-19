@@ -6,6 +6,7 @@ using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.Exceptions;
 using TestDataFramework.ListOperations;
+using TestDataFramework.ListOperations.Concrete;
 using TestDataFramework.Populator.Interfaces;
 using TestDataFramework.TypeGenerator.Interfaces;
 
@@ -55,7 +56,7 @@ namespace TestDataFramework.Populator.Concrete
         public virtual FieldExpression<TListElement, TProperty> Set<TProperty>(
             Expression<Func<TListElement, TProperty>> expression)
         {
-            var fieldExpression = new FieldExpression<TListElement, TProperty>(expression, this);
+            var fieldExpression = new FieldExpression<TListElement, TProperty>(expression, this, this.ObjectGraphService);
             return fieldExpression;
         }
 

@@ -21,14 +21,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TestDataFramework.Exceptions;
-using TestDataFramework.Populator;
+using TestDataFramework.ListOperations.Interfaces;
 using TestDataFramework.Populator.Concrete;
 
-namespace TestDataFramework.ListOperations
+namespace TestDataFramework.ListOperations.Concrete
 {
     public class ValueGuaranteePopulator
     {
-        public virtual void Bind<T>(OperableList<T> references, List<GuaranteedValues> guaranteedValuesList)
+        public virtual void Bind<T>(OperableList<T> references, List<GuaranteedValues> guaranteedValuesList, IValueGauranteePopulatorContextService contextService)
         {
             if (
                 guaranteedValuesList.Any(
@@ -75,55 +75,26 @@ namespace TestDataFramework.ListOperations
                 for (int valueIndex = 0; valueIndex < valueAndPopulationQuantity.Item2; valueIndex++)
                 {
                     int referenceIndex = random.Next(workingList.Count);
-                    RecordReference reference = workingList[referenceIndex];
+                    RecordReference<T> reference = workingList[referenceIndex];
 
                     object subject =
                         valueAndPopulationQuantity.Item1[valueIndex % valueAndPopulationQuantity.Item1.Count];
-
-                    Func<object> objectFunc;
 
                     Type subjectType = subject.GetType();
 
                     if (subjectType.IsGenericType && subjectType.GetGenericTypeDefinition() == typeof(Func<>))
                     {
-                        objectFunc = (Func<object>) subject;
-
-                        Type[] typeArgs = subject.GetType().GetGenericArguments();
-                        if (typeArgs.Length > 1 || typeArgs[0] != typeof(T))
-                            throw new ValueGuaranteeException(string.Format(Messages.GuaranteedTypeNotOfListType,
-                                typeof(T), typeArgs[0], ValueGuaranteePopulator.GetValue(objectFunc)));
-
-                        reference.RecordObject = objectFunc();
+                        var objectFunc = (Func<object>)subject;
+                        contextService.SetRecordReference(reference, objectFunc());
                     }
                     else
                     {
-                        if (subjectType != typeof(T))
-                            throw new ValueGuaranteeException(string.Format(Messages.GuaranteedTypeNotOfListType,
-                                typeof(T), subject.GetType(), subject));
-
-                        reference.RecordObject = subject;
+                        contextService.SetRecordReference(reference, subject);
                     }
 
                     reference.IsPopulated = true;
                     workingList.RemoveAt(referenceIndex);
                 }
-        }
-
-        private static object GetValue(Func<object> objectFunc)
-        {
-            object value;
-
-            try
-            {
-                value = objectFunc();
-            }
-            catch (Exception ex)
-            {
-                value =
-                    $"Value func evaluation resulted in exception: {ex.GetType()}, Message: {ex.Message}, Stack trace: {ex.StackTrace}";
-            }
-
-            return value;
         }
     }
 }

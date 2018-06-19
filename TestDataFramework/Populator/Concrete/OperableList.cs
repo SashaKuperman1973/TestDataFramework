@@ -22,7 +22,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using TestDataFramework.ListOperations;
+using TestDataFramework.DeepSetting;
+using TestDataFramework.ListOperations.Concrete;
 
 namespace TestDataFramework.Populator.Concrete
 {
@@ -36,9 +37,16 @@ namespace TestDataFramework.Populator.Concrete
     public class OperableList<T> : Populatable, IList<RecordReference<T>>
     {
         internal readonly List<GuaranteedValues> GuaranteedValues = new List<GuaranteedValues>();
+        internal readonly List<GuaranteedValues> GuaranteedPropertySetters = new List<GuaranteedValues>();
+
         protected readonly BasePopulator Populator;
         protected readonly ValueGuaranteePopulator ValueGuaranteePopulator;
         protected internal List<RecordReference<T>> InternalList;
+
+        private readonly ExplicitPropertySetterContextService explicitPropertySetterContextService =
+            new ExplicitPropertySetterContextService();
+
+        private readonly ValueSetContextService valueSetContextService = new ValueSetContextService();
 
         public OperableList(ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator)
         {
@@ -64,13 +72,13 @@ namespace TestDataFramework.Populator.Concrete
             }
         }
 
-        public virtual OperableList<T> GuaranteeByPercentageOfTotal<TValue>(IEnumerable<TValue> guaranteedValues,
+        public virtual OperableList<T> GuaranteeByPercentageOfTotal(IEnumerable<object> guaranteedValues,
             int frequencyPercentage = 10)
         {
             this.GuaranteedValues.Add(new GuaranteedValues
             {
                 FrequencyPercentage = frequencyPercentage,
-                Values = guaranteedValues.Cast<object>()
+                Values = guaranteedValues
             });
 
             return this;
@@ -100,7 +108,7 @@ namespace TestDataFramework.Populator.Concrete
             return this;
         }
 
-        public virtual OperableList<T> GuaranteeByFixedQuantity<TValue>(IEnumerable<TValue> guaranteedValues,
+        public virtual OperableList<T> GuaranteeByFixedQuantity(IEnumerable<object> guaranteedValues,
             int fixedQuantity = 0)
         {
             guaranteedValues = guaranteedValues.ToList();
@@ -111,7 +119,7 @@ namespace TestDataFramework.Populator.Concrete
             this.GuaranteedValues.Add(new GuaranteedValues
             {
                 TotalFrequency = fixedQuantity,
-                Values = guaranteedValues.Cast<object>()
+                Values = guaranteedValues
             });
 
             return this;
@@ -160,8 +168,12 @@ namespace TestDataFramework.Populator.Concrete
             if (this.IsPopulated)
                 return;
 
+            if (this.GuaranteedPropertySetters.Any())
+                this.ValueGuaranteePopulator.Bind(this, this.GuaranteedPropertySetters,
+                    this.explicitPropertySetterContextService);
+
             if (this.GuaranteedValues.Any())
-                this.ValueGuaranteePopulator.Bind(this, this.GuaranteedValues);
+                this.ValueGuaranteePopulator.Bind(this, this.GuaranteedValues, this.valueSetContextService);
 
             this.InternalList.ForEach(recordReference => recordReference.Populate());
             this.IsPopulated = true;

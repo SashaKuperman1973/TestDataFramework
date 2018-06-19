@@ -28,7 +28,7 @@ namespace TestDataFramework.Populator.Interfaces
     {
         IEnumerable<T> RecordObjects { get; }
 
-        OperableList<T> GuaranteeByPercentageOfTotal<TValue>(IEnumerable<TValue> guaranteedValues,
+        OperableList<T> GuaranteeByPercentageOfTotal(IEnumerable<object> guaranteedValues,
             int frequencyPercentage = 10);
 
         OperableList<T> GuaranteeByPercentageOfTotal(IEnumerable<Func<T>> guaranteedValues,
@@ -36,7 +36,7 @@ namespace TestDataFramework.Populator.Interfaces
 
         OperableList<T> GuaranteeByPercentageOfTotal(IEnumerable<T> guaranteedValues, int frequencyPercentage = 10);
 
-        OperableList<T> GuaranteeByFixedQuantity<TValue>(IEnumerable<TValue> guaranteedValues, int fixedQuantity = 0);
+        OperableList<T> GuaranteeByFixedQuantity(IEnumerable<object> guaranteedValues, int fixedQuantity = 0);
 
         OperableList<T> GuaranteeByFixedQuantity(IEnumerable<Func<T>> guaranteedValues, int fixedQuantity = 0);
 

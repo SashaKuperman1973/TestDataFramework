@@ -17,13 +17,15 @@
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Factories;
-using TestDataFramework.ListOperations;
+using TestDataFramework.ListOperations.Concrete;
+using TestDataFramework.ListOperations.Interfaces;
 using TestDataFramework.Populator.Concrete;
 using TestDataFramework.Populator.Interfaces;
 
@@ -32,6 +34,14 @@ namespace Tests.Tests
     [TestClass]
     public class ValueGuaranteePopulatorTests
     {
+        private Mock<IValueGauranteePopulatorContextService> contextService;
+
+        [TestInitialize]
+        public void Initialize()
+        {
+            this.contextService = new Mock<IValueGauranteePopulatorContextService>();
+        }
+
         [TestMethod]
         public void NeitherPercentageNorTotalGiven_Exception_Test()
         {
@@ -39,7 +49,7 @@ namespace Tests.Tests
 
             var values = new List<GuaranteedValues> {new GuaranteedValues()};
 
-            Helpers.ExceptionTest(() => valueGuaranteePopulator.Bind<object>(null, values),
+            Helpers.ExceptionTest(() => valueGuaranteePopulator.Bind<object>(null, values, this.contextService.Object),
                 typeof(ValueGuaranteeException),
                 Messages.NeitherPercentageNorTotalGiven);
         }
@@ -67,7 +77,7 @@ namespace Tests.Tests
                 new RecordReference<int>(null, null, null, null, null, null)
             };
 
-            Helpers.ExceptionTest(() => valueGuaranteePopulator.Bind(operableList, values),
+            Helpers.ExceptionTest(() => valueGuaranteePopulator.Bind(operableList, values, this.contextService.Object),
                 typeof(ValueGuaranteeException),
                 string.Format(Messages.GuaranteedTypeNotOfListType, "System.Int32", "System.String", "Hello"));
         }
@@ -95,7 +105,7 @@ namespace Tests.Tests
                 new RecordReference<int>(null, null, null, null, null, null)
             };
 
-            Helpers.ExceptionTest(() => valueGuaranteePopulator.Bind(operableList, values),
+            Helpers.ExceptionTest(() => valueGuaranteePopulator.Bind(operableList, values, this.contextService.Object),
                 typeof(ValueGuaranteeException),
                 string.Format(Messages.GuaranteedTypeNotOfListType, "System.Int32", "System.String", "Hello"));
         }
@@ -115,7 +125,7 @@ namespace Tests.Tests
                 }
             };
 
-            ValueGuaranteePopulatorTests.Test(22, guaranteedValuesSet);
+            this.Test(22, guaranteedValuesSet);
         }
 
         [TestMethod]
@@ -133,7 +143,7 @@ namespace Tests.Tests
                 }
             };
 
-            ValueGuaranteePopulatorTests.Test(50, guaranteedValuesSet);
+            this.Test(50, guaranteedValuesSet);
         }
 
         [TestMethod]
@@ -151,11 +161,11 @@ namespace Tests.Tests
                 }
             };
 
-            Helpers.ExceptionTest(() => ValueGuaranteePopulatorTests.Test(-1, guaranteedValuesSet),
+            Helpers.ExceptionTest(() => this.Test(-1, guaranteedValuesSet),
                 typeof(ValueGuaranteeException));
         }
 
-        private static void Test(int expectedCount, params GuaranteedValues[] guaranteedValuesSet)
+        private void Test(int expectedCount, params GuaranteedValues[] guaranteedValuesSet)
         {
             IPopulator populator = StaticPopulatorFactory.CreateMemoryPopulator();
 
@@ -175,7 +185,7 @@ namespace Tests.Tests
 
             // Act
 
-            valueGuaranteePopulator.Bind(operableList, guaranteedValuesSet.ToList());
+            valueGuaranteePopulator.Bind(operableList, guaranteedValuesSet.ToList(), this.contextService.Object);
 
             // Assert
 

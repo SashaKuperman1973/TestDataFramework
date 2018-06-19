@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.Populator.Concrete;
 using Range = TestDataFramework.Populator.Concrete.Range;
 
@@ -17,17 +18,21 @@ namespace Tests.Tests
         private FieldExpression<ElementType, ElementType.PropertyType> fieldExpression;
 
         private Mock<RangeOperableList<ElementType>> rangeOperableListMock;
+        private Mock<IObjectGraphService> objectGraphServiceMock;
 
         [TestInitialize]
         public void Initialize()
         {
             this.rangeOperableListMock =
                 new Mock<RangeOperableList<ElementType>>(null, null, null, null, null, null, null);
+
             this.expression = element => element.AProperty;
+
+            this.objectGraphServiceMock = new Mock<IObjectGraphService>();
 
             this.fieldExpression =
                 new FieldExpression<ElementType, ElementType.PropertyType>(this.expression,
-                    this.rangeOperableListMock.Object);
+                    this.rangeOperableListMock.Object, this.objectGraphServiceMock.Object);
         }
 
         [TestMethod]
@@ -276,7 +281,7 @@ namespace Tests.Tests
 
             var returnFieldExpression =
                 new FieldExpression<ElementType, ElementType.PropertyType>(element => element.AProperty,
-                    this.rangeOperableListMock.Object);
+                    this.rangeOperableListMock.Object, this.objectGraphServiceMock.Object);
 
             this.rangeOperableListMock.Setup(m => m.Set(expression))
                 .Returns(returnFieldExpression);

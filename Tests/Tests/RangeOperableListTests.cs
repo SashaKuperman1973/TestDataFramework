@@ -8,6 +8,7 @@ using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.Exceptions;
 using TestDataFramework.ListOperations;
+using TestDataFramework.ListOperations.Concrete;
 using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete;
 using TestDataFramework.TypeGenerator.Interfaces;

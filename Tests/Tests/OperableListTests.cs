@@ -27,6 +27,8 @@ using Moq;
 using TestDataFramework.DeepSetting;
 using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.ListOperations;
+using TestDataFramework.ListOperations.Concrete;
+using TestDataFramework.ListOperations.Interfaces;
 using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete;
 using TestDataFramework.TypeGenerator.Interfaces;
@@ -38,11 +40,13 @@ namespace Tests.Tests
     public class OperableListTests
     {
         private Mock<BasePopulator> populatorMock;
+        private Mock<IValueGauranteePopulatorContextService> valueGuaranteePopulatorService;
 
         [TestInitialize]
         public void Initialize()
         {
             this.populatorMock = new Mock<BasePopulator>(null);
+            this.valueGuaranteePopulatorService = new Mock<IValueGauranteePopulatorContextService>();
         }
 
         [TestMethod]
@@ -607,7 +611,7 @@ namespace Tests.Tests
             typeGeneratorMock.Verify(m => m.GetObject<SubjectClass>(It.IsAny<List<ExplicitPropertySetter>>()),
                 Times.Exactly(2));
             valueGuaranteePopulatorMock.Verify(
-                m => m.Bind(It.IsAny<OperableList<SubjectClass>>(), It.IsAny<List<GuaranteedValues>>()), Times.Never);
+                m => m.Bind(It.IsAny<OperableList<SubjectClass>>(), It.IsAny<List<GuaranteedValues>>(), It.IsAny<IValueGauranteePopulatorContextService>()), Times.Never);
         }
 
         [TestMethod]
@@ -630,7 +634,8 @@ namespace Tests.Tests
 
             // Assert
 
-            valueGuaranteePopulatorMock.Verify(m => m.Bind(operableList, operableList.GuaranteedValues));
+            valueGuaranteePopulatorMock.Verify(m => m.Bind(operableList, operableList.GuaranteedValues,
+                this.valueGuaranteePopulatorService.Object));
         }
 
         [TestMethod]

@@ -27,6 +27,7 @@ using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeepSetting;
 using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.ListOperations;
+using TestDataFramework.ListOperations.Concrete;
 using TestDataFramework.Logger;
 using TestDataFramework.TypeGenerator.Interfaces;
 

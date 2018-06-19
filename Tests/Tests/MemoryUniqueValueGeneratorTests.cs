@@ -17,6 +17,7 @@
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using System;
 using System.Reflection;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -60,7 +61,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            PropertyInfo keyPropertyInfo = typeof(ClassWithIntAutoPrimaryKey).GetProperty("Key");
+            PropertyInfo keyPropertyInfo = typeof(ClassWithIntAutoPrimaryKey).GetProperty(nameof(ClassWithIntAutoPrimaryKey.Key));
 
             // Act
 
@@ -77,7 +78,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            PropertyInfo keyPropertyInfo = typeof(ClassWithIntManualPrimaryKey).GetProperty("Key");
+            PropertyInfo keyPropertyInfo = typeof(ClassWithIntManualPrimaryKey).GetProperty(nameof(ClassWithIntManualPrimaryKey.Key));
 
             // Act
 
@@ -94,7 +95,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            PropertyInfo keyPropertyInfo = typeof(ClassWithIntUnsupportedPrimaryKey).GetProperty("Key");
+            PropertyInfo keyPropertyInfo = typeof(ClassWithIntUnsupportedPrimaryKey).GetProperty(nameof(ClassWithIntUnsupportedPrimaryKey.Key));
 
             // Act
 
@@ -112,7 +113,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            PropertyInfo keyPropertyInfo = typeof(SubjectClass).GetProperty("Integer");
+            PropertyInfo keyPropertyInfo = typeof(SubjectClass).GetProperty(nameof(SubjectClass.Integer));
 
             // Act
 
@@ -123,6 +124,17 @@ namespace Tests.Tests
 
             this.propertyValueAccumulatorMock.Verify(m => m.GetValue(keyPropertyInfo, Helper.DefaultInitalCount),
                 Times.Exactly(2));
+        }
+
+        [TestMethod]
+        public void GetValue_Guid_Test()
+        {
+            PropertyInfo guidPropertyInfo = typeof(SubjectClass).GetProperty(nameof(SubjectClass.AGuid));
+
+            object result = this.generator.GetValue(guidPropertyInfo);
+            Assert.IsTrue(result is Guid);
+            var guidResult = (Guid) result;
+            Assert.AreNotEqual(Guid.Empty, guidResult);
         }
     }
 }

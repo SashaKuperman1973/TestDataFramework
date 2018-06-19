@@ -47,6 +47,11 @@ namespace Tests.Tests
                 largeInteger++;
                 Assert.AreEqual(i, (ulong) largeInteger);
             }
+
+            largeInteger = 0xffffffff;
+            largeInteger++;
+
+            Assert.AreEqual("4294967296", largeInteger.ToString());
         }
 
         [TestMethod]
@@ -325,6 +330,50 @@ namespace Tests.Tests
             var equalRight = new LargeInteger(5);
             result = left != equalRight;
             Assert.IsFalse(result);
+        }
+
+        [TestMethod]
+        public void Equals_Test()
+        {
+            var a = new LargeInteger(1234);
+            var b = new LargeInteger(1234);
+
+            Assert.AreEqual(a, b);
+
+            var c = new LargeInteger(12345);
+            Assert.AreNotEqual(a, c);
+
+            var objectRight = new object();
+            Assert.AreNotEqual(a, objectRight);
+        }
+
+        [TestMethod]
+        public void Equality_Symbol_Test()
+        {
+            var left = new LargeInteger(1234);
+            var right = new LargeInteger(1234);
+
+            bool result = left == right;
+            Assert.IsTrue(result);
+
+            var unequalRight = new LargeInteger(4321);
+            result = left == unequalRight;
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod]
+        public void GetHashCode_Test()
+        {
+            var a = new LargeInteger(1234);
+
+            int firstHashCode = a.GetHashCode();
+            int secondHashCode = a.GetHashCode();
+
+            Assert.AreEqual(firstHashCode, secondHashCode);
+
+            a++;
+            int newHashCode = a.GetHashCode();
+            Assert.AreNotEqual(firstHashCode, newHashCode);
         }
     }
 }

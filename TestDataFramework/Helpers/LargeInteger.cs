@@ -31,6 +31,7 @@ namespace TestDataFramework.Helpers
     {
         private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(LargeInteger));
 
+        private readonly object hashCodeObject;
         private List<uint> data;
 
         public LargeInteger(ulong initialValue)
@@ -39,14 +40,21 @@ namespace TestDataFramework.Helpers
                 $"Entering constructor LargeInteger(ulong initialVlaue). initialValue: {initialValue}");
 
             this.data = new List<uint>();
+            this.hashCodeObject = new object();
             LargeInteger.Encode(initialValue, this);
 
             LargeInteger.Logger.Debug("Entering constructor LargeInteger(ulong initialVlaue)");
         }
 
+        private LargeInteger(List<uint> data)
+        {
+            this.data = data;
+            this.hashCodeObject = new object();
+        }
+
         private LargeInteger Clone()
         {
-            var result = new LargeInteger {data = this.data.GetRange(0, this.data.Count)};
+            var result = new LargeInteger(this.data.GetRange(0, this.data.Count));
             return result;
         }
 
@@ -122,7 +130,7 @@ namespace TestDataFramework.Helpers
         {
             LargeInteger.Logger.Debug($"Entering LargeInteger(ulong value). value: {value}");
 
-            var result = new LargeInteger {data = new List<uint>()};
+            var result = new LargeInteger(new List<uint>());
             LargeInteger.Encode(value, result);
 
             LargeInteger.Logger.Debug($"Exiting LargeInteger(ulong value). result: {result.PrintLargeInteger()}");
@@ -334,12 +342,12 @@ namespace TestDataFramework.Helpers
 
             public static QuotienScratchAdjuster operator ++(QuotienScratchAdjuster input)
             {
-                return new QuotienScratchAdjuster {memberValue = ++input};
+                return new QuotienScratchAdjuster {memberValue = ++input.memberValue};
             }
 
             public static QuotienScratchAdjuster operator --(QuotienScratchAdjuster input)
             {
-                return new QuotienScratchAdjuster {memberValue = --input};
+                return new QuotienScratchAdjuster {memberValue = --input.memberValue};
             }
 
             public static implicit operator QuotienScratchAdjuster(ulong value)
@@ -392,13 +400,13 @@ namespace TestDataFramework.Helpers
             this.Ensure().Ensure(ref divisor);
 
             if (this < divisor)
-                return new Tuple<LargeInteger, LargeInteger>(0, this);
+                return new Tuple<LargeInteger, LargeInteger>(0, this.Clone());
 
             // This is long division.
 
-            var quotient = new LargeInteger {data = new List<uint>()};
+            var quotient = new LargeInteger(new List<uint>());
 
-            var testDividend = new LargeInteger {data = new List<uint>()};
+            var testDividend = new LargeInteger(new List<uint>());
             int dividendPosition = this.data.Count - 1;
 
             for (int i = 0; i < divisor.data.Count; i++)
@@ -411,10 +419,7 @@ namespace TestDataFramework.Helpers
             do
             {
                 int adjusterLength = testDividend.data.Count - divisor.data.Count + 1;
-                QuotienScratchAdjuster adjuster = new LargeInteger
-                {
-                    data = new List<uint>(adjusterLength)
-                };
+                QuotienScratchAdjuster adjuster = new LargeInteger(new List<uint>(adjusterLength));
 
                 for (int i = 0; i < adjusterLength; i++)
                     ((LargeInteger) adjuster).data.Add(0);
@@ -610,8 +615,7 @@ namespace TestDataFramework.Helpers
         {
             LargeInteger.Logger.Debug("Entering GetHashCode");
 
-            this.Ensure();
-            int result = this.data.GetHashCode();
+            int result = this.hashCodeObject.GetHashCode();
 
             LargeInteger.Logger.Debug($"Exiting GetHashCode. result: {result}");
             return result;

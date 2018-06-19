@@ -50,5 +50,51 @@ namespace Tests.Tests
             Assert.AreEqual(1, resultList.Count);
             Assert.AreEqual(explicitPropertySetter, resultList.Single());
         }
+
+        [TestMethod]
+        public void ObjectGraphNode_Is_Null_Test()
+        {
+            var propertySetters = new List<ExplicitPropertySetter> {null};
+            IEnumerable<ExplicitPropertySetter> result =
+                this.service.GetExplicitlySetPropertySetters(propertySetters, null);
+            Assert.AreEqual(0, result.Count());
+        }
+
+        [TestMethod]
+        public void ExplicitPropertySetter_Are_FilteredIn_By_ObjectGraph_Test()
+        {
+            var objectGraphMatch = new ExplicitPropertySetter
+            {
+                PropertyChain = new List<PropertyInfo>
+                {
+                    typeof(SubjectClass).GetProperty(nameof(SubjectClass.SecondObject))
+                }
+            };
+
+            var propertySetters = new List<ExplicitPropertySetter>
+            {
+                new ExplicitPropertySetter
+                {
+                    PropertyChain = new List<PropertyInfo>
+                    {
+                        typeof(SubjectClass).GetProperty(nameof(SubjectClass.Integer)),
+                    }
+                },
+
+                objectGraphMatch
+            };
+
+            var objectGraphNode = new ObjectGraphNode(
+                typeof(SubjectClass).GetProperty(nameof(SubjectClass.SecondObject)),
+                null);
+
+            IEnumerable<ExplicitPropertySetter> result =
+                this.service.GetExplicitlySetPropertySetters(propertySetters, objectGraphNode);
+
+            Assert.IsNotNull(result);
+            List<ExplicitPropertySetter> resultList = result.ToList();
+            Assert.AreEqual(1, resultList.Count);
+            Assert.AreEqual(objectGraphMatch, resultList.Single());
+        }
     }
 }

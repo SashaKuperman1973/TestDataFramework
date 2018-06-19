@@ -50,6 +50,16 @@ namespace Tests.Tests
         }
 
         [TestMethod]
+        public void Encode_Insert_FirstLetter_Of_Alphabet_Test()
+        {
+            var a = new LargeInteger(0);
+            var generator = new LetterEncoder();
+            string result = generator.Encode(a, 1);
+
+            Assert.AreEqual("A", result);
+        }
+
+        [TestMethod]
         public void Decode_Test()
         {
             var expected = new LargeInteger(5204);

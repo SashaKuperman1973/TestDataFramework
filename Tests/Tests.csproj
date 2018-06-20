@@ -93,7 +93,9 @@
     <Compile Include="Tests\DbProviderWritePrimitivesTests.cs" />
     <Compile Include="Tests\DeepCollectionSettingConverterTests.cs" />
     <Compile Include="Tests\ExplicitlyIgnoredValueTests.cs" />
-    <Compile Include="Tests\FieldExpressionTests.cs" />
+    <Compile Include="Tests\FieldExpressionTests\FieldExpressionTests.cs" />
+    <Compile Include="Tests\FieldExpressionTests\GuaranteeObject.cs" />
+    <Compile Include="Tests\FieldExpressionTests\GuaranteeProperties.cs" />
     <Compile Include="Tests\FieldExpressionValidatorTests.cs" />
     <Compile Include="Tests\MaxAttributeTests.cs" />
     <Compile Include="Tests\MemoryValueGeneratorTests.cs" />

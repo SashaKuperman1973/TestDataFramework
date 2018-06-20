@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using TestDataFramework.DeepSetting;
 using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.Populator.Concrete;
 using Range = TestDataFramework.Populator.Concrete.Range;
@@ -19,6 +21,15 @@ namespace Tests.Tests
 
         private Mock<RangeOperableList<ElementType>> rangeOperableListMock;
         private Mock<IObjectGraphService> objectGraphServiceMock;
+
+        public class ElementType
+        {
+            public PropertyType AProperty { get; set; }
+
+            public class PropertyType
+            {
+            }
+        }
 
         [TestInitialize]
         public void Initialize()
@@ -143,8 +154,10 @@ namespace Tests.Tests
             // Arrange
 
             var values = new[] {new ElementType(), new ElementType()};
+
             this.rangeOperableListMock.Setup(m => m.GuaranteeByPercentageOfTotal(values, 5))
                 .Returns(this.rangeOperableListMock.Object);
+
             // Act
 
             OperableList<ElementType> result = this.fieldExpression.GuaranteeByPercentageOfTotal(values, 5);
@@ -277,23 +290,17 @@ namespace Tests.Tests
         [TestMethod]
         public void Set_ChangeValueType_Test()
         {
-            Expression<Func<ElementType, ElementType.PropertyType>> expression = element => element.AProperty;
-
-            var returnFieldExpression =
-                new FieldExpression<ElementType, ElementType.PropertyType>(element => element.AProperty,
-                    this.rangeOperableListMock.Object, this.objectGraphServiceMock.Object);
-
-            this.rangeOperableListMock.Setup(m => m.Set(expression))
-                .Returns(returnFieldExpression);
+            this.rangeOperableListMock.Setup(m => m.Set(this.expression))
+                .Returns(this.fieldExpression);
 
             // Act
 
-            FieldExpression<ElementType, ElementType.PropertyType> result = this.fieldExpression.Set(expression);
+            FieldExpression<ElementType, ElementType.PropertyType> result = this.fieldExpression.Set(this.expression);
 
             // Assert
 
-            this.rangeOperableListMock.Verify(m => m.Set(expression));
-            Assert.AreEqual(returnFieldExpression, result);
+            this.rangeOperableListMock.Verify(m => m.Set(this.expression));
+            Assert.AreEqual(this.fieldExpression, result);
         }
 
         [TestMethod]
@@ -334,12 +341,70 @@ namespace Tests.Tests
             Assert.AreEqual(this.fieldExpression, result);
         }
 
-        public class ElementType
+        [TestMethod]
+        public void GuaranteePropertiesByFixedQuantity_TProperty_Test()
         {
-            public PropertyType AProperty { get; set; }
+            var values = new[] { new ElementType.PropertyType(), };
 
-            public class PropertyType
+            Func<OperableList<ElementType>> action = () => this.fieldExpression.GuaranteePropertiesByFixedQuantity(values, 5);
+
+            this.GuaranteePropertiesByFixedQuantity_Test(action, values);
+        }
+
+        [TestMethod]
+        public void GuaranteePropertiesByFixedQuantity_Func_Test()
+        {
+            var values = new[] {new ElementType.PropertyType()};
+
+            IEnumerable<Func<ElementType.PropertyType>> funcs =
+                values.Select<ElementType.PropertyType, Func<ElementType.PropertyType>>(value => () => value);
+
+            Func<OperableList<ElementType>> action = () => this.fieldExpression.GuaranteePropertiesByFixedQuantity(funcs, 5);
+
+            this.GuaranteePropertiesByFixedQuantity_Test(action, values);
+        }
+
+        [TestMethod]
+        public void GuaranteePropertiesByFixedQuantity_Mixed_TypeAndFunc_Test()
+        {
+            var values = new[] { new ElementType.PropertyType(), new ElementType.PropertyType() };
+            var objects = new object[] { values[0], (Func<ElementType.PropertyType>)(() => values[1]) };
+
+            Func<OperableList<ElementType>> action = () => this.fieldExpression.GuaranteePropertiesByFixedQuantity(objects, 5);
+
+            this.GuaranteePropertiesByFixedQuantity_Test(action, values);
+        }
+
+        private void GuaranteePropertiesByFixedQuantity_Test(Func<OperableList<ElementType>> action, ElementType.PropertyType[] values)
+        {
+            var objectGraph = new List<PropertyInfo> { typeof(ElementType).GetProperty(nameof(ElementType.AProperty)) };
+
+            this.objectGraphServiceMock.Setup(m => m.GetObjectGraph(this.expression)).Returns(objectGraph);
+
+            // Act
+
+            OperableList<ElementType> operableList = action();
+
+            // Assert
+
+            Assert.AreEqual(this.rangeOperableListMock.Object, operableList);
+
+            GuaranteedValues guaranteedValue = this.rangeOperableListMock.Object.GuaranteedPropertySetters.Single();
+
+            Assert.AreEqual(5, guaranteedValue.TotalFrequency);
+            Assert.IsNull(guaranteedValue.FrequencyPercentage);
+
+            for (int i=0; i < values.Length; i++)
             {
+                var propertySettersEnumerable = guaranteedValue.Values as IEnumerable<ExplicitPropertySetter>;
+                Assert.IsNotNull(propertySettersEnumerable);
+                List<ExplicitPropertySetter> propertySetters = propertySettersEnumerable.ToList();
+
+                Assert.AreEqual(objectGraph, propertySetters[i].PropertyChain);
+
+                var element = new ElementType();
+                propertySetters[i].Action(element);
+                Assert.AreEqual(values[i], element.AProperty);
             }
         }
     }

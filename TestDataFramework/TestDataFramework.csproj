@@ -122,6 +122,7 @@
     <Compile Include="Populator\Concrete\Converter.cs" />
     <Compile Include="Populator\Concrete\ExplicitlyIgnoredValue.cs" />
     <Compile Include="Populator\Concrete\FieldExpression.cs" />
+    <Compile Include="Populator\Concrete\FieldExpressionHelper.cs" />
     <Compile Include="Populator\Concrete\OperableList.cs" />
     <Compile Include="Populator\Concrete\RangeOperableList.cs" />
     <Compile Include="Populator\Concrete\RecordReferenceOfT.cs" />

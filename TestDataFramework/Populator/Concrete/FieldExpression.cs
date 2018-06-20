@@ -91,8 +91,8 @@ namespace TestDataFramework.Populator.Concrete
             this.rangeOperableList.GuaranteedPropertySetters.Add(new GuaranteedValues
             {
                 TotalFrequency = fixedQuantity,
-                Values = guaranteedValues.Select(value => FieldExpression<TListElement, TProperty>
-                    .GetFuncOrValueBasedExlicitPropertySetter(value, setterObjectGraph))
+                Values = guaranteedValues.Select(value => FieldExpressionHelper
+                    .GetFuncOrValueBasedExlicitPropertySetter<TProperty>(value, setterObjectGraph))
             });
 
             return this.rangeOperableList;
@@ -159,8 +159,8 @@ namespace TestDataFramework.Populator.Concrete
             this.rangeOperableList.GuaranteedPropertySetters.Add(new GuaranteedValues
             {
                 FrequencyPercentage = frequencyPercentage,
-                Values = guaranteedValues.Select(value => FieldExpression<TListElement, TProperty>
-                    .GetFuncOrValueBasedExlicitPropertySetter(value, setterObjectGraph))
+                Values = guaranteedValues.Select(value => FieldExpressionHelper
+                    .GetFuncOrValueBasedExlicitPropertySetter<TProperty>(value, setterObjectGraph))
             });
 
             return this.rangeOperableList;
@@ -201,38 +201,6 @@ namespace TestDataFramework.Populator.Concrete
         {
             this.rangeOperableList.Set(this.expression, valueFactory, ranges);
             return this;
-        }
-
-        private static ExplicitPropertySetter GetFuncOrValueBasedExlicitPropertySetter(object value, List<PropertyInfo> setterObjectGraph)
-        {
-            if (value == null)
-                return new ExplicitPropertySetter
-                {
-                    PropertyChain = setterObjectGraph,
-                    Action = @object => setterObjectGraph.Last().SetValue(@object, null)
-                };
-
-            var valueFunc = value as Func<TProperty>;
-            if (valueFunc == null && !(value is TProperty))
-            {
-                throw new ValueGuaranteeException(string.Format(Messages.GuaranteedTypeNotOfListType,
-                    typeof(TProperty), value.GetType()));
-            }
-
-            if (valueFunc != null)
-            {
-                return new ExplicitPropertySetter
-                {
-                    PropertyChain = setterObjectGraph,
-                    Action = @object => setterObjectGraph.Last().SetValue(@object, valueFunc())
-                };
-            }
-
-            return new ExplicitPropertySetter
-            {
-                PropertyChain = setterObjectGraph,
-                Action = @object => setterObjectGraph.Last().SetValue(@object, value)
-            };
         }
     }
 }

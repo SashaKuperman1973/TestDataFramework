@@ -18,16 +18,12 @@
 */
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Moq;
+using System.Collections.Generic;
 using TestDataFramework.Exceptions;
-using TestDataFramework.Factories;
 using TestDataFramework.ListOperations.Concrete;
 using TestDataFramework.ListOperations.Interfaces;
 using TestDataFramework.Populator.Concrete;
-using TestDataFramework.Populator.Interfaces;
 
 namespace Tests.Tests
 {
@@ -52,158 +48,6 @@ namespace Tests.Tests
             Helpers.ExceptionTest(() => valueGuaranteePopulator.Bind<object>(null, values, this.contextService.Object),
                 typeof(ValueGuaranteeException),
                 Messages.NeitherPercentageNorTotalGiven);
-        }
-
-        [TestMethod]
-        public void GuaranteedTypeNotOfListType_Exception_ByLiteralValue_Test()
-        {
-            var valueGuaranteePopulator = new ValueGuaranteePopulator();
-
-            var values = new List<GuaranteedValues>
-            {
-                new GuaranteedValues
-                {
-                    TotalFrequency = 5,
-                    Values = new object[] {1, 2, "Hello", 4}
-                }
-            };
-
-            var operableList = new OperableList<int>(null, null)
-            {
-                new RecordReference<int>(null, null, null, null, null, null),
-                new RecordReference<int>(null, null, null, null, null, null),
-                new RecordReference<int>(null, null, null, null, null, null),
-                new RecordReference<int>(null, null, null, null, null, null),
-                new RecordReference<int>(null, null, null, null, null, null)
-            };
-
-            Helpers.ExceptionTest(() => valueGuaranteePopulator.Bind(operableList, values, this.contextService.Object),
-                typeof(ValueGuaranteeException),
-                string.Format(Messages.GuaranteedTypeNotOfListType, "System.Int32", "System.String", "Hello"));
-        }
-
-        [TestMethod]
-        public void GuaranteedTypeNotOfListType_Exception_ByDelegate_Test()
-        {
-            var valueGuaranteePopulator = new ValueGuaranteePopulator();
-
-            var values = new List<GuaranteedValues>
-            {
-                new GuaranteedValues
-                {
-                    TotalFrequency = 5,
-                    Values = new object[] {1, 2, (Func<string>) (() => "Hello"), 4}
-                }
-            };
-
-            var operableList = new OperableList<int>(null, null)
-            {
-                new RecordReference<int>(null, null, null, null, null, null),
-                new RecordReference<int>(null, null, null, null, null, null),
-                new RecordReference<int>(null, null, null, null, null, null),
-                new RecordReference<int>(null, null, null, null, null, null),
-                new RecordReference<int>(null, null, null, null, null, null)
-            };
-
-            Helpers.ExceptionTest(() => valueGuaranteePopulator.Bind(operableList, values, this.contextService.Object),
-                typeof(ValueGuaranteeException),
-                string.Format(Messages.GuaranteedTypeNotOfListType, "System.Int32", "System.String", "Hello"));
-        }
-
-        [TestMethod]
-        public void TotalFrequency_LessThan_RequiredValues_LessThan_TotalListElements()
-        {
-            var guaranteedValuesSet = new[]
-            {
-                new GuaranteedValues
-                {
-                    TotalFrequency = 10
-                },
-                new GuaranteedValues
-                {
-                    FrequencyPercentage = 25
-                }
-            };
-
-            this.Test(22, guaranteedValuesSet);
-        }
-
-        [TestMethod]
-        public void BoundaryCondition_TotalFrequency_EqualTo_RequiredValues_LessThan_TotalListElements()
-        {
-            var guaranteedValuesSet = new[]
-            {
-                new GuaranteedValues
-                {
-                    TotalFrequency = 10
-                },
-                new GuaranteedValues
-                {
-                    FrequencyPercentage = 80
-                }
-            };
-
-            this.Test(50, guaranteedValuesSet);
-        }
-
-        [TestMethod]
-        public void ValueGuaranteeException_TooFewReferences()
-        {
-            var guaranteedValuesSet = new[]
-            {
-                new GuaranteedValues
-                {
-                    TotalFrequency = 8
-                },
-                new GuaranteedValues
-                {
-                    FrequencyPercentage = 86
-                }
-            };
-
-            Helpers.ExceptionTest(() => this.Test(-1, guaranteedValuesSet),
-                typeof(ValueGuaranteeException));
-        }
-
-        private void Test(int expectedCount, params GuaranteedValues[] guaranteedValuesSet)
-        {
-            IPopulator populator = StaticPopulatorFactory.CreateMemoryPopulator();
-
-            var valueGuaranteePopulator = new ValueGuaranteePopulator();
-
-            List<RecordReference<int>> setOfInts = populator.Add<int>(50).ToList();
-
-            var operableList = new OperableList<int>(setOfInts, valueGuaranteePopulator, null);
-
-            var values = new List<int>();
-            guaranteedValuesSet.ToList().ForEach(guaranteedValues =>
-            {
-                List<int> innerValues = populator.Add<int>(10).Make().ToList();
-                guaranteedValues.Values = innerValues.Cast<object>();
-                values.AddRange(innerValues);
-            });
-
-            // Act
-
-            valueGuaranteePopulator.Bind(operableList, guaranteedValuesSet.ToList(), this.contextService.Object);
-
-            // Assert
-
-            List<int?> subjectValues = operableList.Where(reference => reference.RecordObject != default(int))
-                .Select(reference => (int?) reference.RecordObject).ToList();
-
-            int found = 0;
-            int index;
-            values.ForEach(value =>
-            {
-                while ((index = subjectValues.IndexOf(value)) > -1)
-                {
-                    found++;
-                    subjectValues.RemoveAt(index);
-                }
-            });
-
-            Assert.AreEqual(expectedCount, found);
         }
     }
 }

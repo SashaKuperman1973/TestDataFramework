@@ -56,7 +56,8 @@ namespace TestDataFramework.Populator.Concrete
         public virtual FieldExpression<TListElement, TProperty> Set<TProperty>(
             Expression<Func<TListElement, TProperty>> expression)
         {
-            var fieldExpression = new FieldExpression<TListElement, TProperty>(expression, this, this.ObjectGraphService);
+            var fieldExpression =
+                new FieldExpression<TListElement, TProperty>(expression, this, this.ObjectGraphService);
             return fieldExpression;
         }
 

@@ -40,13 +40,11 @@ namespace Tests.Tests
     public class OperableListTests
     {
         private Mock<BasePopulator> populatorMock;
-        private Mock<IValueGauranteePopulatorContextService> valueGuaranteePopulatorService;
 
         [TestInitialize]
         public void Initialize()
         {
             this.populatorMock = new Mock<BasePopulator>(null);
-            this.valueGuaranteePopulatorService = new Mock<IValueGauranteePopulatorContextService>();
         }
 
         [TestMethod]
@@ -635,7 +633,7 @@ namespace Tests.Tests
             // Assert
 
             valueGuaranteePopulatorMock.Verify(m => m.Bind(operableList, operableList.GuaranteedValues,
-                this.valueGuaranteePopulatorService.Object));
+                It.IsAny<IValueGauranteePopulatorContextService>()));
         }
 
         [TestMethod]

@@ -158,9 +158,10 @@ namespace TestDataFramework.Populator.Concrete
             return this;
         }
 
-        public virtual void Ignore<TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression)
+        public virtual OperableList<T> Ignore<TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression)
         {
             this.InternalList.ForEach(reference => reference.Ignore(fieldExpression));
+            return this;
         }
 
         protected internal override void Populate()

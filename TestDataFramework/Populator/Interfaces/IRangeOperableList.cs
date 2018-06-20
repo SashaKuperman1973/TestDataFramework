@@ -42,7 +42,7 @@ namespace TestDataFramework.Populator.Interfaces
 
         OperableList<T> GuaranteeByFixedQuantity(IEnumerable<T> guaranteedValues, int fixedQuantity = 0);
 
-        void Ignore<TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression);
+        OperableList<T> Ignore<TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression);
 
         IEnumerable<T> BindAndMake();
 

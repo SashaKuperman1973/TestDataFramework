@@ -92,7 +92,6 @@ namespace TestDataFramework.ListOperations.Concrete
                         contextService.SetRecordReference(reference, subject);
                     }
 
-                    reference.IsPopulated = true;
                     workingList.RemoveAt(referenceIndex);
                 }
         }

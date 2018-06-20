@@ -11,6 +11,7 @@ namespace TestDataFramework.ListOperations.Concrete
         public void SetRecordReference<T>(RecordReference<T> reference, object value)
         {
             ((RecordReference)reference).RecordObject = value;
+            reference.IsPopulated = true;
         }
 
         public List<RecordReference<T>> FilterInWorkingListOfReferfences<T>(IEnumerable<RecordReference<T>> references,

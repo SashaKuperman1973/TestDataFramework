@@ -25,6 +25,7 @@ using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Factories;
+using TestDataFramework.Helpers;
 using TestDataFramework.Populator.Concrete;
 using TestDataFramework.Populator.Interfaces;
 using Tests.TestModels;
@@ -539,6 +540,17 @@ namespace CommonIntegrationTests.Tests
             int result = resultRecord.RecordObject;
 
             Assert.IsTrue(result != 0);
+        }
+
+        [TestMethod]
+        public void GauranteedCollectionDeepPropertySetting_Test()
+        {
+            IPopulator populator = this.factory.CreateMemoryPopulator();
+
+            RecordReference<DeepA> deepARecord = populator.Add<DeepA>();
+
+            deepARecord.SetList(m => m.DeepB.DeepCList, 10).Set(deepC => deepC.DeepString)
+                .GuaranteePropertiesByFixedQuantity(new[] {"A", "B", "C"}, 5).BindAndMake();
         }
 
         private class ClassWithDictionary

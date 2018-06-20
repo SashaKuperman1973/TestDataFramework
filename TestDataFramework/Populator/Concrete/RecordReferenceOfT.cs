@@ -165,7 +165,7 @@ namespace TestDataFramework.Populator.Concrete
             return this;
         }
 
-        public virtual void Ignore<TPropertyValue>(Expression<Func<T, TPropertyValue>> fieldExpression)
+        public virtual RecordReference<T> Ignore<TPropertyValue>(Expression<Func<T, TPropertyValue>> fieldExpression)
         {
             RecordReference<T>.Logger.Debug(
                 $"Entering Ignore(fieldExpression). TPropertyValue: {typeof(TPropertyValue)}, fieldExpression: {fieldExpression}");
@@ -173,6 +173,8 @@ namespace TestDataFramework.Populator.Concrete
             this.AddToExplicitPropertySetters(fieldExpression, () => ExplicitlyIgnoredValue.Instance);
 
             RecordReference<T>.Logger.Debug("Exiting Ignore(fieldExpression)");
+
+            return this;
         }
 
         public virtual T BindAndMake()

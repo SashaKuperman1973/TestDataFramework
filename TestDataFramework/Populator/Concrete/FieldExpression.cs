@@ -166,9 +166,9 @@ namespace TestDataFramework.Populator.Concrete
             return this.rangeOperableList;
         }
 
-        public virtual void Ignore<TPropertyType>(Expression<Func<TListElement, TPropertyType>> fieldExpression)
+        public virtual OperableList<TListElement> Ignore<TPropertyType>(Expression<Func<TListElement, TPropertyType>> fieldExpression)
         {
-            this.rangeOperableList.Ignore(fieldExpression);
+            return this.rangeOperableList.Ignore(fieldExpression);
         }
 
         public RangeOperableList<TListElement> Set<TValueProperty>(

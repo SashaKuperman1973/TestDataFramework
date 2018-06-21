@@ -1,13 +1,12 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.Exceptions;
-using TestDataFramework.ListOperations;
 using TestDataFramework.ListOperations.Concrete;
 using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete;
@@ -111,6 +110,34 @@ namespace Tests.Tests
         public void Set_BoundaryConditions_Test()
         {
             this.rangeOperableList.Set(p => p.Integer, () => 1, new Range(0, RangeOperableListTests.ListSize - 1));
+        }
+
+        [TestMethod]
+        public void Set_TProperty_Test()
+        {
+            // Arrange
+
+            this.objectGraphServiceMock.Setup(m => m.GetObjectGraph<SubjectClass, int>(p => p.Integer))
+                .Returns(new List<PropertyInfo> { typeof(SubjectClass).GetProperty(nameof(SubjectClass.Integer)) });
+
+            // Act
+
+            this.rangeOperableList.Set(p => p.Integer, 7, 0);
+
+            List<RecordReference<SubjectClass>> internalList = this.rangeOperableList.InternalList;
+            RangeOperableListTests.CheckRecordReference(internalList[0]);
+        }
+
+        [TestMethod]
+        public void Set_Return_FieldExpression_Test()
+        {
+            // Act
+
+            FieldExpression<SubjectClass, int> resultFieldExpression = this.rangeOperableList.Set(m => m.Integer);
+
+            // Assert
+
+            Assert.IsNotNull(resultFieldExpression);
         }
     }
 }

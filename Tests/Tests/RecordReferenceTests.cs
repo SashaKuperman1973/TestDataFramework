@@ -256,5 +256,37 @@ namespace Tests.Tests
             Assert.AreEqual(nameof(SecondDeepPropertyTable), propertyChain.DeclaringType.Name);
             Assert.AreEqual(nameof(SecondDeepPropertyTable.Deep1), propertyChain.Name);
         }
+
+        [TestMethod]
+        public void SetList_Test()
+        {
+            var objectGraphServiceMock = new Mock<IObjectGraphService>();
+            var typeGeneratorMock = new Mock<ITypeGenerator>();
+            var deepSettingConverterMock = new Mock<DeepCollectionSettingConverter>();
+
+            var expected = new List<int> {1, 2, 3, 4};
+
+            deepSettingConverterMock.Setup(m => m.Convert(It.IsAny<IEnumerable<int>>(), It.IsAny<PropertyInfo>()))
+                .Returns(expected);
+
+            objectGraphServiceMock.Setup(m => m.GetObjectGraph(It.IsAny<Expression<Func<SubjectClass, IEnumerable<int>>>>()))
+                .Returns(new List<PropertyInfo> {typeof(SubjectClass).GetProperty(nameof(SubjectClass.IntegerList))});
+
+            var recordReference = new RecordReference<SubjectClass>(
+                typeGeneratorMock.Object, null, null, objectGraphServiceMock.Object, null, deepSettingConverterMock.Object);
+
+            // Act
+
+            RangeOperableList<int> result = recordReference.SetList(m => m.IntegerList, 5);
+
+            // Assert
+
+            Assert.IsNotNull(result);
+
+            var @object = new SubjectClass();
+            recordReference.ExplicitPropertySetters.Single().Action(@object);
+
+            Assert.AreEqual(expected, @object.IntegerList);
+        }
     }
 }

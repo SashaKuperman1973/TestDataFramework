@@ -40,7 +40,7 @@ namespace TestDataFramework.Populator.Concrete
         private readonly IHandledTypeGenerator handledTypeGenerator;
         private readonly IObjectGraphService objectGraphService;
         private readonly IPersistence persistence;
-        private readonly List<Populatable> populatables = new List<Populatable>();
+        internal readonly List<Populatable> Populatables = new List<Populatable>();
 
         private readonly ITypeGenerator typeGenerator;
         private readonly ValueGuaranteePopulator valueGuaranteePopulator;
@@ -68,7 +68,7 @@ namespace TestDataFramework.Populator.Concrete
 
         public override void Clear()
         {
-            this.populatables.Clear();
+            this.Populatables.Clear();
         }
 
         public override void Extend(Type type, HandledTypeValueGetter valueGetter)
@@ -82,7 +82,7 @@ namespace TestDataFramework.Populator.Concrete
                 $"Entering Add. T: {typeof(T)}, copies: {copies}, primaryRecordReference: {primaryRecordReferences}");
 
             var result = new OperableList<T>(this.valueGuaranteePopulator, this);
-            this.populatables.Add(result);
+            this.Populatables.Add(result);
 
             for (int i = 0; i < copies; i++)
                 result.Add(this.Add<T>(primaryRecordReferences));
@@ -99,7 +99,7 @@ namespace TestDataFramework.Populator.Concrete
             var recordReference = new RecordReference<T>(this.typeGenerator, this.AttributeDecorator, this,
                 this.objectGraphService, this.valueGuaranteePopulator, this.deepCollectionSettingConverter);
 
-            this.populatables.Add(recordReference);
+            this.Populatables.Add(recordReference);
             recordReference.AddPrimaryRecordReference(primaryRecordReferences);
 
             StandardPopulator.Logger.Debug("Exiting Add<T>(primaryRecordReference, propertyExpressionDictionary)");
@@ -112,7 +112,7 @@ namespace TestDataFramework.Populator.Concrete
         {
             StandardPopulator.Logger.Debug("Entering Bind()");
 
-            this.populatables.ForEach(populatable => populatable.Populate());
+            this.Populatables.ForEach(populatable => populatable.Populate());
             this.Persist();
 
             StandardPopulator.Logger.Debug("Exiting Bind()");
@@ -150,7 +150,7 @@ namespace TestDataFramework.Populator.Concrete
         private void Persist()
         {
             var recordReferences = new List<RecordReference>();
-            this.populatables.ForEach(populatable => populatable.AddToReferences(recordReferences));
+            this.Populatables.ForEach(populatable => populatable.AddToReferences(recordReferences));
             this.persistence.Persist(recordReferences);
         }
     }

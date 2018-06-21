@@ -26,12 +26,14 @@ using Moq;
 using TestDataFramework.AttributeDecorator.Concrete;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.AttributeDecorator.Interfaces;
+using TestDataFramework.DeepSetting;
 using TestDataFramework.HandledTypeGenerator;
 using TestDataFramework.Helpers;
 using TestDataFramework.Persistence.Interfaces;
 using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete;
 using TestDataFramework.TypeGenerator.Interfaces;
+using TestDataFramework.ValueGenerator.Interfaces;
 using Tests.Mocks;
 using Tests.TestModels;
 
@@ -45,6 +47,7 @@ namespace Tests.Tests
         private Mock<IPersistence> persistenceMock;
         private StandardPopulator populator;
         private Mock<ITypeGenerator> typeGeneratorMock;
+        private Mock<IValueGenerator> valueGeneratorMock;
 
         [TestInitialize]
         public void Initialize()
@@ -55,9 +58,11 @@ namespace Tests.Tests
             this.persistenceMock = new Mock<IPersistence>();
             this.typeGeneratorMock = new Mock<ITypeGenerator>();
             this.handledTypeGeneratorMock = new Mock<IHandledTypeGenerator>();
+            this.valueGeneratorMock = new Mock<IValueGenerator>();
 
             this.populator = new StandardPopulator(this.typeGeneratorMock.Object, this.persistenceMock.Object,
-                this.attributeDecorator, this.handledTypeGeneratorMock.Object, null, null, null, null);
+                this.attributeDecorator, this.handledTypeGeneratorMock.Object, this.valueGeneratorMock.Object, null,
+                null, null);
         }
 
         [TestMethod]
@@ -251,6 +256,53 @@ namespace Tests.Tests
 
             Assert.AreEqual(1, valueGetterDictionary.Count);
             Assert.AreEqual(subject, valueGetterDictionary[typeof(SubjectClass)](typeof(SubjectClass)));
+        }
+
+        [TestMethod]
+        public void Bind_RecordReference_Is_Populated_Test()
+        {
+            // Arrange
+
+            var recordReference =
+                new RecordReference<SubjectClass>(null, null, null, null, null, null) {IsPopulated = true};
+
+            // Act
+
+            this.populator.Bind(recordReference);
+
+            // Assert
+
+            this.persistenceMock.Verify(m => m.Persist(It.IsAny<RecordReference[]>()), Times.Never);
+            this.typeGeneratorMock.Verify(m => m.GetObject<SubjectClass>(It.IsAny<List<ExplicitPropertySetter>>()), Times.Never);
+        }
+
+        [TestMethod]
+        public void Add_Gets_Collection_Test()
+        {
+            // Arrange
+
+            var primaryKeys = new[]
+            {
+                new RecordReference<SecondClass>(null, null, null, null, null, null),
+                new RecordReference<SecondClass>(null, null, null, null, null, null)
+            };
+
+            // Act
+
+            OperableList<SubjectClass> result =
+                this.populator.Add<SubjectClass>(5, primaryKeys);
+
+            // Assert
+
+            Assert.AreEqual(result, this.populator.Populatables.Single(x => x is OperableList<SubjectClass>));
+        }
+
+        [TestMethod]
+        public void ValueGenerator_Get()
+        {
+            IValueGenerator result = this.populator.ValueGenerator;
+
+            Assert.AreEqual(this.valueGeneratorMock.Object, result);
         }
     }
 }

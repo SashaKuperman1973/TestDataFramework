@@ -18,6 +18,7 @@
 */
 
 using System;
+using System.Collections.Generic;
 using TestDataFramework;
 using TestDataFramework.ValueProvider.Interfaces;
 
@@ -115,6 +116,8 @@ namespace Tests.TestModels
         public int[][,,][] JaggedMultiDimensionalArray { get; set; }
 
         public Guid AGuid { get; set; }
+
+        public List<int> IntegerList { get; set; }
     }
 
     public class SecondClass

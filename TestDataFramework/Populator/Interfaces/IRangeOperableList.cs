@@ -20,6 +20,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using TestDataFramework.ListOperations.Concrete;
 using TestDataFramework.Populator.Concrete;
 
 namespace TestDataFramework.Populator.Interfaces
@@ -28,19 +29,54 @@ namespace TestDataFramework.Populator.Interfaces
     {
         IEnumerable<T> RecordObjects { get; }
 
+        OperableList<T> GuaranteeByPercentageOfTotal(IEnumerable<object> guaranteedValues, int frequencyPercentage,
+            ValueCountRequestOption valueCountRequestOption =
+                ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
+
         OperableList<T> GuaranteeByPercentageOfTotal(IEnumerable<object> guaranteedValues,
-            int frequencyPercentage = 10);
+            ValueCountRequestOption valueCountRequestOption =
+                ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
 
         OperableList<T> GuaranteeByPercentageOfTotal(IEnumerable<Func<T>> guaranteedValues,
-            int frequencyPercentage = 10);
+            int frequencyPercentage,
+            ValueCountRequestOption valueCountRequestOption =
+                ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
 
-        OperableList<T> GuaranteeByPercentageOfTotal(IEnumerable<T> guaranteedValues, int frequencyPercentage = 10);
+        OperableList<T> GuaranteeByPercentageOfTotal(IEnumerable<Func<T>> guaranteedValues,
+            ValueCountRequestOption valueCountRequestOption =
+                ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
 
-        OperableList<T> GuaranteeByFixedQuantity(IEnumerable<object> guaranteedValues, int fixedQuantity = 0);
+        OperableList<T> GuaranteeByPercentageOfTotal(IEnumerable<T> guaranteedValues, int frequencyPercentage,
+            ValueCountRequestOption valueCountRequestOption =
+                ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
 
-        OperableList<T> GuaranteeByFixedQuantity(IEnumerable<Func<T>> guaranteedValues, int fixedQuantity = 0);
+        OperableList<T> GuaranteeByPercentageOfTotal(IEnumerable<T> guaranteedValues,
+            ValueCountRequestOption valueCountRequestOption =
+                ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
 
-        OperableList<T> GuaranteeByFixedQuantity(IEnumerable<T> guaranteedValues, int fixedQuantity = 0);
+        OperableList<T> GuaranteeByFixedQuantity(IEnumerable<object> guaranteedValues, int fixedQuantity,
+            ValueCountRequestOption valueCountRequestOption =
+                ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
+
+        OperableList<T> GuaranteeByFixedQuantity(IEnumerable<object> guaranteedValues,
+            ValueCountRequestOption valueCountRequestOption =
+                ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
+
+        OperableList<T> GuaranteeByFixedQuantity(IEnumerable<Func<T>> guaranteedValues, int fixedQuantity,
+            ValueCountRequestOption valueCountRequestOption =
+                ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
+
+        OperableList<T> GuaranteeByFixedQuantity(IEnumerable<Func<T>> guaranteedValues,
+            ValueCountRequestOption valueCountRequestOption =
+                ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
+
+        OperableList<T> GuaranteeByFixedQuantity(IEnumerable<T> guaranteedValues, int fixedQuantity,
+            ValueCountRequestOption valueCountRequestOption =
+                ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
+
+        OperableList<T> GuaranteeByFixedQuantity(IEnumerable<T> guaranteedValues,
+            ValueCountRequestOption valueCountRequestOption =
+                ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
 
         OperableList<T> Ignore<TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression);
 

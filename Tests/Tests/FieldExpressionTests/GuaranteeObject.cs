@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestDataFramework.ListOperations.Concrete;
 using TestDataFramework.Populator.Concrete;
 
 namespace Tests.Tests.FieldExpressionTests
@@ -12,7 +13,7 @@ namespace Tests.Tests.FieldExpressionTests
             // Arrange
 
             var values = new object[] { new ElementType(), (Func<ElementType>)(() => new ElementType()) };
-            this.rangeOperableListMock.Setup(m => m.GuaranteeByFixedQuantity(values, 5))
+            this.rangeOperableListMock.Setup(m => m.GuaranteeByFixedQuantity(values, 5, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall))
                 .Returns(this.rangeOperableListMock.Object);
 
             // Act
@@ -21,7 +22,7 @@ namespace Tests.Tests.FieldExpressionTests
 
             // Assert
 
-            this.rangeOperableListMock.Verify(m => m.GuaranteeByFixedQuantity(values, 5));
+            this.rangeOperableListMock.Verify(m => m.GuaranteeByFixedQuantity(values, 5, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall));
             Assert.AreEqual(this.rangeOperableListMock.Object, result);
         }
 
@@ -31,7 +32,7 @@ namespace Tests.Tests.FieldExpressionTests
             // Arrange
 
             var values = new Func<ElementType>[] { () => new ElementType(), () => new ElementType() };
-            this.rangeOperableListMock.Setup(m => m.GuaranteeByFixedQuantity(values, 5))
+            this.rangeOperableListMock.Setup(m => m.GuaranteeByFixedQuantity(values, 5, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall))
                 .Returns(this.rangeOperableListMock.Object);
 
             // Act
@@ -40,7 +41,7 @@ namespace Tests.Tests.FieldExpressionTests
 
             // Assert
 
-            this.rangeOperableListMock.Verify(m => m.GuaranteeByFixedQuantity(values, 5));
+            this.rangeOperableListMock.Verify(m => m.GuaranteeByFixedQuantity(values, 5, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall));
             Assert.AreEqual(this.rangeOperableListMock.Object, result);
         }
 
@@ -50,16 +51,16 @@ namespace Tests.Tests.FieldExpressionTests
             // Arrange
 
             var values = new[] { new ElementType(), new ElementType() };
-            this.rangeOperableListMock.Setup(m => m.GuaranteeByFixedQuantity(values, 5))
+            this.rangeOperableListMock.Setup(m => m.GuaranteeByFixedQuantity(values, 5, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall))
                 .Returns(this.rangeOperableListMock.Object);
 
             // Act
 
-            OperableList<ElementType> result = this.fieldExpression.GuaranteeByFixedQuantity(values, 5);
+            OperableList<ElementType> result = this.fieldExpression.GuaranteeByFixedQuantity(values, 5, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
 
             // Assert
 
-            this.rangeOperableListMock.Verify(m => m.GuaranteeByFixedQuantity(values, 5));
+            this.rangeOperableListMock.Verify(m => m.GuaranteeByFixedQuantity(values, 5, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall));
             Assert.AreEqual(this.rangeOperableListMock.Object, result);
         }
 
@@ -70,7 +71,7 @@ namespace Tests.Tests.FieldExpressionTests
 
             var values = new object[] { new ElementType(), (Func<ElementType>)(() => new ElementType()) };
 
-            this.rangeOperableListMock.Setup(m => m.GuaranteeByPercentageOfTotal(values, 5))
+            this.rangeOperableListMock.Setup(m => m.GuaranteeByPercentageOfTotal(values, 5, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall))
                 .Returns(this.rangeOperableListMock.Object);
 
             // Act
@@ -79,7 +80,7 @@ namespace Tests.Tests.FieldExpressionTests
 
             // Assert
 
-            this.rangeOperableListMock.Verify(m => m.GuaranteeByPercentageOfTotal(values, 5));
+            this.rangeOperableListMock.Verify(m => m.GuaranteeByPercentageOfTotal(values, 5, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall));
             Assert.AreEqual(this.rangeOperableListMock.Object, result);
         }
 
@@ -89,7 +90,7 @@ namespace Tests.Tests.FieldExpressionTests
             // Arrange
 
             var values = new Func<ElementType>[] { () => new ElementType(), () => new ElementType() };
-            this.rangeOperableListMock.Setup(m => m.GuaranteeByPercentageOfTotal(values, 5))
+            this.rangeOperableListMock.Setup(m => m.GuaranteeByPercentageOfTotal(values, 5, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall))
                 .Returns(this.rangeOperableListMock.Object);
 
             // Act
@@ -98,7 +99,7 @@ namespace Tests.Tests.FieldExpressionTests
 
             // Assert
 
-            this.rangeOperableListMock.Verify(m => m.GuaranteeByPercentageOfTotal(values, 5));
+            this.rangeOperableListMock.Verify(m => m.GuaranteeByPercentageOfTotal(values, 5, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall));
             Assert.AreEqual(this.rangeOperableListMock.Object, result);
         }
 
@@ -108,7 +109,7 @@ namespace Tests.Tests.FieldExpressionTests
             // Arrange
 
             var values = new[] { new ElementType(), new ElementType() };
-            this.rangeOperableListMock.Setup(m => m.GuaranteeByPercentageOfTotal(values, 5))
+            this.rangeOperableListMock.Setup(m => m.GuaranteeByPercentageOfTotal(values, 5, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall))
                 .Returns(this.rangeOperableListMock.Object);
 
             // Act
@@ -117,7 +118,7 @@ namespace Tests.Tests.FieldExpressionTests
 
             // Assert
 
-            this.rangeOperableListMock.Verify(m => m.GuaranteeByPercentageOfTotal(values, 5));
+            this.rangeOperableListMock.Verify(m => m.GuaranteeByPercentageOfTotal(values, 5, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall));
             Assert.AreEqual(this.rangeOperableListMock.Object, result);
         }
     }

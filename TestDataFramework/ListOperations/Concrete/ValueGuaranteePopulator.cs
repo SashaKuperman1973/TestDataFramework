@@ -26,9 +26,24 @@ using TestDataFramework.Populator.Concrete;
 
 namespace TestDataFramework.ListOperations.Concrete
 {
+    public class GuaranteedValues
+    {
+        public IEnumerable<object> Values { get; set; }
+        public int? FrequencyPercentage { get; set; }
+        public int? TotalFrequency { get; set; }
+        public ValueCountRequestOption ValueCountRequestOption { get; set; }
+    }
+
+    public enum ValueCountRequestOption
+    {
+        DoNotThrow,
+        ThrowIfValueCountRequestedIsTooSmall
+    }
+
     public class ValueGuaranteePopulator
     {
-        public virtual void Bind<T>(OperableList<T> references, List<GuaranteedValues> guaranteedValuesList, IValueGauranteePopulatorContextService contextService)
+        public virtual void Bind<T>(OperableList<T> references, List<GuaranteedValues> guaranteedValuesList,
+            IValueGauranteePopulatorContextService contextService)
         {
             if (
                 guaranteedValuesList.Any(
@@ -47,6 +62,15 @@ namespace TestDataFramework.ListOperations.Concrete
 
                             quantity = quantity >= 1 ? quantity : 1;
 
+                            if (valueSet.ValueCountRequestOption ==
+                                ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall
+                                && quantity < valueSet.Values.Count())
+                            {
+                                throw new ValueGuaranteeException(
+                                    string.Format(Messages.PercentFrequencyTooSmall, valueSet.Values.Count(),
+                                        valueSet.FrequencyPercentage, quantity, references.Count));
+                            }
+
                             var percentageValuesResult = new Tuple<IEnumerable<object>, int>(valueSet.Values, quantity);
 
                             return percentageValuesResult;
@@ -55,7 +79,19 @@ namespace TestDataFramework.ListOperations.Concrete
             List<Tuple<IEnumerable<object>, int>> valuesPerTotalSet =
                 guaranteedValuesList.Where(valueSet => valueSet.TotalFrequency.HasValue)
                     .Select(
-                        valueSet => new Tuple<IEnumerable<object>, int>(valueSet.Values, valueSet.TotalFrequency.Value))
+                        valueSet =>
+                        {
+                            if (valueSet.ValueCountRequestOption ==
+                                ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall
+                                && valueSet.TotalFrequency < valueSet.Values.Count())
+                            {
+                                throw new ValueGuaranteeException(
+                                    string.Format(Messages.TotalFrequencyTooSmall, valueSet.Values.Count(),
+                                        valueSet.TotalFrequency, references.Count));
+                            }
+
+                            return new Tuple<IEnumerable<object>, int>(valueSet.Values, valueSet.TotalFrequency.Value);
+                        })
                     .ToList();
 
             IEnumerable<Tuple<List<object>, int>> allValues =
@@ -84,7 +120,7 @@ namespace TestDataFramework.ListOperations.Concrete
 
                     if (subjectType.IsGenericType && subjectType.GetGenericTypeDefinition() == typeof(Func<>))
                     {
-                        var objectFunc = (Func<object>)subject;
+                        var objectFunc = (Func<object>) subject;
                         contextService.SetRecordReference(reference, objectFunc());
                     }
                     else

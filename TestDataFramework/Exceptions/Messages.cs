@@ -141,5 +141,13 @@ namespace TestDataFramework.Exceptions
             "Type {0} is not supported for deep collection setting";
 
         public const string NoRangeOperableListPositionsPassedIn = "No positions passed in.";
+
+        public const string PercentFrequencyTooSmall =
+                "Frequency requested is less than number of values given. Value count: {0}, Frequency percentage requested: {1}, Computed frequency total: {2}, Number of total populatable values in set: {3}"
+            ;
+
+        public const string TotalFrequencyTooSmall =
+                "Frequency requested is less than number of values given. Value count: {0}, Total count requested: {1}, Number of total populatable values in set: {2}"
+            ;
     }
 }

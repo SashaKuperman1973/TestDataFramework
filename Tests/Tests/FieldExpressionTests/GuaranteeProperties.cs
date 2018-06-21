@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.DeepSetting;
+using TestDataFramework.ListOperations.Concrete;
 using TestDataFramework.Populator.Concrete;
 
 namespace Tests.Tests.FieldExpressionTests

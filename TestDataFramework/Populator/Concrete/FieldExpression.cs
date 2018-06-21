@@ -38,25 +38,52 @@ namespace TestDataFramework.Populator.Concrete
         }
 
         public virtual OperableList<TListElement> GuaranteeByFixedQuantity(IEnumerable<object> guaranteedValues,
-            int fixedQuantity = 0)
+            ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
-            return this.rangeOperableList.GuaranteeByFixedQuantity(guaranteedValues, fixedQuantity);
+            return this.GuaranteeByFixedQuantity(guaranteedValues, 0, valueCountRequestOption);
+        }
+
+        public virtual OperableList<TListElement> GuaranteeByFixedQuantity(IEnumerable<object> guaranteedValues,
+            int fixedQuantity, ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
+        {
+            return this.rangeOperableList.GuaranteeByFixedQuantity(guaranteedValues, fixedQuantity, valueCountRequestOption);
+        }
+
+        public OperableList<TListElement> GuaranteeByFixedQuantity(IEnumerable<Func<TListElement>> guaranteedValues,
+            ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
+        {
+            return this.GuaranteeByFixedQuantity(guaranteedValues, 0, valueCountRequestOption);
         }
 
         public virtual OperableList<TListElement> GuaranteeByFixedQuantity(
-            IEnumerable<Func<TListElement>> guaranteedValues, int fixedQuantity = 0)
+            IEnumerable<Func<TListElement>> guaranteedValues, int fixedQuantity,
+            ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
-            return this.rangeOperableList.GuaranteeByFixedQuantity(guaranteedValues, fixedQuantity);
+            return this.rangeOperableList.GuaranteeByFixedQuantity(guaranteedValues, fixedQuantity, valueCountRequestOption);
+        }
+
+        public OperableList<TListElement> GuaranteeByFixedQuantity(IEnumerable<TListElement> guaranteedValues,
+            ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
+        {
+            return this.GuaranteeByFixedQuantity(guaranteedValues, 0, valueCountRequestOption);
         }
 
         public virtual OperableList<TListElement> GuaranteeByFixedQuantity(IEnumerable<TListElement> guaranteedValues,
-            int fixedQuantity = 0)
+            int fixedQuantity, ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
-            return this.rangeOperableList.GuaranteeByFixedQuantity(guaranteedValues, fixedQuantity);
+            return this.rangeOperableList.GuaranteeByFixedQuantity(guaranteedValues, fixedQuantity, valueCountRequestOption);
         }
 
         public virtual OperableList<TListElement> GuaranteePropertiesByFixedQuantity(
-            IEnumerable<Func<TProperty>> guaranteedValues, int fixedQuantity = 0)
+            IEnumerable<Func<TProperty>> guaranteedValues,
+            ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
+        {
+            return this.GuaranteePropertiesByFixedQuantity(guaranteedValues, 0, valueCountRequestOption);
+        }
+
+        public virtual OperableList<TListElement> GuaranteePropertiesByFixedQuantity(
+            IEnumerable<Func<TProperty>> guaranteedValues, int fixedQuantity,
+            ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
             List<PropertyInfo> setterObjectGraph = this.objectGraphService.GetObjectGraph(this.expression);
 
@@ -72,14 +99,22 @@ namespace TestDataFramework.Populator.Concrete
                 {
                     PropertyChain = setterObjectGraph,
                     Action = @object => setterObjectGraph.Last().SetValue(@object, value())
-                })
+                }),
+                ValueCountRequestOption = valueCountRequestOption
             });
 
             return this.rangeOperableList;
+        }
+
+        public virtual OperableList<TListElement> GuaranteePropertiesByFixedQuantity(
+            IEnumerable<object> guaranteedValues,
+            ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
+        {
+            return this.GuaranteePropertiesByFixedQuantity(guaranteedValues, 0, valueCountRequestOption);
         }
 
         public virtual OperableList<TListElement> GuaranteePropertiesByFixedQuantity(IEnumerable<object> guaranteedValues,
-            int fixedQuantity = 0)
+            int fixedQuantity, ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
             List<PropertyInfo> setterObjectGraph = this.objectGraphService.GetObjectGraph(this.expression);
 
@@ -92,39 +127,79 @@ namespace TestDataFramework.Populator.Concrete
             {
                 TotalFrequency = fixedQuantity,
                 Values = guaranteedValues.Select(value => FieldExpressionHelper
-                    .GetFuncOrValueBasedExlicitPropertySetter<TProperty>(value, setterObjectGraph))
+                    .GetFuncOrValueBasedExlicitPropertySetter<TProperty>(value, setterObjectGraph)),
+                ValueCountRequestOption = valueCountRequestOption
             });
 
             return this.rangeOperableList;
         }
 
+        public virtual OperableList<TListElement> GuaranteePropertiesByFixedQuantity(
+            IEnumerable<TProperty> guaranteedValues,
+            ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
+        {
+            return this.GuaranteePropertiesByFixedQuantity(guaranteedValues, 0, valueCountRequestOption);
+        }
+
         public virtual OperableList<TListElement> GuaranteePropertiesByFixedQuantity(IEnumerable<TProperty> guaranteedValues,
-            int fixedQuantity = 0)
+            int fixedQuantity, ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
             return this.GuaranteePropertiesByFixedQuantity(
-                guaranteedValues.Select<TProperty, Func<TProperty>>(value => () => value), fixedQuantity);
+                guaranteedValues.Select<TProperty, Func<TProperty>>(value => () => value), fixedQuantity, valueCountRequestOption);
         }
 
         public virtual OperableList<TListElement> GuaranteeByPercentageOfTotal(
-            IEnumerable<object> guaranteedValues, int frequencyPercentage = 10)
+            IEnumerable<object> guaranteedValues, 
+            ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
-            return this.rangeOperableList.GuaranteeByPercentageOfTotal(guaranteedValues, frequencyPercentage);
+            return this.GuaranteeByPercentageOfTotal(guaranteedValues, 10, valueCountRequestOption);
         }
 
         public virtual OperableList<TListElement> GuaranteeByPercentageOfTotal(
-            IEnumerable<Func<TListElement>> guaranteedValues, int frequencyPercentage = 10)
+            IEnumerable<object> guaranteedValues, int frequencyPercentage,
+            ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
-            return this.rangeOperableList.GuaranteeByPercentageOfTotal(guaranteedValues, frequencyPercentage);
+            return this.rangeOperableList.GuaranteeByPercentageOfTotal(guaranteedValues, frequencyPercentage, valueCountRequestOption);
         }
 
         public virtual OperableList<TListElement> GuaranteeByPercentageOfTotal(
-            IEnumerable<TListElement> guaranteedValues, int frequencyPercentage = 10)
+            IEnumerable<Func<TListElement>> guaranteedValues, 
+            ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
-            return this.rangeOperableList.GuaranteeByPercentageOfTotal(guaranteedValues, frequencyPercentage);
+            return this.GuaranteeByPercentageOfTotal(guaranteedValues, 10, valueCountRequestOption);
+        }
+
+        public virtual OperableList<TListElement> GuaranteeByPercentageOfTotal(
+            IEnumerable<Func<TListElement>> guaranteedValues, int frequencyPercentage,
+            ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
+        {
+            return this.rangeOperableList.GuaranteeByPercentageOfTotal(guaranteedValues, frequencyPercentage, valueCountRequestOption);
+        }
+
+        public virtual OperableList<TListElement> GuaranteeByPercentageOfTotal(
+            IEnumerable<TListElement> guaranteedValues,
+            ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
+        {
+            return this.GuaranteeByPercentageOfTotal(guaranteedValues, 10, valueCountRequestOption);
+        }
+
+        public virtual OperableList<TListElement> GuaranteeByPercentageOfTotal(
+            IEnumerable<TListElement> guaranteedValues, int frequencyPercentage,
+            ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
+        {
+            return this.rangeOperableList.GuaranteeByPercentageOfTotal(guaranteedValues, frequencyPercentage, valueCountRequestOption);
         }
 
         public virtual OperableList<TListElement> GuaranteePropertiesByPercentageOfTotal(
-            IEnumerable<Func<TProperty>> guaranteedValues, int frequencyPercentage = 10)
+            IEnumerable<Func<TProperty>> guaranteedValues,
+            ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
+        {
+            return this.GuaranteePropertiesByPercentageOfTotal(guaranteedValues, 10, valueCountRequestOption);
+        }
+
+        public virtual OperableList<TListElement> GuaranteePropertiesByPercentageOfTotal(
+            IEnumerable<Func<TProperty>> guaranteedValues, int frequencyPercentage,
+            ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
             List<PropertyInfo> setterObjectGraph = this.objectGraphService.GetObjectGraph(this.expression);
 
@@ -136,21 +211,39 @@ namespace TestDataFramework.Populator.Concrete
                 {
                     PropertyChain = setterObjectGraph,
                     Action = @object => setterObjectGraph.Last().SetValue(@object, value())
-                })
+                }),
+                ValueCountRequestOption = valueCountRequestOption
             });
 
             return this.rangeOperableList;
         }
 
         public virtual OperableList<TListElement> GuaranteePropertiesByPercentageOfTotal(
-            IEnumerable<TProperty> guaranteedValues, int frequencyPercentage = 10)
+            IEnumerable<TProperty> guaranteedValues,
+            ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
-            return this.GuaranteePropertiesByPercentageOfTotal(
-                guaranteedValues.Select<TProperty, Func<TProperty>>(value => () => value), frequencyPercentage);
+            return this.GuaranteePropertiesByPercentageOfTotal(guaranteedValues, 10, valueCountRequestOption);
         }
 
         public virtual OperableList<TListElement> GuaranteePropertiesByPercentageOfTotal(
-            IEnumerable<object> guaranteedValues, int frequencyPercentage = 10)
+            IEnumerable<TProperty> guaranteedValues, int frequencyPercentage,
+            ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
+        {
+            return this.GuaranteePropertiesByPercentageOfTotal(
+                guaranteedValues.Select<TProperty, Func<TProperty>>(value => () => value), frequencyPercentage,
+                valueCountRequestOption);
+        }
+
+        public virtual OperableList<TListElement> GuaranteePropertiesByPercentageOfTotal(
+            IEnumerable<object> guaranteedValues, 
+            ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
+        {
+            return this.GuaranteePropertiesByPercentageOfTotal(guaranteedValues, 10, valueCountRequestOption);
+        }
+
+        public virtual OperableList<TListElement> GuaranteePropertiesByPercentageOfTotal(
+            IEnumerable<object> guaranteedValues, int frequencyPercentage,
+            ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
             List<PropertyInfo> setterObjectGraph = this.objectGraphService.GetObjectGraph(this.expression);
 
@@ -160,7 +253,8 @@ namespace TestDataFramework.Populator.Concrete
             {
                 FrequencyPercentage = frequencyPercentage,
                 Values = guaranteedValues.Select(value => FieldExpressionHelper
-                    .GetFuncOrValueBasedExlicitPropertySetter<TProperty>(value, setterObjectGraph))
+                    .GetFuncOrValueBasedExlicitPropertySetter<TProperty>(value, setterObjectGraph)),
+                ValueCountRequestOption = valueCountRequestOption
             });
 
             return this.rangeOperableList;

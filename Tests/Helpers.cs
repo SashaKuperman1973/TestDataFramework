@@ -34,6 +34,12 @@ using TestDataFramework.TypeGenerator.Interfaces;
 
 namespace Tests
 {
+    public enum MessageOption
+    {
+        FullMessage,
+        MessageStartsWith
+    }
+
     public static class Helpers
     {
         public static IEnumerable<Column> ColumnSymbolToColumn(IEnumerable<ExtendedColumnSymbol> columnsSymbol)
@@ -41,7 +47,7 @@ namespace Tests
             return columnsSymbol.Select(fkc => new Column {Name = fkc.ColumnName, Value = fkc.Value});
         }
 
-        public static void ExceptionTest(Action action, Type exceptionType, string message = null)
+        public static void ExceptionTest(Action action, Type exceptionType, string message = null, MessageOption messageOption = MessageOption.FullMessage)
         {
             // Act
 
@@ -61,8 +67,16 @@ namespace Tests
             Assert.IsNotNull(exception);
             Assert.AreEqual(exceptionType, exception.GetType());
 
-            if (message != null)
+            if (message != null && messageOption == MessageOption.FullMessage)
+            {
                 Assert.AreEqual(message, exception.Message);
+                return;
+            }
+
+            if (message != null && messageOption == MessageOption.MessageStartsWith)
+            {
+                Assert.IsTrue(exception.Message.StartsWith(message));
+            }
         }
 
         public static Mock<ITypeGenerator> GetTypeGeneratorMock<T>(T returnObject)

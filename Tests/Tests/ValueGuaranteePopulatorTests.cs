@@ -59,26 +59,31 @@ namespace Tests.Tests
         {
             var valuesByPercentage1 = new GuaranteedValues
             {
-                FrequencyPercentage = 10,
+                FrequencyPercentage = 15,
                 Values = new object[] { (Func<SubjectClass>)(() => new SubjectClass()), new SubjectClass(), new SubjectClass(), },
+                ValueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall
             };
 
             var valuesByPercentage2 = new GuaranteedValues
             {
-                FrequencyPercentage = 10,
-                Values = new object[] { new SubjectClass(), (Func<SubjectClass>)(() => new SubjectClass()), new SubjectClass(), }
+                FrequencyPercentage = 15,
+                Values = new object[] { new SubjectClass(), (Func<SubjectClass>)(() => new SubjectClass()), new SubjectClass(), },
+                ValueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall
             };
 
             var valuesByFixedAmount1 = new GuaranteedValues
             {
                 TotalFrequency= 4,
-                Values = new object[] { new SubjectClass(), new SubjectClass(), (Func<SubjectClass>)(() => new SubjectClass()), }
+                Values = new object[] { new SubjectClass(), new SubjectClass(), (Func<SubjectClass>)(() => new SubjectClass()), },
+                ValueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall
             };
 
             var valuesByFixedAmount2 = new GuaranteedValues
             {
                 TotalFrequency = 5,
-                Values = new object[] { new SubjectClass(), new SubjectClass(), new SubjectClass(), }
+                Values = new object[] { new SubjectClass(), new SubjectClass(), new SubjectClass(), },
+                ValueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall
+
             };
 
             var guaranteedValues = new List<GuaranteedValues>
@@ -120,11 +125,67 @@ namespace Tests.Tests
 
             // Assert
 
-            Assert.AreEqual(13, results.Count);
+            Assert.AreEqual(15, results.Count);
+        }
 
-            //int c = results.Count(r => values r.Item2 );
+        [TestMethod]
+        public void Bind_FrequencyPercentage_LessThan_RequestCount_Throws_Test()
+        {
+            var valuesByPercentage = new GuaranteedValues
+            {
+                FrequencyPercentage = 10,
+                Values = new object[] { (Func<SubjectClass>)(() => new SubjectClass()), new SubjectClass(), new SubjectClass(), },
+                ValueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall
+            };
 
-            //this.contextService.Verify(m => m.SetRecordReference(It.IsAny<RecordReference<SubjectClass>>(), It.IsAny<SubjectClass>()), tim);
+            var valueGuaranteePopulator = new ValueGuaranteePopulator();
+
+            var operableList = new OperableList<SubjectClass>(null, null);
+
+            for (int i = 0; i < 20; i++)
+            {
+                var reference = new RecordReference<SubjectClass>(null, null, null, null, null, null);
+
+                operableList.InternalList.Add(reference);
+            }
+
+            // Act/Assert
+
+            Helpers.ExceptionTest(() =>
+                    valueGuaranteePopulator.Bind(operableList, new[] {valuesByPercentage}, this.contextService.Object),
+                typeof(ValueGuaranteeException),
+                Messages.PercentFrequencyTooSmall.Substring(0, Messages.PercentFrequencyTooSmall.IndexOf('.')),
+                MessageOption.MessageStartsWith);
+        }
+
+        [TestMethod]
+        public void Bind_TotalFrequency_LessThan_RequestCount_Throws_Test()
+        {
+            var totalFrequency = new GuaranteedValues
+            {
+                TotalFrequency = 2,
+                Values = new object[] { (Func<SubjectClass>)(() => new SubjectClass()), new SubjectClass(), new SubjectClass(), },
+                ValueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall
+            };
+
+            var valueGuaranteePopulator = new ValueGuaranteePopulator();
+
+            var operableList = new OperableList<SubjectClass>(null, null);
+
+            for (int i = 0; i < 20; i++)
+            {
+                var reference = new RecordReference<SubjectClass>(null, null, null, null, null, null);
+
+                operableList.InternalList.Add(reference);
+            }
+
+            // Act/Assert
+
+            Helpers.ExceptionTest(() =>
+                    valueGuaranteePopulator.Bind(operableList, new[] { totalFrequency }, this.contextService.Object),
+                typeof(ValueGuaranteeException),
+                Messages.TotalFrequencyTooSmall.Substring(0, Messages.PercentFrequencyTooSmall.IndexOf('.')),
+                MessageOption.MessageStartsWith);
         }
     }
 }

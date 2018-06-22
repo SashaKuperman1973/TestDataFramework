@@ -42,9 +42,11 @@ namespace TestDataFramework.ListOperations.Concrete
 
     public class ValueGuaranteePopulator
     {
-        public virtual void Bind<T>(OperableList<T> references, List<GuaranteedValues> guaranteedValuesList,
+        public virtual void Bind<T>(OperableList<T> references, IEnumerable<GuaranteedValues> guaranteedValuesList,
             IValueGauranteePopulatorContextService contextService)
         {
+            guaranteedValuesList = guaranteedValuesList.ToList();
+
             if (
                 guaranteedValuesList.Any(
                     valueSet => !valueSet.FrequencyPercentage.HasValue && !valueSet.TotalFrequency.HasValue))

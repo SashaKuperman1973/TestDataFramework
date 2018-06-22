@@ -68,12 +68,6 @@ namespace TestDataFramework.Populator
 
         public abstract void Clear();
 
-        internal void AddToDecoratorDictionary(IDictionary<Type, Decorator> decoratorDictionary)
-        {
-            foreach (KeyValuePair<Type, Decorator> kvp in decoratorDictionary)
-                this.DecoratorDictionary.TryAdd(kvp.Key, kvp.Value);
-        }
-
         protected internal abstract void Bind(RecordReference recordReference);
 
         protected internal abstract void Bind<T>(OperableList<T> operableList);

@@ -92,6 +92,7 @@
     <Compile Include="Tests\ColumnAttributeTests.cs" />
     <Compile Include="Tests\DbProviderWritePrimitivesTests.cs" />
     <Compile Include="Tests\DeepCollectionSettingConverterTests.cs" />
+    <Compile Include="Tests\DefaultInitialCountGeneratorTests.cs" />
     <Compile Include="Tests\ExplicitlyIgnoredValueTests.cs" />
     <Compile Include="Tests\ExplicitPropertySetterContextServiceTests.cs" />
     <Compile Include="Tests\FieldExpressionHelperTests.cs" />

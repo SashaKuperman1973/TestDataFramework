@@ -608,6 +608,7 @@ namespace Tests.Tests
 
             typeGeneratorMock.Verify(m => m.GetObject<SubjectClass>(It.IsAny<List<ExplicitPropertySetter>>()),
                 Times.Exactly(2));
+
             valueGuaranteePopulatorMock.Verify(
                 m => m.Bind(It.IsAny<OperableList<SubjectClass>>(), It.IsAny<List<GuaranteedValues>>(), It.IsAny<IValueGauranteePopulatorContextService>()), Times.Never);
         }
@@ -633,7 +634,30 @@ namespace Tests.Tests
             // Assert
 
             valueGuaranteePopulatorMock.Verify(m => m.Bind(operableList, operableList.GuaranteedValues,
-                It.IsAny<IValueGauranteePopulatorContextService>()));
+                It.IsAny<ValueSetContextService>()));
+        }
+
+        [TestMethod]
+        public void Populate_ExplicitlySetGuaranteedValues_AreProcessed_Test()
+        {
+            // Arrange
+
+            var valueGuaranteePopulatorMock = new Mock<ValueGuaranteePopulator>();
+
+            var operableList =
+                new RangeOperableList<SubjectClass>(10, valueGuaranteePopulatorMock.Object, null,
+                    new Mock<ITypeGenerator>().Object, null, new Mock<IObjectGraphService>().Object, null);
+
+            operableList.Set(m => m.Integer).GuaranteePropertiesByFixedQuantity(new[] {1, 2, 3, 4, 5});
+
+            // Act
+
+            operableList.Populate();
+
+            // Assert
+
+            valueGuaranteePopulatorMock.Verify(m => m.Bind(operableList, operableList.GuaranteedPropertySetters,
+                It.IsAny<ExplicitPropertySetterContextService>()));
         }
 
         [TestMethod]

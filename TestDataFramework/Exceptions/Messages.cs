@@ -65,7 +65,7 @@ namespace TestDataFramework.Exceptions
         public const string Underflow = "Underflow";
 
         public const string DataCountsDoNotMatch =
-            "Db result counts doesn't match input collection count in FillData method";
+            "Db result count doesn't match input collection count in FillData method";
 
         public const string MultipleKeysNotAllowedWithAutoKey =
             "Composite primary keys are not allowed when there is an Auto key. Type: {0}";

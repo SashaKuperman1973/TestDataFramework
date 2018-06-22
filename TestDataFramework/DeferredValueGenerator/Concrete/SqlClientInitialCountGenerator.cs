@@ -32,13 +32,13 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
     {
         private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(SqlClientInitialCountGenerator));
 
-        private readonly IWriterDictinary writerDictinary;
+        private readonly IWriterDictinary writerDictionary;
 
         public SqlClientInitialCountGenerator(IWriterDictinary writerDictinary)
         {
             SqlClientInitialCountGenerator.Logger.Debug("Entering constructor");
 
-            this.writerDictinary = writerDictinary;
+            this.writerDictionary = writerDictinary;
 
             SqlClientInitialCountGenerator.Logger.Debug("Exiting constructor");
         }
@@ -62,7 +62,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
             {
                 SqlClientInitialCountGenerator.Logger.Debug($"PropertyInfo keying the writerDictionary: {data.Key}");
 
-                WriterDelegate writer = this.writerDictinary[data.Key.PropertyType];
+                WriterDelegate writer = this.writerDictionary[data.Key.PropertyType];
 
                 SqlClientInitialCountGenerator.Logger.Debug($"Writer delegate: {writer}");
 
@@ -73,7 +73,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
                 decoders.Add(decoder);
             });
 
-            object[] results = this.writerDictinary.Execute();
+            object[] results = this.writerDictionary.Execute();
 
             if (results.Length != decoders.Count)
                 throw new DataLengthMismatchException(Messages.DataCountsDoNotMatch);

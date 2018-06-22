@@ -18,6 +18,8 @@
 */
 
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -89,6 +91,52 @@ namespace Tests.Tests
             Assert.AreEqual(1, recordObject1.RecordObject.Integer);
             Assert.AreEqual("B", recordObject2.RecordObject.Text);
             Assert.AreEqual(2, recordObject2.RecordObject.Integer);
+        }
+
+        [TestMethod]
+        public void AddDelegate_KeyAlreadyExists_Test()
+        {
+            PropertyInfo targetPropertyInfo = typeof(SubjectClass).GetProperty(nameof(SubjectClass.Integer));
+            object value = new object();
+            DeferredValueGetterDelegate<LargeInteger> valueGetter = i => value;
+
+            var generator = new StandardDeferredValueGenerator<LargeInteger>(null);
+
+            // Act
+
+            generator.AddDelegate(targetPropertyInfo, valueGetter);
+            generator.AddDelegate(targetPropertyInfo, valueGetter);
+
+            // Assert
+
+            Assert.AreEqual(1, generator.PropertyDataDictionary.Count);
+            Assert.IsTrue(generator.PropertyDataDictionary.TryGetValue(targetPropertyInfo, out Data<LargeInteger> dictionaryValue));
+            Assert.AreEqual(value, dictionaryValue.ValueGetter(new LargeInteger()));
+        }
+
+        [TestMethod]
+        public void Execute_TargetRecordReference_IsExplicitlySet_Test()
+        {
+            // Arrange
+
+            var dataSource = new Mock<IPropertyDataGenerator<SubjectClass>>();
+            var generator = new StandardDeferredValueGenerator<SubjectClass>(dataSource.Object);
+
+            var recordObject = new RecordReference<SubjectClass>(null, null, null, null, null, null);
+            ((RecordReference) recordObject).RecordObject = new SubjectClass();
+
+            var propertySetter = new ExplicitPropertySetter
+            {
+                PropertyChain = new List<PropertyInfo> {typeof(SubjectClass).GetProperty(nameof(SubjectClass.Integer))}
+            };
+
+            recordObject.ExplicitPropertySetters.Add(propertySetter);
+
+            // Act
+
+            generator.Execute(new[] {recordObject});
+
+            // Assert - No exceptions signifies success
         }
     }
 }

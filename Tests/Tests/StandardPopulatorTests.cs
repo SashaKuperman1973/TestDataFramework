@@ -304,5 +304,19 @@ namespace Tests.Tests
 
             Assert.AreEqual(this.valueGeneratorMock.Object, result);
         }
+
+        [TestMethod]
+        public void Clear_Test()
+        {
+            this.populator.Populatables.Add(new RecordReference<SubjectClass>(null, null, null, null, null, null));
+
+            // Act
+
+            this.populator.Clear();
+
+            // Assert
+
+            Assert.AreEqual(0, this.populator.Populatables.Count);
+        }
     }
 }

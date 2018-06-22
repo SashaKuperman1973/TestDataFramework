@@ -41,6 +41,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
             {
                 DefaultInitialCountGenerator.Logger.Debug(
                     $"Setting for property: {kvp.Key.GetExtendedMemberInfoString()}");
+
                 kvp.Value.Item = Helper.DefaultInitalCount;
             });
 

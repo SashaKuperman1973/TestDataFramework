@@ -17,14 +17,13 @@
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using log4net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using log4net;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.HandledTypeGenerator;
-using TestDataFramework.ListOperations;
 using TestDataFramework.ListOperations.Concrete;
 using TestDataFramework.Logger;
 using TestDataFramework.Persistence.Interfaces;

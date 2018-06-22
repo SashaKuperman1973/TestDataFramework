@@ -221,5 +221,23 @@ namespace Tests.Tests
                     It.Is<Type>(p => p == typeof(SecondClass)))
                 , Times.Once);
         }
+
+        [TestMethod]
+        public void GetObject_ValueGenerator_IntrinsicValue_Is_Not_Null_Test()
+        {
+            // Arrange
+
+            var expected = new object();
+
+            this.valueGeneratorMock.Setup(m => m.GetIntrinsicValue(null, typeof(SubjectClass))).Returns(expected);
+
+            // Act
+
+            object result = this.typeGenerator.GetObject<SubjectClass>(null);
+
+            // Assert
+
+            Assert.AreEqual(expected, result);
+        }
     }
 }

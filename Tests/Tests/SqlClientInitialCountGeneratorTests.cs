@@ -17,6 +17,7 @@
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -78,6 +79,24 @@ namespace Tests.Tests
 
             Assert.AreEqual(returnValue1 + 1, data1.Item);
             Assert.AreEqual(returnValue2 + 1, data2.Item);
+        }
+
+        [TestMethod]
+        public void FillData_PropertyDataDictionary_Is_Empty()
+        {
+            // Arrange
+
+            var dictionary = new Dictionary<PropertyInfo, Data<LargeInteger>>();
+
+            // Act
+
+            this.generator.FillData(dictionary);
+
+            // Assert
+
+            this.writersMock.Verify(m => m[It.IsAny<Type>()], Times.Never);
+
+            this.writersMock.Verify(m => m.Execute(), Times.Never);
         }
     }
 }

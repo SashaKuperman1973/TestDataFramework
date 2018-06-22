@@ -93,6 +93,7 @@
     <Compile Include="Tests\DbProviderWritePrimitivesTests.cs" />
     <Compile Include="Tests\DeepCollectionSettingConverterTests.cs" />
     <Compile Include="Tests\ExplicitlyIgnoredValueTests.cs" />
+    <Compile Include="Tests\ExplicitPropertySetterContextServiceTests.cs" />
     <Compile Include="Tests\FieldExpressionHelperTests.cs" />
     <Compile Include="Tests\FieldExpressionTests\FieldExpressionTests.cs" />
     <Compile Include="Tests\FieldExpressionTests\GuaranteeObject.cs" />
@@ -150,6 +151,7 @@
     <Compile Include="Tests\SqlWriterCommandTextGeneratorTests.cs" />
     <Compile Include="Tests\ForeignKeyAttributeTest.cs" />
     <Compile Include="Tests\SqlWriterCommandTextGeneratorTest.cs" />
+    <Compile Include="Tests\ValueSetContextServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TestDataFramework\TestDataFramework.csproj">

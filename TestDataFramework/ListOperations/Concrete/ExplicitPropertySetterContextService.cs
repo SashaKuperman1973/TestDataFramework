@@ -20,12 +20,16 @@ namespace TestDataFramework.ListOperations.Concrete
         {
             references = references.ToList();
 
-            var explicitPropertySetters = (IEnumerable<ExplicitPropertySetter>) values.SelectMany(v => v.Values);
+            var explicitPropertySetters = values.SelectMany(v => v.Values).Cast<ExplicitPropertySetter>();
 
             IEnumerable<RecordReference<T>> result =
+
                 references.Where(reference => !reference.ExplicitPropertySetters.Any(
+
                     referenceSetter => explicitPropertySetters.Any(
+
                         valueSetter => ExplicitPropertySetterContextService.AreEqual(referenceSetter.PropertyChain,
+
                             valueSetter.PropertyChain))));
 
             return result.ToList();

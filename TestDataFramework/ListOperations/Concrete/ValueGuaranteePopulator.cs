@@ -49,11 +49,14 @@ namespace TestDataFramework.ListOperations.Concrete
 
             if (
                 guaranteedValuesList.Any(
-                    valueSet => !valueSet.FrequencyPercentage.HasValue && !valueSet.TotalFrequency.HasValue))
+                    valueSet => !valueSet.FrequencyPercentage.HasValue && !valueSet.TotalFrequency.HasValue)
+                )
+            {
                 throw new ValueGuaranteeException(Messages.NeitherPercentageNorTotalGiven);
+            }
 
             List<RecordReference<T>> workingList =
-                references.Where(reference => !reference.ExplicitPropertySetters.Any()).ToList();
+                contextService.FilterInWorkingListOfReferfences(references, guaranteedValuesList);
 
             List<Tuple<IEnumerable<object>, int>> valuesPerPercentageSet =
                 guaranteedValuesList.Where(valueSet => valueSet.FrequencyPercentage.HasValue)

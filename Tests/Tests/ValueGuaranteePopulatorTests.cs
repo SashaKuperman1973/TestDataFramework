@@ -34,12 +34,19 @@ namespace Tests.Tests
     [TestClass]
     public class ValueGuaranteePopulatorTests
     {
-        private Mock<IValueGauranteePopulatorContextService> contextService;
+        private Mock<IValueGauranteePopulatorContextService> contextServiceMock;
 
         [TestInitialize]
         public void Initialize()
         {
-            this.contextService = new Mock<IValueGauranteePopulatorContextService>();
+            this.contextServiceMock = new Mock<IValueGauranteePopulatorContextService>();
+
+            this.contextServiceMock
+                .Setup(m => m.FilterInWorkingListOfReferfences(It.IsAny<OperableList<SubjectClass>>(),
+                    It.IsAny<List<GuaranteedValues>>()))
+                .Returns<OperableList<SubjectClass>, List<GuaranteedValues>>(
+                    (references, values) => references.ToList())
+                .Verifiable();
         }
 
         [TestMethod]
@@ -49,7 +56,7 @@ namespace Tests.Tests
 
             var values = new List<GuaranteedValues> {new GuaranteedValues()};
 
-            Helpers.ExceptionTest(() => valueGuaranteePopulator.Bind<object>(null, values, this.contextService.Object),
+            Helpers.ExceptionTest(() => valueGuaranteePopulator.Bind<object>(null, values, this.contextServiceMock.Object),
                 typeof(ValueGuaranteeException),
                 Messages.NeitherPercentageNorTotalGiven);
         }
@@ -110,7 +117,7 @@ namespace Tests.Tests
 
             var results = new List<Tuple<RecordReference<SubjectClass>, object>>();
 
-            this.contextService
+            this.contextServiceMock
                 .Setup(m => m.SetRecordReference(It.IsAny<RecordReference<SubjectClass>>(), It.IsAny<object>()))
                 .Callback<RecordReference<SubjectClass>, object>(
                     (reference, value) => results.Add(
@@ -121,7 +128,7 @@ namespace Tests.Tests
 
             // Act
 
-            valueGuaranteePopulator.Bind(operableList, guaranteedValues, this.contextService.Object);
+            valueGuaranteePopulator.Bind(operableList, guaranteedValues, this.contextServiceMock.Object);
 
             // Assert
 
@@ -168,7 +175,7 @@ namespace Tests.Tests
             {
                 Helpers.ExceptionTest(() =>
                         valueGuaranteePopulator.Bind(operableList, new[] {frequency},
-                            this.contextService.Object),
+                            this.contextServiceMock.Object),
                     typeof(ValueGuaranteeException),
                     Messages.PercentFrequencyTooSmall.Substring(0, Messages.PercentFrequencyTooSmall.IndexOf('.')),
                     MessageOption.MessageStartsWith);
@@ -176,7 +183,9 @@ namespace Tests.Tests
                 return;
             }
 
-            valueGuaranteePopulator.Bind(operableList, new[] { frequency }, this.contextService.Object);
+            valueGuaranteePopulator.Bind(operableList, new[] { frequency }, this.contextServiceMock.Object);
+
+            this.contextServiceMock.Verify();
         }
 
         [TestMethod]
@@ -203,7 +212,7 @@ namespace Tests.Tests
             // Act/Assert
 
             Helpers.ExceptionTest(() =>
-                    valueGuaranteePopulator.Bind(operableList, new[] {guaranteedValues}, this.contextService.Object),
+                    valueGuaranteePopulator.Bind(operableList, new[] {guaranteedValues}, this.contextServiceMock.Object),
                 typeof(ValueGuaranteeException), Messages.TooFewReferencesForValueGuarantee);
         }
     }

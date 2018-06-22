@@ -15,12 +15,18 @@ namespace Tests.Tests
         [TestMethod]
         public void SetRecordReference_Test()
         {
+            // Arrange
+
             var service = new ExplicitPropertySetterContextService();
 
             var reference = new RecordReference<SubjectClass>(null, null, null, null, null, null);
             var propertySetter = new ExplicitPropertySetter();
 
+            // Act
+
             service.SetRecordReference(reference, propertySetter);
+
+            // Assert
 
             Assert.AreEqual(propertySetter, reference.ExplicitPropertySetters.Single());
         }
@@ -28,6 +34,8 @@ namespace Tests.Tests
         [TestMethod]
         public void FilterInWorkingListOfReferfences_Test()
         {
+            // Arrange
+
             var service = new ExplicitPropertySetterContextService();
 
             var references = new List<RecordReference<SubjectClass>>();
@@ -63,9 +71,126 @@ namespace Tests.Tests
                 }
             };
 
+            // Act
+
             List<RecordReference<SubjectClass>> result = service.FilterInWorkingListOfReferfences(references, guaranteedValuesList);
 
+            // Assert
+
             Assert.AreEqual(17, result.Count);
+        }
+
+        [TestMethod]
+        public void ExplicitPropertySetterContextService_PropertyChains_DifferentLength_Test()
+        {
+            // Arrange
+
+            var service = new ExplicitPropertySetterContextService();
+
+            var propertyChain1 = new List<PropertyInfo>
+            {
+                typeof(SubjectClass).GetProperty(nameof(SubjectClass.Integer)),
+                typeof(SubjectClass).GetProperty(nameof(SubjectClass.AnEmailAddress)),
+            };
+
+            var propertyChain2 = new List<PropertyInfo>
+            {
+                typeof(SubjectClass).GetProperty(nameof(SubjectClass.Integer)),
+                typeof(SubjectClass).GetProperty(nameof(SubjectClass.AnEmailAddress)),
+                typeof(SubjectClass).GetProperty(nameof(SubjectClass.Decimal)),
+            };
+
+            var referencePropertySetter =
+                new ExplicitPropertySetter {PropertyChain = propertyChain1};
+
+            var reference = new RecordReference<SubjectClass>(null, null, null, null, null, null);
+
+            reference.ExplicitPropertySetters.Add(referencePropertySetter);
+
+            var references = new List<RecordReference<SubjectClass>>
+            {
+                reference
+            };
+
+            var values = new List<GuaranteedValues>
+            {
+                new GuaranteedValues
+                {
+                    Values = new List<object>
+                    {
+                        new ExplicitPropertySetter
+                        {
+                            PropertyChain = propertyChain2
+                        }
+                    }
+                }
+            };
+
+            // Act
+
+            List<RecordReference<SubjectClass>> result = service.FilterInWorkingListOfReferfences(references, values);
+
+            // Assert
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Count);
+            Assert.IsNotNull(result.Single());
+        }
+
+        [TestMethod]
+        public void FilterInWorkingListOfReferfences_PropertyChains_Different_Lengths_Test()
+        {
+            // Arrange
+
+            var service = new ExplicitPropertySetterContextService();
+
+            var propertyChain1 = new List<PropertyInfo>
+            {
+                typeof(SubjectClass).GetProperty(nameof(SubjectClass.Integer)),
+                typeof(SubjectClass).GetProperty(nameof(SubjectClass.AnEmailAddress)),
+            };
+
+            var propertyChain2 = new List<PropertyInfo>
+            {
+                typeof(SubjectClass).GetProperty(nameof(SubjectClass.Integer)),
+                typeof(SubjectClass).GetProperty(nameof(SubjectClass.Decimal)),
+            };
+
+            var referencePropertySetter =
+                new ExplicitPropertySetter { PropertyChain = propertyChain1 };
+
+            var reference = new RecordReference<SubjectClass>(null, null, null, null, null, null);
+
+            reference.ExplicitPropertySetters.Add(referencePropertySetter);
+
+            var references = new List<RecordReference<SubjectClass>>
+            {
+                reference
+            };
+
+            var guaranteedValuesList = new List<GuaranteedValues>
+            {
+                new GuaranteedValues
+                {
+                    Values = new List<ExplicitPropertySetter>
+                    {
+                        new ExplicitPropertySetter
+                        {
+                            PropertyChain = propertyChain2
+                        }
+                    }
+                }
+            };
+
+            // Act
+
+            List<RecordReference<SubjectClass>> result = service.FilterInWorkingListOfReferfences(references, guaranteedValuesList);
+
+            // Assert
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Count);
+            Assert.IsNotNull(result.Single());
         }
     }
 }

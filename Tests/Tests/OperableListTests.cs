@@ -101,7 +101,28 @@ namespace Tests.Tests
         }
 
         [TestMethod]
+        public void GuaranteeByPercentageOfTotal_ByValue_DefaultPercentage_Test()
+        {
+            void Call(OperableList<SubjectClass> collection, SubjectClass[] data)
+            {
+                collection.GuaranteeByPercentageOfTotal(data);
+            }
+
+            OperableListTests.GuaranteeByPercentageOfTotal_ByValue_Test(Call);
+        }
+
+        [TestMethod]
         public void GuaranteeByPercentageOfTotal_ByValue_Test()
+        {
+            void Call(OperableList<SubjectClass> collection, SubjectClass[] data)
+            {
+                collection.GuaranteeByPercentageOfTotal(data, 10);
+            }
+
+            OperableListTests.GuaranteeByPercentageOfTotal_ByValue_Test(Call);
+        }
+
+        private static void GuaranteeByPercentageOfTotal_ByValue_Test(Action<OperableList<SubjectClass>, SubjectClass[]> call)
         {
             // Arrange
 
@@ -111,7 +132,7 @@ namespace Tests.Tests
 
             // Act
 
-            operableList.GuaranteeByPercentageOfTotal(data, 10);
+            call(operableList, data);
 
             // Assert
 
@@ -120,7 +141,24 @@ namespace Tests.Tests
         }
 
         [TestMethod]
+        public void GuaranteeByPercentageOfTotal_ByObject_DefaultPercentage_Test()
+        {
+            void Call(OperableList<SubjectClass> collection, object[] values) =>
+                collection.GuaranteeByPercentageOfTotal(values);
+
+            OperableListTests.GuaranteeByPercentageOfTotal_ByObject_Test(Call);
+        }
+
+        [TestMethod]
         public void GuaranteeByPercentageOfTotal_ByObject_Test()
+        {
+            void Call(OperableList<SubjectClass> collection, object[] values) => 
+                collection.GuaranteeByPercentageOfTotal(values, 10);
+
+            OperableListTests.GuaranteeByPercentageOfTotal_ByObject_Test(Call);
+        }
+
+        private static void GuaranteeByPercentageOfTotal_ByObject_Test(Action<OperableList<SubjectClass>, object[]> call)
         {
             // Arrange
 
@@ -131,7 +169,7 @@ namespace Tests.Tests
 
             // Act
 
-            operableList.GuaranteeByPercentageOfTotal(new object[] {a, b}, 10);
+            call(operableList, new object[] {a, b});
 
             // Assert
 
@@ -140,17 +178,34 @@ namespace Tests.Tests
         }
 
         [TestMethod]
+        public void GuaranteeByPercentageOfTotal_ByValueFunc_DefaultPercentage_Test()
+        {
+            void Call(OperableList<SubjectClass> subject, Func<SubjectClass>[] data) =>
+                subject.GuaranteeByPercentageOfTotal(data);
+
+            OperableListTests.GuaranteeByPercentageOfTotal_ByValueFunc_Test(Call);
+        }
+
+        [TestMethod]
         public void GuaranteeByPercentageOfTotal_ByValueFunc_Test()
+        {
+            void Call(OperableList<SubjectClass> subject, Func<SubjectClass>[] data) =>
+                subject.GuaranteeByPercentageOfTotal(data, 10);
+
+            OperableListTests.GuaranteeByPercentageOfTotal_ByValueFunc_Test(Call);
+        }
+
+        public static void GuaranteeByPercentageOfTotal_ByValueFunc_Test(Action<OperableList<SubjectClass>, Func<SubjectClass>[]> call)
         {
             // Arrange
 
             var operableList = new OperableList<SubjectClass>(null, null);
             Func<SubjectClass> subject = () => new SubjectClass();
-            Func<SubjectClass>[] data = {subject};
+            Func<SubjectClass>[] data = { subject };
 
             // Act
 
-            operableList.GuaranteeByPercentageOfTotal(data, 10);
+            call(operableList, data);
 
             // Assert
 

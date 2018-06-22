@@ -140,7 +140,7 @@ namespace Tests.Tests
             this.Bind_Frequency_LessThan_RequestCount_Test(ValueCountRequestOption.DoNotThrow, totalFrequency: 2);
         }
 
-        public void Bind_Frequency_LessThan_RequestCount_Test(ValueCountRequestOption valueCountRequestOption, 
+        private void Bind_Frequency_LessThan_RequestCount_Test(ValueCountRequestOption valueCountRequestOption, 
             int? frequencyPercentage = null, int? totalFrequency = null)
         {
             var frequency = new GuaranteedValues
@@ -177,6 +177,34 @@ namespace Tests.Tests
             }
 
             valueGuaranteePopulator.Bind(operableList, new[] { frequency }, this.contextService.Object);
+        }
+
+        [TestMethod]
+        public void Bind_Total_RequestCount_Overflows_Available_Elements_Test()
+        {
+            var guaranteedValues = new GuaranteedValues
+            {
+                TotalFrequency = 21,
+                Values = new object[] { (Func<SubjectClass>)(() => new SubjectClass()), new SubjectClass(), new SubjectClass(), },
+                ValueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall
+            };
+
+            var valueGuaranteePopulator = new ValueGuaranteePopulator();
+
+            var operableList = new OperableList<SubjectClass>(null, null);
+
+            for (int i = 0; i < 20; i++)
+            {
+                var reference = new RecordReference<SubjectClass>(null, null, null, null, null, null);
+
+                operableList.InternalList.Add(reference);
+            }
+
+            // Act/Assert
+
+            Helpers.ExceptionTest(() =>
+                    valueGuaranteePopulator.Bind(operableList, new[] {guaranteedValues}, this.contextService.Object),
+                typeof(ValueGuaranteeException), Messages.TooFewReferencesForValueGuarantee);
         }
     }
 }

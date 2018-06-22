@@ -129,43 +129,26 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void Bind_FrequencyPercentage_LessThan_RequestCount_Throws_Test()
+        public void Bind_Frequency_LessThan_RequestCount_Throws_Test()
         {
-            var valuesByPercentage = new GuaranteedValues
-            {
-                FrequencyPercentage = 10,
-                Values = new object[] { (Func<SubjectClass>)(() => new SubjectClass()), new SubjectClass(), new SubjectClass(), },
-                ValueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall
-            };
+            this.Bind_Frequency_LessThan_RequestCount_Test(ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall, frequencyPercentage: 10);
 
-            var valueGuaranteePopulator = new ValueGuaranteePopulator();
+            this.Bind_Frequency_LessThan_RequestCount_Test(ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall, totalFrequency: 2);
 
-            var operableList = new OperableList<SubjectClass>(null, null);
+            this.Bind_Frequency_LessThan_RequestCount_Test(ValueCountRequestOption.DoNotThrow, frequencyPercentage: 10);
 
-            for (int i = 0; i < 20; i++)
-            {
-                var reference = new RecordReference<SubjectClass>(null, null, null, null, null, null);
-
-                operableList.InternalList.Add(reference);
-            }
-
-            // Act/Assert
-
-            Helpers.ExceptionTest(() =>
-                    valueGuaranteePopulator.Bind(operableList, new[] {valuesByPercentage}, this.contextService.Object),
-                typeof(ValueGuaranteeException),
-                Messages.PercentFrequencyTooSmall.Substring(0, Messages.PercentFrequencyTooSmall.IndexOf('.')),
-                MessageOption.MessageStartsWith);
+            this.Bind_Frequency_LessThan_RequestCount_Test(ValueCountRequestOption.DoNotThrow, totalFrequency: 2);
         }
 
-        [TestMethod]
-        public void Bind_TotalFrequency_LessThan_RequestCount_Throws_Test()
+        public void Bind_Frequency_LessThan_RequestCount_Test(ValueCountRequestOption valueCountRequestOption, 
+            int? frequencyPercentage = null, int? totalFrequency = null)
         {
-            var totalFrequency = new GuaranteedValues
+            var frequency = new GuaranteedValues
             {
-                TotalFrequency = 2,
+                FrequencyPercentage = frequencyPercentage,
+                TotalFrequency = totalFrequency,
                 Values = new object[] { (Func<SubjectClass>)(() => new SubjectClass()), new SubjectClass(), new SubjectClass(), },
-                ValueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall
+                ValueCountRequestOption = valueCountRequestOption
             };
 
             var valueGuaranteePopulator = new ValueGuaranteePopulator();
@@ -181,11 +164,19 @@ namespace Tests.Tests
 
             // Act/Assert
 
-            Helpers.ExceptionTest(() =>
-                    valueGuaranteePopulator.Bind(operableList, new[] { totalFrequency }, this.contextService.Object),
-                typeof(ValueGuaranteeException),
-                Messages.TotalFrequencyTooSmall.Substring(0, Messages.PercentFrequencyTooSmall.IndexOf('.')),
-                MessageOption.MessageStartsWith);
+            if (valueCountRequestOption == ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
+            {
+                Helpers.ExceptionTest(() =>
+                        valueGuaranteePopulator.Bind(operableList, new[] {frequency},
+                            this.contextService.Object),
+                    typeof(ValueGuaranteeException),
+                    Messages.PercentFrequencyTooSmall.Substring(0, Messages.PercentFrequencyTooSmall.IndexOf('.')),
+                    MessageOption.MessageStartsWith);
+
+                return;
+            }
+
+            valueGuaranteePopulator.Bind(operableList, new[] { frequency }, this.contextService.Object);
         }
     }
 }

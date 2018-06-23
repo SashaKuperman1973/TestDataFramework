@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using TestDataFramework;
 using TestDataFramework.AttributeDecorator.Concrete;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.AttributeDecorator.Interfaces;
@@ -29,6 +30,7 @@ using TestDataFramework.Helpers;
 using TestDataFramework.Persistence.Concrete;
 using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete;
+using TestDataFramework.RepositoryOperations.Model;
 using Tests.TestModels;
 
 namespace Tests.Tests
@@ -102,6 +104,37 @@ namespace Tests.Tests
 
             Assert.AreEqual(primaryTable.Key1, foreignTable.ForeignKey1);
             Assert.AreEqual(primaryTable.Key2, foreignTable.ForeignKey2);
+        }
+
+        [TestMethod]
+        public void Persist_NoPrimaryKey_ForForeignKey_Test()
+        {
+            var deferredValueGeneratorMock = new Mock<IDeferredValueGenerator<LargeInteger>>();
+            var attributeDecoratorMock = new Mock<IAttributeDecorator>();
+
+            var persistence = new MemoryPersistence(deferredValueGeneratorMock.Object, attributeDecoratorMock.Object);
+
+            var recordReference = new RecordReference<SubjectClass>(null, null, null, null, null, null);
+            var primaryKeyReference = new RecordReference<SecondClass>(null, null, null, null, null, null);
+            recordReference.PrimaryKeyReferences.Add(primaryKeyReference);
+
+            attributeDecoratorMock.Setup(m => m.GetPropertyAttributes<PrimaryKeyAttribute>(typeof(SecondClass)))
+                .Returns(new[]
+                {
+                    new PropertyAttribute<PrimaryKeyAttribute>
+                    {
+                        PropertyInfo = typeof(SecondClass).GetProperty(nameof(SecondClass.SecondInteger))
+                    }
+                });
+
+            var foreignKeyPropertyAttribute = new PropertyAttribute<ForeignKeyAttribute>();
+
+            attributeDecoratorMock.Setup(m => m.GetPropertyAttributes<ForeignKeyAttribute>(typeof(SubjectClass)))
+                .Returns(new[] { foreignKeyPropertyAttribute });
+
+            persistence.Persist(new [] { recordReference });
+
+            Assert.IsNull(foreignKeyPropertyAttribute.PropertyInfo);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -492,7 +493,7 @@ namespace Tests.Tests.TableTypeCacheServiceTests
 
             var tryAssociateTypeToTableMock = new Mock<TryAssociateTypeToTable>();
             var assemblyWrapperMock = new Mock<AssemblyWrapper>();
-            appDomainWrapperMock.Setup(m => m.Load(assemblyName)).Returns(assemblyWrapperMock.Object);
+            appDomainWrapperMock.Setup(m => m.LoadAssembly(assemblyName)).Returns(assemblyWrapperMock.Object);
 
             assemblyWrapperMock.SetupGet(m => m.DefinedTypes)
                 .Returns(new[] {new TypeInfoWrapper(), new TypeInfoWrapper()});
@@ -504,7 +505,7 @@ namespace Tests.Tests.TableTypeCacheServiceTests
 
             // Assert
 
-            appDomainWrapperMock.Verify(m => m.Load(assemblyName), Times.Once);
+            appDomainWrapperMock.Verify(m => m.LoadAssembly(assemblyName), Times.Once);
             assemblyWrapperMock.VerifyGet(m => m.DefinedTypes, Times.Once);
 
             tryAssociateTypeToTableMock.Verify(m => m(It.IsAny<TypeInfoWrapper>(), this.assemblyLookupContext,
@@ -517,7 +518,7 @@ namespace Tests.Tests.TableTypeCacheServiceTests
             var appDomainWrapperMock = new Mock<AppDomainWrapper>();
             var assemblyName = new AssemblyNameWrapper();
 
-            appDomainWrapperMock.Setup(m => m.Load(assemblyName)).Throws<FileNotFoundException>();
+            appDomainWrapperMock.Setup(m => m.LoadAssembly(assemblyName)).Throws<FileNotFoundException>();
             var tryAssociateTypeToTableMock = new Mock<TryAssociateTypeToTable>();
 
             // Act
@@ -542,7 +543,7 @@ namespace Tests.Tests.TableTypeCacheServiceTests
 
             var tryAssociateTypeToTableMock = new Mock<TryAssociateTypeToTable>();
             var assemblyWrapperMock = new Mock<AssemblyWrapper>();
-            appDomainWrapperMock.Setup(m => m.Load(assemblyName)).Returns(assemblyWrapperMock.Object);
+            appDomainWrapperMock.Setup(m => m.LoadAssembly(assemblyName)).Returns(assemblyWrapperMock.Object);
 
             assemblyWrapperMock.SetupGet(m => m.DefinedTypes).Throws(new ReflectionTypeLoadException(null, null));
 
@@ -553,11 +554,27 @@ namespace Tests.Tests.TableTypeCacheServiceTests
 
             // Assert
 
-            appDomainWrapperMock.Verify(m => m.Load(assemblyName), Times.Once);
+            appDomainWrapperMock.Verify(m => m.LoadAssembly(assemblyName), Times.Once);
             assemblyWrapperMock.VerifyGet(m => m.DefinedTypes, Times.Once);
 
             tryAssociateTypeToTableMock.Verify(m => m(It.IsAny<TypeInfoWrapper>(), It.IsAny<AssemblyLookupContext>(),
                 It.IsAny<GetTableAttribute>(), It.IsAny<string>()), Times.Never());
+        }
+
+        [TestMethod]
+        public void CreateDomain_Test()
+        {
+            AppDomainWrapper wrapper = null;
+
+            try
+            {
+                wrapper = this.service.CreateDomain();
+                Assert.IsNotNull(wrapper);
+            }
+            finally
+            {
+                wrapper?.Unload();
+            }
         }
     }
 }

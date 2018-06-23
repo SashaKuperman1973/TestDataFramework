@@ -27,6 +27,7 @@ using Moq;
 using TestDataFramework.AttributeDecorator.Concrete;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.AttributeDecorator.Interfaces;
+using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
 using TestDataFramework.Populator;
 using TestDataFramework.RepositoryOperations;
@@ -294,6 +295,20 @@ namespace Tests.Tests
             Assert.AreEqual(returnValue[1], record.Key1);
             Assert.AreEqual(returnValue[3], record.Key3);
             Assert.AreEqual(6, streamReadPointer.Value);
+        }
+
+        [TestMethod]
+        public void Conversion_Overflow_Test()
+        {
+            var record = new PrimaryTable();
+
+            this.recordReferenceMock.SetupGet(m => m.RecordObject).Returns(record);
+            this.recordReferenceMock.SetupGet(m => m.RecordType).Returns(record.GetType());
+
+            var streamReadPointer = new Counter();
+
+            Helpers.ExceptionTest(() => this.insertRecord.Read(streamReadPointer, new object[] {nameof(PrimaryTable.Key), long.MaxValue}),
+                typeof(OverflowException), Messages.TypeTooNarrow.Substring(0, 20), MessageOption.MessageStartsWith);
         }
 
         public class ConcreteRecordReference : RecordReference

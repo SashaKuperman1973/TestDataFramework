@@ -10,9 +10,6 @@
             if (toCompare == null)
                 return false;
 
-            if (wrapper.Wrapped != null && toCompare.Wrapped != null)
-                return wrapper.Wrapped.Equals(toCompare.Wrapped);
-
             if (wrapper.Wrapped == null && toCompare.Wrapped != null
                 || wrapper.Wrapped != null && toCompare.Wrapped == null)
                 return false;

@@ -37,7 +37,7 @@ namespace TestDataFramework.Populator
         private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(RecordReference));
         protected readonly IAttributeDecorator AttributeDecorator;
 
-        protected internal readonly IEnumerable<RecordReference> PrimaryKeyReferences = new List<RecordReference>();
+        protected internal readonly List<RecordReference> PrimaryKeyReferences = new List<RecordReference>();
 
         protected readonly ITypeGenerator TypeGenerator;
 

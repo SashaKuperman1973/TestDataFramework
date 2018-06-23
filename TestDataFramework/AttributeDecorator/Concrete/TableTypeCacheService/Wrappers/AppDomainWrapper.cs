@@ -5,27 +5,27 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wr
 {
     public class AppDomainWrapper
     {
-        private readonly AppDomain appDomain;
+        internal readonly AppDomain AppDomain;
 
         public AppDomainWrapper(AppDomain appDomain)
         {
-            this.appDomain = appDomain ?? throw new ArgumentNullException(nameof(appDomain));
+            this.AppDomain = appDomain ?? throw new ArgumentNullException(nameof(appDomain));
         }
 
         public AppDomainWrapper()
         {
         }
 
-        public virtual AssemblyWrapper Load(AssemblyNameWrapper assemblyName)
+        public virtual AssemblyWrapper LoadAssembly(AssemblyNameWrapper assemblyName)
         {
-            Assembly assembly = this.appDomain?.Load(assemblyName.Name);
+            Assembly assembly = this.AppDomain?.Load(assemblyName.Name);
             AssemblyWrapper result = assembly == null ? new AssemblyWrapper() : new AssemblyWrapper(assembly);
             return result;
         }
 
         public virtual void Unload()
         {
-            AppDomain.Unload(this.appDomain);
+            AppDomain.Unload(this.AppDomain);
         }
     }
 }

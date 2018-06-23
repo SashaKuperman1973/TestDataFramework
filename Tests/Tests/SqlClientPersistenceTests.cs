@@ -42,8 +42,9 @@ namespace Tests.Tests
     {
         private IAttributeDecorator attributeDecorator;
         private Mock<IDeferredValueGenerator<LargeInteger>> deferredValueGeneratorMock;
-        private SqlClientPersistence persistence;
         private Mock<IWritePrimitives> writePrimitivesMock;
+
+        private SqlClientPersistence persistence;
 
         [TestInitialize]
         public void Initialize()
@@ -224,6 +225,15 @@ namespace Tests.Tests
 
             Assert.AreEqual(expected[1], primaryTable.Key);
             Assert.AreEqual(expected[5], foreignTable.Key);
+        }
+
+        [TestMethod]
+        public void Persist_EmptyInput_Test()
+        {
+            this.persistence.Persist(new RecordReference[0]);
+
+            this.deferredValueGeneratorMock.VerifyNoOtherCalls();
+            this.writePrimitivesMock.VerifyNoOtherCalls();
         }
     }
 }

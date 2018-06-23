@@ -21,6 +21,7 @@ using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
+using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
 using TestDataFramework.PropertyValueAccumulator;
 using TestDataFramework.UniqueValueGenerator;
@@ -35,6 +36,7 @@ namespace Tests.Tests
         private Mock<IPropertyValueAccumulator> propertyValueAccumulatorMock;
 
         private UniqueValueGenerator uniqueValueGenerator;
+        private UniqueValueGenerator generatorThrowsIfUnhandledType;
 
         [TestInitialize]
         public void Initialize()
@@ -43,7 +45,10 @@ namespace Tests.Tests
             this.deferredValueGeneratorMock = new Mock<IDeferredValueGenerator<LargeInteger>>();
 
             this.uniqueValueGenerator = new UniqueValueGenerator(this.propertyValueAccumulatorMock.Object,
-                this.deferredValueGeneratorMock.Object);
+                this.deferredValueGeneratorMock.Object, false);
+
+            this.generatorThrowsIfUnhandledType = new UniqueValueGenerator(this.propertyValueAccumulatorMock.Object,
+                this.deferredValueGeneratorMock.Object, true);
         }
 
         [TestMethod]
@@ -93,11 +98,25 @@ namespace Tests.Tests
                 Times.Once);
         }
 
+        [TestMethod]
+        public void UnhandledTypeCheck_Throws_Test()
+        {
+            // Arrange
+
+            this.propertyValueAccumulatorMock.Setup(m => m.IsTypeHandled(typeof(SecondClass))).Returns(false);
+
+            // Act
+
+            Helpers.ExceptionTest(() =>
+                this.generatorThrowsIfUnhandledType.GetValue(typeof(SubjectClass).GetProperty(nameof(SubjectClass.SecondObject))),
+                typeof(UnHandledTypeException), Messages.UnhandledUniqueKeyType.Substring(0, 30), MessageOption.MessageStartsWith);
+        }
+
         private class UniqueValueGenerator : BaseUniqueValueGenerator
         {
             public UniqueValueGenerator(IPropertyValueAccumulator accumulator,
-                IDeferredValueGenerator<LargeInteger> deferredValueGenerator) : base(accumulator,
-                deferredValueGenerator, false)
+                IDeferredValueGenerator<LargeInteger> deferredValueGenerator, bool throwIfUnhandledType) : base(accumulator,
+                deferredValueGenerator, throwIfUnhandledType)
             {
             }
 

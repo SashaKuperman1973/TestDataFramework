@@ -33,13 +33,13 @@ namespace TestDataFramework.ValueProvider.Concrete
 
         private bool boolean;
 
-        private byte byteCount = (byte) Helper.DefaultInitalCount;
+        internal byte ByteCount = (byte) Helper.DefaultInitalCount;
 
         private int characterCount;
 
         private int countField = (int) Helper.DefaultInitalCount;
 
-        private int Count
+        internal int Count
         {
             get
             {
@@ -138,10 +138,13 @@ namespace TestDataFramework.ValueProvider.Concrete
         {
             AccumulatorValueProvider.Logger.Debug("Entering GetByte");
 
-            if (this.byteCount + 1 >= byte.MaxValue)
-                this.byteCount = (byte) Helper.DefaultInitalCount;
+            if (this.ByteCount == byte.MaxValue)
+            {
+                this.ByteCount = (byte) Helper.DefaultInitalCount;
+                return byte.MaxValue;
+            }
 
-            byte result = ++this.byteCount;
+            byte result = this.ByteCount++;
 
             AccumulatorValueProvider.Logger.Debug($"Exiting GetByte. result: {result}");
             return result;

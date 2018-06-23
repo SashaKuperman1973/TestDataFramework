@@ -24,6 +24,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.DeferredValueGenerator.Concrete;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
+using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
 using Tests.TestModels;
 
@@ -97,6 +98,28 @@ namespace Tests.Tests
             this.writersMock.Verify(m => m[It.IsAny<Type>()], Times.Never);
 
             this.writersMock.Verify(m => m.Execute(), Times.Never);
+        }
+
+        [TestMethod]
+        public void FillData_InternalError_InputVsDbContent_Count_Mismatch()
+        {
+            // Arrange
+
+            var dictionary = new Dictionary<PropertyInfo, Data<LargeInteger>>();
+
+            PropertyInfo property = typeof(SubjectClass).GetProperty(nameof(SubjectClass.Integer));
+            var data = new Data<LargeInteger>(null);
+            dictionary.Add(property, data);
+
+            DecoderDelegate WriterCall(PropertyInfo propertyInfo) => (decoderPropertyInfo, input) => new LargeInteger();
+
+            this.writersMock.Setup(m => m[typeof(int)]).Returns(WriterCall);
+            this.writersMock.Setup(m => m.Execute()).Returns(new[] {new object(), new object()});
+
+            // Act/Assert
+
+            Helpers.ExceptionTest(() => this.generator.FillData(dictionary), typeof(DataLengthMismatchException),
+                Messages.DataCountsDoNotMatch);
         }
     }
 }

@@ -118,6 +118,8 @@ namespace Tests.TestModels
         public Guid AGuid { get; set; }
 
         public List<int> IntegerList { get; set; }
+
+        public AnEnum AnEnumeration { get; set; }
     }
 
     public class SecondClass

@@ -49,6 +49,12 @@ namespace Tests.TestModels
         public int Integer { get; set; }
     }
 
+    public class ClassWithInvalidAutoKey
+    {
+        [PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Auto)]
+        public string Key { get; set; }
+    }
+
     public class ManualKeyPrimaryTable
     {
         [PrimaryKey]
@@ -67,7 +73,7 @@ namespace Tests.TestModels
         public int ForeignKey2 { get; set; }
     }
 
-    public class KeyNoneTable
+    public class NoKeyTable
     {
         public string Text { get; set; }
     }

@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using Tests.TestModels;
 
@@ -34,6 +35,17 @@ namespace Tests.Tests.TableTypeCacheServiceTests
             bool result = EqualityHelper.Equals<Wrapper, string>(left, right);
 
             Assert.IsTrue(result);
+        }
+
+        [TestMethod]
+        public void Are_Unequal_Test()
+        {
+            var left = new Wrapper { Wrapped = "X" };
+            var right = new Wrapper { Wrapped = "Y" };
+
+            bool result = EqualityHelper.Equals<Wrapper, string>(left, right);
+
+            Assert.IsFalse(result);
         }
 
         [TestMethod]

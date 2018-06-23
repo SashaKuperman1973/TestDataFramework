@@ -26,6 +26,7 @@ using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers.Interfaces;
 using TestDataFramework.ValueProvider.Concrete;
 using TestDataFramework.ValueProvider.Interfaces;
+using Tests.TestModels;
 
 namespace Tests.Tests
 {
@@ -524,6 +525,26 @@ namespace Tests.Tests
 
             Helpers.ExceptionTest(() => this.randomizer.GetFloat(8), typeof(ArgumentOutOfRangeException),
                 new ArgumentOutOfRangeException("precision", 8, Messages.FloatPrecisionOutOfRange).Message);
+        }
+
+        [TestMethod]
+        public void GetEnum_Test()
+        {
+            // Arrange
+
+            const AnEnum anEnum = AnEnum.SymbolB;
+
+            this.randomMock.Setup(m => m.Next(2)).Returns(1);
+
+            // Act
+
+            object result = this.randomizer.GetEnum(typeof(AnEnum));
+
+            // Assert
+
+            Assert.IsNotNull(result);
+            var theEnum = (AnEnum) result;
+            Assert.AreEqual(anEnum, theEnum);
         }
     }
 }

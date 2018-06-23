@@ -168,8 +168,8 @@ namespace Tests.Tests
 
             // Assert
 
-            Assert.AreEqual((byte) this.initialCount + 1, result1);
-            Assert.AreEqual((byte) this.initialCount + 2, result2);
+            Assert.AreEqual((byte) this.initialCount, result1);
+            Assert.AreEqual((byte) this.initialCount + 1, result2);
         }
 
         [TestMethod]
@@ -198,6 +198,34 @@ namespace Tests.Tests
 
             Assert.AreEqual(this.initialCount, result1);
             Assert.AreEqual((float) this.initialCount + 1, result2);
+        }
+
+        [TestMethod]
+        public void Count_Overflow_Test()
+        {
+            this.valueProvider.Count = int.MaxValue - 10;
+
+            for (int i = int.MaxValue - 10; i <= int.MaxValue - 1; i++)
+            {
+                int result = this.valueProvider.GetInteger(null);
+                Assert.AreEqual(i, result);
+            }
+
+            Assert.AreEqual(1, this.valueProvider.GetInteger(null));
+        }
+
+        [TestMethod]
+        public void ByteCount_Overflow_Test()
+        {
+            this.valueProvider.ByteCount = byte.MaxValue - 10;
+
+            for (int i = byte.MaxValue - 10; i <= byte.MaxValue; i++)
+            {
+                int result = this.valueProvider.GetByte();
+                Assert.AreEqual(i, result);
+            }
+
+            Assert.AreEqual(1, this.valueProvider.GetByte());
         }
     }
 }

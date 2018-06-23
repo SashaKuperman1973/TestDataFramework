@@ -56,6 +56,7 @@ namespace Tests.Tests
         private const string EmailAddress = "address@domain.com";
         private static readonly string StringResult = Guid.NewGuid().ToString("N");
         private static readonly DateTime DateTimeResult = DateTime.Now;
+        private const AnEnum AnEnumeration = AnEnum.SymbolA;
         private Mock<IArrayRandomizer> arrayRandomizerMock;
         private Mock<IValueProvider> randomizerMock;
         private Mock<ITypeGenerator> typeGeneratorMock;
@@ -97,6 +98,7 @@ namespace Tests.Tests
             this.randomizerMock.Setup(m => m.GetFloat(It.Is<int?>(precision => precision == null)))
                 .Returns(BaseValueGeneratorTests.FloatResult);
             this.randomizerMock.Setup(m => m.GetEmailAddress()).Returns(BaseValueGeneratorTests.EmailAddress);
+            this.randomizerMock.Setup(m => m.GetEnum(It.IsAny<Type>())).Returns(AnEnum.SymbolA);
 
             this.valueGenerator = new ValueGenerator(this.randomizerMock.Object, () => this.typeGeneratorMock.Object,
                 () => this.arrayRandomizerMock.Object, this.uniqueValueGeneratorMock.Object,
@@ -108,27 +110,28 @@ namespace Tests.Tests
         {
             var list = new List<Tuple<string, object>>
             {
-                new Tuple<string, object>("Integer", BaseValueGeneratorTests.IntegerResult),
-                new Tuple<string, object>("UnsignedInteger", BaseValueGeneratorTests.UnsignedIntegerResult),
-                new Tuple<string, object>("LongInteger", BaseValueGeneratorTests.LongResult),
-                new Tuple<string, object>("UnsignedLongInteger", BaseValueGeneratorTests.UnsignedLongResult),
-                new Tuple<string, object>("ShortInteger", BaseValueGeneratorTests.ShortResult),
-                new Tuple<string, object>("UnsignedShortInteger", BaseValueGeneratorTests.UnsignedShortResult),
-                new Tuple<string, object>("Text", BaseValueGeneratorTests.StringResult),
-                new Tuple<string, object>("Character", BaseValueGeneratorTests.CharacterResult),
-                new Tuple<string, object>("Decimal", BaseValueGeneratorTests.DecimalResult),
-                new Tuple<string, object>("Boolean", BaseValueGeneratorTests.BooleanResult),
-                new Tuple<string, object>("DateTime", BaseValueGeneratorTests.DateTimeResult),
-                new Tuple<string, object>("Byte", BaseValueGeneratorTests.ByteResult),
-                new Tuple<string, object>("Double", BaseValueGeneratorTests.DoubleResult),
-                new Tuple<string, object>("Float", BaseValueGeneratorTests.FloatResult),
-                new Tuple<string, object>("NullableInteger", BaseValueGeneratorTests.IntegerResult),
-                new Tuple<string, object>("UnsignedNullableInteger", BaseValueGeneratorTests.UnsignedIntegerResult),
-                new Tuple<string, object>("NullableLong", BaseValueGeneratorTests.LongResult),
-                new Tuple<string, object>("UnsignedNullableLong", BaseValueGeneratorTests.UnsignedLongResult),
-                new Tuple<string, object>("NullableShort", BaseValueGeneratorTests.ShortResult),
-                new Tuple<string, object>("UnsignedNullableShort", BaseValueGeneratorTests.UnsignedShortResult),
-                new Tuple<string, object>("AnEmailAddress", BaseValueGeneratorTests.EmailAddress)
+                new Tuple<string, object>(nameof(SubjectClass.Integer), BaseValueGeneratorTests.IntegerResult),
+                new Tuple<string, object>(nameof(SubjectClass.UnsignedInteger), BaseValueGeneratorTests.UnsignedIntegerResult),
+                new Tuple<string, object>(nameof(SubjectClass.LongInteger), BaseValueGeneratorTests.LongResult),
+                new Tuple<string, object>(nameof(SubjectClass.UnsignedLongInteger), BaseValueGeneratorTests.UnsignedLongResult),
+                new Tuple<string, object>(nameof(SubjectClass.ShortInteger), BaseValueGeneratorTests.ShortResult),
+                new Tuple<string, object>(nameof(SubjectClass.UnsignedShortInteger), BaseValueGeneratorTests.UnsignedShortResult),
+                new Tuple<string, object>(nameof(SubjectClass.Text), BaseValueGeneratorTests.StringResult),
+                new Tuple<string, object>(nameof(SubjectClass.Character), BaseValueGeneratorTests.CharacterResult),
+                new Tuple<string, object>(nameof(SubjectClass.Decimal), BaseValueGeneratorTests.DecimalResult),
+                new Tuple<string, object>(nameof(SubjectClass.Boolean), BaseValueGeneratorTests.BooleanResult),
+                new Tuple<string, object>(nameof(SubjectClass.DateTime), BaseValueGeneratorTests.DateTimeResult),
+                new Tuple<string, object>(nameof(SubjectClass.Byte), BaseValueGeneratorTests.ByteResult),
+                new Tuple<string, object>(nameof(SubjectClass.Double), BaseValueGeneratorTests.DoubleResult),
+                new Tuple<string, object>(nameof(SubjectClass.Float), BaseValueGeneratorTests.FloatResult),
+                new Tuple<string, object>(nameof(SubjectClass.NullableInteger), BaseValueGeneratorTests.IntegerResult),
+                new Tuple<string, object>(nameof(SubjectClass.UnsignedNullableInteger), BaseValueGeneratorTests.UnsignedIntegerResult),
+                new Tuple<string, object>(nameof(SubjectClass.NullableLong), BaseValueGeneratorTests.LongResult),
+                new Tuple<string, object>(nameof(SubjectClass.UnsignedNullableLong), BaseValueGeneratorTests.UnsignedLongResult),
+                new Tuple<string, object>(nameof(SubjectClass.NullableShort), BaseValueGeneratorTests.ShortResult),
+                new Tuple<string, object>(nameof(SubjectClass.UnsignedNullableShort), BaseValueGeneratorTests.UnsignedShortResult),
+                new Tuple<string, object>(nameof(SubjectClass.AnEmailAddress), BaseValueGeneratorTests.EmailAddress),
+                new Tuple<string, object>(nameof(SubjectClass.AnEnumeration), BaseValueGeneratorTests.AnEnumeration)
             };
 
             list.ForEach(type => this.TypeTest(type.Item1, type.Item2));
@@ -354,6 +357,38 @@ namespace Tests.Tests
 
             this.uniqueValueGeneratorMock.Verify();
             Assert.AreEqual(1, result);
+        }
+
+        [TestMethod]
+        public void GetValue_NonIntrinsicValue_Test()
+        {
+            var expected = new SubjectClass();
+
+            this.typeGeneratorMock.Setup(m => m.GetObject(typeof(SubjectClass), null)).Returns(expected);
+
+            object result = this.valueGenerator.GetValue(null, typeof(SubjectClass));
+            Assert.IsNotNull(result);
+            Assert.AreEqual(expected, result);
+        }
+
+        [TestMethod]
+        public void GetIntrinsicValue_Success_Test()
+        {
+            this.valueGenerator.GetIntrinsicValue(null, typeof(int));
+
+            this.randomizerMock.Setup(m => m.GetInteger(It.IsAny<int?>())).Returns(5);
+
+            object result = this.valueGenerator.GetIntrinsicValue(null, typeof(int));
+            Assert.AreEqual(5, result);
+        }
+
+        [TestMethod]
+        public void GetIntrinsicValue_NullResponse_Test()
+        {
+            object result = this.valueGenerator.GetIntrinsicValue(null, typeof(SubjectClass));
+
+            Assert.IsNull(result);
+            this.randomizerMock.VerifyNoOtherCalls();
         }
 
         private class ValueGenerator : BaseValueGenerator

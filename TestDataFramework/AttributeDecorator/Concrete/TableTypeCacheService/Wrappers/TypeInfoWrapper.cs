@@ -5,7 +5,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wr
 {
     public class TypeInfoWrapper : MemberInfo, IWrapper<TypeInfo>
     {
-        private readonly Guid id = Guid.NewGuid();
+        public readonly Guid Id = Guid.NewGuid();
 
         public TypeInfoWrapper(TypeInfo typeInfo)
         {
@@ -24,6 +24,8 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wr
         {
         }
 
+        public TypeInfo Wrapped { get; }
+
         public virtual AssemblyWrapper Assembly => this.Wrapped == null
             ? new AssemblyWrapper()
             : new AssemblyWrapper(this.Wrapped.Assembly);
@@ -37,8 +39,6 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wr
         public override Type ReflectedType => this.Wrapped.ReflectedType;
 
         public override string Name => this.Wrapped.Name;
-
-        public TypeInfo Wrapped { get; }
 
         public override object[] GetCustomAttributes(bool inherit)
         {
@@ -57,7 +57,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wr
 
         public override string ToString()
         {
-            return this.Wrapped?.ToString() ?? $"Empty TypeInfo Wrapper. ID: {this.id}";
+            return this.Wrapped?.ToString() ?? $"Empty TypeInfo Wrapper. ID: {this.Id}";
         }
 
         public override bool Equals(object obj)

@@ -134,6 +134,7 @@
     <Compile Include="Tests\TableTypeCacheServiceTests\EqualityHelperTests.cs" />
     <Compile Include="Tests\TableTypeCacheServiceTests\StandardTableTypeCacheServiceTests.cs" />
     <Compile Include="Tests\TableTypeCacheServiceTests\TableTypeLookupTests.cs" />
+    <Compile Include="Tests\TableTypeCacheServiceTests\TypeInfoWrapperTests.cs" />
     <Compile Include="Tests\TableTypeCriteriaTests.cs" />
     <Compile Include="Tests\UniqueValueTypeGeneratorTests.cs" />
     <Compile Include="Tests\ValueGuaranteePopulatorTests.cs" />

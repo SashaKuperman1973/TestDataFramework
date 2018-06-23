@@ -23,6 +23,7 @@ using System.Linq;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using TestDataFramework;
 using TestDataFramework.AttributeDecorator.Concrete;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.AttributeDecorator.Interfaces;
@@ -47,13 +48,14 @@ namespace Tests.Tests
         private IAttributeDecorator attributeDecorator;
 
         private ForeignTable foreignKeyTable;
-        private InsertRecordService insertRecordService;
         private List<Column> mainTableColumns;
         private Mock<IObjectGraphService> objectGraphServiceMock;
         private IEnumerable<AbstractRepositoryOperation> peers;
         private RecordReference<ForeignTable> recordReference;
         private Mock<ITypeGenerator> typeGeneratorMock;
         private Mock<IWritePrimitives> writerMock;
+
+        private InsertRecordService insertRecordService;
 
         [TestInitialize]
         public void Initialize()
@@ -68,10 +70,12 @@ namespace Tests.Tests
             this.recordReference = new RecordReference<ForeignTable>(this.typeGeneratorMock.Object,
                 this.attributeDecorator, null, this.objectGraphServiceMock.Object, null, null);
             this.recordReference.Populate();
-            this.insertRecordService = new InsertRecordService(this.recordReference, this.attributeDecorator,
-                InsertRecordServiceTest.IsKeyReferenceCheckEnforced);
+
             this.writerMock = new Mock<IWritePrimitives>();
             this.peers = Enumerable.Empty<AbstractRepositoryOperation>();
+
+            this.insertRecordService = new InsertRecordService(this.recordReference, this.attributeDecorator,
+                InsertRecordServiceTest.IsKeyReferenceCheckEnforced);
 
             this.mainTableColumns = Helpers.GetColumns(this.foreignKeyTable, this.attributeDecorator);
         }
@@ -242,9 +246,9 @@ namespace Tests.Tests
 
             this.insertRecordService =
                 new InsertRecordService(
-                    new RecordReference<KeyNoneTable>(
+                    new RecordReference<NoKeyTable>(
                         Helpers.GetTypeGeneratorMock(
-                            new KeyNoneTable()).Object, this.attributeDecorator, null, null, null, null),
+                            new NoKeyTable()).Object, this.attributeDecorator, null, null, null, null),
                     this.attributeDecorator,
                     InsertRecordServiceTest.IsKeyReferenceCheckEnforced);
 
@@ -260,6 +264,56 @@ namespace Tests.Tests
             // Assert
 
             Assert.IsFalse(primaryKeyValues.Any());
+        }
+
+        [TestMethod]
+        public void WritePrimitives_ColumnNotInInputList_Test()
+        {
+            var primaryKeyValues = new List<ColumnSymbol>();
+
+            const string identityVariableSymbol = "ABCD";
+            const string catalogueName = "catABC";
+            const string schema = "schemaABC";
+            string tableName = nameof(ManualKeyPrimaryTable);
+
+            this.writerMock.Setup(m => m.SelectIdentity(It.IsAny<string>())).Returns(identityVariableSymbol);
+
+            var localRecordReference = new RecordReference<ManualKeyPrimaryTable>(null, null, null, null, null, null);
+
+            this.insertRecordService = new InsertRecordService(localRecordReference, this.attributeDecorator,
+                InsertRecordServiceTest.IsKeyReferenceCheckEnforced);
+
+            // Act/Assert
+
+            Helpers.ExceptionTest(() => this.insertRecordService.WritePrimitives(this.writerMock.Object, catalogueName,
+                    schema, tableName,
+                    this.mainTableColumns, primaryKeyValues), typeof(PopulatePrimaryKeyException),
+                Messages.ColumnNotInInputList.Substring(0, 30), MessageOption.MessageStartsWith);
+        }
+
+        [TestMethod]
+        public void WritePrimitives_InvalidAutoKey_Test()
+        {
+            var primaryKeyValues = new List<ColumnSymbol>();
+
+            const string identityVariableSymbol = "ABCD";
+            const string catalogueName = "catABC";
+            const string schema = "schemaABC";
+            string tableName = nameof(ClassWithInvalidAutoKey);
+
+            this.writerMock.Setup(m => m.SelectIdentity(It.IsAny<string>())).Returns(identityVariableSymbol);
+
+            var localRecordReference = new RecordReference<ClassWithInvalidAutoKey>(null, null, null, null, null, null);
+
+            this.insertRecordService = new InsertRecordService(localRecordReference, this.attributeDecorator,
+                InsertRecordServiceTest.IsKeyReferenceCheckEnforced);
+
+            // Act/Assert
+
+            Helpers.ExceptionTest(() => this.insertRecordService.WritePrimitives(this.writerMock.Object, catalogueName,
+                    schema, tableName,
+                    this.mainTableColumns, primaryKeyValues), typeof(PopulatePrimaryKeyException),
+                Messages.AutoKeyMustBeInteger.Substring(0, 30), MessageOption.MessageStartsWith);
         }
 
         [TestMethod]
@@ -322,6 +376,54 @@ namespace Tests.Tests
                 () => this.insertRecordService.CopyPrimaryToForeignKeyColumns(columns),
                 typeof(InvalidOperationException),
                 "Sequence contains no matching element");
+        }
+
+        [TestMethod]
+        public void KeyType_NoPrimaryKeyAttributes_Test()
+        {
+            var attributeDecoratorMock = new Mock<IAttributeDecorator>();
+
+            attributeDecoratorMock.Setup(m => m.GetUniqueAttributes<PrimaryKeyAttribute>(It.IsAny<Type>()))
+                .Returns(Enumerable.Empty<PrimaryKeyAttribute>());
+
+            this.insertRecordService = new InsertRecordService(this.recordReference, attributeDecoratorMock.Object,
+                InsertRecordServiceTest.IsKeyReferenceCheckEnforced);
+
+            PrimaryKeyAttribute.KeyTypeEnum result = this.insertRecordService.KeyType;
+
+            Assert.AreEqual(PrimaryKeyAttribute.KeyTypeEnum.None, result);
+        }
+
+        [TestMethod]
+        public void KeyType_ManualPrimaryKeyAttributes_Test()
+        {
+            var attributeDecoratorMock = new Mock<IAttributeDecorator>();
+
+            attributeDecoratorMock.Setup(m => m.GetUniqueAttributes<PrimaryKeyAttribute>(It.IsAny<Type>()))
+                .Returns(new PrimaryKeyAttribute[2]);
+
+            this.insertRecordService = new InsertRecordService(this.recordReference, attributeDecoratorMock.Object,
+                InsertRecordServiceTest.IsKeyReferenceCheckEnforced);
+
+            PrimaryKeyAttribute.KeyTypeEnum result = this.insertRecordService.KeyType;
+
+            Assert.AreEqual(PrimaryKeyAttribute.KeyTypeEnum.Manual, result);
+        }
+
+        [TestMethod]
+        public void KeyType_OnlyOnePrimaryKeyProperty_Test()
+        {
+            var attributeDecoratorMock = new Mock<IAttributeDecorator>();
+
+            attributeDecoratorMock.Setup(m => m.GetUniqueAttributes<PrimaryKeyAttribute>(It.IsAny<Type>()))
+                .Returns(new[] {new PrimaryKeyAttribute(PrimaryKeyAttribute.KeyTypeEnum.Auto)});
+
+            this.insertRecordService = new InsertRecordService(this.recordReference, attributeDecoratorMock.Object,
+                InsertRecordServiceTest.IsKeyReferenceCheckEnforced);
+
+            PrimaryKeyAttribute.KeyTypeEnum result = this.insertRecordService.KeyType;
+
+            Assert.AreEqual(PrimaryKeyAttribute.KeyTypeEnum.Auto, result);
         }
 
         [TestMethod]

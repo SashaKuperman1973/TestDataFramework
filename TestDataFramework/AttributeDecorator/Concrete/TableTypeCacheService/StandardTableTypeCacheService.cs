@@ -148,7 +148,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
 
             try
             {
-                loadedAssembly = domain.Load(assemblyName);
+                loadedAssembly = domain.LoadAssembly(assemblyName);
             }
             catch (FileNotFoundException exception)
             {

@@ -375,5 +375,60 @@ namespace Tests.Tests
             int newHashCode = a.GetHashCode();
             Assert.AreNotEqual(firstHashCode, newHashCode);
         }
+
+        [TestMethod]
+        public void Pow_DivideByZero_Test()
+        {
+            var a = new LargeInteger(0);
+
+            Helpers.ExceptionTest(() => a.Pow(0), typeof(DivideByZeroException));
+        }
+
+        [TestMethod]
+        public void Divide_DivisionByZero()
+        {
+            var a = new LargeInteger(5);
+            var b = new LargeInteger(0);
+         
+            Helpers.ExceptionTest(() => a.Divide(b), typeof(DivideByZeroException));
+        }
+
+        [TestMethod]
+        public void Divide_Operator_DivisionByZero()
+        {
+            var a = new LargeInteger(5);
+            var b = new LargeInteger(0);
+
+            Helpers.ExceptionTest(() =>
+            {
+                var x = a / b;
+            }, typeof(DivideByZeroException));
+        }
+
+        [TestMethod]
+        public void Modulus_Operator_DivisionByZero()
+        {
+            var a = new LargeInteger(5);
+            var b = new LargeInteger(0);
+
+            Helpers.ExceptionTest(() =>
+            {
+                var x = a % b;
+            }, typeof(DivideByZeroException));
+        }
+
+        [TestMethod]
+        public void Test_When_Adding_Placeholder_In_Quotient_During_Long_Division()
+        {
+            LargeInteger numberBase = new LargeInteger(uint.MaxValue) + 1;
+
+            LargeInteger a = 5 * numberBase.Pow(2) + 3 * numberBase + 7;
+
+            LargeInteger quotient = a / 5;
+
+            LargeInteger originalNumber = quotient * 5;
+
+            Assert.AreEqual(a, originalNumber);
+        }
     }
 }

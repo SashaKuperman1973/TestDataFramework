@@ -397,6 +397,11 @@ namespace TestDataFramework.Helpers
             LargeInteger.Logger.Debug(
                 $"Entering Divide. this (dividend): {this.PrintLargeInteger()}, divisor: {divisor.PrintLargeInteger()}");
 
+            if (divisor == 0)
+            {
+                throw new DivideByZeroException("LargeInteger: divide by zero");
+            }
+
             this.Ensure().Ensure(ref divisor);
 
             if (this < divisor)
@@ -468,7 +473,7 @@ namespace TestDataFramework.Helpers
 
                 if (numberOfPlacesAddedToLastTestDividend > quotientScratch.data.Count)
                 {
-                    if (numberOfPlacesAddedToLastTestDividend + 1 != quotientScratch.data.Count)
+                    if (numberOfPlacesAddedToLastTestDividend != quotientScratch.data.Count + 1)
                         throw new ApplicationException(
                             $"Internal error: numberOfPlacesAddedToLastTestDividend > quotientScratch.data.Count && numberOfPlacesAddedToLastTestDividend {numberOfPlacesAddedToLastTestDividend} + 1 != quotientScratch.data.Count {quotientScratch.data.Count}. \r\nDividend:\r\n{this.PrintLargeInteger()}\r\nDivisor:\r\n{divisor.PrintLargeInteger()}");
 
@@ -730,8 +735,8 @@ namespace TestDataFramework.Helpers
             if (!this.data.Any())
                 return "Internal Buffer is empty";
 
-            for (int i = 0; i < this.data.Count; i++)
-                sb.Append($"[{i}] {this.data[i].ToString("x")}, ");
+            for (int i = this.data.Count - 1; i >= 0; i--)
+                sb.Append($"[{i}] {this.data[i]:x}, ");
 
             return sb.Remove(sb.Length - 2, 2).ToString();
         }

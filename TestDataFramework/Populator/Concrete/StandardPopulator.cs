@@ -80,7 +80,9 @@ namespace TestDataFramework.Populator.Concrete
             StandardPopulator.Logger.Debug(
                 $"Entering Add. T: {typeof(T)}, copies: {copies}, primaryRecordReference: {primaryRecordReferences}");
 
-            var result = new OperableList<T>(this.valueGuaranteePopulator, this);
+            var result = new OperableList<T>(this.valueGuaranteePopulator, this, this.typeGenerator,
+                this.AttributeDecorator, this.objectGraphService, this.deepCollectionSettingConverter);
+
             this.Populatables.Add(result);
 
             for (int i = 0; i < copies; i++)

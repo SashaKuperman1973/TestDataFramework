@@ -10,7 +10,7 @@ namespace Tests.Tests
         [TestMethod]
         public void Range_WithConstructor_Test()
         {
-            var range = new Range(3, 5);
+            var range = Range.StartAndEndPositions(3, 5);
 
             Assert.AreEqual(3, range.StartPosition);
             Assert.AreEqual(5, range.EndPosition);

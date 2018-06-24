@@ -101,7 +101,7 @@ namespace Tests.Tests
                 valuesByFixedAmount2,
             };
 
-            var operableList = new OperableList<SubjectClass>(null, null);
+            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
 
             for (int i = 0; i < 20; i++)
             {
@@ -160,7 +160,7 @@ namespace Tests.Tests
 
             var valueGuaranteePopulator = new ValueGuaranteePopulator();
 
-            var operableList = new OperableList<SubjectClass>(null, null);
+            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
 
             for (int i = 0; i < 20; i++)
             {
@@ -200,7 +200,7 @@ namespace Tests.Tests
 
             var valueGuaranteePopulator = new ValueGuaranteePopulator();
 
-            var operableList = new OperableList<SubjectClass>(null, null);
+            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
 
             for (int i = 0; i < 20; i++)
             {

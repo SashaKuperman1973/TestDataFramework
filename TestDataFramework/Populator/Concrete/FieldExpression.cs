@@ -11,30 +11,30 @@ using TestDataFramework.Populator.Interfaces;
 
 namespace TestDataFramework.Populator.Concrete
 {
-    public class FieldExpression<TListElement, TProperty> : IRangeOperableList<TListElement>
+    public class FieldExpression<TListElement, TProperty>
     {
         private readonly Expression<Func<TListElement, TProperty>> expression;
-        private readonly RangeOperableList<TListElement> rangeOperableList;
+        private readonly OperableList<TListElement> OperableList;
         private readonly IObjectGraphService objectGraphService;
 
         public FieldExpression(Expression<Func<TListElement, TProperty>> expression,
-            RangeOperableList<TListElement> rangeOperableList, IObjectGraphService objectGraphService)
+            OperableList<TListElement> operableList, IObjectGraphService objectGraphService)
         {
             this.expression = expression;
-            this.rangeOperableList = rangeOperableList;
+            this.OperableList = operableList;
             this.objectGraphService = objectGraphService;
         }
 
-        public virtual IEnumerable<TListElement> RecordObjects => this.rangeOperableList.RecordObjects;
+        public virtual IEnumerable<TListElement> RecordObjects => this.OperableList.RecordObjects;
 
         public virtual IEnumerable<TListElement> Make()
         {
-            return this.rangeOperableList.Make();
+            return this.OperableList.Make();
         }
 
         public virtual IEnumerable<TListElement> BindAndMake()
         {
-            return this.rangeOperableList.BindAndMake();
+            return this.OperableList.BindAndMake();
         }
 
         public virtual OperableList<TListElement> GuaranteeByFixedQuantity(IEnumerable<object> guaranteedValues,
@@ -46,7 +46,7 @@ namespace TestDataFramework.Populator.Concrete
         public virtual OperableList<TListElement> GuaranteeByFixedQuantity(IEnumerable<object> guaranteedValues,
             int fixedQuantity, ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
-            return this.rangeOperableList.GuaranteeByFixedQuantity(guaranteedValues, fixedQuantity, valueCountRequestOption);
+            return this.OperableList.GuaranteeByFixedQuantity(guaranteedValues, fixedQuantity, valueCountRequestOption);
         }
 
         public OperableList<TListElement> GuaranteeByFixedQuantity(IEnumerable<Func<TListElement>> guaranteedValues,
@@ -59,7 +59,7 @@ namespace TestDataFramework.Populator.Concrete
             IEnumerable<Func<TListElement>> guaranteedValues, int fixedQuantity,
             ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
-            return this.rangeOperableList.GuaranteeByFixedQuantity(guaranteedValues, fixedQuantity, valueCountRequestOption);
+            return this.OperableList.GuaranteeByFixedQuantity(guaranteedValues, fixedQuantity, valueCountRequestOption);
         }
 
         public OperableList<TListElement> GuaranteeByFixedQuantity(IEnumerable<TListElement> guaranteedValues,
@@ -71,7 +71,7 @@ namespace TestDataFramework.Populator.Concrete
         public virtual OperableList<TListElement> GuaranteeByFixedQuantity(IEnumerable<TListElement> guaranteedValues,
             int fixedQuantity, ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
-            return this.rangeOperableList.GuaranteeByFixedQuantity(guaranteedValues, fixedQuantity, valueCountRequestOption);
+            return this.OperableList.GuaranteeByFixedQuantity(guaranteedValues, fixedQuantity, valueCountRequestOption);
         }
 
         public virtual OperableList<TListElement> GuaranteePropertiesByFixedQuantity(
@@ -92,7 +92,7 @@ namespace TestDataFramework.Populator.Concrete
             if (fixedQuantity == 0)
                 fixedQuantity = guaranteedValues.Count();
 
-            this.rangeOperableList.GuaranteedPropertySetters.Add(new GuaranteedValues
+            this.OperableList.GuaranteedPropertySetters.Add(new GuaranteedValues
             {
                 TotalFrequency = fixedQuantity,
                 Values = guaranteedValues.Select(value => new ExplicitPropertySetter
@@ -103,7 +103,7 @@ namespace TestDataFramework.Populator.Concrete
                 ValueCountRequestOption = valueCountRequestOption
             });
 
-            return this.rangeOperableList;
+            return this.OperableList;
         }
 
         public virtual OperableList<TListElement> GuaranteePropertiesByFixedQuantity(
@@ -123,7 +123,7 @@ namespace TestDataFramework.Populator.Concrete
             if (fixedQuantity == 0)
                 fixedQuantity = guaranteedValues.Count();
 
-            this.rangeOperableList.GuaranteedPropertySetters.Add(new GuaranteedValues
+            this.OperableList.GuaranteedPropertySetters.Add(new GuaranteedValues
             {
                 TotalFrequency = fixedQuantity,
                 Values = guaranteedValues.Select(value => FieldExpressionHelper
@@ -131,7 +131,7 @@ namespace TestDataFramework.Populator.Concrete
                 ValueCountRequestOption = valueCountRequestOption
             });
 
-            return this.rangeOperableList;
+            return this.OperableList;
         }
 
         public virtual OperableList<TListElement> GuaranteePropertiesByFixedQuantity(
@@ -159,7 +159,7 @@ namespace TestDataFramework.Populator.Concrete
             IEnumerable<object> guaranteedValues, int frequencyPercentage,
             ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
-            return this.rangeOperableList.GuaranteeByPercentageOfTotal(guaranteedValues, frequencyPercentage, valueCountRequestOption);
+            return this.OperableList.GuaranteeByPercentageOfTotal(guaranteedValues, frequencyPercentage, valueCountRequestOption);
         }
 
         public virtual OperableList<TListElement> GuaranteeByPercentageOfTotal(
@@ -173,7 +173,7 @@ namespace TestDataFramework.Populator.Concrete
             IEnumerable<Func<TListElement>> guaranteedValues, int frequencyPercentage,
             ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
-            return this.rangeOperableList.GuaranteeByPercentageOfTotal(guaranteedValues, frequencyPercentage, valueCountRequestOption);
+            return this.OperableList.GuaranteeByPercentageOfTotal(guaranteedValues, frequencyPercentage, valueCountRequestOption);
         }
 
         public virtual OperableList<TListElement> GuaranteeByPercentageOfTotal(
@@ -187,7 +187,7 @@ namespace TestDataFramework.Populator.Concrete
             IEnumerable<TListElement> guaranteedValues, int frequencyPercentage,
             ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
-            return this.rangeOperableList.GuaranteeByPercentageOfTotal(guaranteedValues, frequencyPercentage, valueCountRequestOption);
+            return this.OperableList.GuaranteeByPercentageOfTotal(guaranteedValues, frequencyPercentage, valueCountRequestOption);
         }
 
         public virtual OperableList<TListElement> GuaranteePropertiesByPercentageOfTotal(
@@ -203,7 +203,7 @@ namespace TestDataFramework.Populator.Concrete
         {
             List<PropertyInfo> setterObjectGraph = this.objectGraphService.GetObjectGraph(this.expression);
 
-            this.rangeOperableList.GuaranteedPropertySetters.Add(new GuaranteedValues
+            this.OperableList.GuaranteedPropertySetters.Add(new GuaranteedValues
             {
                 FrequencyPercentage = frequencyPercentage,
 
@@ -215,7 +215,7 @@ namespace TestDataFramework.Populator.Concrete
                 ValueCountRequestOption = valueCountRequestOption
             });
 
-            return this.rangeOperableList;
+            return this.OperableList;
         }
 
         public virtual OperableList<TListElement> GuaranteePropertiesByPercentageOfTotal(
@@ -249,7 +249,7 @@ namespace TestDataFramework.Populator.Concrete
 
             guaranteedValues = guaranteedValues.ToList();
 
-            this.rangeOperableList.GuaranteedPropertySetters.Add(new GuaranteedValues
+            this.OperableList.GuaranteedPropertySetters.Add(new GuaranteedValues
             {
                 FrequencyPercentage = frequencyPercentage,
                 Values = guaranteedValues.Select(value => FieldExpressionHelper
@@ -257,43 +257,50 @@ namespace TestDataFramework.Populator.Concrete
                 ValueCountRequestOption = valueCountRequestOption
             });
 
-            return this.rangeOperableList;
+            return this.OperableList;
         }
 
         public virtual OperableList<TListElement> Ignore<TPropertyType>(Expression<Func<TListElement, TPropertyType>> fieldExpression)
         {
-            return this.rangeOperableList.Ignore(fieldExpression);
+            return this.OperableList.Ignore(fieldExpression);
         }
 
-        public RangeOperableList<TListElement> Set<TValueProperty>(
+        public OperableList<TListElement> Set<TValueProperty>(
             Expression<Func<TListElement, TValueProperty>> fieldExpression, TValueProperty value, params Range[] ranges)
         {
-            return this.rangeOperableList.Set(fieldExpression, value, ranges);
+            return this.OperableList.Set(fieldExpression, value, ranges);
         }
 
-        public RangeOperableList<TListElement> Set<TValueProperty>(
+        public OperableList<TListElement> Set<TValueProperty>(
             Expression<Func<TListElement, TValueProperty>> fieldExpression, Func<TValueProperty> valueFactory,
             params Range[] ranges)
         {
-            return this.rangeOperableList.Set(fieldExpression, valueFactory, ranges);
+            return this.OperableList.Set(fieldExpression, valueFactory, ranges);
+        }
+
+        public CollectionOfRangeOperableLists<TNewListElement> SetList<TNewListElement>(
+            Expression<Func<TListElement, IEnumerable<TNewListElement>>> listFieldExpression, int newSize,
+            params Range[] rangesOfCallingList)
+        {
+            return this.OperableList.SetList(listFieldExpression, newSize, rangesOfCallingList);
         }
 
         public FieldExpression<TListElement, TValueProperty> Set<TValueProperty>(
             Expression<Func<TListElement, TValueProperty>> expression)
         {
-            return this.rangeOperableList.Set(expression);
+            return this.OperableList.Set(expression);
         }
 
         public virtual FieldExpression<TListElement, TProperty> Value(TProperty value, params Range[] ranges)
         {
-            this.rangeOperableList.Set(this.expression, value, ranges);
+            this.OperableList.Set(this.expression, value, ranges);
             return this;
         }
 
         public virtual FieldExpression<TListElement, TProperty> Value(Func<TProperty> valueFactory,
             params Range[] ranges)
         {
-            this.rangeOperableList.Set(this.expression, valueFactory, ranges);
+            this.OperableList.Set(this.expression, valueFactory, ranges);
             return this;
         }
     }

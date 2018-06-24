@@ -1,66 +1,85 @@
-﻿namespace TestDataFramework.Populator.Concrete
+﻿using System.CodeDom.Compiler;
+
+namespace TestDataFramework.Populator.Concrete
 {
     public class Range
     {
-        private int? endPosition;
+        private int? endPositionField;
 
-        private int? length;
+        private int? lengthField;
 
-        private int? startPosition;
+        private int? startPositionField;
 
-        public Range()
+        public static Range StartAndLength(int startPosition, int length)
         {
+            var result = new Range
+            {
+                startPositionField = startPosition,
+                endPositionField = startPosition + length - 1,
+                lengthField = length
+            };
+
+            return result;
         }
 
-        public Range(int startPosition, int endPosition)
+        public static Range StartAndEndPositions(int startPosition, int endPosition)
         {
-            this.startPosition = startPosition;
-            this.endPosition = endPosition;
-            this.length = endPosition + 1 - startPosition;
+            var result = new Range
+            {
+                startPositionField = startPosition,
+                endPositionField = endPosition,
+                lengthField = endPosition + 1 - startPosition
+            };
+
+            return result;
+        }
+            
+        internal Range()
+        {
         }
 
         public int StartPosition
         {
-            get => this.startPosition.Value;
+            get => this.startPositionField.Value;
 
             set
             {
-                this.startPosition = value;
+                this.startPositionField = value;
 
-                if (this.length.HasValue)
-                    this.endPosition = this.startPosition.Value + this.length.Value - 1;
-                else if (this.endPosition.HasValue)
-                    this.length = this.endPosition.Value + 1 - this.startPosition.Value;
+                if (this.lengthField.HasValue)
+                    this.endPositionField = this.startPositionField.Value + this.lengthField.Value - 1;
+                else if (this.endPositionField.HasValue)
+                    this.lengthField = this.endPositionField.Value + 1 - this.startPositionField.Value;
             }
         }
 
         public int EndPosition
         {
-            get => this.endPosition.Value;
+            get => this.endPositionField.Value;
 
             set
             {
-                this.endPosition = value;
+                this.endPositionField = value;
 
-                if (this.startPosition.HasValue)
-                    this.length = this.endPosition.Value + 1 - this.startPosition.Value;
-                else if (this.length.HasValue)
-                    this.startPosition = this.endPosition.Value + 1 - this.length.Value;
+                if (this.startPositionField.HasValue)
+                    this.lengthField = this.endPositionField.Value + 1 - this.startPositionField.Value;
+                else if (this.lengthField.HasValue)
+                    this.startPositionField = this.endPositionField.Value + 1 - this.lengthField.Value;
             }
         }
 
         public int Length
         {
-            get => this.length.Value;
+            get => this.lengthField.Value;
 
             set
             {
-                this.length = value;
+                this.lengthField = value;
 
-                if (this.startPosition.HasValue)
-                    this.endPosition = this.startPosition.Value + this.length.Value - 1;
-                else if (this.endPosition.HasValue)
-                    this.startPosition = this.endPosition.Value - this.length.Value + 1;
+                if (this.startPositionField.HasValue)
+                    this.endPositionField = this.startPositionField.Value + this.lengthField.Value - 1;
+                else if (this.endPositionField.HasValue)
+                    this.startPositionField = this.endPositionField.Value - this.lengthField.Value + 1;
             }
         }
 

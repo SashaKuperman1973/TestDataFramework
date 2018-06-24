@@ -26,7 +26,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.DeepSetting;
 using TestDataFramework.DeepSetting.Interfaces;
-using TestDataFramework.ListOperations;
 using TestDataFramework.ListOperations.Concrete;
 using TestDataFramework.ListOperations.Interfaces;
 using TestDataFramework.Populator;
@@ -34,7 +33,7 @@ using TestDataFramework.Populator.Concrete;
 using TestDataFramework.TypeGenerator.Interfaces;
 using Tests.TestModels;
 
-namespace Tests.Tests
+namespace Tests.Tests.OperableListTests
 {
     [TestClass]
     public class OperableListTests
@@ -52,7 +51,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, this.populatorMock.Object);
+            var operableList = new OperableList<SubjectClass>(null, this.populatorMock.Object, null, null, null, null);
             var subjectReference = new RecordReference<SubjectClass>(null, null, null, null, null, null);
             operableList.Add(subjectReference);
 
@@ -70,7 +69,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, this.populatorMock.Object);
+            var operableList = new OperableList<SubjectClass>(null, this.populatorMock.Object, null, null, null, null);
 
             // Act
 
@@ -86,7 +85,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null);
+            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
             var recordReference = new RecordReference<SubjectClass>(null, null, null, null, null, null);
             var subject = new SubjectClass();
             ((RecordReference) recordReference).RecordObject = subject;
@@ -126,7 +125,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null);
+            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
             var subject = new SubjectClass();
             SubjectClass[] data = {subject};
 
@@ -162,7 +161,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null);
+            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
 
             var a = new SubjectClass();
             Func<SubjectClass> b = () => new SubjectClass();
@@ -199,7 +198,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null);
+            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
             Func<SubjectClass> subject = () => new SubjectClass();
             Func<SubjectClass>[] data = { subject };
 
@@ -218,7 +217,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null);
+            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
             var subject = new SubjectClass();
             SubjectClass[] data = {subject};
 
@@ -237,7 +236,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null);
+            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
 
             var a = new SubjectClass();
             Func<SubjectClass> b = () => new SubjectClass();
@@ -257,7 +256,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null);
+            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
             Func<SubjectClass> subject = () => new SubjectClass();
             Func<SubjectClass>[] data = {subject};
 
@@ -276,7 +275,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null);
+            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
 
             var subject1 = new SubjectClass();
             var subject2 = new SubjectClass();
@@ -297,7 +296,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null);
+            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
 
             var subject1 = new SubjectClass();
             Func<SubjectClass> subject2 = () => new SubjectClass();
@@ -318,7 +317,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null);
+            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
             Func<SubjectClass> subject1 = () => new SubjectClass();
             Func<SubjectClass> subject2 = () => new SubjectClass();
             Func<SubjectClass> subject3 = () => new SubjectClass();
@@ -338,7 +337,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null);
+            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
             var subjectRecord = new RecordReference<SubjectClass>(null, null, null, null, null, null);
             operableList.InternalList = new List<RecordReference<SubjectClass>> {subjectRecord};
 
@@ -358,7 +357,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null);
+            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
             var reference = new RecordReference<SubjectClass>(null, null, null, null, null, null);
             operableList.InternalList.Add(reference);
 
@@ -382,7 +381,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null);
+            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
             var reference = new RecordReference<SubjectClass>(null, null, null, null, null, null);
             operableList.InternalList.Add(reference);
 
@@ -404,7 +403,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null);
+            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
             var reference = new RecordReference<SubjectClass>(null, null, null, null, null, null);
 
             // Act
@@ -421,7 +420,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null);
+            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
             var reference = new RecordReference<SubjectClass>(null, null, null, null, null, null);
             operableList.Add(reference);
             var array = new RecordReference<SubjectClass>[1];
@@ -440,7 +439,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null);
+            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
             var reference = new RecordReference<SubjectClass>(null, null, null, null, null, null);
             operableList.Add(reference);
 
@@ -458,7 +457,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null);
+            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
             var reference = new RecordReference<SubjectClass>(null, null, null, null, null, null);
             operableList.Add(reference);
 
@@ -476,7 +475,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null);
+            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
             var reference = new RecordReference<SubjectClass>(null, null, null, null, null, null);
             var expected = new RecordReference<SubjectClass>(null, null, null, null, null, null);
             operableList.Add(reference);
@@ -495,7 +494,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null);
+            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
             var reference = new RecordReference<SubjectClass>(null, null, null, null, null, null);
 
             var subject = new SubjectClass();
@@ -517,7 +516,7 @@ namespace Tests.Tests
         [TestMethod]
         public void Contains_Test()
         {
-            var operableList = new OperableList<SubjectClass>(null, null);
+            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
             var reference = new RecordReference<SubjectClass>(null, null, null, null, null, null);
             operableList.Add(reference);
 
@@ -535,7 +534,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null);
+            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
 
             // Act
 
@@ -551,7 +550,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null);
+            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
 
             var reference1 = new RecordReference<SubjectClass>(null, null, null, null, null, null);
             operableList.Add(reference1);
@@ -573,7 +572,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null);
+            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
 
             var reference1 = new RecordReference<SubjectClass>(null, null, null, null, null, null);
             operableList.Add(reference1);
@@ -594,7 +593,7 @@ namespace Tests.Tests
         {
             // Arange
 
-            var operableList = new OperableList<SubjectClass>(null, null);
+            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
 
             var reference1 = new RecordReference<SubjectClass>(null, null, null, null, null, null);
             operableList.Add(reference1);
@@ -620,7 +619,7 @@ namespace Tests.Tests
         {
             // Arange
 
-            var operableList = new OperableList<SubjectClass>(null, null);
+            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
 
             var reference1 = new RecordReference<SubjectClass>(null, null, null, null, null, null);
             operableList.Add(reference1);
@@ -647,7 +646,7 @@ namespace Tests.Tests
 
             var typeGeneratorMock = new Mock<ITypeGenerator>();
             var valueGuaranteePopulatorMock = new Mock<ValueGuaranteePopulator>();
-            var operableList = new OperableList<SubjectClass>(valueGuaranteePopulatorMock.Object, null);
+            var operableList = new OperableList<SubjectClass>(valueGuaranteePopulatorMock.Object, null, null, null, null, null);
 
             var subject1 = new RecordReference<SubjectClass>(typeGeneratorMock.Object, null, null, null, null, null);
             var subject2 = new RecordReference<SubjectClass>(typeGeneratorMock.Object, null, null, null, null, null);
@@ -675,7 +674,7 @@ namespace Tests.Tests
 
             var valueGuaranteePopulatorMock = new Mock<ValueGuaranteePopulator>();
 
-            var operableList = new OperableList<SubjectClass>(valueGuaranteePopulatorMock.Object, null);
+            var operableList = new OperableList<SubjectClass>(valueGuaranteePopulatorMock.Object, null, null, null, null, null);
 
             var subject = new SubjectClass();
             SubjectClass[] data = {subject};
@@ -700,7 +699,7 @@ namespace Tests.Tests
             var valueGuaranteePopulatorMock = new Mock<ValueGuaranteePopulator>();
 
             var operableList =
-                new RangeOperableList<SubjectClass>(10, valueGuaranteePopulatorMock.Object, null,
+                new OperableList<SubjectClass>(10, valueGuaranteePopulatorMock.Object, null,
                     new Mock<ITypeGenerator>().Object, null, new Mock<IObjectGraphService>().Object, null);
 
             operableList.Set(m => m.Integer).GuaranteePropertiesByFixedQuantity(new[] {1, 2, 3, 4, 5});
@@ -719,7 +718,7 @@ namespace Tests.Tests
         public void Populate_NoAction_IfPopulated_Test()
         {
             var typeGeneratorMock = new Mock<ITypeGenerator>();
-            var operableList = new OperableList<SubjectClass>(null, null);
+            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
 
             var subject1 = new RecordReference<SubjectClass>(typeGeneratorMock.Object, null, null, null, null, null);
 
@@ -739,7 +738,7 @@ namespace Tests.Tests
         [TestMethod]
         public void Ignore_Test()
         {
-            var operableList = new OperableList<ClassWithSideEffectProperty>(null, null);
+            var operableList = new OperableList<ClassWithSideEffectProperty>(null, null, null, null, null, null);
 
             var objectGraphServiceMock = new Mock<IObjectGraphService>();
             PropertyInfo propertyInfo =

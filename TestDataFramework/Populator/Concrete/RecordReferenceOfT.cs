@@ -120,12 +120,12 @@ namespace TestDataFramework.Populator.Concrete
             return this;
         }
 
-        public virtual RangeOperableList<TListElement> SetList<TListElement>(
+        public virtual OperableList<TListElement> SetList<TListElement>(
             Expression<Func<T, IEnumerable<TListElement>>> listFieldExpression, int size)
         {
             List<PropertyInfo> objectPropertyGraph = this.objectGraphService.GetObjectGraph(listFieldExpression);
 
-            var operableList = new RangeOperableList<TListElement>(size, this.valueGuaranteePopulator, this.Populator,
+            var operableList = new OperableList<TListElement>(size, this.valueGuaranteePopulator, this.Populator,
                 this.TypeGenerator, this.AttributeDecorator, this.objectGraphService,
                 this.deepCollectionSettingConverter);
 

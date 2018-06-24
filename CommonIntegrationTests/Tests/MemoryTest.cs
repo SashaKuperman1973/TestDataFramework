@@ -264,6 +264,11 @@ namespace CommonIntegrationTests.Tests
             populator.Bind();
         }
 
+        private class ClassWithDictionary
+        {
+            public Dictionary<string, string> ADictionary { get; set; }
+        }
+
         [TestMethod]
         public void GuaranteedValueAndExplicitSetting_Test()
         {
@@ -476,7 +481,7 @@ namespace CommonIntegrationTests.Tests
             listSetterBaseTypeReference.SetList(p => p.B.WithCollection.ElementList, 5)
                 .Set(p => p.SubElement.AString, "Me", 2, 4)
                 .Set(p => p.AString, "Hello", 0, 2, 4)
-                .Set(p => p.SubElement.AnInt, 7, new Range(2, 4));
+                .Set(p => p.SubElement.AnInt, 7, Range.StartAndEndPositions(2, 4));
 
             populator.Bind();
 
@@ -496,7 +501,7 @@ namespace CommonIntegrationTests.Tests
             listSetterBaseTypeReference.SetList(p => p.B.WithCollection.ElementArray, 5)
                 .Set(p => p.SubElement.AString, "Me", 2, 4)
                 .Set(p => p.AString, "Hello", 0, 2, 4)
-                .Set(p => p.SubElement.AnInt, 7, new Range(2, 4));
+                .Set(p => p.SubElement.AnInt, 7, Range.StartAndEndPositions(2, 4));
 
             populator.Bind();
 
@@ -547,15 +552,33 @@ namespace CommonIntegrationTests.Tests
         {
             IPopulator populator = this.factory.CreateMemoryPopulator();
 
-            RecordReference<DeepA> deepARecord = populator.Add<DeepA>();
+            //OperableList<DeepA> deepARecord;
+            var reference = populator.Add<DeepA>();
+            reference.SetList(m => m.DeepB.DeepCList, 3).Set(m => m.DeepString, "S", 2);
+            populator.Bind();
 
-            deepARecord.SetList(m => m.DeepB.DeepCList, 10).Set(deepC => deepC.DeepString)
-                .GuaranteePropertiesByFixedQuantity(new[] {"A", "B", "C"}, 5).BindAndMake();
-        }
+            var result = reference.RecordObject;
 
-        private class ClassWithDictionary
-        {
-            public Dictionary<string, string> ADictionary { get; set; }
+            populator = this.factory.CreateMemoryPopulator();
+
+            var reference2 = populator.Add<DeepA>(5);
+            var x = reference2.Set(m => m.DeepB.String, "S", Range.StartAndLength(2, 3))
+                .SetList(m => m.DeepB.DeepCList, 3, Range.StartAndLength(1, 2)).Set(m => m.DeepString, "S", Range.StartAndEndPositions(0, 1));
+            //reference2.SetList(m => m.DeepB.DeepCList, 3).Set(m => m.DeepString, "S", 2);
+            populator.Bind();
+
+            var result2 = reference2.RecordObjects;
+
+            populator = this.factory.CreateMemoryPopulator();
+
+            var reference3 = populator.Add<DeepA>(5);
+            reference3.Set(m => m.DeepB.String).GuaranteePropertiesByFixedQuantity(new [] {"A"});
+            populator.Bind();
+
+            var result3 = reference3.RecordObjects;
+
+            //.Set(deepC => deepC.DeepString)
+            //.GuaranteePropertiesByFixedQuantity(new[] {"A", "B", "C"}, 5).BindAndMake();
         }
     }
 }

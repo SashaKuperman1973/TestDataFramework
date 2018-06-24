@@ -19,7 +19,7 @@ namespace Tests.Tests.FieldExpressionTests
 
         private FieldExpression<ElementType, ElementType.PropertyType> fieldExpression;
 
-        private Mock<RangeOperableList<ElementType>> rangeOperableListMock;
+        private Mock<OperableList<ElementType>> rangeOperableListMock;
         private Mock<IObjectGraphService> objectGraphServiceMock;
 
         public class ElementType
@@ -35,7 +35,7 @@ namespace Tests.Tests.FieldExpressionTests
         public void Initialize()
         {
             this.rangeOperableListMock =
-                new Mock<RangeOperableList<ElementType>>(null, null, null, null, null, null, null);
+                new Mock<OperableList<ElementType>>(null, null, null, null, null, null, null);
 
             this.expression = element => element.AProperty;
 
@@ -122,7 +122,7 @@ namespace Tests.Tests.FieldExpressionTests
 
             // Act
 
-            RangeOperableList<ElementType> result = this.fieldExpression.Set(expression, value, range);
+            OperableList<ElementType> result = this.fieldExpression.Set(expression, value, range);
 
             // Assert
 
@@ -144,7 +144,7 @@ namespace Tests.Tests.FieldExpressionTests
 
             // Act
 
-            RangeOperableList<ElementType> result = this.fieldExpression.Set(expression, value, range);
+            OperableList<ElementType> result = this.fieldExpression.Set(expression, value, range);
 
             // Assert
 

@@ -280,9 +280,16 @@ namespace TestDataFramework.Populator.Concrete
             return this;
         }
 
-        public virtual OperableList<TListElement> Ignore<TPropertyType>(Expression<Func<TListElement, TPropertyType>> fieldExpression)
+        public virtual OperableList<TListElement> Ignore<TPropertyType>(Expression<Func<TListElement, TPropertyType>> fieldExpression, params Range[] ranges)
         {
-            this.InternalList.ForEach(reference => reference.Ignore(fieldExpression));
+            int[] positions = this.GetPositions(ranges);
+            this.ValidatePositionBoundaries(positions, nameof(ranges));
+
+            foreach (int position in positions)
+            {
+                this.InternalList[position].Ignore(fieldExpression);
+            }
+
             return this;
         }
 

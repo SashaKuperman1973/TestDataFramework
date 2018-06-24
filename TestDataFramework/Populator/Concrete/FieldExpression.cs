@@ -13,8 +13,8 @@ namespace TestDataFramework.Populator.Concrete
 {
     public class FieldExpression<TListElement, TProperty>
     {
+        internal readonly OperableList<TListElement> OperableList;
         private readonly Expression<Func<TListElement, TProperty>> expression;
-        private readonly OperableList<TListElement> OperableList;
         private readonly IObjectGraphService objectGraphService;
 
         public FieldExpression(Expression<Func<TListElement, TProperty>> expression,
@@ -37,51 +37,14 @@ namespace TestDataFramework.Populator.Concrete
             return this.OperableList.BindAndMake();
         }
 
-        public virtual OperableList<TListElement> GuaranteeByFixedQuantity(IEnumerable<object> guaranteedValues,
-            ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
-        {
-            return this.GuaranteeByFixedQuantity(guaranteedValues, 0, valueCountRequestOption);
-        }
-
-        public virtual OperableList<TListElement> GuaranteeByFixedQuantity(IEnumerable<object> guaranteedValues,
-            int fixedQuantity, ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
-        {
-            return this.OperableList.GuaranteeByFixedQuantity(guaranteedValues, fixedQuantity, valueCountRequestOption);
-        }
-
-        public OperableList<TListElement> GuaranteeByFixedQuantity(IEnumerable<Func<TListElement>> guaranteedValues,
-            ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
-        {
-            return this.GuaranteeByFixedQuantity(guaranteedValues, 0, valueCountRequestOption);
-        }
-
-        public virtual OperableList<TListElement> GuaranteeByFixedQuantity(
-            IEnumerable<Func<TListElement>> guaranteedValues, int fixedQuantity,
-            ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
-        {
-            return this.OperableList.GuaranteeByFixedQuantity(guaranteedValues, fixedQuantity, valueCountRequestOption);
-        }
-
-        public OperableList<TListElement> GuaranteeByFixedQuantity(IEnumerable<TListElement> guaranteedValues,
-            ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
-        {
-            return this.GuaranteeByFixedQuantity(guaranteedValues, 0, valueCountRequestOption);
-        }
-
-        public virtual OperableList<TListElement> GuaranteeByFixedQuantity(IEnumerable<TListElement> guaranteedValues,
-            int fixedQuantity, ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
-        {
-            return this.OperableList.GuaranteeByFixedQuantity(guaranteedValues, fixedQuantity, valueCountRequestOption);
-        }
-
-        public virtual OperableList<TListElement> GuaranteePropertiesByFixedQuantity(
+        public virtual FieldExpression<TListElement, TProperty> GuaranteePropertiesByFixedQuantity(
             IEnumerable<Func<TProperty>> guaranteedValues,
             ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
             return this.GuaranteePropertiesByFixedQuantity(guaranteedValues, 0, valueCountRequestOption);
         }
 
-        public virtual OperableList<TListElement> GuaranteePropertiesByFixedQuantity(
+        public virtual FieldExpression<TListElement, TProperty> GuaranteePropertiesByFixedQuantity(
             IEnumerable<Func<TProperty>> guaranteedValues, int fixedQuantity,
             ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
@@ -103,17 +66,17 @@ namespace TestDataFramework.Populator.Concrete
                 ValueCountRequestOption = valueCountRequestOption
             });
 
-            return this.OperableList;
+            return this;
         }
 
-        public virtual OperableList<TListElement> GuaranteePropertiesByFixedQuantity(
+        public virtual FieldExpression<TListElement, TProperty> GuaranteePropertiesByFixedQuantity(
             IEnumerable<object> guaranteedValues,
             ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
             return this.GuaranteePropertiesByFixedQuantity(guaranteedValues, 0, valueCountRequestOption);
         }
 
-        public virtual OperableList<TListElement> GuaranteePropertiesByFixedQuantity(IEnumerable<object> guaranteedValues,
+        public virtual FieldExpression<TListElement, TProperty> GuaranteePropertiesByFixedQuantity(IEnumerable<object> guaranteedValues,
             int fixedQuantity, ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
             List<PropertyInfo> setterObjectGraph = this.objectGraphService.GetObjectGraph(this.expression);
@@ -131,73 +94,31 @@ namespace TestDataFramework.Populator.Concrete
                 ValueCountRequestOption = valueCountRequestOption
             });
 
-            return this.OperableList;
+            return this;
         }
 
-        public virtual OperableList<TListElement> GuaranteePropertiesByFixedQuantity(
+        public virtual FieldExpression<TListElement, TProperty> GuaranteePropertiesByFixedQuantity(
             IEnumerable<TProperty> guaranteedValues,
             ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
             return this.GuaranteePropertiesByFixedQuantity(guaranteedValues, 0, valueCountRequestOption);
         }
 
-        public virtual OperableList<TListElement> GuaranteePropertiesByFixedQuantity(IEnumerable<TProperty> guaranteedValues,
+        public virtual FieldExpression<TListElement, TProperty> GuaranteePropertiesByFixedQuantity(IEnumerable<TProperty> guaranteedValues,
             int fixedQuantity, ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
             return this.GuaranteePropertiesByFixedQuantity(
                 guaranteedValues.Select<TProperty, Func<TProperty>>(value => () => value), fixedQuantity, valueCountRequestOption);
         }
 
-        public virtual OperableList<TListElement> GuaranteeByPercentageOfTotal(
-            IEnumerable<object> guaranteedValues, 
-            ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
-        {
-            return this.GuaranteeByPercentageOfTotal(guaranteedValues, 10, valueCountRequestOption);
-        }
-
-        public virtual OperableList<TListElement> GuaranteeByPercentageOfTotal(
-            IEnumerable<object> guaranteedValues, int frequencyPercentage,
-            ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
-        {
-            return this.OperableList.GuaranteeByPercentageOfTotal(guaranteedValues, frequencyPercentage, valueCountRequestOption);
-        }
-
-        public virtual OperableList<TListElement> GuaranteeByPercentageOfTotal(
-            IEnumerable<Func<TListElement>> guaranteedValues, 
-            ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
-        {
-            return this.GuaranteeByPercentageOfTotal(guaranteedValues, 10, valueCountRequestOption);
-        }
-
-        public virtual OperableList<TListElement> GuaranteeByPercentageOfTotal(
-            IEnumerable<Func<TListElement>> guaranteedValues, int frequencyPercentage,
-            ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
-        {
-            return this.OperableList.GuaranteeByPercentageOfTotal(guaranteedValues, frequencyPercentage, valueCountRequestOption);
-        }
-
-        public virtual OperableList<TListElement> GuaranteeByPercentageOfTotal(
-            IEnumerable<TListElement> guaranteedValues,
-            ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
-        {
-            return this.GuaranteeByPercentageOfTotal(guaranteedValues, 10, valueCountRequestOption);
-        }
-
-        public virtual OperableList<TListElement> GuaranteeByPercentageOfTotal(
-            IEnumerable<TListElement> guaranteedValues, int frequencyPercentage,
-            ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
-        {
-            return this.OperableList.GuaranteeByPercentageOfTotal(guaranteedValues, frequencyPercentage, valueCountRequestOption);
-        }
-
-        public virtual OperableList<TListElement> GuaranteePropertiesByPercentageOfTotal(
+        public virtual FieldExpression<TListElement, TProperty> GuaranteePropertiesByPercentageOfTotal(
             IEnumerable<Func<TProperty>> guaranteedValues,
             ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
             return this.GuaranteePropertiesByPercentageOfTotal(guaranteedValues, 10, valueCountRequestOption);
         }
 
-        public virtual OperableList<TListElement> GuaranteePropertiesByPercentageOfTotal(
+        public virtual FieldExpression<TListElement, TProperty> GuaranteePropertiesByPercentageOfTotal(
             IEnumerable<Func<TProperty>> guaranteedValues, int frequencyPercentage,
             ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
@@ -215,17 +136,17 @@ namespace TestDataFramework.Populator.Concrete
                 ValueCountRequestOption = valueCountRequestOption
             });
 
-            return this.OperableList;
+            return this;
         }
 
-        public virtual OperableList<TListElement> GuaranteePropertiesByPercentageOfTotal(
+        public virtual FieldExpression<TListElement, TProperty> GuaranteePropertiesByPercentageOfTotal(
             IEnumerable<TProperty> guaranteedValues,
             ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
             return this.GuaranteePropertiesByPercentageOfTotal(guaranteedValues, 10, valueCountRequestOption);
         }
 
-        public virtual OperableList<TListElement> GuaranteePropertiesByPercentageOfTotal(
+        public virtual FieldExpression<TListElement, TProperty> GuaranteePropertiesByPercentageOfTotal(
             IEnumerable<TProperty> guaranteedValues, int frequencyPercentage,
             ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
@@ -234,14 +155,14 @@ namespace TestDataFramework.Populator.Concrete
                 valueCountRequestOption);
         }
 
-        public virtual OperableList<TListElement> GuaranteePropertiesByPercentageOfTotal(
+        public virtual FieldExpression<TListElement, TProperty> GuaranteePropertiesByPercentageOfTotal(
             IEnumerable<object> guaranteedValues, 
             ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
             return this.GuaranteePropertiesByPercentageOfTotal(guaranteedValues, 10, valueCountRequestOption);
         }
 
-        public virtual OperableList<TListElement> GuaranteePropertiesByPercentageOfTotal(
+        public virtual FieldExpression<TListElement, TProperty> GuaranteePropertiesByPercentageOfTotal(
             IEnumerable<object> guaranteedValues, int frequencyPercentage,
             ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
@@ -257,38 +178,7 @@ namespace TestDataFramework.Populator.Concrete
                 ValueCountRequestOption = valueCountRequestOption
             });
 
-            return this.OperableList;
-        }
-
-        public virtual OperableList<TListElement> Ignore<TPropertyType>(Expression<Func<TListElement, TPropertyType>> fieldExpression)
-        {
-            return this.OperableList.Ignore(fieldExpression);
-        }
-
-        public OperableList<TListElement> Set<TValueProperty>(
-            Expression<Func<TListElement, TValueProperty>> fieldExpression, TValueProperty value, params Range[] ranges)
-        {
-            return this.OperableList.Set(fieldExpression, value, ranges);
-        }
-
-        public OperableList<TListElement> Set<TValueProperty>(
-            Expression<Func<TListElement, TValueProperty>> fieldExpression, Func<TValueProperty> valueFactory,
-            params Range[] ranges)
-        {
-            return this.OperableList.Set(fieldExpression, valueFactory, ranges);
-        }
-
-        public CollectionOfRangeOperableLists<TNewListElement> SetList<TNewListElement>(
-            Expression<Func<TListElement, IEnumerable<TNewListElement>>> listFieldExpression, int newSize,
-            params Range[] rangesOfCallingList)
-        {
-            return this.OperableList.SetList(listFieldExpression, newSize, rangesOfCallingList);
-        }
-
-        public FieldExpression<TListElement, TValueProperty> Set<TValueProperty>(
-            Expression<Func<TListElement, TValueProperty>> expression)
-        {
-            return this.OperableList.Set(expression);
+            return this;
         }
 
         public virtual FieldExpression<TListElement, TProperty> Value(TProperty value, params Range[] ranges)

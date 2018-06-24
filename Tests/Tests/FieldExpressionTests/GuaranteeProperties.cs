@@ -16,7 +16,7 @@ namespace Tests.Tests.FieldExpressionTests
         {
             var values = new[] { new ElementType.PropertyType(), };
 
-            Func<OperableList<ElementType>> action = () => this.fieldExpression.GuaranteePropertiesByFixedQuantity(values, 5);
+            Func<FieldExpression<ElementType, ElementType.PropertyType>> action = () => this.fieldExpression.GuaranteePropertiesByFixedQuantity(values, 5);
 
             this.GuaranteePropertiesByFixedQuantity_Test(action, values);
         }
@@ -29,7 +29,7 @@ namespace Tests.Tests.FieldExpressionTests
             IEnumerable<Func<ElementType.PropertyType>> funcs =
                 values.Select<ElementType.PropertyType, Func<ElementType.PropertyType>>(value => () => value);
 
-            Func<OperableList<ElementType>> action = () => this.fieldExpression.GuaranteePropertiesByFixedQuantity(funcs, 5);
+            Func<FieldExpression<ElementType, ElementType.PropertyType>> action = () => this.fieldExpression.GuaranteePropertiesByFixedQuantity(funcs, 5);
 
             this.GuaranteePropertiesByFixedQuantity_Test(action, values);
         }
@@ -40,12 +40,12 @@ namespace Tests.Tests.FieldExpressionTests
             var values = new[] { new ElementType.PropertyType(), new ElementType.PropertyType() };
             var objects = new object[] { values[0], (Func<ElementType.PropertyType>)(() => values[1]) };
 
-            Func<OperableList<ElementType>> action = () => this.fieldExpression.GuaranteePropertiesByFixedQuantity(objects, 5);
+            Func<FieldExpression<ElementType, ElementType.PropertyType>> action = () => this.fieldExpression.GuaranteePropertiesByFixedQuantity(objects, 5);
 
             this.GuaranteePropertiesByFixedQuantity_Test(action, values);
         }
 
-        private void GuaranteePropertiesByFixedQuantity_Test(Func<OperableList<ElementType>> action,
+        private void GuaranteePropertiesByFixedQuantity_Test(Func<FieldExpression<ElementType, ElementType.PropertyType>> action,
             ElementType.PropertyType[] values)
         {
             void AssertFrequency(GuaranteedValues guaranteedValues)
@@ -62,7 +62,7 @@ namespace Tests.Tests.FieldExpressionTests
         {
             var values = new[] { new ElementType.PropertyType(), };
 
-            Func<OperableList<ElementType>> action = () => this.fieldExpression.GuaranteePropertiesByPercentageOfTotal(values, 5);
+            Func<FieldExpression<ElementType, ElementType.PropertyType>> action = () => this.fieldExpression.GuaranteePropertiesByPercentageOfTotal(values, 5);
 
             this.GuaranteePropertiesByPercentageOfTotal_Test(action, values);
         }
@@ -75,7 +75,7 @@ namespace Tests.Tests.FieldExpressionTests
             IEnumerable<Func<ElementType.PropertyType>> funcs =
                 values.Select<ElementType.PropertyType, Func<ElementType.PropertyType>>(value => () => value);
 
-            Func<OperableList<ElementType>> action = () => this.fieldExpression.GuaranteePropertiesByPercentageOfTotal(funcs, 5);
+            Func<FieldExpression<ElementType, ElementType.PropertyType>> action = () => this.fieldExpression.GuaranteePropertiesByPercentageOfTotal(funcs, 5);
 
             this.GuaranteePropertiesByPercentageOfTotal_Test(action, values);
         }
@@ -86,12 +86,12 @@ namespace Tests.Tests.FieldExpressionTests
             var values = new[] { new ElementType.PropertyType(), new ElementType.PropertyType() };
             var objects = new object[] { values[0], (Func<ElementType.PropertyType>)(() => values[1]) };
 
-            Func<OperableList<ElementType>> action = () => this.fieldExpression.GuaranteePropertiesByPercentageOfTotal(objects, 5);
+            Func<FieldExpression<ElementType, ElementType.PropertyType>> action = () => this.fieldExpression.GuaranteePropertiesByPercentageOfTotal(objects, 5);
 
             this.GuaranteePropertiesByPercentageOfTotal_Test(action, values);
         }
 
-        private void GuaranteePropertiesByPercentageOfTotal_Test(Func<OperableList<ElementType>> action,
+        private void GuaranteePropertiesByPercentageOfTotal_Test(Func<FieldExpression<ElementType, ElementType.PropertyType>> action,
             ElementType.PropertyType[] values)
         {
             void AssertFrequency(GuaranteedValues guaranteedValues)
@@ -103,7 +103,7 @@ namespace Tests.Tests.FieldExpressionTests
             this.GuaranteeProperties_Test(action, values, AssertFrequency);
         }
 
-        private void GuaranteeProperties_Test(Func<OperableList<ElementType>> action,
+        private void GuaranteeProperties_Test(Func<FieldExpression<ElementType, ElementType.PropertyType>> action,
             ElementType.PropertyType[] values, Action<GuaranteedValues> assertFrequency)
         {
             var objectGraph = new List<PropertyInfo> {typeof(ElementType).GetProperty(nameof(ElementType.AProperty))};
@@ -112,11 +112,11 @@ namespace Tests.Tests.FieldExpressionTests
 
             // Act
 
-            OperableList<ElementType> operableList = action();
+            FieldExpression<ElementType, ElementType.PropertyType> resultFieldExpression = action();
 
             // Assert
 
-            Assert.AreEqual(this.rangeOperableListMock.Object, operableList);
+            Assert.AreEqual(this.rangeOperableListMock.Object, resultFieldExpression);
 
             GuaranteedValues guaranteedValues = this.rangeOperableListMock.Object.GuaranteedPropertySetters.Single();
 
@@ -153,11 +153,11 @@ namespace Tests.Tests.FieldExpressionTests
 
             // Act
 
-            OperableList<ElementType> result = this.fieldExpression.GuaranteePropertiesByFixedQuantity(guaranteedValues);
+            FieldExpression<ElementType, ElementType.PropertyType> result = this.fieldExpression.GuaranteePropertiesByFixedQuantity(guaranteedValues);
 
             // Assert
 
-            Assert.AreEqual(count, result.GuaranteedPropertySetters.Single().TotalFrequency);
+            Assert.AreEqual(count, result.OperableList.GuaranteedPropertySetters.Single().TotalFrequency);
         }
 
         [TestMethod]
@@ -177,11 +177,11 @@ namespace Tests.Tests.FieldExpressionTests
 
             // Act
 
-            OperableList<ElementType> result = this.fieldExpression.GuaranteePropertiesByFixedQuantity(guaranteedValues);
+            FieldExpression<ElementType, ElementType.PropertyType> result = this.fieldExpression.GuaranteePropertiesByFixedQuantity(guaranteedValues);
 
             // Assert
 
-            Assert.AreEqual(count, result.GuaranteedPropertySetters.Single().TotalFrequency);
+            Assert.AreEqual(count, result.OperableList.GuaranteedPropertySetters.Single().TotalFrequency);
         }
 
         [TestMethod]
@@ -204,11 +204,11 @@ namespace Tests.Tests.FieldExpressionTests
 
             // Act
 
-            OperableList<ElementType> result = this.fieldExpression.GuaranteePropertiesByFixedQuantity(guaranteedValues);
+            FieldExpression<ElementType, ElementType.PropertyType> result = this.fieldExpression.GuaranteePropertiesByFixedQuantity(guaranteedValues);
 
             // Assert
 
-            Assert.AreEqual(count, result.GuaranteedPropertySetters.Single().TotalFrequency);
+            Assert.AreEqual(count, result.OperableList.GuaranteedPropertySetters.Single().TotalFrequency);
         }
 
         [TestMethod]
@@ -216,12 +216,12 @@ namespace Tests.Tests.FieldExpressionTests
         {
             // Act
 
-            OperableList<ElementType> result =
+            FieldExpression<ElementType, ElementType.PropertyType> result =
                 this.fieldExpression.GuaranteePropertiesByPercentageOfTotal(new List<Func<ElementType.PropertyType>>());
 
             // Assert
 
-            Assert.AreEqual(10, result.GuaranteedPropertySetters.Single().FrequencyPercentage);
+            Assert.AreEqual(10, result.OperableList.GuaranteedPropertySetters.Single().FrequencyPercentage);
         }
 
         [TestMethod]
@@ -229,11 +229,12 @@ namespace Tests.Tests.FieldExpressionTests
         {
             // Act
 
-            OperableList<ElementType> result = this.fieldExpression.GuaranteePropertiesByPercentageOfTotal(new List<ElementType.PropertyType>());
+            FieldExpression<ElementType, ElementType.PropertyType> result =
+                this.fieldExpression.GuaranteePropertiesByPercentageOfTotal(new List<ElementType.PropertyType>());
 
             // Assert
 
-            Assert.AreEqual(10, result.GuaranteedPropertySetters.Single().FrequencyPercentage);
+            Assert.AreEqual(10, result.OperableList.GuaranteedPropertySetters.Single().FrequencyPercentage);
         }
 
         [TestMethod]
@@ -254,11 +255,11 @@ namespace Tests.Tests.FieldExpressionTests
 
             // Act
 
-            OperableList<ElementType> result = this.fieldExpression.GuaranteePropertiesByPercentageOfTotal(guaranteedValues);
+            FieldExpression<ElementType, ElementType.PropertyType> result = this.fieldExpression.GuaranteePropertiesByPercentageOfTotal(guaranteedValues);
 
             // Assert
 
-            Assert.AreEqual(10, result.GuaranteedPropertySetters.Single().FrequencyPercentage);
+            Assert.AreEqual(10, result.OperableList.GuaranteedPropertySetters.Single().FrequencyPercentage);
         }
     }
 }

@@ -126,7 +126,7 @@
     <Compile Include="Populator\Concrete\FieldExpressionHelper.cs" />
     <Compile Include="Populator\Concrete\OperableList.cs" />
     <Compile Include="Populator\Concrete\RecordReferenceOfT.cs" />
-    <Compile Include="Populator\Interfaces\IMakeable.cs" />
+    <Compile Include="Populator\Interfaces\IMakeableCollectionContainer.cs" />
     <Compile Include="Populator\Populatable.cs" />
     <Compile Include="Populator\Interfaces\IPopulator.cs" />
     <Compile Include="Populator\RecordReference.cs" />

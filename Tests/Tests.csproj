@@ -103,8 +103,6 @@
     <Compile Include="Tests\MemoryValueGeneratorTests.cs" />
     <Compile Include="Tests\MinAttributeTests.cs" />
     <Compile Include="Tests\ObjectGraphServiceTest.cs" />
-    <Compile Include="Tests\OperableListTests\RangeOperableListTests.cs" />
-    <Compile Include="Tests\RangeTests.cs" />
     <Compile Include="Tests\SqlClientValueGeneratorTests.cs" />
     <Compile Include="Tests\StandardHandledTypeGeneratorTests.cs" />
     <Compile Include="Tests\MemoryUniqueValueGeneratorTests.cs" />

@@ -8,7 +8,6 @@ using Moq;
 using TestDataFramework.DeepSetting;
 using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.Populator.Concrete;
-using Range = TestDataFramework.Populator.Concrete.Range;
 
 namespace Tests.Tests.FieldExpressionTests
 {
@@ -89,44 +88,6 @@ namespace Tests.Tests.FieldExpressionTests
             // Assert
 
             this.rangeOperableListMock.Verify(m => m.BindAndMake());
-        }
-
-        [TestMethod]
-        public void Value_Test()
-        {
-            // Arrange
-
-            var range = new Range();
-            var value = new ElementType.PropertyType();
-
-            // Act
-
-            FieldExpression<ElementType, ElementType.PropertyType> result =
-                this.fieldExpression.Value(value, range);
-
-            // Assert
-
-            this.rangeOperableListMock.Verify(m => m.Set(this.expression, value, range));
-            Assert.AreEqual(this.fieldExpression, result);
-        }
-
-        [TestMethod]
-        public void Value_Func_Test()
-        {
-            // Arrange
-
-            var range = new Range();
-            Func<ElementType.PropertyType> valueFunc = () => new ElementType.PropertyType();
-
-            // Act
-
-            FieldExpression<ElementType, ElementType.PropertyType> result =
-                this.fieldExpression.Value(valueFunc, range);
-
-            // Assert
-
-            this.rangeOperableListMock.Verify(m => m.Set(this.expression, valueFunc, range));
-            Assert.AreEqual(this.fieldExpression, result);
         }
     }
 }

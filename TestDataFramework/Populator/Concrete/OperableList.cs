@@ -27,25 +27,25 @@ using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.Exceptions;
 using TestDataFramework.ListOperations.Concrete;
 using TestDataFramework.ListOperations.Interfaces;
+using TestDataFramework.Populator.Interfaces;
 using TestDataFramework.TypeGenerator.Interfaces;
 
 namespace TestDataFramework.Populator.Concrete
 {
-    public class OperableList<TListElement> : Populatable, IList<RecordReference<TListElement>>
+    public class OperableList<TListElement> : Populatable, IList<RecordReference<TListElement>>, IMakeableCollectionContainer<TListElement>
     {
-        internal readonly List<GuaranteedValues> GuaranteedValues = new List<GuaranteedValues>();
-        internal readonly List<GuaranteedValues> GuaranteedPropertySetters = new List<GuaranteedValues>();
-
-        protected internal List<RecordReference<TListElement>> InternalList;
-
         protected readonly BasePopulator Populator;
-        protected readonly ValueGuaranteePopulator ValueGuaranteePopulator;
         protected readonly IAttributeDecorator AttributeDecorator;
         protected readonly DeepCollectionSettingConverter DeepCollectionSettingConverter;
         protected readonly IObjectGraphService ObjectGraphService;
         protected readonly ITypeGenerator TypeGenerator;
+        protected readonly ValueGuaranteePopulator ValueGuaranteePopulator;
+        protected internal readonly List<GuaranteedValues> GuaranteedValues = new List<GuaranteedValues>();
+        protected internal List<RecordReference<TListElement>> InternalList;
+        internal readonly List<GuaranteedValues> GuaranteedPropertySetters = new List<GuaranteedValues>();
 
         private readonly IValueGauranteePopulatorContextService valueSetContextService = new ValueSetContextService();
+
         private readonly IValueGauranteePopulatorContextService explicitPropertySetterContextService =
             new ExplicitPropertySetterContextService();
 
@@ -56,12 +56,12 @@ namespace TestDataFramework.Populator.Concrete
             List<RecordReference<TListElement>> internalList = null)
         {
             this.InternalList = internalList ?? new List<RecordReference<TListElement>>();
-            this.ValueGuaranteePopulator = valueGuaranteePopulator;
             this.Populator = populator;
             this.TypeGenerator = typeGenerator;
             this.AttributeDecorator = attributeDecorator;
             this.ObjectGraphService = objectGraphService;
             this.DeepCollectionSettingConverter = deepCollectionSettingConverter;
+            this.ValueGuaranteePopulator = valueGuaranteePopulator;
 
             for (int i = 0; i < this.InternalList.Count; i++)
                 if (this.InternalList[i] == null)
@@ -91,8 +91,29 @@ namespace TestDataFramework.Populator.Concrete
             BasePopulator populator)
         {
             this.InternalList = new List<RecordReference<TListElement>>(input);
-            this.ValueGuaranteePopulator = valueGuaranteePopulator;
             this.Populator = populator;
+            this.ValueGuaranteePopulator = valueGuaranteePopulator;
+        }
+
+        protected internal override void Populate()
+        {
+            if (this.IsPopulated)
+                return;
+
+            if (this.GuaranteedPropertySetters.Any())
+                this.ValueGuaranteePopulator.Bind(this, this.GuaranteedPropertySetters,
+                    this.explicitPropertySetterContextService);
+
+            if (this.GuaranteedValues.Any())
+                this.ValueGuaranteePopulator.Bind(this, this.GuaranteedValues, this.valueSetContextService);
+
+            this.InternalList.ForEach(recordReference => recordReference.Populate());
+            this.IsPopulated = true;
+        }
+
+        internal override void AddToReferences(IList<RecordReference> collection)
+        {
+            this.InternalList.ForEach(collection.Add);
         }
 
         public virtual IEnumerable<TListElement> RecordObjects
@@ -105,22 +126,16 @@ namespace TestDataFramework.Populator.Concrete
         }
 
         public virtual OperableList<TListElement> Set<TProperty>(
-            Expression<Func<TListElement, TProperty>> fieldExpression, TProperty value, params Range[] ranges)
+            Expression<Func<TListElement, TProperty>> fieldExpression, TProperty value)
         {
-            OperableList<TListElement> result = this.Set(fieldExpression, () => value, ranges);
+            OperableList<TListElement> result = this.Set(fieldExpression, () => value);
             return result;
         }
 
         public virtual OperableList<TListElement> Set<TProperty>(
-            Expression<Func<TListElement, TProperty>> fieldExpression, Func<TProperty> valueFactory,
-            params Range[] ranges)
+            Expression<Func<TListElement, TProperty>> fieldExpression, Func<TProperty> valueFactory)
         {
-            if (!ranges.Any())
-                throw new ArgumentException(Messages.NoRangeOperableListPositionsPassedIn, nameof(ranges));
-
-            int[] positions = this.GetPositions(ranges);
-            this.ValidatePositionBoundaries(positions, nameof(ranges));
-            this.SetInternalList(positions, fieldExpression, valueFactory);
+            this.InternalList.ForEach(reference => reference.Set(fieldExpression, valueFactory));
 
             return this;
         }
@@ -131,23 +146,6 @@ namespace TestDataFramework.Populator.Concrete
             var fieldExpression =
                 new FieldExpression<TListElement, TProperty>(expression, this, this.ObjectGraphService);
             return fieldExpression;
-        }
-
-        public virtual CollectionOfRangeOperableLists<TNewListElement> SetList<TNewListElement>(
-            Expression<Func<TListElement, IEnumerable<TNewListElement>>> listFieldExpression, int newSize, params Range[] rangesOfCallingList)
-        {
-            int[] positions = this.GetPositions(rangesOfCallingList);
-            this.ValidatePositionBoundaries(positions, nameof(rangesOfCallingList));
-
-            var lists = new CollectionOfRangeOperableLists<TNewListElement>();
-
-            foreach (int i in positions)
-            {
-                OperableList<TNewListElement> list = this.InternalList[i].SetList(listFieldExpression, newSize);
-                lists.Add(list);
-            }
-
-            return lists;
         }
 
         public virtual OperableList<TListElement> GuaranteeByPercentageOfTotal(IEnumerable<object> guaranteedValues,
@@ -280,38 +278,11 @@ namespace TestDataFramework.Populator.Concrete
             return this;
         }
 
-        public virtual OperableList<TListElement> Ignore<TPropertyType>(Expression<Func<TListElement, TPropertyType>> fieldExpression, params Range[] ranges)
+        public virtual OperableList<TListElement> Ignore<TPropertyType>(Expression<Func<TListElement, TPropertyType>> fieldExpression)
         {
-            int[] positions = this.GetPositions(ranges);
-            this.ValidatePositionBoundaries(positions, nameof(ranges));
-
-            foreach (int position in positions)
-            {
-                this.InternalList[position].Ignore(fieldExpression);
-            }
+            this.InternalList.ForEach(reference => reference.Ignore(fieldExpression));
 
             return this;
-        }
-
-        protected internal override void Populate()
-        {
-            if (this.IsPopulated)
-                return;
-
-            if (this.GuaranteedPropertySetters.Any())
-                this.ValueGuaranteePopulator.Bind(this, this.GuaranteedPropertySetters,
-                    this.explicitPropertySetterContextService);
-
-            if (this.GuaranteedValues.Any())
-                this.ValueGuaranteePopulator.Bind(this, this.GuaranteedValues, this.valueSetContextService);
-
-            this.InternalList.ForEach(recordReference => recordReference.Populate());
-            this.IsPopulated = true;
-        }
-
-        internal override void AddToReferences(IList<RecordReference> collection)
-        {
-            this.InternalList.ForEach(collection.Add);
         }
 
         public virtual IEnumerable<TListElement> BindAndMake()
@@ -326,46 +297,6 @@ namespace TestDataFramework.Populator.Concrete
             this.Populator.Bind(this);
             IEnumerable<TListElement> result = this.RecordObjects;
             return result;
-        }
-
-        protected int[] GetPositions(IEnumerable<Range> ranges)
-        {
-            ranges = ranges.ToList();
-
-            int[] positions;
-
-            if (!ranges.Any())
-            {
-                positions = new int[this.InternalList.Count];
-                for (int i = 0; i < positions.Length; i++)
-                {
-                    positions[i] = i;
-                }
-            }
-            else
-            {
-                positions = ranges.SelectMany(r =>
-                {
-                    var range = new int[r.EndPosition + 1 - r.StartPosition];
-
-                    int i = 0;
-                    for (int j = r.StartPosition; j <= r.EndPosition; j++)
-                        range[i++] = j;
-
-                    return range;
-                }).ToArray();
-            }
-
-            return positions;
-        }
-
-        private void SetInternalList<TProperty>(IEnumerable<int> positions,
-            Expression<Func<TListElement, TProperty>> fieldExpression, Func<TProperty> valueFactory)
-        {
-            foreach (int position in positions)
-            {
-                this.InternalList[position].Set(fieldExpression, valueFactory);
-            }
         }
 
         private RecordReference<TListElement> CreateRecordReference()
@@ -387,6 +318,31 @@ namespace TestDataFramework.Populator.Concrete
                 throw new ArgumentOutOfRangeException(rangesParameterName);
         }
 
+        public MakeableEnumerable<OperableList<TResult>, TListElement> Select<TResult>(
+            Expression<Func<TListElement, IEnumerable<TResult>>> selector, int size)
+        {
+            IEnumerable<OperableList<TResult>> operableListCollection =
+                this.InternalList.Select(recordReference => recordReference.SetList(selector, size));
+
+            var result = new MakeableEnumerable<OperableList<TResult>, TListElement>(operableListCollection, this);
+
+            return result;
+        }
+
+        public OperableList<TListElement> Take(int count)
+        {
+            IEnumerable<RecordReference<TListElement>> input = this.InternalList.Take(count);
+            var result = new OperableList<TListElement>(input, this.ValueGuaranteePopulator, this.Populator);
+            return result;
+        }
+
+        public OperableList<TListElement> Skip(int count)
+        {
+            IEnumerable<RecordReference<TListElement>> input = this.InternalList.Skip(count);
+            var result = new OperableList<TListElement>(input, this.ValueGuaranteePopulator, this.Populator);
+            return result;
+        }
+
         #region IList<> members
 
         public IEnumerator<RecordReference<TListElement>> GetEnumerator()
@@ -406,7 +362,7 @@ namespace TestDataFramework.Populator.Concrete
 
         public int Count => this.InternalList.Count;
 
-        public bool IsReadOnly => ((IList) this.InternalList).IsReadOnly;
+        public bool IsReadOnly => ((IList)this.InternalList).IsReadOnly;
 
         public void Clear()
         {

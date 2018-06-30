@@ -5,15 +5,12 @@ using System.Linq.Expressions;
 using System.Reflection;
 using TestDataFramework.DeepSetting;
 using TestDataFramework.DeepSetting.Interfaces;
-using TestDataFramework.Exceptions;
 using TestDataFramework.ListOperations.Concrete;
-using TestDataFramework.Populator.Interfaces;
 
 namespace TestDataFramework.Populator.Concrete
 {
     public class FieldExpression<TListElement, TProperty>
     {
-        internal readonly OperableList<TListElement> OperableList;
         private readonly Expression<Func<TListElement, TProperty>> expression;
         private readonly IObjectGraphService objectGraphService;
 
@@ -24,6 +21,8 @@ namespace TestDataFramework.Populator.Concrete
             this.OperableList = operableList;
             this.objectGraphService = objectGraphService;
         }
+
+        public virtual OperableList<TListElement> OperableList { get; }
 
         public virtual IEnumerable<TListElement> RecordObjects => this.OperableList.RecordObjects;
 
@@ -178,19 +177,6 @@ namespace TestDataFramework.Populator.Concrete
                 ValueCountRequestOption = valueCountRequestOption
             });
 
-            return this;
-        }
-
-        public virtual FieldExpression<TListElement, TProperty> Value(TProperty value, params Range[] ranges)
-        {
-            this.OperableList.Set(this.expression, value, ranges);
-            return this;
-        }
-
-        public virtual FieldExpression<TListElement, TProperty> Value(Func<TProperty> valueFactory,
-            params Range[] ranges)
-        {
-            this.OperableList.Set(this.expression, valueFactory, ranges);
             return this;
         }
     }

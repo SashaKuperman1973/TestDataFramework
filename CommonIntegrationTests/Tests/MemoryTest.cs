@@ -477,38 +477,59 @@ namespace CommonIntegrationTests.Tests
             IPopulator populator = this.factory.CreateMemoryPopulator();
 
             RecordReference<ListSetterBaseType> listSetterBaseTypeReference = populator.Add<ListSetterBaseType>();
+            OperableList<ListElementType> operableList = listSetterBaseTypeReference.SetList(p => p.B.WithCollection.ElementList, 10);
 
-            listSetterBaseTypeReference.SetList(p => p.B.WithCollection.ElementList, 5)
-                .Set(p => p.SubElement.AString, "Me", 2, 4)
-                .Set(p => p.AString, "Hello", 0, 2, 4)
-                .Set(p => p.SubElement.AnInt, 7, Range.StartAndEndPositions(2, 4));
-
-            populator.Bind();
+            MemoryTest.PopulateForSetTest(operableList, populator);
 
             Assert.AreEqual("Me",
                 listSetterBaseTypeReference.RecordObject.B.WithCollection.ElementList[2].SubElement.AString);
             Assert.AreEqual("Me",
+                listSetterBaseTypeReference.RecordObject.B.WithCollection.ElementList[3].SubElement.AString);
+            Assert.AreEqual("Me",
                 listSetterBaseTypeReference.RecordObject.B.WithCollection.ElementList[4].SubElement.AString);
+
+            Assert.AreEqual("Hello", listSetterBaseTypeReference.RecordObject.B.WithCollection.ElementList[5].AString);
+            Assert.AreEqual("Hello", listSetterBaseTypeReference.RecordObject.B.WithCollection.ElementList[6].AString);
+            Assert.AreEqual("Hello", listSetterBaseTypeReference.RecordObject.B.WithCollection.ElementList[7].AString);
+            Assert.AreEqual("Hello", listSetterBaseTypeReference.RecordObject.B.WithCollection.ElementList[8].AString);
+
+            Assert.AreEqual(7,
+                listSetterBaseTypeReference.RecordObject.B.WithCollection.ElementList[9].SubElement.AnInt);
         }
 
         [TestMethod]
-        public void Set_Array_Test()
+        private void Set_Array_Test()
         {
             IPopulator populator = this.factory.CreateMemoryPopulator();
 
             RecordReference<ListSetterBaseType> listSetterBaseTypeReference = populator.Add<ListSetterBaseType>();
+            OperableList<ListElementType> operableList = listSetterBaseTypeReference.SetList(p => p.B.WithCollection.ElementArray, 10);
 
-            listSetterBaseTypeReference.SetList(p => p.B.WithCollection.ElementArray, 5)
-                .Set(p => p.SubElement.AString, "Me", 2, 4)
-                .Set(p => p.AString, "Hello", 0, 2, 4)
-                .Set(p => p.SubElement.AnInt, 7, Range.StartAndEndPositions(2, 4));
-
-            populator.Bind();
+            MemoryTest.PopulateForSetTest(operableList, populator);
 
             Assert.AreEqual("Me",
                 listSetterBaseTypeReference.RecordObject.B.WithCollection.ElementArray[2].SubElement.AString);
             Assert.AreEqual("Me",
+                listSetterBaseTypeReference.RecordObject.B.WithCollection.ElementArray[3].SubElement.AString);
+            Assert.AreEqual("Me",
                 listSetterBaseTypeReference.RecordObject.B.WithCollection.ElementArray[4].SubElement.AString);
+
+            Assert.AreEqual("Hello", listSetterBaseTypeReference.RecordObject.B.WithCollection.ElementArray[5].AString);
+            Assert.AreEqual("Hello", listSetterBaseTypeReference.RecordObject.B.WithCollection.ElementArray[6].AString);
+            Assert.AreEqual("Hello", listSetterBaseTypeReference.RecordObject.B.WithCollection.ElementArray[7].AString);
+            Assert.AreEqual("Hello", listSetterBaseTypeReference.RecordObject.B.WithCollection.ElementArray[8].AString);
+
+            Assert.AreEqual(7,
+                listSetterBaseTypeReference.RecordObject.B.WithCollection.ElementArray[9].SubElement.AnInt);
+        }
+
+        private static void PopulateForSetTest(OperableList<ListElementType> operableList, IPopulator populator)
+        {
+            operableList.Skip(2).Set(p => p.SubElement.AString, "Me")
+                .Skip(3).Set(p => p.AString, "Hello")
+                .Skip(4).Take(1).Set(p => p.SubElement.AnInt, 7);
+
+            populator.Bind();
         }
 
         [TestMethod]
@@ -552,33 +573,16 @@ namespace CommonIntegrationTests.Tests
         {
             IPopulator populator = this.factory.CreateMemoryPopulator();
 
-            //OperableList<DeepA> deepARecord;
-            var reference = populator.Add<DeepA>();
-            reference.SetList(m => m.DeepB.DeepCList, 3).Set(m => m.DeepString, "S", 2);
-            populator.Bind();
+            var a = populator.Add<DeepA>(5).Select(q => q.DeepB.DeepCList, 10).Skip(2).Take(3)
+                .Set(r => r.Skip(2).Take(2).Set(s => s.DeepString, "I"))
+            .Set(r => r.Skip(4).Take(2).Set(s => s.DeepString, "II"))
+            .Make();
 
-            var result = reference.RecordObject;
+            //.Select(r =>
 
-            populator = this.factory.CreateMemoryPopulator();
+            //        r.Set(s => s.DeepString, "X"))
 
-            var reference2 = populator.Add<DeepA>(5);
-            var x = reference2.Set(m => m.DeepB.String, "S", Range.StartAndLength(2, 3))
-                .SetList(m => m.DeepB.DeepCList, 3, Range.StartAndLength(1, 2)).Set(m => m.DeepString, "S", Range.StartAndEndPositions(0, 1));
-            //reference2.SetList(m => m.DeepB.DeepCList, 3).Set(m => m.DeepString, "S", 2);
-            populator.Bind();
-
-            var result2 = reference2.RecordObjects;
-
-            populator = this.factory.CreateMemoryPopulator();
-
-            var reference3 = populator.Add<DeepA>(5);
-            reference3.Set(m => m.DeepB.String).GuaranteePropertiesByFixedQuantity(new [] {"A"});
-            populator.Bind();
-
-            var result3 = reference3.RecordObjects;
-
-            //.Set(deepC => deepC.DeepString)
-            //.GuaranteePropertiesByFixedQuantity(new[] {"A", "B", "C"}, 5).BindAndMake();
+            //        .BindAndMake();
         }
     }
 }

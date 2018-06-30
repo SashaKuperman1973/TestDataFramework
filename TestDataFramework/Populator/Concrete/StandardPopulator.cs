@@ -86,7 +86,7 @@ namespace TestDataFramework.Populator.Concrete
             this.Populatables.Add(result);
 
             for (int i = 0; i < copies; i++)
-                result.Add(this.Add<T>(primaryRecordReferences));
+                result.Add(this.Get<T>(primaryRecordReferences));
 
             StandardPopulator.Logger.Debug("Exiting Add");
             return result;
@@ -97,15 +97,28 @@ namespace TestDataFramework.Populator.Concrete
             StandardPopulator.Logger.Debug(
                 $"Entering Add. T: {typeof(T)}, primaryRecordReference: {primaryRecordReferences}");
 
-            var recordReference = new RecordReference<T>(this.typeGenerator, this.AttributeDecorator, this,
-                this.objectGraphService, this.valueGuaranteePopulator, this.deepCollectionSettingConverter);
-
+            RecordReference<T> recordReference = this.Get<T>(primaryRecordReferences);
             this.Populatables.Add(recordReference);
-            recordReference.AddPrimaryRecordReference(primaryRecordReferences);
 
             StandardPopulator.Logger.Debug("Exiting Add<T>(primaryRecordReference, propertyExpressionDictionary)");
 
             StandardPopulator.Logger.Debug($"Exiting Add. record object: {recordReference.RecordObject}");
+            return recordReference;
+        }
+
+        private RecordReference<T> Get<T>(params RecordReference[] primaryRecordReferences)
+        {
+            StandardPopulator.Logger.Debug(
+                $"Entering Get. T: {typeof(T)}, primaryRecordReference: {primaryRecordReferences}");
+
+            var recordReference = new RecordReference<T>(this.typeGenerator, this.AttributeDecorator, this,
+                this.objectGraphService, this.valueGuaranteePopulator, this.deepCollectionSettingConverter);
+
+            recordReference.AddPrimaryRecordReference(primaryRecordReferences);
+
+            StandardPopulator.Logger.Debug("Exiting Get<T>(primaryRecordReference, propertyExpressionDictionary)");
+
+            StandardPopulator.Logger.Debug($"Exiting Get. record object: {recordReference.RecordObject}");
             return recordReference;
         }
 

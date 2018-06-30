@@ -568,15 +568,97 @@ namespace CommonIntegrationTests.Tests
             Assert.IsTrue(result != 0);
         }
 
+        private IMakeableCollectionContainer<DeepA> DeepPropertySetting_SettersTest(IPopulator populator)
+        {
+            IMakeableCollectionContainer<DeepA> result = populator.Add<DeepA>(5)
+                .Select(q => q.DeepB.DeepCList, 10).Skip(2).Take(3)
+                .Set(r => r.Skip(2).Take(2).Set(s => s.DeepString, "I"))
+                .Set(r => r.Skip(4).Take(2).Set(s => s.DeepString, "II"));
+
+            return result;
+        }
+
         [TestMethod]
-        public void GauranteedCollectionDeepPropertySetting_Test()
+        public void DeepPropertySetting_Make_Test()
         {
             IPopulator populator = this.factory.CreateMemoryPopulator();
 
-            IEnumerable<DeepA> a = populator.Add<DeepA>(5).Select(q => q.DeepB.DeepCList, 10).Skip(2).Take(3)
-                .Set(r => r.Skip(2).Take(2).Set(s => s.DeepString, "I"))
-                .Set(r => r.Skip(4).Take(2).Set(s => s.DeepString, "II"))
-                .Make();
+            IMakeableCollectionContainer<DeepA> makeable = this.DeepPropertySetting_SettersTest(populator);
+            IEnumerable<DeepA> result = makeable.Make();
+
+            MemoryTest.DeepPropertySetting_Test(result);
+        }
+
+        [TestMethod]
+        public void DeepPropertySetting_BindAndMake_Test()
+        {
+            IPopulator populator = this.factory.CreateMemoryPopulator();
+
+            RecordReference<SubjectClass> subjectReference = populator.Add<SubjectClass>();
+
+            IMakeableCollectionContainer<DeepA> makeable = this.DeepPropertySetting_SettersTest(populator);
+            IEnumerable<DeepA> result = makeable.BindAndMake();
+
+            MemoryTest.DeepPropertySetting_Test(result);
+
+            SubjectClass subject = subjectReference.RecordObject;
+            Assert.IsNotNull(subject);
+            Assert.IsNotNull(subject.AnEmailAddress);
+            Assert.AreNotEqual(0, subject.Integer);
+        }
+
+        private static void DeepPropertySetting_Test(IEnumerable<DeepA> makeable)
+        {
+            List<DeepA> list = makeable.ToList();
+
+            Assert.AreEqual(5, list.Count);
+
+            int deepCCount;
+            int deepACount = 0;
+            list.ForEach(deepA =>
+            {
+                Assert.AreEqual(10, deepA.DeepB.DeepCList.Count);
+
+                if (deepACount < 2)
+                {
+                    deepA.DeepB.DeepCList.ForEach(deepC =>
+                    {
+                        Assert.AreNotEqual("I", deepC.DeepString);
+                        Assert.AreNotEqual("II", deepC.DeepString);
+                    });
+
+                    deepACount++;
+                    return;
+                }
+
+                deepCCount = 0;
+                deepA.DeepB.DeepCList.ForEach(deepC =>
+                {
+                    if (deepCCount < 2 || deepCCount >= 6)
+                    {
+                        Assert.AreNotEqual("I", deepC.DeepString);
+                        Assert.AreNotEqual("II", deepC.DeepString);
+                    }
+                    else if (deepCCount >= 2 && deepCCount < 4)
+                    {
+                        Assert.AreEqual("I", deepC.DeepString);
+                    }
+                    else if (deepCCount >= 4 && deepCCount < 6)
+                    {
+                        Assert.AreEqual("II", deepC.DeepString);
+                    }
+                    else
+                    {
+                        throw new Exception($"Range error. Count = {deepCCount}");
+                    }
+
+                    deepCCount++;
+                });
+
+                deepACount++;
+            });
+
+            Assert.AreEqual(5, deepACount);
         }
     }
 }

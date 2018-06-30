@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.DeepSetting;
 using TestDataFramework.DeepSetting.Interfaces;
+using TestDataFramework.ListOperations.Concrete;
 using TestDataFramework.Populator.Concrete;
 
 namespace Tests.Tests.FieldExpressionTests
@@ -18,7 +19,7 @@ namespace Tests.Tests.FieldExpressionTests
 
         private FieldExpression<ElementType, ElementType.PropertyType> fieldExpression;
 
-        private Mock<OperableList<ElementType>> rangeOperableListMock;
+        private Mock<OperableList<ElementType>> operableListMock;
         private Mock<IObjectGraphService> objectGraphServiceMock;
 
         public class ElementType
@@ -33,8 +34,10 @@ namespace Tests.Tests.FieldExpressionTests
         [TestInitialize]
         public void Initialize()
         {
-            this.rangeOperableListMock =
-                new Mock<OperableList<ElementType>>(null, null, null, null, null, null, null);
+            var valueGuaranteePopulatorMock = new Mock<ValueGuaranteePopulator>();
+
+            this.operableListMock =
+                new Mock<OperableList<ElementType>>(valueGuaranteePopulatorMock.Object, null, null, null, null, null, null);
 
             this.expression = element => element.AProperty;
 
@@ -42,7 +45,7 @@ namespace Tests.Tests.FieldExpressionTests
 
             this.fieldExpression =
                 new FieldExpression<ElementType, ElementType.PropertyType>(this.expression,
-                    this.rangeOperableListMock.Object, this.objectGraphServiceMock.Object);
+                    this.operableListMock.Object, this.objectGraphServiceMock.Object);
         }
 
         [TestMethod]
@@ -50,7 +53,7 @@ namespace Tests.Tests.FieldExpressionTests
         {
             // Arrange
             var element = new ElementType();
-            this.rangeOperableListMock.SetupGet(m => m.RecordObjects).Returns(new[] {element});
+            this.operableListMock.SetupGet(m => m.RecordObjects).Returns(new[] {element});
 
             // Act
 
@@ -75,7 +78,7 @@ namespace Tests.Tests.FieldExpressionTests
 
             // Assert
 
-            this.rangeOperableListMock.Verify(m => m.Make());
+            this.operableListMock.Verify(m => m.Make());
         }
 
         [TestMethod]
@@ -87,7 +90,7 @@ namespace Tests.Tests.FieldExpressionTests
 
             // Assert
 
-            this.rangeOperableListMock.Verify(m => m.BindAndMake());
+            this.operableListMock.Verify(m => m.BindAndMake());
         }
     }
 }

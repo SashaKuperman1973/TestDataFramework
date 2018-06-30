@@ -116,9 +116,7 @@ namespace Tests.Tests.FieldExpressionTests
 
             // Assert
 
-            Assert.AreEqual(this.rangeOperableListMock.Object, resultFieldExpression);
-
-            GuaranteedValues guaranteedValues = this.rangeOperableListMock.Object.GuaranteedPropertySetters.Single();
+            GuaranteedValues guaranteedValues = this.operableListMock.Object.GuaranteedPropertySetters.Single();
 
             assertFrequency(guaranteedValues);
 

@@ -77,16 +77,6 @@ namespace TestDataFramework.Populator.Concrete
         {
         }
 
-        public OperableList(IEnumerable<RecordReference<TListElement>> internalList,
-            ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator,
-            ITypeGenerator typeGenerator, IAttributeDecorator attributeDecorator,
-            IObjectGraphService objectGraphService,
-            DeepCollectionSettingConverter deepCollectionSettingConverter)
-            : this(valueGuaranteePopulator, populator, typeGenerator, attributeDecorator, objectGraphService,
-                deepCollectionSettingConverter, internalList.ToList())
-        {
-        }
-
         public OperableList(IEnumerable<RecordReference<TListElement>> input, ValueGuaranteePopulator valueGuaranteePopulator,
             BasePopulator populator)
         {

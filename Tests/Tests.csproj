@@ -136,7 +136,7 @@
     <Compile Include="Tests\UniqueValueTypeGeneratorTests.cs" />
     <Compile Include="Tests\ValueGuaranteePopulatorTests.cs" />
     <Compile Include="Tests\GenericRecordReferenceTests.cs" />
-    <Compile Include="Tests\OperableListTests\OperableListTests.cs" />
+    <Compile Include="Tests\OperableListTests.cs" />
     <Compile Include="Tests\LargeIntegerTests.cs" />
     <Compile Include="Tests\SqlWriterDictionaryTests.cs" />
     <Compile Include="Tests\KeyTypeUniqueValueGeneratorTests.cs" />

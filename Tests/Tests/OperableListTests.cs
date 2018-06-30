@@ -764,5 +764,134 @@ namespace Tests.Tests.OperableListTests
 
             Assert.AreEqual(0, subject.i);
         }
+
+        [TestMethod]
+        public void Set_Value_Test()
+        {
+            // Arrange
+
+            var objectGraphServiceMock = new Mock<IObjectGraphService>();
+
+            objectGraphServiceMock.Setup(m => m.GetObjectGraph<SubjectClass, string>(n => n.Text))
+                .Returns(new List<PropertyInfo> {typeof(SubjectClass).GetProperty(nameof(SubjectClass.Text))});
+
+            var operableList =
+                new OperableList<SubjectClass>(5, null, null, null, null, objectGraphServiceMock.Object, null);
+
+            // Act
+
+            OperableList<SubjectClass> result = operableList.Set(m => m.Text, "X");
+
+            // Assert
+
+            Assert.AreEqual(operableList, result);
+
+            Assert.AreEqual(5, operableList.InternalList.Count);
+
+            operableList.InternalList.ForEach(reference =>
+            {
+                ExplicitPropertySetter setter = reference.ExplicitPropertySetters.Single();
+                PropertyInfo property = setter.PropertyChain.Single();
+                
+                Assert.AreEqual(nameof(SubjectClass.Text), property.Name);
+
+                var subject = new SubjectClass();
+                setter.Action(subject);
+                Assert.AreEqual("X", subject.Text);
+            });
+        }
+
+        [TestMethod]
+        public void Set_Func_Test()
+        {
+            // Arrange
+
+            var objectGraphServiceMock = new Mock<IObjectGraphService>();
+
+            objectGraphServiceMock.Setup(m => m.GetObjectGraph<SubjectClass, string>(n => n.Text))
+                .Returns(new List<PropertyInfo> { typeof(SubjectClass).GetProperty(nameof(SubjectClass.Text)) });
+
+            var operableList =
+                new OperableList<SubjectClass>(5, null, null, null, null, objectGraphServiceMock.Object, null);
+
+            // Act
+
+            OperableList<SubjectClass> result = operableList.Set(m => m.Text, () => "X");
+
+            // Assert
+
+            Assert.AreEqual(operableList, result);
+
+            Assert.AreEqual(5, operableList.InternalList.Count);
+
+            operableList.InternalList.ForEach(reference =>
+            {
+                ExplicitPropertySetter setter = reference.ExplicitPropertySetters.Single();
+                PropertyInfo property = setter.PropertyChain.Single();
+
+                Assert.AreEqual(nameof(SubjectClass.Text), property.Name);
+
+                var subject = new SubjectClass();
+                setter.Action(subject);
+                Assert.AreEqual("X", subject.Text);
+            });
+        }
+
+        [TestMethod]
+        public void Take_Test()
+        {
+            // Arrange
+
+            var operableList =
+                new OperableList<SubjectClass>(5, null, null, null, null, null, null);
+
+            // Act
+
+            OperableList<SubjectClass> result = operableList.Take(2);
+
+            // Assert
+
+            Assert.AreEqual(2, result.Count);
+        }
+
+        [TestMethod]
+        public void Skip_Test()
+        {
+            // Arrange
+
+            var operableList =
+                new OperableList<SubjectClass>(5, null, null, null, null, null, null);
+
+            // Act
+
+            OperableList<SubjectClass> result = operableList.Skip(2);
+
+            // Assert
+
+            Assert.AreEqual(3, result.Count);
+        }
+
+        [TestMethod]
+        public void Select_Test()
+        {
+            // Arrange
+
+            var objectGraphServiceMock = new Mock<IObjectGraphService>();
+
+            objectGraphServiceMock.Setup(m => m.GetObjectGraph<SubjectClass, List<int>>(n => n.IntegerList))
+                .Returns(new List<PropertyInfo> { typeof(SubjectClass).GetProperty(nameof(SubjectClass.IntegerList)) });
+
+            var operableList =
+                new OperableList<SubjectClass>(5, null, null, null, null, objectGraphServiceMock.Object, null);
+
+            // Act
+
+            MakeableEnumerable<OperableList<int>, SubjectClass> result = operableList.Select(m => m.IntegerList, 3);
+
+            // Assert
+
+            Assert.AreEqual(5, result.Count);
+            result.ForEach(collection => Assert.AreEqual(3, collection.Count));
+        }
     }
 }

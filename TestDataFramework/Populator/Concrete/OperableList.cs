@@ -298,16 +298,6 @@ namespace TestDataFramework.Populator.Concrete
             return result;
         }
 
-        protected void ValidatePositionBoundaries(IEnumerable<int> positions, string rangesParameterName)
-        {
-            IOrderedEnumerable<int> orderedPositions = positions.OrderBy(i => i);
-            int highestPosition = orderedPositions.Last();
-            int lowestPosition = orderedPositions.First();
-
-            if (highestPosition >= this.InternalList.Count || lowestPosition < 0)
-                throw new ArgumentOutOfRangeException(rangesParameterName);
-        }
-
         public MakeableEnumerable<OperableList<TResult>, TListElement> Select<TResult>(
             Expression<Func<TListElement, IEnumerable<TResult>>> selector, int size)
         {

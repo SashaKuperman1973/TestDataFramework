@@ -99,6 +99,7 @@
     <Compile Include="Tests\FieldExpressionTests\FieldExpressionTests.cs" />
     <Compile Include="Tests\FieldExpressionTests\GuaranteeProperties.cs" />
     <Compile Include="Tests\FieldExpressionValidatorTests.cs" />
+    <Compile Include="Tests\MakeableEnumerableTests.cs" />
     <Compile Include="Tests\MaxAttributeTests.cs" />
     <Compile Include="Tests\MemoryValueGeneratorTests.cs" />
     <Compile Include="Tests\MinAttributeTests.cs" />

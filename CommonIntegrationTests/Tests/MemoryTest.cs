@@ -573,16 +573,10 @@ namespace CommonIntegrationTests.Tests
         {
             IPopulator populator = this.factory.CreateMemoryPopulator();
 
-            var a = populator.Add<DeepA>(5).Select(q => q.DeepB.DeepCList, 10).Skip(2).Take(3)
+            IEnumerable<DeepA> a = populator.Add<DeepA>(5).Select(q => q.DeepB.DeepCList, 10).Skip(2).Take(3)
                 .Set(r => r.Skip(2).Take(2).Set(s => s.DeepString, "I"))
-            .Set(r => r.Skip(4).Take(2).Set(s => s.DeepString, "II"))
-            .Make();
-
-            //.Select(r =>
-
-            //        r.Set(s => s.DeepString, "X"))
-
-            //        .BindAndMake();
+                .Set(r => r.Skip(4).Take(2).Set(s => s.DeepString, "II"))
+                .Make();
         }
     }
 }

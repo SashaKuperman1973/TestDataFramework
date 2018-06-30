@@ -7,28 +7,28 @@ namespace TestDataFramework.Populator.Concrete
 {
     public class MakeableEnumerable<TListElement, TParentListElement> : List<TListElement>, IMakeableCollectionContainer<TParentListElement>
     {
-        private readonly IMakeableCollectionContainer<TParentListElement> parentContainer;
+        internal readonly IMakeableCollectionContainer<TParentListElement> ParentContainer;
 
         public MakeableEnumerable(IEnumerable<TListElement> collection,
             IMakeableCollectionContainer<TParentListElement> parentContainer) : base(collection)
         {
-            this.parentContainer = parentContainer;
+            this.ParentContainer = parentContainer;
         }
 
         public IEnumerable<TParentListElement> Make()
         {
-            return this.parentContainer.Make();
+            return this.ParentContainer.Make();
         }
 
         public IEnumerable<TParentListElement> BindAndMake()
         {
-            return this.parentContainer.BindAndMake();
+            return this.ParentContainer.BindAndMake();
         }
 
         public MakeableEnumerable<TListElement, TParentListElement> Set<TResultElement>(
             Func<TListElement, TResultElement> selector)
         {
-            Enumerable.Select(this, selector).ToList();
+            this.Select(selector).ToList();
             return this;
         }
 
@@ -36,7 +36,7 @@ namespace TestDataFramework.Populator.Concrete
         {
             IEnumerable<TListElement> taken = Enumerable.Take(this, count);
 
-            var result = new MakeableEnumerable<TListElement, TParentListElement>(taken, this.parentContainer);
+            var result = new MakeableEnumerable<TListElement, TParentListElement>(taken, this.ParentContainer);
             return result;
         }
 
@@ -44,7 +44,7 @@ namespace TestDataFramework.Populator.Concrete
         {
             IEnumerable<TListElement> afterSkip = Enumerable.Skip(this, count);
 
-            var result = new MakeableEnumerable<TListElement, TParentListElement>(afterSkip, this.parentContainer);
+            var result = new MakeableEnumerable<TListElement, TParentListElement>(afterSkip, this.ParentContainer);
             return result;
         }
     }

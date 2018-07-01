@@ -20,6 +20,7 @@
 using System;
 using TestDataFramework.HandledTypeGenerator;
 using TestDataFramework.Populator.Concrete;
+using TestDataFramework.Populator.Concrete.OperableList;
 using TestDataFramework.ValueGenerator.Interfaces;
 
 namespace TestDataFramework.Populator.Interfaces
@@ -29,7 +30,7 @@ namespace TestDataFramework.Populator.Interfaces
         IValueGenerator ValueGenerator { get; }
         void Bind();
 
-        OperableList<T> Add<T>(int copies, params RecordReference[] primaryRecordReferences);
+        ListParentOperableList<T> Add<T>(int copies, params RecordReference[] primaryRecordReferences);
 
         RecordReference<T> Add<T>(params RecordReference[] primaryRecordReferences);
 

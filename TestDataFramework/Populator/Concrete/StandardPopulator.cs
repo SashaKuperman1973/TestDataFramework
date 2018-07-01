@@ -27,6 +27,7 @@ using TestDataFramework.HandledTypeGenerator;
 using TestDataFramework.ListOperations.Concrete;
 using TestDataFramework.Logger;
 using TestDataFramework.Persistence.Interfaces;
+using TestDataFramework.Populator.Concrete.OperableList;
 using TestDataFramework.TypeGenerator.Interfaces;
 using TestDataFramework.ValueGenerator.Interfaces;
 
@@ -75,12 +76,12 @@ namespace TestDataFramework.Populator.Concrete
             this.handledTypeGenerator.HandledTypeValueGetterDictionary.Add(type, valueGetter);
         }
 
-        public override OperableList<T> Add<T>(int copies, params RecordReference[] primaryRecordReferences)
+        public override ListParentOperableList<T> Add<T>(int copies, params RecordReference[] primaryRecordReferences)
         {
             StandardPopulator.Logger.Debug(
                 $"Entering Add. T: {typeof(T)}, copies: {copies}, primaryRecordReference: {primaryRecordReferences}");
 
-            var result = new OperableList<T>(this.valueGuaranteePopulator, this, this.typeGenerator,
+            var result = new ListParentOperableList<T>(this.valueGuaranteePopulator, this, this.typeGenerator,
                 this.AttributeDecorator, this.objectGraphService, this.deepCollectionSettingConverter);
 
             this.Populatables.Add(result);

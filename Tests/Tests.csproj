@@ -97,7 +97,7 @@
     <Compile Include="Tests\ExplicitPropertySetterContextServiceTests.cs" />
     <Compile Include="Tests\FieldExpressionHelperTests.cs" />
     <Compile Include="Tests\FieldExpressionTests\FieldExpressionTests.cs" />
-    <Compile Include="Tests\FieldExpressionTests\GuaranteeProperties.cs" />
+    <Compile Include="Tests\FieldExpressionTests\GuaranteePropertiesTests.cs" />
     <Compile Include="Tests\FieldExpressionValidatorTests.cs" />
     <Compile Include="Tests\MakeableEnumerableTests.cs" />
     <Compile Include="Tests\MaxAttributeTests.cs" />

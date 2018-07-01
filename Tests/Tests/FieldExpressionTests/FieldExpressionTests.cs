@@ -8,7 +8,10 @@ using Moq;
 using TestDataFramework.DeepSetting;
 using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.ListOperations.Concrete;
+using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete;
+using TestDataFramework.Populator.Concrete.FieldExpression;
+using TestDataFramework.Populator.Concrete.OperableList;
 
 namespace Tests.Tests.FieldExpressionTests
 {
@@ -17,9 +20,9 @@ namespace Tests.Tests.FieldExpressionTests
     {
         private Expression<Func<ElementType, ElementType.PropertyType>> expression;
 
-        private FieldExpression<ElementType, ElementType.PropertyType> fieldExpression;
+        private ListParentFieldExpression<ElementType, ElementType.PropertyType> fieldExpression;
 
-        private Mock<OperableList<ElementType>> operableListMock;
+        private Mock<ListParentOperableList<ElementType>> operableListMock;
         private Mock<IObjectGraphService> objectGraphServiceMock;
 
         public class ElementType
@@ -37,14 +40,14 @@ namespace Tests.Tests.FieldExpressionTests
             var valueGuaranteePopulatorMock = new Mock<ValueGuaranteePopulator>();
 
             this.operableListMock =
-                new Mock<OperableList<ElementType>>(valueGuaranteePopulatorMock.Object, null, null, null, null, null, null);
+                new Mock<ListParentOperableList<ElementType>>(valueGuaranteePopulatorMock.Object, null, null, null, null, null, null);
 
             this.expression = element => element.AProperty;
 
             this.objectGraphServiceMock = new Mock<IObjectGraphService>();
 
             this.fieldExpression =
-                new FieldExpression<ElementType, ElementType.PropertyType>(this.expression,
+                new ListParentFieldExpression<ElementType, ElementType.PropertyType>(this.expression,
                     this.operableListMock.Object, this.objectGraphServiceMock.Object);
         }
 

@@ -32,6 +32,7 @@ using TestDataFramework.DeepSetting;
 using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
+using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete;
 using TestDataFramework.TypeGenerator.Interfaces;
 using Tests.TestModels;

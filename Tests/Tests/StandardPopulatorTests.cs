@@ -32,6 +32,7 @@ using TestDataFramework.Helpers;
 using TestDataFramework.Persistence.Interfaces;
 using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete;
+using TestDataFramework.Populator.Concrete.OperableList;
 using TestDataFramework.TypeGenerator.Interfaces;
 using TestDataFramework.ValueGenerator.Interfaces;
 using Tests.Mocks;
@@ -169,7 +170,7 @@ namespace Tests.Tests
 
             var referenceMock1 = new Mock<RecordReference<SubjectClass>>(null, null, null, null, null, null);
             var referenceMock2 = new Mock<RecordReference<SubjectClass>>(null, null, null, null, null, null);
-            var set = new OperableList<SubjectClass>(
+            var set = new ListParentOperableList<SubjectClass>(
                 new List<RecordReference<SubjectClass>> {referenceMock1.Object, referenceMock2.Object},
                 null, null);
 
@@ -289,12 +290,12 @@ namespace Tests.Tests
 
             // Act
 
-            OperableList<SubjectClass> result =
+            ListParentOperableList<SubjectClass> result =
                 this.populator.Add<SubjectClass>(5, primaryKeys);
 
             // Assert
 
-            Assert.AreEqual(result, this.populator.Populatables.Single(x => x is OperableList<SubjectClass>));
+            Assert.AreEqual(result, this.populator.Populatables.Single(x => x is ListParentOperableList<SubjectClass>));
         }
 
         [TestMethod]

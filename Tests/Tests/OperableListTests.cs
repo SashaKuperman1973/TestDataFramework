@@ -30,6 +30,8 @@ using TestDataFramework.ListOperations.Concrete;
 using TestDataFramework.ListOperations.Interfaces;
 using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete;
+using TestDataFramework.Populator.Concrete.MakeableEnumerable;
+using TestDataFramework.Populator.Concrete.OperableList;
 using TestDataFramework.TypeGenerator.Interfaces;
 using Tests.TestModels;
 
@@ -51,7 +53,7 @@ namespace Tests.Tests.OperableListTests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, this.populatorMock.Object, null, null, null, null);
+            var operableList = new ListParentOperableList<SubjectClass>(null, this.populatorMock.Object, null, null, null, null);
             var subjectReference = new RecordReference<SubjectClass>(null, null, null, null, null, null);
             operableList.Add(subjectReference);
 
@@ -69,7 +71,7 @@ namespace Tests.Tests.OperableListTests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, this.populatorMock.Object, null, null, null, null);
+            var operableList = new ListParentOperableList<SubjectClass>(null, this.populatorMock.Object, null, null, null, null);
 
             // Act
 
@@ -85,7 +87,7 @@ namespace Tests.Tests.OperableListTests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
+            var operableList = new ListParentOperableList<SubjectClass>(null, null, null, null, null, null);
             var recordReference = new RecordReference<SubjectClass>(null, null, null, null, null, null);
             var subject = new SubjectClass();
             ((RecordReference) recordReference).RecordObject = subject;
@@ -102,7 +104,7 @@ namespace Tests.Tests.OperableListTests
         [TestMethod]
         public void GuaranteeByPercentageOfTotal_ByValue_DefaultPercentage_Test()
         {
-            void Call(OperableList<SubjectClass> collection, SubjectClass[] data)
+            void Call(ListParentOperableList<SubjectClass> collection, SubjectClass[] data)
             {
                 collection.GuaranteeByPercentageOfTotal(data);
             }
@@ -113,7 +115,7 @@ namespace Tests.Tests.OperableListTests
         [TestMethod]
         public void GuaranteeByPercentageOfTotal_ByValue_Test()
         {
-            void Call(OperableList<SubjectClass> collection, SubjectClass[] data)
+            void Call(ListParentOperableList<SubjectClass> collection, SubjectClass[] data)
             {
                 collection.GuaranteeByPercentageOfTotal(data, 10);
             }
@@ -121,11 +123,11 @@ namespace Tests.Tests.OperableListTests
             OperableListTests.GuaranteeByPercentageOfTotal_ByValue_Test(Call);
         }
 
-        private static void GuaranteeByPercentageOfTotal_ByValue_Test(Action<OperableList<SubjectClass>, SubjectClass[]> call)
+        private static void GuaranteeByPercentageOfTotal_ByValue_Test(Action<ListParentOperableList<SubjectClass>, SubjectClass[]> call)
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
+            var operableList = new ListParentOperableList<SubjectClass>(null, null, null, null, null, null);
             var subject = new SubjectClass();
             SubjectClass[] data = {subject};
 
@@ -142,7 +144,7 @@ namespace Tests.Tests.OperableListTests
         [TestMethod]
         public void GuaranteeByPercentageOfTotal_ByObject_DefaultPercentage_Test()
         {
-            void Call(OperableList<SubjectClass> collection, object[] values) =>
+            void Call(ListParentOperableList<SubjectClass> collection, object[] values) =>
                 collection.GuaranteeByPercentageOfTotal(values);
 
             OperableListTests.GuaranteeByPercentageOfTotal_ByObject_Test(Call);
@@ -151,17 +153,17 @@ namespace Tests.Tests.OperableListTests
         [TestMethod]
         public void GuaranteeByPercentageOfTotal_ByObject_Test()
         {
-            void Call(OperableList<SubjectClass> collection, object[] values) => 
+            void Call(ListParentOperableList<SubjectClass> collection, object[] values) => 
                 collection.GuaranteeByPercentageOfTotal(values, 10);
 
             OperableListTests.GuaranteeByPercentageOfTotal_ByObject_Test(Call);
         }
 
-        private static void GuaranteeByPercentageOfTotal_ByObject_Test(Action<OperableList<SubjectClass>, object[]> call)
+        private static void GuaranteeByPercentageOfTotal_ByObject_Test(Action<ListParentOperableList<SubjectClass>, object[]> call)
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
+            var operableList = new ListParentOperableList<SubjectClass>(null, null, null, null, null, null);
 
             var a = new SubjectClass();
             Func<SubjectClass> b = () => new SubjectClass();
@@ -179,7 +181,7 @@ namespace Tests.Tests.OperableListTests
         [TestMethod]
         public void GuaranteeByPercentageOfTotal_ByValueFunc_DefaultPercentage_Test()
         {
-            void Call(OperableList<SubjectClass> subject, Func<SubjectClass>[] data) =>
+            void Call(ListParentOperableList<SubjectClass> subject, Func<SubjectClass>[] data) =>
                 subject.GuaranteeByPercentageOfTotal(data);
 
             OperableListTests.GuaranteeByPercentageOfTotal_ByValueFunc_Test(Call);
@@ -188,17 +190,17 @@ namespace Tests.Tests.OperableListTests
         [TestMethod]
         public void GuaranteeByPercentageOfTotal_ByValueFunc_Test()
         {
-            void Call(OperableList<SubjectClass> subject, Func<SubjectClass>[] data) =>
+            void Call(ListParentOperableList<SubjectClass> subject, Func<SubjectClass>[] data) =>
                 subject.GuaranteeByPercentageOfTotal(data, 10);
 
             OperableListTests.GuaranteeByPercentageOfTotal_ByValueFunc_Test(Call);
         }
 
-        public static void GuaranteeByPercentageOfTotal_ByValueFunc_Test(Action<OperableList<SubjectClass>, Func<SubjectClass>[]> call)
+        public static void GuaranteeByPercentageOfTotal_ByValueFunc_Test(Action<ListParentOperableList<SubjectClass>, Func<SubjectClass>[]> call)
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
+            var operableList = new ListParentOperableList<SubjectClass>(null, null, null, null, null, null);
             Func<SubjectClass> subject = () => new SubjectClass();
             Func<SubjectClass>[] data = { subject };
 
@@ -217,7 +219,7 @@ namespace Tests.Tests.OperableListTests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
+            var operableList = new ListParentOperableList<SubjectClass>(null, null, null, null, null, null);
             var subject = new SubjectClass();
             SubjectClass[] data = {subject};
 
@@ -236,7 +238,7 @@ namespace Tests.Tests.OperableListTests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
+            var operableList = new ListParentOperableList<SubjectClass>(null, null, null, null, null, null);
 
             var a = new SubjectClass();
             Func<SubjectClass> b = () => new SubjectClass();
@@ -256,7 +258,7 @@ namespace Tests.Tests.OperableListTests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
+            var operableList = new ListParentOperableList<SubjectClass>(null, null, null, null, null, null);
             Func<SubjectClass> subject = () => new SubjectClass();
             Func<SubjectClass>[] data = {subject};
 
@@ -275,7 +277,7 @@ namespace Tests.Tests.OperableListTests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
+            var operableList = new ListParentOperableList<SubjectClass>(null, null, null, null, null, null);
 
             var subject1 = new SubjectClass();
             var subject2 = new SubjectClass();
@@ -296,7 +298,7 @@ namespace Tests.Tests.OperableListTests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
+            var operableList = new ListParentOperableList<SubjectClass>(null, null, null, null, null, null);
 
             var subject1 = new SubjectClass();
             Func<SubjectClass> subject2 = () => new SubjectClass();
@@ -317,7 +319,7 @@ namespace Tests.Tests.OperableListTests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
+            var operableList = new ListParentOperableList<SubjectClass>(null, null, null, null, null, null);
             Func<SubjectClass> subject1 = () => new SubjectClass();
             Func<SubjectClass> subject2 = () => new SubjectClass();
             Func<SubjectClass> subject3 = () => new SubjectClass();
@@ -337,7 +339,7 @@ namespace Tests.Tests.OperableListTests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
+            var operableList = new ListParentOperableList<SubjectClass>(null, null, null, null, null, null);
             var subjectRecord = new RecordReference<SubjectClass>(null, null, null, null, null, null);
             operableList.InternalList = new List<RecordReference<SubjectClass>> {subjectRecord};
 
@@ -357,7 +359,7 @@ namespace Tests.Tests.OperableListTests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
+            var operableList = new ListParentOperableList<SubjectClass>(null, null, null, null, null, null);
             var reference = new RecordReference<SubjectClass>(null, null, null, null, null, null);
             operableList.InternalList.Add(reference);
 
@@ -381,7 +383,7 @@ namespace Tests.Tests.OperableListTests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
+            var operableList = new ListParentOperableList<SubjectClass>(null, null, null, null, null, null);
             var reference = new RecordReference<SubjectClass>(null, null, null, null, null, null);
             operableList.InternalList.Add(reference);
 
@@ -403,7 +405,7 @@ namespace Tests.Tests.OperableListTests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
+            var operableList = new ListParentOperableList<SubjectClass>(null, null, null, null, null, null);
             var reference = new RecordReference<SubjectClass>(null, null, null, null, null, null);
 
             // Act
@@ -420,7 +422,7 @@ namespace Tests.Tests.OperableListTests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
+            var operableList = new ListParentOperableList<SubjectClass>(null, null, null, null, null, null);
             var reference = new RecordReference<SubjectClass>(null, null, null, null, null, null);
             operableList.Add(reference);
             var array = new RecordReference<SubjectClass>[1];
@@ -439,7 +441,7 @@ namespace Tests.Tests.OperableListTests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
+            var operableList = new ListParentOperableList<SubjectClass>(null, null, null, null, null, null);
             var reference = new RecordReference<SubjectClass>(null, null, null, null, null, null);
             operableList.Add(reference);
 
@@ -457,7 +459,7 @@ namespace Tests.Tests.OperableListTests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
+            var operableList = new ListParentOperableList<SubjectClass>(null, null, null, null, null, null);
             var reference = new RecordReference<SubjectClass>(null, null, null, null, null, null);
             operableList.Add(reference);
 
@@ -475,7 +477,7 @@ namespace Tests.Tests.OperableListTests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
+            var operableList = new ListParentOperableList<SubjectClass>(null, null, null, null, null, null);
             var reference = new RecordReference<SubjectClass>(null, null, null, null, null, null);
             var expected = new RecordReference<SubjectClass>(null, null, null, null, null, null);
             operableList.Add(reference);
@@ -494,7 +496,7 @@ namespace Tests.Tests.OperableListTests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
+            var operableList = new ListParentOperableList<SubjectClass>(null, null, null, null, null, null);
             var reference = new RecordReference<SubjectClass>(null, null, null, null, null, null);
 
             var subject = new SubjectClass();
@@ -516,7 +518,7 @@ namespace Tests.Tests.OperableListTests
         [TestMethod]
         public void Contains_Test()
         {
-            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
+            var operableList = new ListParentOperableList<SubjectClass>(null, null, null, null, null, null);
             var reference = new RecordReference<SubjectClass>(null, null, null, null, null, null);
             operableList.Add(reference);
 
@@ -534,7 +536,7 @@ namespace Tests.Tests.OperableListTests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
+            var operableList = new ListParentOperableList<SubjectClass>(null, null, null, null, null, null);
 
             // Act
 
@@ -550,7 +552,7 @@ namespace Tests.Tests.OperableListTests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
+            var operableList = new ListParentOperableList<SubjectClass>(null, null, null, null, null, null);
 
             var reference1 = new RecordReference<SubjectClass>(null, null, null, null, null, null);
             operableList.Add(reference1);
@@ -572,7 +574,7 @@ namespace Tests.Tests.OperableListTests
         {
             // Arrange
 
-            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
+            var operableList = new ListParentOperableList<SubjectClass>(null, null, null, null, null, null);
 
             var reference1 = new RecordReference<SubjectClass>(null, null, null, null, null, null);
             operableList.Add(reference1);
@@ -593,7 +595,7 @@ namespace Tests.Tests.OperableListTests
         {
             // Arange
 
-            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
+            var operableList = new ListParentOperableList<SubjectClass>(null, null, null, null, null, null);
 
             var reference1 = new RecordReference<SubjectClass>(null, null, null, null, null, null);
             operableList.Add(reference1);
@@ -619,7 +621,7 @@ namespace Tests.Tests.OperableListTests
         {
             // Arange
 
-            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
+            var operableList = new ListParentOperableList<SubjectClass>(null, null, null, null, null, null);
 
             var reference1 = new RecordReference<SubjectClass>(null, null, null, null, null, null);
             operableList.Add(reference1);
@@ -646,7 +648,7 @@ namespace Tests.Tests.OperableListTests
 
             var typeGeneratorMock = new Mock<ITypeGenerator>();
             var valueGuaranteePopulatorMock = new Mock<ValueGuaranteePopulator>();
-            var operableList = new OperableList<SubjectClass>(valueGuaranteePopulatorMock.Object, null, null, null, null, null);
+            var operableList = new ListParentOperableList<SubjectClass>(valueGuaranteePopulatorMock.Object, null, null, null, null, null);
 
             var subject1 = new RecordReference<SubjectClass>(typeGeneratorMock.Object, null, null, null, null, null);
             var subject2 = new RecordReference<SubjectClass>(typeGeneratorMock.Object, null, null, null, null, null);
@@ -664,7 +666,7 @@ namespace Tests.Tests.OperableListTests
                 Times.Exactly(2));
 
             valueGuaranteePopulatorMock.Verify(
-                m => m.Bind(It.IsAny<OperableList<SubjectClass>>(), It.IsAny<List<GuaranteedValues>>(), It.IsAny<IValueGauranteePopulatorContextService>()), Times.Never);
+                m => m.Bind(It.IsAny<ListParentOperableList<SubjectClass>>(), It.IsAny<List<GuaranteedValues>>(), It.IsAny<IValueGauranteePopulatorContextService>()), Times.Never);
         }
 
         [TestMethod]
@@ -674,7 +676,7 @@ namespace Tests.Tests.OperableListTests
 
             var valueGuaranteePopulatorMock = new Mock<ValueGuaranteePopulator>();
 
-            var operableList = new OperableList<SubjectClass>(valueGuaranteePopulatorMock.Object, null, null, null, null, null);
+            var operableList = new ListParentOperableList<SubjectClass>(valueGuaranteePopulatorMock.Object, null, null, null, null, null);
 
             var subject = new SubjectClass();
             SubjectClass[] data = {subject};
@@ -699,7 +701,7 @@ namespace Tests.Tests.OperableListTests
             var valueGuaranteePopulatorMock = new Mock<ValueGuaranteePopulator>();
 
             var operableList =
-                new OperableList<SubjectClass>(10, valueGuaranteePopulatorMock.Object, null,
+                new ListParentOperableList<SubjectClass>(10, valueGuaranteePopulatorMock.Object, null,
                     new Mock<ITypeGenerator>().Object, null, new Mock<IObjectGraphService>().Object, null);
 
             operableList.Set(m => m.Integer).GuaranteePropertiesByFixedQuantity(new[] {1, 2, 3, 4, 5});
@@ -718,7 +720,7 @@ namespace Tests.Tests.OperableListTests
         public void Populate_NoAction_IfPopulated_Test()
         {
             var typeGeneratorMock = new Mock<ITypeGenerator>();
-            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
+            var operableList = new ListParentOperableList<SubjectClass>(null, null, null, null, null, null);
 
             var subject1 = new RecordReference<SubjectClass>(typeGeneratorMock.Object, null, null, null, null, null);
 
@@ -738,7 +740,7 @@ namespace Tests.Tests.OperableListTests
         [TestMethod]
         public void Ignore_Test()
         {
-            var operableList = new OperableList<ClassWithSideEffectProperty>(null, null, null, null, null, null);
+            var operableList = new ListParentOperableList<ClassWithSideEffectProperty>(null, null, null, null, null, null);
 
             var objectGraphServiceMock = new Mock<IObjectGraphService>();
             PropertyInfo propertyInfo =
@@ -776,11 +778,11 @@ namespace Tests.Tests.OperableListTests
                 .Returns(new List<PropertyInfo> {typeof(SubjectClass).GetProperty(nameof(SubjectClass.Text))});
 
             var operableList =
-                new OperableList<SubjectClass>(5, null, null, null, null, objectGraphServiceMock.Object, null);
+                new ListParentOperableList<SubjectClass>(5, null, null, null, null, objectGraphServiceMock.Object, null);
 
             // Act
 
-            OperableList<SubjectClass> result = operableList.Set(m => m.Text, "X");
+            ListParentOperableList<SubjectClass> result = operableList.Set(m => m.Text, "X");
 
             // Assert
 
@@ -812,11 +814,11 @@ namespace Tests.Tests.OperableListTests
                 .Returns(new List<PropertyInfo> { typeof(SubjectClass).GetProperty(nameof(SubjectClass.Text)) });
 
             var operableList =
-                new OperableList<SubjectClass>(5, null, null, null, null, objectGraphServiceMock.Object, null);
+                new ListParentOperableList<SubjectClass>(5, null, null, null, null, objectGraphServiceMock.Object, null);
 
             // Act
 
-            OperableList<SubjectClass> result = operableList.Set(m => m.Text, () => "X");
+            ListParentOperableList<SubjectClass> result = operableList.Set(m => m.Text, () => "X");
 
             // Assert
 
@@ -843,11 +845,11 @@ namespace Tests.Tests.OperableListTests
             // Arrange
 
             var operableList =
-                new OperableList<SubjectClass>(5, null, null, null, null, null, null);
+                new ListParentOperableList<SubjectClass>(5, null, null, null, null, null, null);
 
             // Act
 
-            OperableList<SubjectClass> result = operableList.Take(2);
+            ListParentOperableList<SubjectClass> result = operableList.Take(2);
 
             // Assert
 
@@ -860,11 +862,11 @@ namespace Tests.Tests.OperableListTests
             // Arrange
 
             var operableList =
-                new OperableList<SubjectClass>(5, null, null, null, null, null, null);
+                new ListParentOperableList<SubjectClass>(5, null, null, null, null, null, null);
 
             // Act
 
-            OperableList<SubjectClass> result = operableList.Skip(2);
+            ListParentOperableList<SubjectClass> result = operableList.Skip(2);
 
             // Assert
 
@@ -882,11 +884,11 @@ namespace Tests.Tests.OperableListTests
                 .Returns(new List<PropertyInfo> { typeof(SubjectClass).GetProperty(nameof(SubjectClass.IntegerList)) });
 
             var operableList =
-                new OperableList<SubjectClass>(5, null, null, null, null, objectGraphServiceMock.Object, null);
+                new ListParentOperableList<SubjectClass>(5, null, null, null, null, objectGraphServiceMock.Object, null);
 
             // Act
 
-            MakeableEnumerable<OperableList<int>, SubjectClass> result = operableList.Select(m => m.IntegerList, 3);
+            ListParentMakeableEnumerable<ListParentOperableList<int>, SubjectClass> result = operableList.Select(m => m.IntegerList, 3);
 
             // Assert
 

@@ -26,7 +26,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Factories;
 using TestDataFramework.Helpers;
+using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete;
+using TestDataFramework.Populator.Concrete.OperableList;
 using TestDataFramework.Populator.Interfaces;
 using Tests.TestModels;
 using SubjectClass = CommonIntegrationTests.TestModels.SubjectClass;
@@ -477,7 +479,9 @@ namespace CommonIntegrationTests.Tests
             IPopulator populator = this.factory.CreateMemoryPopulator();
 
             RecordReference<ListSetterBaseType> listSetterBaseTypeReference = populator.Add<ListSetterBaseType>();
-            OperableList<ListElementType> operableList = listSetterBaseTypeReference.SetList(p => p.B.WithCollection.ElementList, 10);
+
+            ReferenceParentOperableList<ListElementType, ListSetterBaseType> operableList =
+                listSetterBaseTypeReference.SetList(p => p.B.WithCollection.ElementList, 10);
 
             MemoryTest.PopulateForSetTest(operableList, populator);
 
@@ -498,12 +502,14 @@ namespace CommonIntegrationTests.Tests
         }
 
         [TestMethod]
-        private void Set_Array_Test()
+        public void Set_Array_Test()
         {
             IPopulator populator = this.factory.CreateMemoryPopulator();
 
             RecordReference<ListSetterBaseType> listSetterBaseTypeReference = populator.Add<ListSetterBaseType>();
-            OperableList<ListElementType> operableList = listSetterBaseTypeReference.SetList(p => p.B.WithCollection.ElementArray, 10);
+
+            ReferenceParentOperableList<ListElementType, ListSetterBaseType> operableList =
+                listSetterBaseTypeReference.SetList(p => p.B.WithCollection.ElementArray, 10);
 
             MemoryTest.PopulateForSetTest(operableList, populator);
 
@@ -523,7 +529,8 @@ namespace CommonIntegrationTests.Tests
                 listSetterBaseTypeReference.RecordObject.B.WithCollection.ElementArray[9].SubElement.AnInt);
         }
 
-        private static void PopulateForSetTest(OperableList<ListElementType> operableList, IPopulator populator)
+        private static void PopulateForSetTest(
+            ReferenceParentOperableList<ListElementType, ListSetterBaseType> operableList, IPopulator populator)
         {
             operableList.Skip(2).Set(p => p.SubElement.AString, "Me")
                 .Skip(3).Set(p => p.AString, "Hello")

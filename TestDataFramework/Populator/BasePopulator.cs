@@ -26,6 +26,7 @@ using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.HandledTypeGenerator;
 using TestDataFramework.Logger;
 using TestDataFramework.Populator.Concrete;
+using TestDataFramework.Populator.Concrete.OperableList;
 using TestDataFramework.Populator.Interfaces;
 using TestDataFramework.ValueGenerator.Interfaces;
 
@@ -58,7 +59,7 @@ namespace TestDataFramework.Populator
 
         public abstract void Bind();
 
-        public abstract OperableList<T> Add<T>(int copies, params RecordReference[] primaryRecordReferences);
+        public abstract ListParentOperableList<T> Add<T>(int copies, params RecordReference[] primaryRecordReferences);
 
         public abstract RecordReference<T> Add<T>(params RecordReference[] primaryRecordReferences);
 

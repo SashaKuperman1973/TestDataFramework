@@ -32,6 +32,7 @@ using TestDataFramework.HandledTypeGenerator;
 using TestDataFramework.Helpers;
 using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete;
+using TestDataFramework.Populator.Concrete.OperableList;
 using TestDataFramework.ValueGenerator.Interfaces;
 using Tests.TestModels;
 using Tests.TestModels.Simple;
@@ -102,7 +103,7 @@ namespace Tests.Tests
                 throw new NotImplementedException();
             }
 
-            public override OperableList<T> Add<T>(int copies, params RecordReference[] primaryRecordReferences)
+            public override ListParentOperableList<T> Add<T>(int copies, params RecordReference[] primaryRecordReferences)
             {
                 throw new NotImplementedException();
             }

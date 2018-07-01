@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TestDataFramework.Exceptions;
 using TestDataFramework.ListOperations.Interfaces;
+using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete;
 
 namespace TestDataFramework.ListOperations.Concrete

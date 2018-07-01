@@ -33,7 +33,7 @@ using TestDataFramework.Populator.Concrete;
 using TestDataFramework.TypeGenerator.Interfaces;
 using Tests.TestModels;
 
-namespace Tests.Tests.OperableListTests
+namespace Tests.Tests
 {
     [TestClass]
     public class OperableListTests

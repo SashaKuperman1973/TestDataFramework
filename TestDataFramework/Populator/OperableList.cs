@@ -250,8 +250,9 @@ namespace TestDataFramework.Populator
             return this;
         }
 
-        public virtual OperableList<TListElement> GuaranteeByFixedQuantity<TValue>(IEnumerable<TValue> guaranteedValues, int fixedQuantity = 0)
+        public virtual OperableList<TListElement> GuaranteeByFixedQuantity(IEnumerable<object> guaranteedValues, int fixedQuantity = 0)
         {
+            this.AddGuaranteeByFixedQuantity(guaranteedValues, fixedQuantity);
             return this;
         }
 

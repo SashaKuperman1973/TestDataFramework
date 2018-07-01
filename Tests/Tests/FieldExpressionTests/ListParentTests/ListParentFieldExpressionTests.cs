@@ -2,27 +2,24 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using TestDataFramework.DeepSetting;
 using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.ListOperations.Concrete;
-using TestDataFramework.Populator;
-using TestDataFramework.Populator.Concrete;
 using TestDataFramework.Populator.Concrete.FieldExpression;
 using TestDataFramework.Populator.Concrete.OperableList;
 
-namespace Tests.Tests.FieldExpressionTests
+namespace Tests.Tests.FieldExpressionTests.ListParentTests
 {
     [TestClass]
-    public partial class FieldExpressionTests
+    public partial class ListParentFieldExpressionTests
     {
         private Expression<Func<ElementType, ElementType.PropertyType>> expression;
 
-        private ListParentFieldExpression<ElementType, ElementType.PropertyType> fieldExpression;
+        private ListParentFieldExpression<ElementType, ElementType.PropertyType> listParentFieldExpression;
 
-        private Mock<ListParentOperableList<ElementType>> operableListMock;
+        private Mock<ListParentOperableList<ElementType>> listParentOperableListMock;
+
         private Mock<IObjectGraphService> objectGraphServiceMock;
 
         public class ElementType
@@ -39,16 +36,15 @@ namespace Tests.Tests.FieldExpressionTests
         {
             var valueGuaranteePopulatorMock = new Mock<ValueGuaranteePopulator>();
 
-            this.operableListMock =
-                new Mock<ListParentOperableList<ElementType>>(valueGuaranteePopulatorMock.Object, null, null, null, null, null, null);
-
             this.expression = element => element.AProperty;
 
             this.objectGraphServiceMock = new Mock<IObjectGraphService>();
 
-            this.fieldExpression =
+            this.listParentOperableListMock =
+                new Mock<ListParentOperableList<ElementType>>(valueGuaranteePopulatorMock.Object, null, null, null, null, null, null);
+            this.listParentFieldExpression =
                 new ListParentFieldExpression<ElementType, ElementType.PropertyType>(this.expression,
-                    this.operableListMock.Object, this.objectGraphServiceMock.Object);
+                    this.listParentOperableListMock.Object, this.objectGraphServiceMock.Object);
         }
 
         [TestMethod]
@@ -56,11 +52,11 @@ namespace Tests.Tests.FieldExpressionTests
         {
             // Arrange
             var element = new ElementType();
-            this.operableListMock.SetupGet(m => m.RecordObjects).Returns(new[] {element});
+            this.listParentOperableListMock.SetupGet(m => m.RecordObjects).Returns(new[] {element});
 
             // Act
 
-            IEnumerable<ElementType> result = this.fieldExpression.RecordObjects;
+            IEnumerable<ElementType> result = this.listParentFieldExpression.RecordObjects;
 
             // Assert
 
@@ -77,11 +73,11 @@ namespace Tests.Tests.FieldExpressionTests
         {
             // Act
 
-            this.fieldExpression.Make();
+            this.listParentFieldExpression.Make();
 
             // Assert
 
-            this.operableListMock.Verify(m => m.Make());
+            this.listParentOperableListMock.Verify(m => m.Make());
         }
 
         [TestMethod]
@@ -89,11 +85,11 @@ namespace Tests.Tests.FieldExpressionTests
         {
             // Act
 
-            this.fieldExpression.BindAndMake();
+            this.listParentFieldExpression.BindAndMake();
 
             // Assert
 
-            this.operableListMock.Verify(m => m.BindAndMake());
+            this.listParentOperableListMock.Verify(m => m.BindAndMake());
         }
     }
 }

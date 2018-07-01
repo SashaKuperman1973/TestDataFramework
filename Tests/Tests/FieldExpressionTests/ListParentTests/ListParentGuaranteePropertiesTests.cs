@@ -6,19 +6,18 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.DeepSetting;
 using TestDataFramework.ListOperations.Concrete;
 using TestDataFramework.Populator;
-using TestDataFramework.Populator.Concrete;
 using TestDataFramework.Populator.Concrete.FieldExpression;
 
-namespace Tests.Tests.FieldExpressionTests
+namespace Tests.Tests.FieldExpressionTests.ListParentTests
 {
-    public partial class FieldExpressionTests
+    public partial class ListParentFieldExpressionTests
     {
         [TestMethod]
         public void GuaranteePropertiesByFixedQuantity_TProperty_Test()
         {
             var values = new[] { new ElementType.PropertyType(), };
 
-            Func<FieldExpression<ElementType, ElementType.PropertyType>> action = () => this.fieldExpression.GuaranteePropertiesByFixedQuantity(values, 5);
+            Func<FieldExpression<ElementType, ElementType.PropertyType>> action = () => this.listParentFieldExpression.GuaranteePropertiesByFixedQuantity(values, 5);
 
             this.GuaranteePropertiesByFixedQuantity_Test(action, values);
         }
@@ -31,7 +30,7 @@ namespace Tests.Tests.FieldExpressionTests
             IEnumerable<Func<ElementType.PropertyType>> funcs =
                 values.Select<ElementType.PropertyType, Func<ElementType.PropertyType>>(value => () => value);
 
-            Func<FieldExpression<ElementType, ElementType.PropertyType>> action = () => this.fieldExpression.GuaranteePropertiesByFixedQuantity(funcs, 5);
+            Func<FieldExpression<ElementType, ElementType.PropertyType>> action = () => this.listParentFieldExpression.GuaranteePropertiesByFixedQuantity(funcs, 5);
 
             this.GuaranteePropertiesByFixedQuantity_Test(action, values);
         }
@@ -42,7 +41,7 @@ namespace Tests.Tests.FieldExpressionTests
             var values = new[] { new ElementType.PropertyType(), new ElementType.PropertyType() };
             var objects = new object[] { values[0], (Func<ElementType.PropertyType>)(() => values[1]) };
 
-            Func<FieldExpression<ElementType, ElementType.PropertyType>> action = () => this.fieldExpression.GuaranteePropertiesByFixedQuantity(objects, 5);
+            Func<FieldExpression<ElementType, ElementType.PropertyType>> action = () => this.listParentFieldExpression.GuaranteePropertiesByFixedQuantity(objects, 5);
 
             this.GuaranteePropertiesByFixedQuantity_Test(action, values);
         }
@@ -64,7 +63,7 @@ namespace Tests.Tests.FieldExpressionTests
         {
             var values = new[] { new ElementType.PropertyType(), };
 
-            Func<FieldExpression<ElementType, ElementType.PropertyType>> action = () => this.fieldExpression.GuaranteePropertiesByPercentageOfTotal(values, 5);
+            Func<FieldExpression<ElementType, ElementType.PropertyType>> action = () => this.listParentFieldExpression.GuaranteePropertiesByPercentageOfTotal(values, 5);
 
             this.GuaranteePropertiesByPercentageOfTotal_Test(action, values);
         }
@@ -77,7 +76,7 @@ namespace Tests.Tests.FieldExpressionTests
             IEnumerable<Func<ElementType.PropertyType>> funcs =
                 values.Select<ElementType.PropertyType, Func<ElementType.PropertyType>>(value => () => value);
 
-            Func<FieldExpression<ElementType, ElementType.PropertyType>> action = () => this.fieldExpression.GuaranteePropertiesByPercentageOfTotal(funcs, 5);
+            Func<FieldExpression<ElementType, ElementType.PropertyType>> action = () => this.listParentFieldExpression.GuaranteePropertiesByPercentageOfTotal(funcs, 5);
 
             this.GuaranteePropertiesByPercentageOfTotal_Test(action, values);
         }
@@ -88,7 +87,7 @@ namespace Tests.Tests.FieldExpressionTests
             var values = new[] { new ElementType.PropertyType(), new ElementType.PropertyType() };
             var objects = new object[] { values[0], (Func<ElementType.PropertyType>)(() => values[1]) };
 
-            Func<FieldExpression<ElementType, ElementType.PropertyType>> action = () => this.fieldExpression.GuaranteePropertiesByPercentageOfTotal(objects, 5);
+            Func<FieldExpression<ElementType, ElementType.PropertyType>> action = () => this.listParentFieldExpression.GuaranteePropertiesByPercentageOfTotal(objects, 5);
 
             this.GuaranteePropertiesByPercentageOfTotal_Test(action, values);
         }
@@ -118,7 +117,7 @@ namespace Tests.Tests.FieldExpressionTests
 
             // Assert
 
-            GuaranteedValues guaranteedValues = this.operableListMock.Object.GuaranteedPropertySetters.Single();
+            GuaranteedValues guaranteedValues = this.listParentOperableListMock.Object.GuaranteedPropertySetters.Single();
 
             assertFrequency(guaranteedValues);
 
@@ -153,7 +152,8 @@ namespace Tests.Tests.FieldExpressionTests
 
             // Act
 
-            ListParentFieldExpression<ElementType, ElementType.PropertyType> result = this.fieldExpression.GuaranteePropertiesByFixedQuantity(guaranteedValues);
+            ListParentFieldExpression<ElementType, ElementType.PropertyType> result =
+                this.listParentFieldExpression.GuaranteePropertiesByFixedQuantity(guaranteedValues);
 
             // Assert
 
@@ -177,7 +177,7 @@ namespace Tests.Tests.FieldExpressionTests
 
             // Act
 
-            ListParentFieldExpression<ElementType, ElementType.PropertyType> result = this.fieldExpression.GuaranteePropertiesByFixedQuantity(guaranteedValues);
+            ListParentFieldExpression<ElementType, ElementType.PropertyType> result = this.listParentFieldExpression.GuaranteePropertiesByFixedQuantity(guaranteedValues);
 
             // Assert
 
@@ -204,7 +204,7 @@ namespace Tests.Tests.FieldExpressionTests
 
             // Act
 
-            ListParentFieldExpression<ElementType, ElementType.PropertyType> result = this.fieldExpression.GuaranteePropertiesByFixedQuantity(guaranteedValues);
+            ListParentFieldExpression<ElementType, ElementType.PropertyType> result = this.listParentFieldExpression.GuaranteePropertiesByFixedQuantity(guaranteedValues);
 
             // Assert
 
@@ -217,7 +217,7 @@ namespace Tests.Tests.FieldExpressionTests
             // Act
 
             ListParentFieldExpression<ElementType, ElementType.PropertyType> result =
-                this.fieldExpression.GuaranteePropertiesByPercentageOfTotal(new List<Func<ElementType.PropertyType>>());
+                this.listParentFieldExpression.GuaranteePropertiesByPercentageOfTotal(new List<Func<ElementType.PropertyType>>());
 
             // Assert
 
@@ -230,7 +230,7 @@ namespace Tests.Tests.FieldExpressionTests
             // Act
 
             ListParentFieldExpression<ElementType, ElementType.PropertyType> result =
-                this.fieldExpression.GuaranteePropertiesByPercentageOfTotal(new List<ElementType.PropertyType>());
+                this.listParentFieldExpression.GuaranteePropertiesByPercentageOfTotal(new List<ElementType.PropertyType>());
 
             // Assert
 
@@ -255,7 +255,8 @@ namespace Tests.Tests.FieldExpressionTests
 
             // Act
 
-            ListParentFieldExpression<ElementType, ElementType.PropertyType> result = this.fieldExpression.GuaranteePropertiesByPercentageOfTotal(guaranteedValues);
+            ListParentFieldExpression<ElementType, ElementType.PropertyType> result =
+                this.listParentFieldExpression.GuaranteePropertiesByPercentageOfTotal(guaranteedValues);
 
             // Assert
 

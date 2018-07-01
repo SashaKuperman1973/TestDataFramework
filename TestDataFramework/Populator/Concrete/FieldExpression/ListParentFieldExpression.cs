@@ -34,7 +34,7 @@ namespace TestDataFramework.Populator.Concrete.FieldExpression
             return this.GuaranteePropertiesByFixedQuantity(guaranteedValues, 0, valueCountRequestOption);
         }
 
-        public virtual ListParentFieldExpression<TListElement, TProperty> GuaranteePropertiesByFixedQuantity(
+        public new virtual ListParentFieldExpression<TListElement, TProperty> GuaranteePropertiesByFixedQuantity(
             IEnumerable<Func<TProperty>> guaranteedValues, int fixedQuantity,
             ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
@@ -49,7 +49,7 @@ namespace TestDataFramework.Populator.Concrete.FieldExpression
             return this.GuaranteePropertiesByFixedQuantity(guaranteedValues, 0, valueCountRequestOption);
         }
 
-        public virtual ListParentFieldExpression<TListElement, TProperty> GuaranteePropertiesByFixedQuantity(IEnumerable<object> guaranteedValues,
+        public new virtual ListParentFieldExpression<TListElement, TProperty> GuaranteePropertiesByFixedQuantity(IEnumerable<object> guaranteedValues,
             int fixedQuantity, ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
             base.GuaranteePropertiesByFixedQuantity(guaranteedValues, fixedQuantity, valueCountRequestOption);
@@ -77,7 +77,7 @@ namespace TestDataFramework.Populator.Concrete.FieldExpression
             return this.GuaranteePropertiesByPercentageOfTotal(guaranteedValues, 10, valueCountRequestOption);
         }
 
-        public virtual ListParentFieldExpression<TListElement, TProperty> GuaranteePropertiesByPercentageOfTotal(
+        public new virtual ListParentFieldExpression<TListElement, TProperty> GuaranteePropertiesByPercentageOfTotal(
             IEnumerable<Func<TProperty>> guaranteedValues, int frequencyPercentage,
             ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
@@ -108,7 +108,7 @@ namespace TestDataFramework.Populator.Concrete.FieldExpression
             return this.GuaranteePropertiesByPercentageOfTotal(guaranteedValues, 10, valueCountRequestOption);
         }
 
-        public virtual ListParentFieldExpression<TListElement, TProperty> GuaranteePropertiesByPercentageOfTotal(
+        public new virtual ListParentFieldExpression<TListElement, TProperty> GuaranteePropertiesByPercentageOfTotal(
             IEnumerable<object> guaranteedValues, int frequencyPercentage,
             ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {

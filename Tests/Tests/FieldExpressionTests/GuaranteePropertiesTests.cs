@@ -5,7 +5,9 @@ using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.DeepSetting;
 using TestDataFramework.ListOperations.Concrete;
+using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete;
+using TestDataFramework.Populator.Concrete.FieldExpression;
 
 namespace Tests.Tests.FieldExpressionTests
 {
@@ -151,7 +153,7 @@ namespace Tests.Tests.FieldExpressionTests
 
             // Act
 
-            FieldExpression<ElementType, ElementType.PropertyType> result = this.fieldExpression.GuaranteePropertiesByFixedQuantity(guaranteedValues);
+            ListParentFieldExpression<ElementType, ElementType.PropertyType> result = this.fieldExpression.GuaranteePropertiesByFixedQuantity(guaranteedValues);
 
             // Assert
 
@@ -175,7 +177,7 @@ namespace Tests.Tests.FieldExpressionTests
 
             // Act
 
-            FieldExpression<ElementType, ElementType.PropertyType> result = this.fieldExpression.GuaranteePropertiesByFixedQuantity(guaranteedValues);
+            ListParentFieldExpression<ElementType, ElementType.PropertyType> result = this.fieldExpression.GuaranteePropertiesByFixedQuantity(guaranteedValues);
 
             // Assert
 
@@ -202,7 +204,7 @@ namespace Tests.Tests.FieldExpressionTests
 
             // Act
 
-            FieldExpression<ElementType, ElementType.PropertyType> result = this.fieldExpression.GuaranteePropertiesByFixedQuantity(guaranteedValues);
+            ListParentFieldExpression<ElementType, ElementType.PropertyType> result = this.fieldExpression.GuaranteePropertiesByFixedQuantity(guaranteedValues);
 
             // Assert
 
@@ -214,7 +216,7 @@ namespace Tests.Tests.FieldExpressionTests
         {
             // Act
 
-            FieldExpression<ElementType, ElementType.PropertyType> result =
+            ListParentFieldExpression<ElementType, ElementType.PropertyType> result =
                 this.fieldExpression.GuaranteePropertiesByPercentageOfTotal(new List<Func<ElementType.PropertyType>>());
 
             // Assert
@@ -227,7 +229,7 @@ namespace Tests.Tests.FieldExpressionTests
         {
             // Act
 
-            FieldExpression<ElementType, ElementType.PropertyType> result =
+            ListParentFieldExpression<ElementType, ElementType.PropertyType> result =
                 this.fieldExpression.GuaranteePropertiesByPercentageOfTotal(new List<ElementType.PropertyType>());
 
             // Assert
@@ -253,7 +255,7 @@ namespace Tests.Tests.FieldExpressionTests
 
             // Act
 
-            FieldExpression<ElementType, ElementType.PropertyType> result = this.fieldExpression.GuaranteePropertiesByPercentageOfTotal(guaranteedValues);
+            ListParentFieldExpression<ElementType, ElementType.PropertyType> result = this.fieldExpression.GuaranteePropertiesByPercentageOfTotal(guaranteedValues);
 
             // Assert
 

@@ -26,9 +26,7 @@ using TestDataFramework.DeepSetting;
 using TestDataFramework.Exceptions;
 using TestDataFramework.ListOperations.Concrete;
 using TestDataFramework.ListOperations.Interfaces;
-using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete;
-using TestDataFramework.Populator.Concrete.OperableList;
 using Tests.TestModels;
 
 namespace Tests.Tests
@@ -103,7 +101,7 @@ namespace Tests.Tests
                 valuesByFixedAmount2,
             };
 
-            var operableList = new ListParentOperableList<SubjectClass>(null, null, null, null, null, null);
+            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
 
             for (int i = 0; i < 20; i++)
             {
@@ -162,7 +160,7 @@ namespace Tests.Tests
 
             var valueGuaranteePopulator = new ValueGuaranteePopulator();
 
-            var operableList = new ListParentOperableList<SubjectClass>(null, null, null, null, null, null);
+            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
 
             for (int i = 0; i < 20; i++)
             {
@@ -202,7 +200,7 @@ namespace Tests.Tests
 
             var valueGuaranteePopulator = new ValueGuaranteePopulator();
 
-            var operableList = new ListParentOperableList<SubjectClass>(null, null, null, null, null, null);
+            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
 
             for (int i = 0; i < 20; i++)
             {

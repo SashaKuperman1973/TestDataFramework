@@ -31,7 +31,7 @@ using TestDataFramework.TypeGenerator.Interfaces;
 
 namespace TestDataFramework.Populator
 {
-    public abstract class OperableList<TListElement> : Populatable, IList<RecordReference<TListElement>>
+    public class OperableList<TListElement> : Populatable, IList<RecordReference<TListElement>>
     {
         protected readonly BasePopulator Populator;
         protected readonly IAttributeDecorator AttributeDecorator;
@@ -48,7 +48,7 @@ namespace TestDataFramework.Populator
         private readonly IValueGauranteePopulatorContextService explicitPropertySetterContextService =
             new ExplicitPropertySetterContextService();
 
-        protected OperableList(ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator,
+        public OperableList(ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator,
             ITypeGenerator typeGenerator, IAttributeDecorator attributeDecorator,
             IObjectGraphService objectGraphService,
             DeepCollectionSettingConverter deepCollectionSettingConverter, 
@@ -67,7 +67,7 @@ namespace TestDataFramework.Populator
                     this.InternalList[i] = this.CreateRecordReference();
         }
 
-        protected OperableList(int size, ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator,
+        public OperableList(int size, ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator,
             ITypeGenerator typeGenerator, IAttributeDecorator attributeDecorator,
             IObjectGraphService objectGraphService,
             DeepCollectionSettingConverter deepCollectionSettingConverter)
@@ -76,12 +76,17 @@ namespace TestDataFramework.Populator
         {
         }
 
-        protected OperableList(IEnumerable<RecordReference<TListElement>> input, ValueGuaranteePopulator valueGuaranteePopulator,
+        public OperableList(IEnumerable<RecordReference<TListElement>> input, ValueGuaranteePopulator valueGuaranteePopulator,
             BasePopulator populator)
         {
             this.InternalList = new List<RecordReference<TListElement>>(input);
             this.Populator = populator;
             this.ValueGuaranteePopulator = valueGuaranteePopulator;
+        }
+
+        public OperableList(ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator) : 
+            this(Enumerable.Empty<RecordReference<TListElement>>(), valueGuaranteePopulator, populator)
+        {
         }
 
         protected internal override void Populate()
@@ -120,7 +125,7 @@ namespace TestDataFramework.Populator
             this.InternalList.ForEach(reference => reference.Set(fieldExpression, valueFactory));
         }
 
-        protected void GuaranteeByPercentageOfTotal(IEnumerable<object> guaranteedValues,
+        protected void AddGuaranteeByPercentageOfTotal(IEnumerable<object> guaranteedValues,
             int frequencyPercentage, ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
             this.GuaranteedValues.Add(new GuaranteedValues
@@ -131,7 +136,7 @@ namespace TestDataFramework.Populator
             });
         }
 
-        protected void GuaranteeByPercentageOfTotal(IEnumerable<Func<TListElement>> guaranteedValues,
+        protected void AddGuaranteeByPercentageOfTotal(IEnumerable<Func<TListElement>> guaranteedValues,
             int frequencyPercentage, ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
             this.GuaranteedValues.Add(new GuaranteedValues
@@ -142,7 +147,7 @@ namespace TestDataFramework.Populator
             });
         }
 
-        protected void GuaranteeByPercentageOfTotal(IEnumerable<TListElement> guaranteedValues,
+        protected void AddGuaranteeByPercentageOfTotal(IEnumerable<TListElement> guaranteedValues,
             int frequencyPercentage, ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
             this.GuaranteedValues.Add(new GuaranteedValues
@@ -153,7 +158,7 @@ namespace TestDataFramework.Populator
             });
         }
 
-        protected void GuaranteeByFixedQuantity(IEnumerable<object> guaranteedValues,
+        protected void AddGuaranteeByFixedQuantity(IEnumerable<object> guaranteedValues,
             int fixedQuantity, ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
             guaranteedValues = guaranteedValues.ToList();
@@ -169,7 +174,7 @@ namespace TestDataFramework.Populator
             });
         }
 
-        protected void GuaranteeByFixedQuantity(IEnumerable<Func<TListElement>> guaranteedValues,
+        protected void AddGuaranteeByFixedQuantity(IEnumerable<Func<TListElement>> guaranteedValues,
             int fixedQuantity, ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
             guaranteedValues = guaranteedValues.ToList();
@@ -185,7 +190,7 @@ namespace TestDataFramework.Populator
             });
         }
 
-        protected void GuaranteeByFixedQuantity(IEnumerable<TListElement> guaranteedValues, int fixedQuantity,
+        protected void AddGuaranteeByFixedQuantity(IEnumerable<TListElement> guaranteedValues, int fixedQuantity,
             ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
             guaranteedValues = guaranteedValues.ToList();
@@ -201,11 +206,9 @@ namespace TestDataFramework.Populator
             });
         }
 
-        public virtual OperableList<TListElement> Ignore<TPropertyType>(Expression<Func<TListElement, TPropertyType>> fieldExpression)
+        public void IgnoreBase<TPropertyType>(Expression<Func<TListElement, TPropertyType>> fieldExpression)
         {
             this.InternalList.ForEach(reference => reference.Ignore(fieldExpression));
-
-            return this;
         }
 
         private RecordReference<TListElement> CreateRecordReference()
@@ -226,6 +229,61 @@ namespace TestDataFramework.Populator
         protected IEnumerable<RecordReference<TListElement>> Skip(int count)
         {
             IEnumerable<RecordReference<TListElement>> result = this.InternalList.Skip(count);
+            return result;
+        }
+
+        public virtual OperableList<TListElement> GuaranteeByPercentageOfTotal(IEnumerable<object> guaranteedValues, int frequencyPercentage = 10)
+        {
+            this.AddGuaranteeByPercentageOfTotal(guaranteedValues, frequencyPercentage);
+            return this;
+        }
+
+        public virtual OperableList<TListElement> GuaranteeByPercentageOfTotal(IEnumerable<Func<TListElement>> guaranteedValues, int frequencyPercentage = 10)
+        {
+            this.AddGuaranteeByPercentageOfTotal(guaranteedValues, frequencyPercentage);
+            return this;
+        }
+
+        public virtual OperableList<TListElement> GuaranteeByPercentageOfTotal(IEnumerable<TListElement> guaranteedValues, int frequencyPercentage = 10)
+        {
+            this.AddGuaranteeByPercentageOfTotal(guaranteedValues, frequencyPercentage);
+            return this;
+        }
+
+        public virtual OperableList<TListElement> GuaranteeByFixedQuantity<TValue>(IEnumerable<TValue> guaranteedValues, int fixedQuantity = 0)
+        {
+            return this;
+        }
+
+        public virtual OperableList<TListElement> GuaranteeByFixedQuantity(IEnumerable<Func<TListElement>> guaranteedValues, int fixedQuantity = 0)
+        {
+            this.AddGuaranteeByFixedQuantity(guaranteedValues, fixedQuantity);
+            return this;
+        }
+
+        public virtual OperableList<TListElement> GuaranteeByFixedQuantity(IEnumerable<TListElement> guaranteedValues, int fixedQuantity = 0)
+        {
+            this.AddGuaranteeByFixedQuantity(guaranteedValues, fixedQuantity);
+            return this;
+        }
+
+        public virtual OperableList<TListElement> Ignore<TPropertyType>(Expression<Func<TListElement, TPropertyType>> fieldExpression)
+        {
+            this.IgnoreBase(fieldExpression);
+            return this;
+        }
+
+        public virtual IEnumerable<TListElement> BindAndMake()
+        {
+            this.Populator.Bind();
+            IEnumerable<TListElement> result = this.RecordObjects;
+            return result;
+        }
+
+        public virtual IEnumerable<TListElement> Make()
+        {
+            this.Populator.Bind(this);
+            IEnumerable<TListElement> result = this.RecordObjects;
             return result;
         }
 

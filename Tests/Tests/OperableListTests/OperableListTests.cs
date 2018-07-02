@@ -30,12 +30,10 @@ using TestDataFramework.ListOperations.Concrete;
 using TestDataFramework.ListOperations.Interfaces;
 using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete;
-using TestDataFramework.Populator.Concrete.FieldExpression;
-using TestDataFramework.Populator.Concrete.OperableList;
 using TestDataFramework.TypeGenerator.Interfaces;
 using Tests.TestModels;
 
-namespace Tests.Tests
+namespace Tests.Tests.OperableListTests
 {
     [TestClass]
     public class OperableListTests

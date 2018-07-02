@@ -96,14 +96,20 @@
     <Compile Include="Tests\ExplicitlyIgnoredValueTests.cs" />
     <Compile Include="Tests\ExplicitPropertySetterContextServiceTests.cs" />
     <Compile Include="Tests\FieldExpressionHelperTests.cs" />
+    <Compile Include="Tests\FieldExpressionTests\ElementType.cs" />
     <Compile Include="Tests\FieldExpressionTests\ListParentTests\ListParentFieldExpressionTests.cs" />
     <Compile Include="Tests\FieldExpressionTests\ListParentTests\ListParentGuaranteePropertiesTests.cs" />
+    <Compile Include="Tests\FieldExpressionTests\ReferenceParentTests\ReferenceParentFieldExpressionTests.cs" />
+    <Compile Include="Tests\FieldExpressionTests\ReferenceParentTests\ReferenceParentGuaranteePropertiesTests.cs" />
     <Compile Include="Tests\FieldExpressionValidatorTests.cs" />
-    <Compile Include="Tests\MakeableEnumerableTests.cs" />
+    <Compile Include="Tests\MakeableEnumerableTests\ReferenceParentMakeableEnumerableTests.cs" />
+    <Compile Include="Tests\MakeableEnumerableTests\ListParentMakeableEnumerableTests.cs" />
     <Compile Include="Tests\MaxAttributeTests.cs" />
     <Compile Include="Tests\MemoryValueGeneratorTests.cs" />
     <Compile Include="Tests\MinAttributeTests.cs" />
     <Compile Include="Tests\ObjectGraphServiceTest.cs" />
+    <Compile Include="Tests\OperableListTests\ListParentOperableListTests.cs" />
+    <Compile Include="Tests\OperableListTests\ReferenceParentOperableListTests.cs" />
     <Compile Include="Tests\SqlClientValueGeneratorTests.cs" />
     <Compile Include="Tests\StandardHandledTypeGeneratorTests.cs" />
     <Compile Include="Tests\MemoryUniqueValueGeneratorTests.cs" />
@@ -137,7 +143,7 @@
     <Compile Include="Tests\UniqueValueTypeGeneratorTests.cs" />
     <Compile Include="Tests\ValueGuaranteePopulatorTests.cs" />
     <Compile Include="Tests\GenericRecordReferenceTests.cs" />
-    <Compile Include="Tests\OperableListTests.cs" />
+    <Compile Include="Tests\OperableListTests\OperableListTests.cs" />
     <Compile Include="Tests\LargeIntegerTests.cs" />
     <Compile Include="Tests\SqlWriterDictionaryTests.cs" />
     <Compile Include="Tests\KeyTypeUniqueValueGeneratorTests.cs" />
@@ -164,9 +170,7 @@
     <None Include="packages.config" />
     <None Include="TestDataFramework.snk" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Tests\FieldExpressionTests\ReferenceParentTests\" />
-  </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

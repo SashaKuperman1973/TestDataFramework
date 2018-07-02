@@ -14,15 +14,25 @@ namespace TestDataFramework.Populator.Concrete.OperableList
 {
     public class ListParentOperableList<TListElement> : OperableList<TListElement>, IMakeableCollectionContainer<TListElement>
     {
-        public ListParentOperableList(ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator, ITypeGenerator typeGenerator, IAttributeDecorator attributeDecorator, IObjectGraphService objectGraphService, DeepCollectionSettingConverter deepCollectionSettingConverter, List<RecordReference<TListElement>> internalList = null) : base(valueGuaranteePopulator, populator, typeGenerator, attributeDecorator, objectGraphService, deepCollectionSettingConverter, internalList)
+        public ListParentOperableList(ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator,
+            ITypeGenerator typeGenerator, IAttributeDecorator attributeDecorator,
+            IObjectGraphService objectGraphService, DeepCollectionSettingConverter deepCollectionSettingConverter,
+            List<RecordReference<TListElement>> internalList = null) : base(valueGuaranteePopulator, populator,
+            typeGenerator, attributeDecorator, objectGraphService, deepCollectionSettingConverter, internalList)
         {
         }
 
-        public ListParentOperableList(int size, ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator, ITypeGenerator typeGenerator, IAttributeDecorator attributeDecorator, IObjectGraphService objectGraphService, DeepCollectionSettingConverter deepCollectionSettingConverter) : base(size, valueGuaranteePopulator, populator, typeGenerator, attributeDecorator, objectGraphService, deepCollectionSettingConverter)
+        public ListParentOperableList(int size, ValueGuaranteePopulator valueGuaranteePopulator,
+            BasePopulator populator, ITypeGenerator typeGenerator, IAttributeDecorator attributeDecorator,
+            IObjectGraphService objectGraphService, DeepCollectionSettingConverter deepCollectionSettingConverter) :
+            base(size, valueGuaranteePopulator, populator, typeGenerator, attributeDecorator, objectGraphService,
+                deepCollectionSettingConverter)
         {
         }
 
-        public ListParentOperableList(IEnumerable<RecordReference<TListElement>> input, ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator) : base(input, valueGuaranteePopulator, populator)
+        public ListParentOperableList(IEnumerable<RecordReference<TListElement>> input,
+            ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator) : base(input,
+            valueGuaranteePopulator, populator)
         {
         }
 

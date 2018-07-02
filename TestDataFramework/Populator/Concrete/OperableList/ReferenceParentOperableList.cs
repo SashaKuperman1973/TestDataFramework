@@ -16,17 +16,28 @@ namespace TestDataFramework.Populator.Concrete.OperableList
     {
         private readonly RecordReference<TParent> parent;
 
-        public ReferenceParentOperableList(RecordReference<TParent> parent, ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator, ITypeGenerator typeGenerator, IAttributeDecorator attributeDecorator, IObjectGraphService objectGraphService, DeepCollectionSettingConverter deepCollectionSettingConverter, List<RecordReference<TListElement>> internalList = null) : base(valueGuaranteePopulator, populator, typeGenerator, attributeDecorator, objectGraphService, deepCollectionSettingConverter, internalList)
+        public ReferenceParentOperableList(RecordReference<TParent> parent,
+            ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator, ITypeGenerator typeGenerator,
+            IAttributeDecorator attributeDecorator, IObjectGraphService objectGraphService,
+            DeepCollectionSettingConverter deepCollectionSettingConverter,
+            List<RecordReference<TListElement>> internalList = null) : base(valueGuaranteePopulator, populator,
+            typeGenerator, attributeDecorator, objectGraphService, deepCollectionSettingConverter, internalList)
         {
             this.parent = parent;
         }
 
-        public ReferenceParentOperableList(RecordReference<TParent> parent, int size, ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator, ITypeGenerator typeGenerator, IAttributeDecorator attributeDecorator, IObjectGraphService objectGraphService, DeepCollectionSettingConverter deepCollectionSettingConverter) : base(size, valueGuaranteePopulator, populator, typeGenerator, attributeDecorator, objectGraphService, deepCollectionSettingConverter)
+        public ReferenceParentOperableList(RecordReference<TParent> parent, int size,
+            ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator, ITypeGenerator typeGenerator,
+            IAttributeDecorator attributeDecorator, IObjectGraphService objectGraphService,
+            DeepCollectionSettingConverter deepCollectionSettingConverter) : base(size, valueGuaranteePopulator,
+            populator, typeGenerator, attributeDecorator, objectGraphService, deepCollectionSettingConverter)
         {
             this.parent = parent;
         }
 
-        public ReferenceParentOperableList(RecordReference<TParent> parent, IEnumerable<RecordReference<TListElement>> input, ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator) : base(input, valueGuaranteePopulator, populator)
+        public ReferenceParentOperableList(RecordReference<TParent> parent,
+            IEnumerable<RecordReference<TListElement>> input, ValueGuaranteePopulator valueGuaranteePopulator,
+            BasePopulator populator) : base(input, valueGuaranteePopulator, populator)
         {
             this.parent = parent;
         }

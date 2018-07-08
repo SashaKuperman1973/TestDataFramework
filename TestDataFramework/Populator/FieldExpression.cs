@@ -16,7 +16,6 @@ namespace TestDataFramework.Populator
         private readonly IObjectGraphService objectGraphService;
         private readonly OperableList<TListElement> operableList;
 
-
         protected FieldExpression(Expression<Func<TListElement, TProperty>> expression,
             OperableList<TListElement> operableList, IObjectGraphService objectGraphService)
         {

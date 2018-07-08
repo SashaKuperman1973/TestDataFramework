@@ -96,7 +96,6 @@
     <Compile Include="Tests\ExplicitlyIgnoredValueTests.cs" />
     <Compile Include="Tests\ExplicitPropertySetterContextServiceTests.cs" />
     <Compile Include="Tests\FieldExpressionHelperTests.cs" />
-    <Compile Include="Tests\FieldExpressionTests\ElementType.cs" />
     <Compile Include="Tests\FieldExpressionTests\ListParentTests\ListParentFieldExpressionTests.cs" />
     <Compile Include="Tests\FieldExpressionTests\ListParentTests\ListParentGuaranteePropertiesTests.cs" />
     <Compile Include="Tests\FieldExpressionTests\ReferenceParentTests\ReferenceParentFieldExpressionTests.cs" />

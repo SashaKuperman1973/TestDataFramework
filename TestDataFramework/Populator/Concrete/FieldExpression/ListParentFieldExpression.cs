@@ -12,7 +12,9 @@ namespace TestDataFramework.Populator.Concrete.FieldExpression
     {
         public ListParentOperableList<TListElement> OperableList { get; }
 
-        public ListParentFieldExpression(Expression<Func<TListElement, TProperty>> expression, ListParentOperableList<TListElement> operableList, IObjectGraphService objectGraphService) : base(expression, operableList, objectGraphService)
+        public ListParentFieldExpression(Expression<Func<TListElement, TProperty>> expression,
+            ListParentOperableList<TListElement> operableList, IObjectGraphService objectGraphService) : base(
+            expression, operableList, objectGraphService)
         {
             this.OperableList = operableList;
         }

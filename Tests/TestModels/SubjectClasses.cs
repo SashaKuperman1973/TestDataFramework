@@ -122,6 +122,17 @@ namespace Tests.TestModels
         public AnEnum AnEnumeration { get; set; }
     }
 
+    public class ElementType
+    {
+        public PropertyType AProperty { get; set; }
+
+        public class PropertyType
+        {
+        }
+
+        public IEnumerable<PropertyType> AnEnumerable { get; set; }
+    }
+
     public class SecondClass
     {
         public int SecondInteger { get; set; }

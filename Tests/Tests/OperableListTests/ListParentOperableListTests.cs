@@ -1,11 +1,18 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
+using Moq;
+using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.ListOperations.Concrete;
+using TestDataFramework.Populator;
+using TestDataFramework.Populator.Concrete;
+using TestDataFramework.Populator.Concrete.FieldExpression;
+using TestDataFramework.Populator.Concrete.MakeableEnumerable;
 using TestDataFramework.Populator.Concrete.OperableList;
 using Tests.TestModels;
-using Tests.Tests.FieldExpressionTests;
 
 namespace Tests.Tests.OperableListTests
 {
@@ -13,11 +20,151 @@ namespace Tests.Tests.OperableListTests
     public class ListParentOperableListTests
     {
         private ListParentOperableList<ElementType> operableList;
+        private List<Mock<RecordReference<ElementType>>> contentReferenceMocks;
+
+        private Mock<IObjectGraphService> objecGraphServcieMock;
+        private List<ElementType> elementTypeSet;
 
         [TestInitialize]
         public void Initialize()
         {
-            this.operableList = new ListParentOperableList<ElementType>(null, null, null, null, null, null);
+            this.objecGraphServcieMock = new Mock<IObjectGraphService>();
+
+            this.operableList = new ListParentOperableList<ElementType>(null, null, null, null, this.objecGraphServcieMock.Object, null);
+
+            this.contentReferenceMocks = new List<Mock<RecordReference<ElementType>>>
+            {
+                new Mock<RecordReference<ElementType>>(null, null, null, this.objecGraphServcieMock.Object, null, null),
+                new Mock<RecordReference<ElementType>>(null, null, null, this.objecGraphServcieMock.Object, null, null),
+                new Mock<RecordReference<ElementType>>(null, null, null, this.objecGraphServcieMock.Object, null, null),
+            };
+
+            this.elementTypeSet = new List<ElementType>();
+            int count = 0;
+            this.contentReferenceMocks.ForEach(mock =>
+            {
+                this.elementTypeSet.Add(new ElementType
+                {
+                    AProperty = new ElementType.PropertyType(),
+                    AnEnumerable = new ElementType.PropertyType[0]
+                });
+                this.operableList.Add(mock.Object);
+                mock.SetupGet(m => m.RecordObject).Returns(this.elementTypeSet[count++]);
+            });
+        }
+
+        [TestMethod]
+        public void Set_PropertyValue_Test()
+        {
+            // Arrange
+
+            var value = new ElementType.PropertyType();
+
+            var setExpression = (Expression<Func<ElementType, ElementType.PropertyType>>)(m => m.AProperty);
+
+            // Act
+
+            ListParentOperableList<ElementType> result = this.operableList.Set(setExpression, value);
+
+            // Assert
+
+            this.contentReferenceMocks.ForEach(mock => mock.Verify(m => m.Set(setExpression,
+                It.Is<Func<ElementType.PropertyType>>(propertyValueFunc => propertyValueFunc() == value))));
+
+            Assert.AreEqual(this.operableList, result);
+        }
+
+        [TestMethod]
+        public void Set_PropertyByFunc_Test()
+        {
+            // Arrange
+
+            var value = new ElementType.PropertyType();
+
+            var setExpression = (Expression<Func<ElementType, ElementType.PropertyType>>)(m => m.AProperty);
+            Func<ElementType.PropertyType> valueFactory = () => value;
+
+            // Act
+
+            ListParentOperableList<ElementType> result = this.operableList.Set(setExpression, valueFactory);
+
+            // Assert
+
+            this.contentReferenceMocks.ForEach(mock => mock.Verify(m => m.Set(setExpression, valueFactory)));
+
+            Assert.AreEqual(this.operableList, result);
+        }
+
+        [TestMethod]
+        public void Set_GetFieldExpression_Test()
+        {
+            // Act
+
+            ListParentFieldExpression<ElementType, ElementType.PropertyType> result = this.operableList.Set(m => m.AProperty);
+
+            // Assert
+
+            Assert.AreEqual(this.operableList, result.OperableList);
+        }
+
+        [TestMethod]
+        public void Ignore_Test()
+        {
+            var ignoreExpression = (Expression<Func<ElementType, ElementType.PropertyType>>)(m => m.AProperty);
+
+            // Act
+
+            OperableList<ElementType> result = this.operableList.Ignore(ignoreExpression);
+
+            // Assert
+
+            this.contentReferenceMocks.ForEach(mock => mock.Verify(m => m.Ignore(ignoreExpression)));
+
+            Assert.AreEqual(this.operableList, result);
+        }
+
+        [TestMethod]
+        public void Take_Test()
+        {
+            // Act
+
+            ListParentOperableList<ElementType> result = this.operableList.Take(3);
+
+            //
+
+            Helpers.AssertSetsAreEqual(this.contentReferenceMocks.Take(3).Select(m => m.Object), result);
+        }
+
+        [TestMethod]
+        public void Skip_Test()
+        {
+            // Act
+
+            ListParentOperableList<ElementType> result = this.operableList.Skip(1);
+
+            //
+
+            Assert.AreEqual(2, result.Count);
+            Helpers.AssertSetsAreEqual(this.contentReferenceMocks.Skip(1).Select(m => m.Object), result);
+        }
+
+        [TestMethod]
+        public void Select_Test()
+        {
+            // Arrange
+
+            var selectExpression = (Expression<Func<ElementType, IEnumerable<ElementType.PropertyType>>>)(m => m.AnEnumerable);
+
+            // Act
+
+            ListParentMakeableEnumerable<ListParentOperableList<ElementType.PropertyType>, ElementType> result =
+                this.operableList.Select(selectExpression, 4);
+
+            // Assert
+
+            Assert.AreEqual(this.contentReferenceMocks.Count, result.Count);
+
+            this.objecGraphServcieMock.Verify(m => m.GetObjectGraph(selectExpression), Times.Exactly(6));
         }
 
         ////////////////////////////////
@@ -221,7 +368,7 @@ namespace Tests.Tests.OperableListTests
 
             GuaranteedValues guaranteedValues = this.operableList.GuaranteedValues.Single();
 
-            ListParentOperableListTests.AssertSetsEqual(values, guaranteedValues.Values);
+            Helpers.AssertSetsAreEqual(values, guaranteedValues.Values);
             Assert.AreEqual(2, guaranteedValues.TotalFrequency);
             Assert.IsNull(guaranteedValues.FrequencyPercentage);
             Assert.AreEqual(ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall, guaranteedValues.ValueCountRequestOption);
@@ -278,7 +425,7 @@ namespace Tests.Tests.OperableListTests
 
             GuaranteedValues guaranteedValues = this.operableList.GuaranteedValues.Single();
 
-            ListParentOperableListTests.AssertSetsEqual(values, guaranteedValues.Values);
+            Helpers.AssertSetsAreEqual(values, guaranteedValues.Values);
             Assert.AreEqual(2, guaranteedValues.TotalFrequency);
             Assert.IsNull(guaranteedValues.FrequencyPercentage);
             Assert.AreEqual(ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall, guaranteedValues.ValueCountRequestOption);
@@ -307,7 +454,7 @@ namespace Tests.Tests.OperableListTests
 
             GuaranteedValues guaranteedValues = this.operableList.GuaranteedValues.Single();
 
-            ListParentOperableListTests.AssertSetsEqual(values, guaranteedValues.Values);
+            Helpers.AssertSetsAreEqual(values, guaranteedValues.Values);
             Assert.AreEqual(25, guaranteedValues.TotalFrequency);
             Assert.IsNull(guaranteedValues.FrequencyPercentage);
             Assert.AreEqual(ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall, guaranteedValues.ValueCountRequestOption);
@@ -364,24 +511,13 @@ namespace Tests.Tests.OperableListTests
 
             GuaranteedValues guaranteedValues = this.operableList.GuaranteedValues.Single();
 
-            ListParentOperableListTests.AssertSetsEqual(values, guaranteedValues.Values);
+            Helpers.AssertSetsAreEqual(values, guaranteedValues.Values);
 
             Assert.AreEqual(25, guaranteedValues.TotalFrequency);
             Assert.IsNull(guaranteedValues.FrequencyPercentage);
             Assert.AreEqual(ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall, guaranteedValues.ValueCountRequestOption);
 
             Assert.AreEqual(this.operableList, result);
-        }
-
-        private static void AssertSetsEqual(IEnumerable<object> left, IEnumerable<object> right)
-        {
-            object[] leftArray = left.ToArray();
-            object[] rightArray = right.ToArray();
-
-            Assert.AreEqual(leftArray.Length, rightArray.Length);
-
-            for (int i = 0; i < leftArray.Length; i++)
-                Assert.AreEqual(leftArray[i], rightArray[i]);
         }
     }
 }

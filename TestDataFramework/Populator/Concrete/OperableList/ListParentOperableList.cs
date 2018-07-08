@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Generic;   
 using System.Linq;
 using System.Linq.Expressions;
 using TestDataFramework.AttributeDecorator.Interfaces;
@@ -153,7 +153,8 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             Expression<Func<TListElement, IEnumerable<TResult>>> selector, int size)
         {
             IEnumerable<ListParentOperableList<TResult>> operableListCollection =
-                this.InternalList.Select(recordReference => recordReference.SetListParentList(selector, size));
+                this.InternalList.Select(recordReference => 
+                    recordReference.SetListParentList(selector, size));
 
             var result =
                 new ListParentMakeableEnumerable<ListParentOperableList<TResult>, TListElement>(operableListCollection,

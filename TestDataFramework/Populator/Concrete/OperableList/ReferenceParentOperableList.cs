@@ -14,43 +14,43 @@ namespace TestDataFramework.Populator.Concrete.OperableList
 {
     public class ReferenceParentOperableList<TListElement, TParent> : OperableList<TListElement>, IMakeable<TParent>
     {
-        private readonly RecordReference<TParent> parent;
+        private readonly RecordReference<TParent> parentReference;
 
-        public ReferenceParentOperableList(RecordReference<TParent> parent,
+        public ReferenceParentOperableList(RecordReference<TParent> parentReference,
             ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator, ITypeGenerator typeGenerator,
             IAttributeDecorator attributeDecorator, IObjectGraphService objectGraphService,
             DeepCollectionSettingConverter deepCollectionSettingConverter,
             List<RecordReference<TListElement>> internalList = null) : base(valueGuaranteePopulator, populator,
             typeGenerator, attributeDecorator, objectGraphService, deepCollectionSettingConverter, internalList)
         {
-            this.parent = parent;
+            this.parentReference = parentReference;
         }
 
-        public ReferenceParentOperableList(RecordReference<TParent> parent, int size,
+        public ReferenceParentOperableList(RecordReference<TParent> parentReference, int size,
             ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator, ITypeGenerator typeGenerator,
             IAttributeDecorator attributeDecorator, IObjectGraphService objectGraphService,
             DeepCollectionSettingConverter deepCollectionSettingConverter) : base(size, valueGuaranteePopulator,
             populator, typeGenerator, attributeDecorator, objectGraphService, deepCollectionSettingConverter)
         {
-            this.parent = parent;
+            this.parentReference = parentReference;
         }
 
-        public ReferenceParentOperableList(RecordReference<TParent> parent,
+        public ReferenceParentOperableList(RecordReference<TParent> parentReference,
             IEnumerable<RecordReference<TListElement>> input, ValueGuaranteePopulator valueGuaranteePopulator,
             BasePopulator populator) : base(input, valueGuaranteePopulator, populator)
         {
-            this.parent = parent;
+            this.parentReference = parentReference;
         }
 
         public new virtual TParent Make()
         {
-            TParent result = this.parent.Make();
+            TParent result = this.parentReference.Make();
             return result;
         }
 
         public new virtual TParent BindAndMake()
         {
-            TParent result = this.parent.BindAndMake();
+            TParent result = this.parentReference.BindAndMake();
             return result;
         }
 
@@ -58,7 +58,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
         {
             IEnumerable<RecordReference<TListElement>> input = base.Take(count);
             var result =
-                new ReferenceParentOperableList<TListElement, TParent>(this.parent, input, this.ValueGuaranteePopulator,
+                new ReferenceParentOperableList<TListElement, TParent>(this.parentReference, input, this.ValueGuaranteePopulator,
                     this.Populator);
             return result;
         }
@@ -67,7 +67,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
         {
             IEnumerable<RecordReference<TListElement>> input = base.Skip(count);
             var result =
-                new ReferenceParentOperableList<TListElement, TParent>(this.parent, input, this.ValueGuaranteePopulator,
+                new ReferenceParentOperableList<TListElement, TParent>(this.parentReference, input, this.ValueGuaranteePopulator,
                     this.Populator);
             return result;
         }
@@ -173,11 +173,11 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             Expression<Func<TListElement, IEnumerable<TResult>>> selector, int size)
         {
             IEnumerable<ReferenceParentOperableList<TResult, TParent>> operableListCollection =
-                this.InternalList.Select(recordReference => recordReference.SetReferenceParentList(selector, size, this.parent));
+                this.InternalList.Select(recordReference => recordReference.SetReferenceParentList(selector, size, this.parentReference));
 
             var result =
                 new ReferenceParentMakeableEnumerable<ReferenceParentOperableList<TResult, TParent>, TParent>(
-                    operableListCollection, this.parent);
+                    operableListCollection, this.parentReference);
 
             return result;
         }

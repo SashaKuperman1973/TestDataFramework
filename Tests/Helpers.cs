@@ -193,5 +193,16 @@ namespace Tests
             {
             }
         }
+
+        public static void AssertSetsAreEqual(IEnumerable<object> left, IEnumerable<object> right)
+        {
+            object[] leftArray = left.ToArray();
+            object[] rightArray = right.ToArray();
+
+            Assert.AreEqual(leftArray.Length, rightArray.Length);
+
+            for (int i = 0; i < leftArray.Length; i++)
+                Assert.AreEqual(leftArray[i], rightArray[i]);
+        }
     }
 }

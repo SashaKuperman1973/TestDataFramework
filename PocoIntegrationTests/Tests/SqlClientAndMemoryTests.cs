@@ -57,7 +57,9 @@ namespace PocoIntegrationTests.Tests
             SqlClientAndMemoryTests.PrimaryKeyForeignKeyTest(populator, new PocoGeneratorIntegrationTest());
         }
 
+#if !DBWRITE
         [Ignore]
+#endif
         [TestMethod]
         public void SqlCient_POCO_Test()
         {

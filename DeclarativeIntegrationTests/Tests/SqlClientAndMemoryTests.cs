@@ -57,7 +57,9 @@ namespace DeclarativeIntegrationTests.Tests
             SqlClientAndMemoryTests.PrimaryKeyForeignKeyTest(populator, new DeclarativeGeneratorIntegrationTest());
         }
 
+#if !DBWRITE
         [Ignore]
+#endif
         [TestMethod]
         public void SqlCient_Declarative_Test()
         {
@@ -107,7 +109,9 @@ namespace DeclarativeIntegrationTests.Tests
             Console.WriteLine(foreignSet2[1].RecordObject.ForeignKey1);
         }
 
+#if !DBWRITE
         [Ignore]
+#endif
         [TestMethod]
         public void EmptyForeignReference_Test()
         {

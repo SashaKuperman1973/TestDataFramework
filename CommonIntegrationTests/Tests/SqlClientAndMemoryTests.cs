@@ -101,7 +101,9 @@ namespace CommonIntegrationTests.Tests
             Console.WriteLine(foreignB[1].ForeignKeyA2);
         }
 
+#if !DBWRITE
         [Ignore]
+#endif
         [TestMethod]
         public void ManualKeyPrimaryTable_Test()
         {
@@ -120,7 +122,9 @@ namespace CommonIntegrationTests.Tests
             Console.WriteLine(result[1].RecordObject.Key2);
         }
 
+#if !DBWRITE
         [Ignore]
+#endif
         [TestMethod]
         public void SubjectClass_Test()
         {
@@ -147,7 +151,9 @@ namespace CommonIntegrationTests.Tests
             x.ToList().ForEach(y => y.Set(p => p.GuidKey, g));
         }
 
+#if !DBWRITE
         [Ignore]
+#endif
         [TestMethod]
         public void Guid_Test()
         {

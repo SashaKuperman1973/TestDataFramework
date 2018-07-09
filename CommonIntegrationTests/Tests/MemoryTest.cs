@@ -25,7 +25,6 @@ using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Factories;
-using TestDataFramework.Helpers;
 using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete;
 using TestDataFramework.Populator.Concrete.OperableList;

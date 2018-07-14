@@ -165,7 +165,7 @@ namespace CommonIntegrationTests.Tests
         {
             IPopulator populator = this.factory.CreateMemoryPopulator();
 
-            IList<RecordReference<SubjectClass>> subjectReference = populator.Add<SubjectClass>(2);
+            IList<RecordReference<SqlSubjectClass>> subjectReference = populator.Add<SqlSubjectClass>(2);
             OperableList<ForeignSubjectClass> foreignReference =
                 populator.Add<ForeignSubjectClass>(20, subjectReference[1])
                     .GuaranteeByPercentageOfTotal(new object[]

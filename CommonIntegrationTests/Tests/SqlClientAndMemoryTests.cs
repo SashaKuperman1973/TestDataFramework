@@ -134,7 +134,7 @@ namespace CommonIntegrationTests.Tests
 
             Guid g = Guid.NewGuid();
 
-            IList<RecordReference<SubjectClass>> result = populator.Add<SubjectClass>(2);
+            IList<RecordReference<SqlSubjectClass>> result = populator.Add<SqlSubjectClass>(2);
 
             SqlClientAndMemoryTests.Go(result, g);
 
@@ -161,7 +161,7 @@ namespace CommonIntegrationTests.Tests
                 @"Data Source=localhost;Initial Catalog=TestDataFramework;Integrated Security=SSPI;",
                 false);
 
-            OperableList<SubjectClass> result = populator.Add<SubjectClass>(2);
+            OperableList<SqlSubjectClass> result = populator.Add<SqlSubjectClass>(2);
             populator.Bind();
         }
     }

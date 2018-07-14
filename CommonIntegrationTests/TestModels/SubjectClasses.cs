@@ -30,7 +30,7 @@ namespace CommonIntegrationTests.TestModels
     }
 
     [Table("Subject")]
-    public class SubjectClass : IGuider
+    public class SqlSubjectClass : IGuider
     {
         public const int StringLength = 5;
         public const int Precision = 4;
@@ -48,35 +48,35 @@ namespace CommonIntegrationTests.TestModels
 
         public int Integer { get; set; }
 
-        [Max(SubjectClass.Max)]
+        [Max(SqlSubjectClass.Max)]
         public int IntegerWithMax { get; set; }
 
         public int? NullableInteger { get; set; }
 
         public long LongInteger { get; set; }
 
-        [Max(SubjectClass.Max)]
+        [Max(SqlSubjectClass.Max)]
         public long LongIntegerWithMax { get; set; }
 
         public long? NullableLong { get; set; }
 
         public short ShortInteger { get; set; }
 
-        [Max(SubjectClass.Max)]
+        [Max(SqlSubjectClass.Max)]
         public short ShortIntegerWithMax { get; set; }
 
         public short? NullableShort { get; set; }
 
         public string Text { get; set; }
 
-        [StringLength(SubjectClass.StringLength)]
+        [StringLength(SqlSubjectClass.StringLength)]
         public string TextWithLength { get; set; }
 
         public char Character { get; set; }
 
         public decimal Decimal { get; set; }
 
-        [Precision(SubjectClass.Precision)]
+        [Precision(SqlSubjectClass.Precision)]
         public decimal DecimalWithPrecision { get; set; }
 
         public bool Boolean { get; set; }
@@ -90,7 +90,7 @@ namespace CommonIntegrationTests.TestModels
 
         public double Double { get; set; }
 
-        [Precision(SubjectClass.Precision)]
+        [Precision(SqlSubjectClass.Precision)]
         public double DoubleWithPrecision { get; set; }
 
         [Email]
@@ -109,15 +109,20 @@ namespace CommonIntegrationTests.TestModels
         public Guid GuidKey { get; set; }
     }
 
+    public class SubjectClass : SqlSubjectClass
+    {
+        public int[,] Rank2Array { get; set; }
+    }
+
     public class ForeignSubjectClass
     {
         [PrimaryKey]
         public int Key { get; set; }
 
-        [ForeignKey(typeof(SubjectClass), nameof(SubjectClass.Key))]
+        [ForeignKey(typeof(SqlSubjectClass), nameof(SqlSubjectClass.Key))]
         public int ForeignIntKey { get; set; }
 
-        [ForeignKey(typeof(SubjectClass), "GuidKey")]
+        [ForeignKey(typeof(SqlSubjectClass), "GuidKey")]
         public Guid ForeignGuidKey { get; set; }
 
         public int SecondInteger { get; set; }

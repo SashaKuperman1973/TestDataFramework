@@ -46,7 +46,6 @@ namespace TestDataFramework.Populator
             this.AttributeDecorator = attributeDecorator;
         }
 
-
         public Decorator<T> DecorateType<T>()
         {
             BasePopulator.Logger.Debug("Entering DecorateType<T>");
@@ -68,6 +67,18 @@ namespace TestDataFramework.Populator
         public abstract IValueGenerator ValueGenerator { get; }
 
         public abstract void Clear();
+
+        public virtual T Make<T>()
+        {
+            T result = this.Add<T>().Make();
+            return result;
+        }
+
+        public virtual IEnumerable<T> Make<T>(int count)
+        {
+            IEnumerable<T> result = this.Add<T>(count).Make();
+            return result;
+        }
 
         protected internal abstract void Bind(RecordReference recordReference);
 

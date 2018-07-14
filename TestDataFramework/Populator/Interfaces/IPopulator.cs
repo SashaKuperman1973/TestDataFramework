@@ -18,6 +18,7 @@
 */
 
 using System;
+using System.Collections.Generic;
 using TestDataFramework.HandledTypeGenerator;
 using TestDataFramework.Populator.Concrete;
 using TestDataFramework.Populator.Concrete.OperableList;
@@ -28,8 +29,13 @@ namespace TestDataFramework.Populator.Interfaces
     public interface IPopulator
     {
         IValueGenerator ValueGenerator { get; }
+
         void Bind();
 
+        T Make<T>();
+
+        IEnumerable<T> Make<T>(int count);
+            
         ListParentOperableList<T> Add<T>(int copies, params RecordReference[] primaryRecordReferences);
 
         RecordReference<T> Add<T>(params RecordReference[] primaryRecordReferences);

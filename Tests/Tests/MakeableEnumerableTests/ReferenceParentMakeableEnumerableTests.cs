@@ -76,7 +76,7 @@ namespace Tests.Tests.MakeableEnumerableTests
 
             // Assert
 
-            Assert.AreEqual(2, count);
+            Assert.AreEqual(setOfLists.Count, count);
             Assert.AreEqual(makeableEnumerable, result);
         }
 

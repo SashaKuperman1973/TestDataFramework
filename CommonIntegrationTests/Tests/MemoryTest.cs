@@ -538,6 +538,45 @@ namespace CommonIntegrationTests.Tests
             populator.Bind();
         }
 
+        private IMakeable<DeepA> GetMakeable(IPopulator populator)
+        {
+            IMakeable<DeepA> makeable = populator.Add<DeepA>().SetList(m => m.DeepB.DeepCList, 5)
+                .Select(q => q.DeepDList, 5).Skip(1).Take(3)
+                .Set(r => r.Skip(1).Set(m => m.Integer, 7));
+
+            return makeable;
+        }
+
+        private static void AssertParentDeepA(DeepA deepA)
+        {
+            deepA.DeepB.DeepCList.Skip(1).Take(3).ToList()
+                .ForEach(deepC => deepC.DeepDList.Skip(1).ToList()
+                    .ForEach(deepD => Assert.AreEqual(7, deepD.Integer)));
+        }
+
+        [TestMethod]
+        public void DeepPropertySetting_ReferenceParent_Make_Test()
+        {
+            IPopulator populator = this.factory.CreateMemoryPopulator();
+            IMakeable<DeepA> makeable = this.GetMakeable(populator);
+
+            DeepA result = makeable.Make();
+            MemoryTest.AssertParentDeepA(result);
+        }
+
+        [TestMethod]
+        public void DeepPropertySetting_ReferenceParent_MakeAndBind_Test()
+        {
+            IPopulator populator = this.factory.CreateMemoryPopulator();
+            IMakeable<DeepA> makeable = this.GetMakeable(populator);
+
+            RecordReference<SubjectClass> subjectReference = populator.Add<SubjectClass>();
+
+            DeepA result = makeable.BindAndMake();
+            MemoryTest.AssertParentDeepA(result);
+            Assert.IsNotNull(subjectReference.RecordObject);
+        }
+
         [TestMethod]
         public void ExplicitlySetAListViaFunction_Test()
         {
@@ -574,7 +613,7 @@ namespace CommonIntegrationTests.Tests
             Assert.IsTrue(result != 0);
         }
 
-        private IMakeableCollectionContainer<DeepA> DeepPropertySetting_SettersTest(IPopulator populator)
+        private IMakeableCollectionContainer<DeepA> DeepPropertySetting_ListParent_SettersTest(IPopulator populator)
         {
             IMakeableCollectionContainer<DeepA> result = populator.Add<DeepA>(5)
                 .Select(q => q.DeepB.DeepCList, 10).Skip(2).Take(3)
@@ -589,7 +628,7 @@ namespace CommonIntegrationTests.Tests
         {
             IPopulator populator = this.factory.CreateMemoryPopulator();
 
-            IMakeableCollectionContainer<DeepA> makeable = this.DeepPropertySetting_SettersTest(populator);
+            IMakeableCollectionContainer<DeepA> makeable = this.DeepPropertySetting_ListParent_SettersTest(populator);
             IEnumerable<DeepA> result = makeable.Make();
 
             MemoryTest.DeepPropertySetting_Test(result);
@@ -602,7 +641,7 @@ namespace CommonIntegrationTests.Tests
 
             RecordReference<SubjectClass> subjectReference = populator.Add<SubjectClass>();
 
-            IMakeableCollectionContainer<DeepA> makeable = this.DeepPropertySetting_SettersTest(populator);
+            IMakeableCollectionContainer<DeepA> makeable = this.DeepPropertySetting_ListParent_SettersTest(populator);
             IEnumerable<DeepA> result = makeable.BindAndMake();
 
             MemoryTest.DeepPropertySetting_Test(result);
@@ -665,6 +704,16 @@ namespace CommonIntegrationTests.Tests
             });
 
             Assert.AreEqual(5, deepACount);
+        }
+
+        [TestMethod]
+        public void Test2()
+        {
+            IPopulator populator = this.factory.CreateMemoryPopulator();
+
+            OperableList<ManualKeyPrimaryTableClass> resultReference = populator.Add<ManualKeyPrimaryTableClass>(2);
+
+            populator.Bind();;
         }
     }
 }

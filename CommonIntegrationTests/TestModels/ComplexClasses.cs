@@ -25,5 +25,12 @@ namespace CommonIntegrationTests.TestModels
         public string DeepString { get; set; }
 
         public List<int> IntList { get; set; }
+
+        public List<DeepD> DeepDList { get; set; }
+    }
+
+    public class DeepD
+    {
+        public int Integer { get; set; }
     }
 }

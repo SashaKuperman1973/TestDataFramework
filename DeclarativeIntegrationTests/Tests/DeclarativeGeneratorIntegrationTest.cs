@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2016, 2017 2018 Alexander Kuperman
+    Copyright 2016, 2017, 2018 Alexander Kuperman
 
     This file is part of TestDataFramework.
 

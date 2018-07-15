@@ -49,8 +49,10 @@ namespace TestDataFramework.Populator.Concrete.OperableList
         {
         }
 
-        public ListParentOperableList(ListParentOperableList<TListElement> parent, IEnumerable<RecordReference<TListElement>> input,
-            ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator) : base(parent, input,
+        public ListParentOperableList(ListParentOperableList<TListElement> rootList,
+            ListParentOperableList<TListElement> rootParallelList, IEnumerable<RecordReference<TListElement>> input,
+            ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator) : base(rootList, rootParallelList,
+            input,
             valueGuaranteePopulator, populator)
         {
         }
@@ -59,7 +61,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
         {
             IEnumerable<RecordReference<TListElement>> input = this.InternalList.Take(count);
             var result =
-                new ListParentOperableList<TListElement>(this, input, this.ValueGuaranteePopulator,
+                new ListParentOperableList<TListElement>(this.RootList, this.RootParallelList, input, this.ValueGuaranteePopulator,
                     this.Populator);
             return result;
         }
@@ -68,12 +70,17 @@ namespace TestDataFramework.Populator.Concrete.OperableList
         {
             IEnumerable<RecordReference<TListElement>> input = this.InternalList.Skip(count);
             var result =
-                new ListParentOperableList<TListElement>(this, input, this.ValueGuaranteePopulator,
+                new ListParentOperableList<TListElement>(this.RootList, this.RootParallelList, input, this.ValueGuaranteePopulator,
                     this.Populator);
             return result;
         }
 
-        public new virtual ListParentOperableList<TListElement> RootList => (ListParentOperableList<TListElement>)base
+        public new virtual ListParentOperableList<TListElement> RootParallelList => (
+            ListParentOperableList<TListElement>)base
+            .RootParallelList;
+
+        public new virtual ListParentOperableList<TListElement> RootList => (
+            ListParentOperableList<TListElement>)base
             .RootList;
 
         public virtual ListParentOperableList<TListElement> Set<TProperty>(

@@ -171,7 +171,7 @@ namespace Tests.Tests
             var referenceMock1 = new Mock<RecordReference<SubjectClass>>(null, null, null, null, null, null);
             var referenceMock2 = new Mock<RecordReference<SubjectClass>>(null, null, null, null, null, null);
             var set = new ListParentOperableList<SubjectClass>(
-                null,
+                null, null,
                 new List<RecordReference<SubjectClass>> {referenceMock1.Object, referenceMock2.Object},
                 null, null);
 

@@ -48,22 +48,9 @@ namespace TestDataFramework.Populator
         private readonly IValueGauranteePopulatorContextService explicitPropertySetterContextService =
             new ExplicitPropertySetterContextService();
 
-        private readonly OperableList<TListElement> parentBacking;
-
-        protected OperableList<TListElement> RootList
-        {
-            get
-            {
-                OperableList<TListElement> operableList = this;
-
-                while (operableList.parentBacking != null)
-                {
-                    operableList = operableList.parentBacking;
-                }
-
-                return operableList;
-            }
-        }
+        protected OperableList<TListElement> RootList;
+        protected OperableList<TListElement> RootParallelList;
+        protected List<OperableList<TListElement>> ParllelLists;
 
         public OperableList(ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator,
             ITypeGenerator typeGenerator, IAttributeDecorator attributeDecorator,
@@ -78,6 +65,8 @@ namespace TestDataFramework.Populator
             this.ObjectGraphService = objectGraphService;
             this.DeepCollectionSettingConverter = deepCollectionSettingConverter;
             this.ValueGuaranteePopulator = valueGuaranteePopulator;
+            this.RootList = this;
+            this.RootParallelList = this;
 
             for (int i = 0; i < this.InternalList.Count; i++)
                 if (this.InternalList[i] == null)
@@ -91,20 +80,19 @@ namespace TestDataFramework.Populator
             : this(valueGuaranteePopulator, populator, typeGenerator, attributeDecorator, objectGraphService,
                 deepCollectionSettingConverter, new RecordReference<TListElement>[size].ToList())
         {
+            this.RootList = this;
+            this.RootParallelList = this;
         }
 
-        public OperableList(OperableList<TListElement> parent, IEnumerable<RecordReference<TListElement>> input, ValueGuaranteePopulator valueGuaranteePopulator,
+        public OperableList(OperableList<TListElement> rootList, OperableList<TListElement> rootParallelList,
+            IEnumerable<RecordReference<TListElement>> input, ValueGuaranteePopulator valueGuaranteePopulator,
             BasePopulator populator)
         {
-            this.parentBacking = parent;
+            this.RootList = rootList ?? this;
+            this.RootParallelList = rootParallelList ?? this;
             this.InternalList = new List<RecordReference<TListElement>>(input);
             this.Populator = populator;
             this.ValueGuaranteePopulator = valueGuaranteePopulator;
-        }
-
-        public OperableList(ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator) : 
-            this(null, Enumerable.Empty<RecordReference<TListElement>>(), valueGuaranteePopulator, populator)
-        {
         }
 
         protected internal override void Populate()
@@ -152,6 +140,8 @@ namespace TestDataFramework.Populator
                 Values = guaranteedValues,
                 ValueCountRequestOption = valueCountRequestOption
             });
+
+            this.AddSelfToParallelList();
         }
 
         protected void AddGuaranteeByPercentageOfTotal(IEnumerable<Func<TListElement>> guaranteedValues,
@@ -163,6 +153,8 @@ namespace TestDataFramework.Populator
                 Values = guaranteedValues,
                 ValueCountRequestOption = valueCountRequestOption
             });
+
+            this.AddSelfToParallelList();
         }
 
         protected void AddGuaranteeByPercentageOfTotal(IEnumerable<TListElement> guaranteedValues,
@@ -174,6 +166,8 @@ namespace TestDataFramework.Populator
                 Values = guaranteedValues.Cast<object>(),
                 ValueCountRequestOption = valueCountRequestOption
             });
+
+            this.AddSelfToParallelList();
         }
 
         protected void AddGuaranteeByFixedQuantity(IEnumerable<object> guaranteedValues,
@@ -190,6 +184,8 @@ namespace TestDataFramework.Populator
                 Values = guaranteedValues,
                 ValueCountRequestOption = valueCountRequestOption
             });
+
+            this.AddSelfToParallelList();
         }
 
         protected void AddGuaranteeByFixedQuantity(IEnumerable<Func<TListElement>> guaranteedValues,
@@ -206,6 +202,8 @@ namespace TestDataFramework.Populator
                 Values = guaranteedValues,
                 ValueCountRequestOption = valueCountRequestOption
             });
+
+            this.AddSelfToParallelList();
         }
 
         protected void AddGuaranteeByFixedQuantity(IEnumerable<TListElement> guaranteedValues, int fixedQuantity,
@@ -222,6 +220,17 @@ namespace TestDataFramework.Populator
                 Values = guaranteedValues.Cast<object>(),
                 ValueCountRequestOption = valueCountRequestOption
             });
+
+            this.AddSelfToParallelList();
+        }
+
+        private void AddSelfToParallelList()
+        {
+            if (this.RootParallelList != this)
+            {
+                (this.RootParallelList.ParllelLists ?? (this.RootParallelList.ParllelLists =
+                     new List<OperableList<TListElement>>())).Add(this);
+            }
         }
 
         internal void AddRange<TPropertyValue>(Expression<Func<TListElement, TPropertyValue>> fieldExpression,
@@ -300,16 +309,26 @@ namespace TestDataFramework.Populator
 
         public virtual IEnumerable<TListElement> BindAndMake()
         {
+            this.RootParallelList.ParllelLists?.ForEach(l =>
+            {
+                l.Populator.Bind(l);
+            });
+
             this.Populator.Bind();
-            IEnumerable<TListElement> result = this.RecordObjects;
-            return result;
+
+            return this.RootList.RecordObjects;
         }
 
         public virtual IEnumerable<TListElement> Make()
         {
-            this.Populator.Bind(this);
-            IEnumerable<TListElement> result = this.RecordObjects;
-            return result;
+            this.RootParallelList.ParllelLists?.ForEach(l =>
+            {
+                l.Populator.Bind(l);
+            });
+
+            this.RootParallelList.Populator.Bind(this.RootParallelList);
+
+            return this.RootList.RecordObjects;
         }
 
         public virtual OperableList<TListElement> SetRange<TPropertyValue>(

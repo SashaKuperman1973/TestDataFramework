@@ -15,6 +15,8 @@ namespace ExplicitlySettingProperties
         public string TextA { get; set; }
 
         public List<DeepB> DeepBCollection { get; set; }
+
+        public string[] StringCollection { get; set; }
     }
 
     public class DeepB

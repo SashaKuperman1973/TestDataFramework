@@ -182,6 +182,23 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             return result;
         }
 
+        public new virtual ListParentOperableList<TListElement> SetRange<TPropertyValue>(
+            Expression<Func<TListElement, TPropertyValue>> fieldExpression,
+            Func<IEnumerable<TPropertyValue>> rangeFactory)
+        {
+            base.AddRange(fieldExpression, rangeFactory);
+            return this;
+        }
+
+        public new virtual ListParentOperableList<TListElement> SetRange<TPropertyValue>(
+            Expression<Func<TListElement, TPropertyValue>> fieldExpression,
+            IEnumerable<TPropertyValue> range)
+        {
+            base.AddRange(fieldExpression, () => range);
+            return this;
+
+        }
+
         public new virtual OperableList<TListElement> Ignore<TPropertyType>(Expression<Func<TListElement, TPropertyType>> fieldExpression)
         {
             base.IgnoreBase(fieldExpression);

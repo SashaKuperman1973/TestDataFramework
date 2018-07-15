@@ -206,6 +206,12 @@ namespace TestDataFramework.Populator
             });
         }
 
+        protected void AddRange<TPropertyValue>(Expression<Func<TListElement, TPropertyValue>> fieldExpression,
+            Func<IEnumerable<TPropertyValue>> rangeFactory)
+        {
+            this.InternalList.ForEach(l => l.SetRange(fieldExpression, rangeFactory));
+        }
+
         public void IgnoreBase<TPropertyType>(Expression<Func<TListElement, TPropertyType>> fieldExpression)
         {
             this.InternalList.ForEach(reference => reference.Ignore(fieldExpression));
@@ -286,6 +292,21 @@ namespace TestDataFramework.Populator
             this.Populator.Bind(this);
             IEnumerable<TListElement> result = this.RecordObjects;
             return result;
+        }
+
+        public virtual OperableList<TListElement> SetRange<TPropertyValue>(
+            Expression<Func<TListElement, TPropertyValue>> fieldExpression,
+            Func<IEnumerable<TPropertyValue>> rangeFactory)
+        {
+            this.AddRange(fieldExpression, rangeFactory);
+            return this;
+        }
+
+        public virtual OperableList<TListElement> SetRange<TPropertyValue>(
+            Expression<Func<TListElement, TPropertyValue>> fieldExpression,
+            IEnumerable<TPropertyValue> range)
+        {
+            return this.SetRange(fieldExpression, () => range);
         }
 
         #region IList<> members

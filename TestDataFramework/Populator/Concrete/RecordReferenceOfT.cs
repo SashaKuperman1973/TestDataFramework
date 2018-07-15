@@ -224,7 +224,7 @@ namespace TestDataFramework.Populator.Concrete
         private static TPropertyValue ChooseElementInRange<TPropertyValue>(IEnumerable<TPropertyValue> elements)
         {
             elements = elements.ToList();
-            int index = new Random().Next(elements.Count());
+            int index = new Random(DateTime.Now.Millisecond).Next(elements.Count());
             TPropertyValue result = elements.ElementAt(index);
             return result;
         }

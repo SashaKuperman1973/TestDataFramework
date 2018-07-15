@@ -21,10 +21,31 @@ namespace DocumentationExamples
         }
 
         [TestMethod]
-        public void ExplicitlyPresettingProperters()
+        public void ExplicitlyPresettingProperties()
         {
             Subject aSubject = StaticPopulatorFactory.CreateMemoryPopulator()
-                .Add<Subject>().Set(m => m.AProperty.Text, "Hello").Make();
+                .Add<Subject>().Set(m => m.DeepA.TextA, "Hello").Make();
+        }
+
+        [TestMethod]
+        public void SetRange_OnCollection()
+        {
+            IEnumerable<Subject> subjectCollection = StaticPopulatorFactory.CreateMemoryPopulator()
+                .Add<Subject>(5).SetRange(m => m.DeepA.TextA, new[] { "A", "B", "C" }).Make();
+        }
+
+        [TestMethod]
+        public void Explicitly_Setting_Collection_Element_Properties()
+        {
+            Subject aSubject = StaticPopulatorFactory.CreateMemoryPopulator()
+
+                .Add<Subject>()
+
+                .SetList(m => m.DeepA.DeepBCollection, 10)
+
+                .Set(m => m.DeepC.AnInteger, 7)
+
+                .Make();
         }
     }
 }

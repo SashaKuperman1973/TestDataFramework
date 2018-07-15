@@ -49,8 +49,8 @@ namespace TestDataFramework.Populator.Concrete.OperableList
         {
         }
 
-        public ListParentOperableList(IEnumerable<RecordReference<TListElement>> input,
-            ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator) : base(input,
+        public ListParentOperableList(ListParentOperableList<TListElement> parent, IEnumerable<RecordReference<TListElement>> input,
+            ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator) : base(parent, input,
             valueGuaranteePopulator, populator)
         {
         }
@@ -59,7 +59,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
         {
             IEnumerable<RecordReference<TListElement>> input = this.InternalList.Take(count);
             var result =
-                new ListParentOperableList<TListElement>(input, this.ValueGuaranteePopulator,
+                new ListParentOperableList<TListElement>(this, input, this.ValueGuaranteePopulator,
                     this.Populator);
             return result;
         }
@@ -68,10 +68,13 @@ namespace TestDataFramework.Populator.Concrete.OperableList
         {
             IEnumerable<RecordReference<TListElement>> input = this.InternalList.Skip(count);
             var result =
-                new ListParentOperableList<TListElement>(input, this.ValueGuaranteePopulator,
+                new ListParentOperableList<TListElement>(this, input, this.ValueGuaranteePopulator,
                     this.Populator);
             return result;
         }
+
+        public new virtual ListParentOperableList<TListElement> RootList => (ListParentOperableList<TListElement>)base
+            .RootList;
 
         public virtual ListParentOperableList<TListElement> Set<TProperty>(
             Expression<Func<TListElement, TProperty>> fieldExpression, TProperty value)
@@ -180,23 +183,6 @@ namespace TestDataFramework.Populator.Concrete.OperableList
                     this);
 
             return result;
-        }
-
-        public new virtual ListParentOperableList<TListElement> SetRange<TPropertyValue>(
-            Expression<Func<TListElement, TPropertyValue>> fieldExpression,
-            Func<IEnumerable<TPropertyValue>> rangeFactory)
-        {
-            base.AddRange(fieldExpression, rangeFactory);
-            return this;
-        }
-
-        public new virtual ListParentOperableList<TListElement> SetRange<TPropertyValue>(
-            Expression<Func<TListElement, TPropertyValue>> fieldExpression,
-            IEnumerable<TPropertyValue> range)
-        {
-            base.AddRange(fieldExpression, () => range);
-            return this;
-
         }
 
         public new virtual OperableList<TListElement> Ignore<TPropertyType>(Expression<Func<TListElement, TPropertyType>> fieldExpression)

@@ -29,13 +29,16 @@ namespace TestDataFramework.Populator.Concrete.FieldExpression
 {
     public class ReferenceParentFieldExpression<TListElement, TProperty, TParent> : FieldExpression<TListElement, TProperty>
     {
-        public ReferenceParentOperableList<TListElement, TParent> OperableList { get; }
+        private new ReferenceParentOperableList<TListElement, TParent> ThisOperableList =>
+            (ReferenceParentOperableList<TListElement, TParent>) base.ThisOperableList;
+
+        public new ReferenceParentOperableList<TListElement, TParent> OperableList => (ReferenceParentOperableList<TListElement, TParent>)base
+            .OperableList;
 
         public ReferenceParentFieldExpression(Expression<Func<TListElement, TProperty>> expression,
             ReferenceParentOperableList<TListElement, TParent> operableList, IObjectGraphService objectGraphService) :
             base(expression, operableList, objectGraphService)
         {
-            this.OperableList = operableList;
         }
 
         public virtual TParent Make()
@@ -46,6 +49,42 @@ namespace TestDataFramework.Populator.Concrete.FieldExpression
         public virtual TParent BindAndMake()
         {
             return this.OperableList.BindAndMake();
+        }
+
+        public ReferenceParentFieldExpression<TListElement, TProperty, TParent> Take(int count)
+        {
+            ReferenceParentOperableList<TListElement, TParent> newOperableList = this.ThisOperableList.Take(count);
+            var result =
+                new ReferenceParentFieldExpression<TListElement, TProperty, TParent>(this.Expression, newOperableList,
+                        this.ObjectGraphService)
+                    { Parent = this };
+            return result;
+        }
+
+        public ReferenceParentFieldExpression<TListElement, TProperty, TParent> Skip(int count)
+        {
+            ReferenceParentOperableList<TListElement, TParent> newOperableList = this.ThisOperableList.Skip(count);
+            var result =
+                new ReferenceParentFieldExpression<TListElement, TProperty, TParent>(this.Expression, newOperableList,
+                        this.ObjectGraphService)
+                    { Parent = this };
+            return result;
+        }
+
+        public virtual ReferenceParentFieldExpression<TListElement, TProperty, TParent> SetRange<TPropertyValue>(
+            Expression<Func<TListElement, TPropertyValue>> fieldExpression,
+            IEnumerable<TPropertyValue> range)
+        {
+            base.SetRange(fieldExpression, () => range);
+            return this;
+        }
+
+        public new virtual ReferenceParentFieldExpression<TListElement, TProperty, TParent> SetRange<TPropertyValue>(
+            Expression<Func<TListElement, TPropertyValue>> fieldExpression,
+            Func<IEnumerable<TPropertyValue>> rangeFactory)
+        {
+            base.SetRange(fieldExpression, rangeFactory);
+            return this;
         }
 
         public virtual ReferenceParentFieldExpression<TListElement, TProperty, TParent> GuaranteePropertiesByFixedQuantity(

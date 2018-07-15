@@ -54,9 +54,9 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             this.parentReference = parentReference;
         }
 
-        public ReferenceParentOperableList(RecordReference<TParent> parentReference,
+        public ReferenceParentOperableList(ReferenceParentOperableList<TListElement, TParent> parent, RecordReference<TParent> parentReference,
             IEnumerable<RecordReference<TListElement>> input, ValueGuaranteePopulator valueGuaranteePopulator,
-            BasePopulator populator) : base(input, valueGuaranteePopulator, populator)
+            BasePopulator populator) : base(parent, input, valueGuaranteePopulator, populator)
         {
             this.parentReference = parentReference;
         }
@@ -77,7 +77,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
         {
             IEnumerable<RecordReference<TListElement>> input = base.Take(count);
             var result =
-                new ReferenceParentOperableList<TListElement, TParent>(this.parentReference, input, this.ValueGuaranteePopulator,
+                new ReferenceParentOperableList<TListElement, TParent>(this, this.parentReference, input, this.ValueGuaranteePopulator,
                     this.Populator);
             return result;
         }
@@ -86,7 +86,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
         {
             IEnumerable<RecordReference<TListElement>> input = base.Skip(count);
             var result =
-                new ReferenceParentOperableList<TListElement, TParent>(this.parentReference, input, this.ValueGuaranteePopulator,
+                new ReferenceParentOperableList<TListElement, TParent>(this, this.parentReference, input, this.ValueGuaranteePopulator,
                     this.Populator);
             return result;
         }

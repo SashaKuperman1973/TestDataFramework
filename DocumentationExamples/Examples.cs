@@ -31,7 +31,8 @@ namespace DocumentationExamples
         public void SetRange_OnCollection()
         {
             IEnumerable<Subject> subjectCollection = StaticPopulatorFactory.CreateMemoryPopulator()
-                .Add<Subject>(5).SetRange(m => m.DeepA.TextA, new[] { "A", "B", "C" }).Make();
+                .Add<Subject>(5).Set(m => m.DeepA.TextA).Take(3).SetRange(m => m.DeepA.TextA, new[] {"A", "B", "C"})
+                .Make();
         }
 
         [TestMethod]
@@ -41,9 +42,9 @@ namespace DocumentationExamples
 
                 .Add<Subject>()
 
-                .SetList(m => m.DeepA.DeepBCollection, 10)
+                .SetList(subject => subject.DeepA.DeepBCollection, 10)
 
-                .Set(m => m.DeepC.AnInteger, 7)
+                .Set(deepB => deepB.DeepC.AnInteger, 7)
 
                 .Make();
         }

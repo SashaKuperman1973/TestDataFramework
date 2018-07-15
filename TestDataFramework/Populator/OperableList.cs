@@ -48,6 +48,23 @@ namespace TestDataFramework.Populator
         private readonly IValueGauranteePopulatorContextService explicitPropertySetterContextService =
             new ExplicitPropertySetterContextService();
 
+        private readonly OperableList<TListElement> parentBacking;
+
+        protected OperableList<TListElement> RootList
+        {
+            get
+            {
+                OperableList<TListElement> operableList = this;
+
+                while (operableList.parentBacking != null)
+                {
+                    operableList = operableList.parentBacking;
+                }
+
+                return operableList;
+            }
+        }
+
         public OperableList(ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator,
             ITypeGenerator typeGenerator, IAttributeDecorator attributeDecorator,
             IObjectGraphService objectGraphService,
@@ -76,16 +93,17 @@ namespace TestDataFramework.Populator
         {
         }
 
-        public OperableList(IEnumerable<RecordReference<TListElement>> input, ValueGuaranteePopulator valueGuaranteePopulator,
+        public OperableList(OperableList<TListElement> parent, IEnumerable<RecordReference<TListElement>> input, ValueGuaranteePopulator valueGuaranteePopulator,
             BasePopulator populator)
         {
+            this.parentBacking = parent;
             this.InternalList = new List<RecordReference<TListElement>>(input);
             this.Populator = populator;
             this.ValueGuaranteePopulator = valueGuaranteePopulator;
         }
 
         public OperableList(ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator) : 
-            this(Enumerable.Empty<RecordReference<TListElement>>(), valueGuaranteePopulator, populator)
+            this(null, Enumerable.Empty<RecordReference<TListElement>>(), valueGuaranteePopulator, populator)
         {
         }
 
@@ -206,7 +224,7 @@ namespace TestDataFramework.Populator
             });
         }
 
-        protected void AddRange<TPropertyValue>(Expression<Func<TListElement, TPropertyValue>> fieldExpression,
+        internal void AddRange<TPropertyValue>(Expression<Func<TListElement, TPropertyValue>> fieldExpression,
             Func<IEnumerable<TPropertyValue>> rangeFactory)
         {
             this.InternalList.ForEach(l => l.SetRange(fieldExpression, rangeFactory));

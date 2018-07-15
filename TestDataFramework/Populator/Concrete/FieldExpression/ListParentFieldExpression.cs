@@ -29,13 +29,16 @@ namespace TestDataFramework.Populator.Concrete.FieldExpression
 {
     public class ListParentFieldExpression<TListElement, TProperty> : FieldExpression<TListElement, TProperty>
     {
-        public ListParentOperableList<TListElement> OperableList { get; }
+        private new ListParentOperableList<TListElement> ThisOperableList => (ListParentOperableList<TListElement>)base
+            .ThisOperableList;
+
+        public new ListParentOperableList<TListElement> OperableList => (ListParentOperableList<TListElement>)base
+            .OperableList;
 
         public ListParentFieldExpression(Expression<Func<TListElement, TProperty>> expression,
             ListParentOperableList<TListElement> operableList, IObjectGraphService objectGraphService) : base(
             expression, operableList, objectGraphService)
         {
-            this.OperableList = operableList;
         }
 
         public virtual IEnumerable<TListElement> Make()
@@ -48,6 +51,41 @@ namespace TestDataFramework.Populator.Concrete.FieldExpression
             return this.OperableList.BindAndMake();
         }
 
+        public ListParentFieldExpression<TListElement, TProperty> Take(int count)
+        {
+            ListParentOperableList<TListElement> newOperableList = this.ThisOperableList.Take(count);
+            var result =
+                new ListParentFieldExpression<TListElement, TProperty>(this.Expression, newOperableList,
+                        this.ObjectGraphService)
+                    { Parent = this };
+            return result;
+        }
+
+        public ListParentFieldExpression<TListElement, TProperty> Skip(int count)
+        {
+            ListParentOperableList<TListElement> newOperableList = this.ThisOperableList.Skip(count);
+            var result =
+                new ListParentFieldExpression<TListElement, TProperty>(this.Expression, newOperableList,
+                        this.ObjectGraphService)
+                    { Parent = this };
+            return result;
+        }
+
+        public new virtual ListParentFieldExpression<TListElement, TProperty> SetRange<TPropertyValue>(
+            Expression<Func<TListElement, TPropertyValue>> fieldExpression,
+            Func<IEnumerable<TPropertyValue>> rangeFactory)
+        {
+            base.SetRange(fieldExpression, rangeFactory);
+            return this;
+        }
+
+        public virtual ListParentFieldExpression<TListElement, TProperty> SetRange<TPropertyValue>(
+            Expression<Func<TListElement, TPropertyValue>> fieldExpression,
+            IEnumerable<TPropertyValue> range)
+        {
+            base.SetRange(fieldExpression, () => range);
+            return this;
+        }
         public virtual ListParentFieldExpression<TListElement, TProperty> GuaranteePropertiesByFixedQuantity(
             IEnumerable<Func<TProperty>> guaranteedValues,
             ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)

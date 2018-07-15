@@ -31,32 +31,51 @@ namespace TestDataFramework.Populator
 {
     public abstract class FieldExpression<TListElement, TProperty>
     {
-        private readonly Expression<Func<TListElement, TProperty>> expression;
-        private readonly IObjectGraphService objectGraphService;
-        private readonly OperableList<TListElement> operableList;
+        protected FieldExpression<TListElement, TProperty> Parent;
+
+        protected readonly Expression<Func<TListElement, TProperty>> Expression;
+
+        protected readonly IObjectGraphService ObjectGraphService;
+
+        protected OperableList<TListElement> ThisOperableList;
+
+        protected OperableList<TListElement> OperableList
+        {
+            get
+            {
+                FieldExpression<TListElement, TProperty> fieldExpression = this;
+
+                while (fieldExpression.Parent != null)
+                {
+                    fieldExpression = fieldExpression.Parent;
+                }
+
+                return fieldExpression.ThisOperableList;
+            }
+        }
 
         protected FieldExpression(Expression<Func<TListElement, TProperty>> expression,
             OperableList<TListElement> operableList, IObjectGraphService objectGraphService)
         {
-            this.expression = expression;
-            this.operableList = operableList;
-            this.objectGraphService = objectGraphService;
+            this.Expression = expression;
+            this.ThisOperableList = operableList;
+            this.ObjectGraphService = objectGraphService;
         }
 
-        public virtual IEnumerable<TListElement> RecordObjects => this.operableList.RecordObjects;
+        public virtual IEnumerable<TListElement> RecordObjects => this.ThisOperableList.RecordObjects;
 
         protected void GuaranteePropertiesByFixedQuantity(
             IEnumerable<Func<TProperty>> guaranteedValues, int fixedQuantity,
             ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
-            List<PropertyInfo> setterObjectGraph = this.objectGraphService.GetObjectGraph(this.expression);
+            List<PropertyInfo> setterObjectGraph = this.ObjectGraphService.GetObjectGraph(this.Expression);
 
             guaranteedValues = guaranteedValues.ToList();
 
             if (fixedQuantity == 0)
                 fixedQuantity = guaranteedValues.Count();
 
-            this.operableList.GuaranteedPropertySetters.Add(new GuaranteedValues
+            this.ThisOperableList.GuaranteedPropertySetters.Add(new GuaranteedValues
             {
                 TotalFrequency = fixedQuantity,
                 Values = guaranteedValues.Select(value => new ExplicitPropertySetter
@@ -71,14 +90,14 @@ namespace TestDataFramework.Populator
         protected void GuaranteePropertiesByFixedQuantity(IEnumerable<object> guaranteedValues,
             int fixedQuantity, ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
-            List<PropertyInfo> setterObjectGraph = this.objectGraphService.GetObjectGraph(this.expression);
+            List<PropertyInfo> setterObjectGraph = this.ObjectGraphService.GetObjectGraph(this.Expression);
 
             guaranteedValues = guaranteedValues.ToList();
 
             if (fixedQuantity == 0)
                 fixedQuantity = guaranteedValues.Count();
 
-            this.operableList.GuaranteedPropertySetters.Add(new GuaranteedValues
+            this.ThisOperableList.GuaranteedPropertySetters.Add(new GuaranteedValues
             {
                 TotalFrequency = fixedQuantity,
                 Values = guaranteedValues.Select(value => FieldExpressionHelper
@@ -91,9 +110,9 @@ namespace TestDataFramework.Populator
             IEnumerable<Func<TProperty>> guaranteedValues, int frequencyPercentage,
             ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
-            List<PropertyInfo> setterObjectGraph = this.objectGraphService.GetObjectGraph(this.expression);
+            List<PropertyInfo> setterObjectGraph = this.ObjectGraphService.GetObjectGraph(this.Expression);
 
-            this.operableList.GuaranteedPropertySetters.Add(new GuaranteedValues
+            this.ThisOperableList.GuaranteedPropertySetters.Add(new GuaranteedValues
             {
                 FrequencyPercentage = frequencyPercentage,
 
@@ -110,17 +129,24 @@ namespace TestDataFramework.Populator
             IEnumerable<object> guaranteedValues, int frequencyPercentage,
             ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
-            List<PropertyInfo> setterObjectGraph = this.objectGraphService.GetObjectGraph(this.expression);
+            List<PropertyInfo> setterObjectGraph = this.ObjectGraphService.GetObjectGraph(this.Expression);
 
             guaranteedValues = guaranteedValues.ToList();
 
-            this.operableList.GuaranteedPropertySetters.Add(new GuaranteedValues
+            this.ThisOperableList.GuaranteedPropertySetters.Add(new GuaranteedValues
             {
                 FrequencyPercentage = frequencyPercentage,
                 Values = guaranteedValues.Select(value => FieldExpressionHelper
                     .GetFuncOrValueBasedExlicitPropertySetter<TProperty>(value, setterObjectGraph)),
                 ValueCountRequestOption = valueCountRequestOption
             });
+        }
+
+        protected void SetRange<TPropertyValue>(
+            Expression<Func<TListElement, TPropertyValue>> fieldExpression,
+            Func<IEnumerable<TPropertyValue>> rangeFactory)
+        {
+            this.ThisOperableList.AddRange(fieldExpression, rangeFactory);
         }
     }
 }

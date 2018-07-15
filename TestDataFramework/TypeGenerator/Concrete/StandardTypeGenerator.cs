@@ -70,9 +70,16 @@ namespace TestDataFramework.TypeGenerator.Concrete
         private readonly IHandledTypeGenerator handledTypeGenerator;
         private readonly ITypeGeneratorService typeGeneratorService;
 
-        private readonly Stack<Type> complexTypeProcessingRecursionGuard = new Stack<Type>();
+        private Stack<Type> complexTypeProcessingRecursionGuard = new Stack<Type>();
 
         private List<ExplicitPropertySetter> explicitPropertySetters;
+        private static readonly List<ExplicitPropertySetter> BlankList = Enumerable.Empty<ExplicitPropertySetter>().ToList();
+        private bool blankSetters = false;
+        private List<ExplicitPropertySetter> ExplicitPropertySetters
+        {
+            get => this.blankSetters ? StandardTypeGenerator.BlankList : this.explicitPropertySetters;
+            set => this.explicitPropertySetters = value;
+        }
 
         #endregion Fields
 
@@ -87,11 +94,19 @@ namespace TestDataFramework.TypeGenerator.Concrete
             if (handledTypeObject != null)
                 return handledTypeObject;
 
+            Stack<Type> savedRecursionGuard = null;
+
             if (this.complexTypeProcessingRecursionGuard.Contains(forType))
             {
-                StandardTypeGenerator.Logger.Debug("Circular reference encountered. Type: " + forType);
+                if (!this.ExplicitSetterforCircularReference(objectGraphNode))
+                {
+                    StandardTypeGenerator.Logger.Debug("Circular reference encountered. Type: " + forType);
 
-                return Helper.GetDefaultValue(forType);
+                    return Helper.GetDefaultValue(forType);
+                }
+
+                savedRecursionGuard = this.complexTypeProcessingRecursionGuard;
+                this.complexTypeProcessingRecursionGuard = new Stack<Type>();
             }
 
             this.complexTypeProcessingRecursionGuard.Push(forType);
@@ -100,15 +115,65 @@ namespace TestDataFramework.TypeGenerator.Concrete
 
             if (!canBeConstructed)
             {
-                this.complexTypeProcessingRecursionGuard.Pop();
+                this.PopRecursionGuard(savedRecursionGuard);
                 return objectToFillResult;
             }
 
             this.FillObject(objectToFillResult, objectGraphNode);
-            this.complexTypeProcessingRecursionGuard.Pop();
+
+            this.PopRecursionGuard(savedRecursionGuard);
 
             StandardTypeGenerator.Logger.Debug("Exiting ConstructObject");
             return objectToFillResult;
+        }
+
+        private void PopRecursionGuard(Stack<Type> savedRecursionGuard)
+        {
+            if (savedRecursionGuard != null)
+            {
+                this.complexTypeProcessingRecursionGuard = savedRecursionGuard;
+            }
+            else
+            {
+                this.complexTypeProcessingRecursionGuard.Pop();
+            }
+        }
+
+        private bool ExplicitSetterforCircularReference(ObjectGraphNode objectGraphNode)
+        {
+            if (objectGraphNode == null)
+                return false;
+
+            var objectGraphNodeList = new List<PropertyInfo>();
+            while (objectGraphNode.PropertyInfo != null)
+            {
+                objectGraphNodeList.Add(objectGraphNode.PropertyInfo);
+                objectGraphNode = objectGraphNode.Parent;
+            }
+
+            objectGraphNodeList.Reverse();
+
+            foreach (ExplicitPropertySetter aSetter in this.ExplicitPropertySetters)
+            {
+                if (objectGraphNodeList.Count > aSetter.PropertyChain.Count)
+                    continue;
+
+                bool result = true;
+                for (int i = 0; i < objectGraphNodeList.Count; i++)
+                {
+                    if (objectGraphNodeList[i].PropertyType == aSetter.PropertyChain[i].PropertyType) continue;
+
+                    result = false;
+                    break;
+                }
+
+                if (result)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private bool InvokeConstructor(Type forType, out object result)
@@ -178,7 +243,7 @@ namespace TestDataFramework.TypeGenerator.Concrete
 
                 IEnumerable<ExplicitPropertySetter> setters =
                     this.typeGeneratorService
-                        .GetExplicitlySetPropertySetters(this.explicitPropertySetters, propertyObjectGraphNode)
+                        .GetExplicitlySetPropertySetters(this.ExplicitPropertySetters, propertyObjectGraphNode)
                         .ToList();
 
                 if (setters.Any())
@@ -215,7 +280,7 @@ namespace TestDataFramework.TypeGenerator.Concrete
             if (intrinsicValue != null)
                 return intrinsicValue;
 
-            this.explicitPropertySetters = explicitProperySetters.ToList();
+            this.ExplicitPropertySetters = explicitProperySetters.ToList();
 
             var parentObjectGraphNode = new ObjectGraphNode(null, null);
 
@@ -225,11 +290,29 @@ namespace TestDataFramework.TypeGenerator.Concrete
             return result;
         }
 
+        private int blankSetterCount = 0;
+
         public virtual object GetObject(Type forType, ObjectGraphNode objectGraphNode)
         {
             StandardTypeGenerator.Logger.Debug($"Entering GetObject. forType: {forType}");
 
+            if (objectGraphNode == null)
+            {
+                this.blankSetters = true;
+                this.blankSetterCount++;
+            }
+
             object result = this.ConstructObject(forType, objectGraphNode);
+
+            if (objectGraphNode == null)
+            {
+                this.blankSetterCount--;
+
+                if (this.blankSetterCount == 0)
+                {
+                    this.blankSetters = false;
+                }
+            }
 
             StandardTypeGenerator.Logger.Debug($"Exiting GetObject. result: {result}");
             return result;

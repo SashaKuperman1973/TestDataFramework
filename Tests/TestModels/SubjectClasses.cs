@@ -319,4 +319,21 @@ namespace Tests.TestModels
     {
         public int AnInt { get; set; }
     }
+
+    public class RecursionCheck_Level1
+    {
+        public RecursionCheck_Level2 Level2 { get; set; }
+    }
+
+    public class RecursionCheck_Level2
+    {
+        public RecursionCheck_Level3 Level3 { get; set; }
+
+        public string Value { get; set; }
+    }
+
+    public class RecursionCheck_Level3
+    {
+        public RecursionCheck_Level1 RecursiveProperty { get; set; }
+    }
 }

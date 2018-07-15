@@ -45,6 +45,8 @@ namespace CommonIntegrationTests.TestModels
 
         public List<int> IntList { get; set; }
 
+        public DeepA DeepA { get; set; }
+
         public List<DeepD> DeepDList { get; set; }
     }
 

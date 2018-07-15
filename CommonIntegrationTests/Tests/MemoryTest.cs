@@ -721,7 +721,8 @@ namespace CommonIntegrationTests.Tests
         {
             IPopulator populator = this.factory.CreateMemoryPopulator();
 
-            DeepA deepA = populator.Add<DeepA>().Set(m => m.DeepB.DeepC.DeepA.Integer, 7).Make();
+            DeepA deepA = populator.Add<DeepA>().SetList(m => m.DeepB.DeepAList, 5).Set(m => m.DeepB.String, "Hello")
+                .Make();
         }
     }
 }

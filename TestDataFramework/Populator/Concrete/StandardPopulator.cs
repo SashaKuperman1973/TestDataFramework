@@ -76,13 +76,20 @@ namespace TestDataFramework.Populator.Concrete
             this.handledTypeGenerator.HandledTypeValueGetterDictionary.Add(type, valueGetter);
         }
 
-        public override ListParentOperableList<T> Add<T>(int copies, params RecordReference[] primaryRecordReferences)
+        public override OperableList<T> Add<T>(int copies, params RecordReference[] primaryRecordReferences)
         {
             StandardPopulator.Logger.Debug(
                 $"Entering Add. T: {typeof(T)}, copies: {copies}, primaryRecordReference: {primaryRecordReferences}");
 
-            var result = new ListParentOperableList<T>(this.valueGuaranteePopulator, this, this.typeGenerator,
-                this.AttributeDecorator, this.objectGraphService, this.deepCollectionSettingConverter);
+            var result = new OperableList<T>(
+                new RecordReference<T>[copies],
+                this.valueGuaranteePopulator,
+                this,
+                this.objectGraphService,
+                this.AttributeDecorator,
+                this.deepCollectionSettingConverter,
+                this.typeGenerator
+                );
 
             this.Populatables.Add(result);
 

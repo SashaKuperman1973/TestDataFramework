@@ -103,7 +103,7 @@ namespace Tests.Tests
                 throw new NotImplementedException();
             }
 
-            public override ListParentOperableList<T> Add<T>(int copies, params RecordReference[] primaryRecordReferences)
+            public override OperableList<T> Add<T>(int copies, params RecordReference[] primaryRecordReferences)
             {
                 throw new NotImplementedException();
             }

@@ -5,7 +5,6 @@ using System.Linq.Expressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.DeepSetting.Interfaces;
-using TestDataFramework.ListOperations.Concrete;
 using TestDataFramework.Populator.Concrete;
 using TestDataFramework.Populator.Concrete.FieldExpression;
 using TestDataFramework.Populator.Concrete.OperableList;
@@ -17,28 +16,33 @@ namespace Tests.Tests.FieldExpressionTests.ReferenceParentTests
     public partial class ReferenceParentFieldExpressionTests
     {
         private Expression<Func<ElementType, ElementType.PropertyType>> expression;
-        private ReferenceParentFieldExpression<ElementType, ElementType.PropertyType, SubjectClass> referenceParentFieldExpression;
-        private Mock<ReferenceParentOperableList<ElementType, SubjectClass>> referenceParentOperableListMock;
+
+        private ReferenceParentFieldExpression<ElementType, ElementType.PropertyType,
+                RootReferenceParentOperableList<ElementType, SubjectClass>, ElementType, SubjectClass>
+            referenceParentFieldExpression;
+
+        private Mock<ReferenceParentOperableList<ElementType,
+                RootReferenceParentOperableList<ElementType, SubjectClass>, ElementType, SubjectClass>>
+            referenceParentOperableListMock;
+
         private Mock<IObjectGraphService> objectGraphServiceMock;
-        private RecordReference<SubjectClass> parentReference;
 
         [TestInitialize]
         public void Initialize()
         {
-            var valueGuaranteePopulatorMock = new Mock<ValueGuaranteePopulator>();
-
             this.expression = element => element.AProperty;
 
             this.objectGraphServiceMock = new Mock<IObjectGraphService>();
 
-            this.parentReference = new RecordReference<SubjectClass>(null, null, null, null, null, null);
-
-            this.referenceParentOperableListMock =
-                new Mock<ReferenceParentOperableList<ElementType, SubjectClass>>(this.parentReference, valueGuaranteePopulatorMock.Object, null, null, null, null, null, null);
+            this.referenceParentOperableListMock = Helpers.GetMock<ReferenceParentOperableList<ElementType,
+                RootReferenceParentOperableList<ElementType, SubjectClass>, ElementType, SubjectClass>>();
 
             this.referenceParentFieldExpression =
-                new ReferenceParentFieldExpression<ElementType, ElementType.PropertyType, SubjectClass>(this.expression,
-                    this.referenceParentOperableListMock.Object, this.objectGraphServiceMock.Object);
+                new ReferenceParentFieldExpression<ElementType, ElementType.PropertyType,
+                    RootReferenceParentOperableList<ElementType, SubjectClass>, ElementType, SubjectClass>(
+                    this.expression,
+                    this.referenceParentOperableListMock.Object,
+                    this.objectGraphServiceMock.Object);
         }
 
         [TestMethod]

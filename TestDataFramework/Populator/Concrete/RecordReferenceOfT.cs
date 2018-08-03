@@ -89,6 +89,8 @@ namespace TestDataFramework.Populator.Concrete
                 return;
             }
 
+            base.Populate();
+
             base.RecordObject = this.TypeGenerator.GetObject<T>(this.ExplicitPropertySetters);
             this.IsPopulated = true;
 
@@ -121,40 +123,21 @@ namespace TestDataFramework.Populator.Concrete
             return this;
         }
 
-        public virtual ReferenceParentOperableList<TListElement, T> SetList<TListElement>(
-            Expression<Func<T, IEnumerable<TListElement>>> listFieldExpression, int size)
-        {
-            return this.SetReferenceParentList(listFieldExpression, size, this);
-        }
-
-        internal ListParentOperableList<TListElement> SetListParentList<TListElement>(
+        public virtual RootReferenceParentOperableList<TListElement, T> SetList<TListElement>(
             Expression<Func<T, IEnumerable<TListElement>>> listFieldExpression, int size)
         {
             List<PropertyInfo> objectPropertyGraph = this.objectGraphService.GetObjectGraph(listFieldExpression);
 
-            var operableList = new ListParentOperableList<TListElement>(size, this.valueGuaranteePopulator, this.Populator,
-                this.TypeGenerator, this.AttributeDecorator, this.objectGraphService,
-                this.deepCollectionSettingConverter);
-
-            this.AddToExplicitPropertySetters(listFieldExpression, () =>
-            {
-                operableList.Populate();
-                IEnumerable<TListElement> setterResult =
-                    this.deepCollectionSettingConverter.Convert(operableList.RecordObjects, objectPropertyGraph.Last());
-                return setterResult;
-            });
-
-            return operableList;
-        }
-
-        internal ReferenceParentOperableList<TListElement, TParentElement> SetReferenceParentList<TListElement, TParentElement>(
-            Expression<Func<T, IEnumerable<TListElement>>> listFieldExpression, int size, RecordReference<TParentElement> parent)
-        {
-            List<PropertyInfo> objectPropertyGraph = this.objectGraphService.GetObjectGraph(listFieldExpression);
-
-            var operableList = new ReferenceParentOperableList<TListElement, TParentElement>(parent, size, this.valueGuaranteePopulator, this.Populator,
-                this.TypeGenerator, this.AttributeDecorator, this.objectGraphService,
-                this.deepCollectionSettingConverter);
+            var operableList = new RootReferenceParentOperableList<TListElement, T>(
+                this, 
+                new RecordReference<TListElement>[size],
+                this.valueGuaranteePopulator,
+                this.Populator,
+                this.objectGraphService,
+                this.AttributeDecorator,
+                this.deepCollectionSettingConverter,
+                this.TypeGenerator
+                );
 
             this.AddToExplicitPropertySetters(listFieldExpression, () =>
             {

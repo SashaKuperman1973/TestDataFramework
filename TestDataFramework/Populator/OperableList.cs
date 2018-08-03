@@ -22,83 +22,73 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Castle.Core.Internal;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.ListOperations.Concrete;
 using TestDataFramework.ListOperations.Interfaces;
 using TestDataFramework.Populator.Concrete;
+using TestDataFramework.Populator.Concrete.MakeableEnumerable;
+using TestDataFramework.Populator.Concrete.OperableList;
+using TestDataFramework.Populator.Interfaces;
 using TestDataFramework.TypeGenerator.Interfaces;
 
 namespace TestDataFramework.Populator
 {
-    public class OperableList<TListElement> : Populatable, IList<RecordReference<TListElement>>
+    public class OperableList<TListElement> : Populatable, IList<RecordReference<TListElement>>, IMakeableCollectionContainer<TListElement>
     {
-        protected readonly BasePopulator Populator;
         protected readonly IAttributeDecorator AttributeDecorator;
         protected readonly DeepCollectionSettingConverter DeepCollectionSettingConverter;
         protected readonly IObjectGraphService ObjectGraphService;
         protected readonly ITypeGenerator TypeGenerator;
         protected readonly ValueGuaranteePopulator ValueGuaranteePopulator;
-        protected internal readonly List<GuaranteedValues> GuaranteedValues = new List<GuaranteedValues>();
-        protected internal List<RecordReference<TListElement>> InternalList;
-        internal readonly List<GuaranteedValues> GuaranteedPropertySetters = new List<GuaranteedValues>();
-
-        private readonly IValueGauranteePopulatorContextService valueSetContextService = new ValueSetContextService();
 
         private readonly IValueGauranteePopulatorContextService explicitPropertySetterContextService =
             new ExplicitPropertySetterContextService();
 
-        protected OperableList<TListElement> RootList;
-        protected OperableList<TListElement> RootParallelList;
-        protected List<OperableList<TListElement>> ParllelLists;
+        private readonly IValueGauranteePopulatorContextService valueSetContextService = new ValueSetContextService();
 
-        public OperableList(ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator,
-            ITypeGenerator typeGenerator, IAttributeDecorator attributeDecorator,
-            IObjectGraphService objectGraphService,
-            DeepCollectionSettingConverter deepCollectionSettingConverter, 
-            List<RecordReference<TListElement>> internalList = null)
+        protected internal readonly BasePopulator Populator;
+
+        internal readonly List<GuaranteedValues> GuaranteedPropertySetters = new List<GuaranteedValues>();
+        internal readonly List<GuaranteedValues> GuaranteedValues = new List<GuaranteedValues>();
+        internal List<RecordReference<TListElement>> InternalList;
+
+        public OperableList(IEnumerable<RecordReference<TListElement>> input,
+            ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator,
+            IObjectGraphService objectGraphService, IAttributeDecorator attributeDecorator,
+            DeepCollectionSettingConverter deepCollectionSettingConverter,
+            ITypeGenerator typeGenerator)
         {
-            this.InternalList = internalList ?? new List<RecordReference<TListElement>>();
             this.Populator = populator;
-            this.TypeGenerator = typeGenerator;
-            this.AttributeDecorator = attributeDecorator;
-            this.ObjectGraphService = objectGraphService;
-            this.DeepCollectionSettingConverter = deepCollectionSettingConverter;
             this.ValueGuaranteePopulator = valueGuaranteePopulator;
-            this.RootList = this;
-            this.RootParallelList = this;
+            this.ObjectGraphService = objectGraphService;
+            this.AttributeDecorator = attributeDecorator;
+            this.DeepCollectionSettingConverter = deepCollectionSettingConverter;
+            this.TypeGenerator = typeGenerator;
+
+            this.InternalList = input?.ToList() ?? new List<RecordReference<TListElement>>();
 
             for (int i = 0; i < this.InternalList.Count; i++)
                 if (this.InternalList[i] == null)
-                    this.InternalList[i] = this.CreateRecordReference();
+                    this.InternalList[i] = this.CreateRecordReference<TListElement>();
         }
 
-        public OperableList(int size, ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator,
-            ITypeGenerator typeGenerator, IAttributeDecorator attributeDecorator,
-            IObjectGraphService objectGraphService,
-            DeepCollectionSettingConverter deepCollectionSettingConverter)
-            : this(valueGuaranteePopulator, populator, typeGenerator, attributeDecorator, objectGraphService,
-                deepCollectionSettingConverter, new RecordReference<TListElement>[size].ToList())
+        public virtual IEnumerable<TListElement> RecordObjects
         {
-            this.RootList = this;
-            this.RootParallelList = this;
-        }
-
-        public OperableList(OperableList<TListElement> rootList, OperableList<TListElement> rootParallelList,
-            IEnumerable<RecordReference<TListElement>> input, ValueGuaranteePopulator valueGuaranteePopulator,
-            BasePopulator populator)
-        {
-            this.RootList = rootList ?? this;
-            this.RootParallelList = rootParallelList ?? this;
-            this.InternalList = new List<RecordReference<TListElement>>(input);
-            this.Populator = populator;
-            this.ValueGuaranteePopulator = valueGuaranteePopulator;
+            get
+            {
+                IEnumerable<TListElement> result = this.InternalList.Select(reference => reference.RecordObject);
+                return result;
+            }
         }
 
         protected internal override void Populate()
         {
             if (this.IsPopulated)
                 return;
+
+            base.Populate();
 
             if (this.GuaranteedPropertySetters.Any())
                 this.ValueGuaranteePopulator.Bind(this, this.GuaranteedPropertySetters,
@@ -116,234 +106,296 @@ namespace TestDataFramework.Populator
             this.InternalList.ForEach(collection.Add);
         }
 
-        public virtual IEnumerable<TListElement> RecordObjects
-        {
-            get
-            {
-                IEnumerable<TListElement> result = this.InternalList.Select(reference => reference.RecordObject);
-                return result;
-            }
-        }
-
-        protected void Set<TProperty>(
-            Expression<Func<TListElement, TProperty>> fieldExpression, Func<TProperty> valueFactory)
-        {
-            this.InternalList.ForEach(reference => reference.Set(fieldExpression, valueFactory));
-        }
-
-        protected void AddGuaranteeByPercentageOfTotal(IEnumerable<object> guaranteedValues,
-            int frequencyPercentage, ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
-        {
-            this.GuaranteedValues.Add(new GuaranteedValues
-            {
-                FrequencyPercentage = frequencyPercentage,
-                Values = guaranteedValues,
-                ValueCountRequestOption = valueCountRequestOption
-            });
-
-            this.AddSelfToParallelList();
-        }
-
-        protected void AddGuaranteeByPercentageOfTotal(IEnumerable<Func<TListElement>> guaranteedValues,
-            int frequencyPercentage, ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
-        {
-            this.GuaranteedValues.Add(new GuaranteedValues
-            {
-                FrequencyPercentage = frequencyPercentage,
-                Values = guaranteedValues,
-                ValueCountRequestOption = valueCountRequestOption
-            });
-
-            this.AddSelfToParallelList();
-        }
-
-        protected void AddGuaranteeByPercentageOfTotal(IEnumerable<TListElement> guaranteedValues,
-            int frequencyPercentage, ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
-        {
-            this.GuaranteedValues.Add(new GuaranteedValues
-            {
-                FrequencyPercentage = frequencyPercentage,
-                Values = guaranteedValues.Cast<object>(),
-                ValueCountRequestOption = valueCountRequestOption
-            });
-
-            this.AddSelfToParallelList();
-        }
-
-        protected void AddGuaranteeByFixedQuantity(IEnumerable<object> guaranteedValues,
-            int fixedQuantity, ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
-        {
-            guaranteedValues = guaranteedValues.ToList();
-
-            if (fixedQuantity == 0)
-                fixedQuantity = guaranteedValues.Count();
-
-            this.GuaranteedValues.Add(new GuaranteedValues
-            {
-                TotalFrequency = fixedQuantity,
-                Values = guaranteedValues,
-                ValueCountRequestOption = valueCountRequestOption
-            });
-
-            this.AddSelfToParallelList();
-        }
-
-        protected void AddGuaranteeByFixedQuantity(IEnumerable<Func<TListElement>> guaranteedValues,
-            int fixedQuantity, ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
-        {
-            guaranteedValues = guaranteedValues.ToList();
-
-            if (fixedQuantity == 0)
-                fixedQuantity = guaranteedValues.Count();
-
-            this.GuaranteedValues.Add(new GuaranteedValues
-            {
-                TotalFrequency = fixedQuantity,
-                Values = guaranteedValues,
-                ValueCountRequestOption = valueCountRequestOption
-            });
-
-            this.AddSelfToParallelList();
-        }
-
-        protected void AddGuaranteeByFixedQuantity(IEnumerable<TListElement> guaranteedValues, int fixedQuantity,
-            ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
-        {
-            guaranteedValues = guaranteedValues.ToList();
-
-            if (fixedQuantity == 0)
-                fixedQuantity = guaranteedValues.Count();
-
-            this.GuaranteedValues.Add(new GuaranteedValues
-            {
-                TotalFrequency = fixedQuantity,
-                Values = guaranteedValues.Cast<object>(),
-                ValueCountRequestOption = valueCountRequestOption
-            });
-
-            this.AddSelfToParallelList();
-        }
-
-        private void AddSelfToParallelList()
-        {
-            if (this.RootParallelList != this)
-            {
-                (this.RootParallelList.ParllelLists ?? (this.RootParallelList.ParllelLists =
-                     new List<OperableList<TListElement>>())).Add(this);
-            }
-        }
-
         internal void AddRange<TPropertyValue>(Expression<Func<TListElement, TPropertyValue>> fieldExpression,
             Func<IEnumerable<TPropertyValue>> rangeFactory)
         {
             this.InternalList.ForEach(l => l.SetRange(fieldExpression, rangeFactory));
         }
 
-        public void IgnoreBase<TPropertyType>(Expression<Func<TListElement, TPropertyType>> fieldExpression)
+        public OperableList<TListElement> Ignore<TPropertyType>(Expression<Func<TListElement, TPropertyType>> fieldExpression)
         {
             this.InternalList.ForEach(reference => reference.Ignore(fieldExpression));
+            return this;
         }
 
-        private RecordReference<TListElement> CreateRecordReference()
+        private RecordReference<TCustomListElement> CreateRecordReference<TCustomListElement>()
         {
-            var result = new RecordReference<TListElement>(this.TypeGenerator, this.AttributeDecorator,
+            var result = new RecordReference<TCustomListElement>(this.TypeGenerator, this.AttributeDecorator,
                 this.Populator, this.ObjectGraphService, this.ValueGuaranteePopulator,
                 this.DeepCollectionSettingConverter);
 
             return result;
         }
 
-        protected IEnumerable<RecordReference<TListElement>> Take(int count)
+        private ListParentOperableList<
+                TChildListElement,
+                OperableList<TListElement>,
+                TListElement>
+
+            CreateChild<TChildListElement>(
+                IEnumerable<RecordReference<TChildListElement>> input
+            )
         {
-            IEnumerable<RecordReference<TListElement>> result = this.InternalList.Take(count);
+            var result = new ListParentOperableList<
+                TChildListElement,
+                OperableList<TListElement>,
+                TListElement>(
+
+                this,
+                this,
+                input,
+                this.ValueGuaranteePopulator,
+                this.Populator,
+                this.ObjectGraphService,
+                this.AttributeDecorator,
+                this.DeepCollectionSettingConverter,
+                this.TypeGenerator
+            );
+
             return result;
         }
 
-        protected IEnumerable<RecordReference<TListElement>> Skip(int count)
+        protected List<RecordReference<TCustomListElement>> CreateRecordReferences<TCustomListElement>(int count)
         {
-            IEnumerable<RecordReference<TListElement>> result = this.InternalList.Skip(count);
+            var list = new List<RecordReference<TCustomListElement>>(count);
+            for (int i = 0; i < count; i++)
+                list.Add(this.CreateRecordReference<TCustomListElement>());
+
+            return list;
+        }
+
+        public virtual OperableList<TListElement> Take(int count)
+        {
+            IEnumerable<RecordReference<TListElement>> input = this.InternalList.Take(count);
+
+            var result = new OperableList<TListElement>(
+                input,
+                this.ValueGuaranteePopulator,
+                this.Populator,
+                this.ObjectGraphService,
+                this.AttributeDecorator,
+                this.DeepCollectionSettingConverter,
+                this.TypeGenerator
+                );
+
+            this.Children.Add(result);
             return result;
         }
 
-        public virtual OperableList<TListElement> GuaranteeByPercentageOfTotal(IEnumerable<object> guaranteedValues, int frequencyPercentage = 10)
+        public virtual OperableList<TListElement> Skip(int count)
         {
-            this.AddGuaranteeByPercentageOfTotal(guaranteedValues, frequencyPercentage);
-            return this;
-        }
+            IEnumerable<RecordReference<TListElement>> input = this.InternalList.Skip(count);
 
-        public virtual OperableList<TListElement> GuaranteeByPercentageOfTotal(IEnumerable<Func<TListElement>> guaranteedValues, int frequencyPercentage = 10)
-        {
-            this.AddGuaranteeByPercentageOfTotal(guaranteedValues, frequencyPercentage);
-            return this;
-        }
+            var result = new OperableList<TListElement>(
+                input,
+                this.ValueGuaranteePopulator,
+                this.Populator,
+                this.ObjectGraphService,
+                this.AttributeDecorator,
+                this.DeepCollectionSettingConverter,
+                this.TypeGenerator
+            );
 
-        public virtual OperableList<TListElement> GuaranteeByPercentageOfTotal(IEnumerable<TListElement> guaranteedValues, int frequencyPercentage = 10)
-        {
-            this.AddGuaranteeByPercentageOfTotal(guaranteedValues, frequencyPercentage);
-            return this;
-        }
-
-        public virtual OperableList<TListElement> GuaranteeByFixedQuantity(IEnumerable<object> guaranteedValues, int fixedQuantity = 0)
-        {
-            this.AddGuaranteeByFixedQuantity(guaranteedValues, fixedQuantity);
-            return this;
-        }
-
-        public virtual OperableList<TListElement> GuaranteeByFixedQuantity(IEnumerable<Func<TListElement>> guaranteedValues, int fixedQuantity = 0)
-        {
-            this.AddGuaranteeByFixedQuantity(guaranteedValues, fixedQuantity);
-            return this;
-        }
-
-        public virtual OperableList<TListElement> GuaranteeByFixedQuantity(IEnumerable<TListElement> guaranteedValues, int fixedQuantity = 0)
-        {
-            this.AddGuaranteeByFixedQuantity(guaranteedValues, fixedQuantity);
-            return this;
-        }
-
-        public virtual OperableList<TListElement> Ignore<TPropertyType>(Expression<Func<TListElement, TPropertyType>> fieldExpression)
-        {
-            this.IgnoreBase(fieldExpression);
-            return this;
-        }
-
-        public virtual IEnumerable<TListElement> BindAndMake()
-        {
-            this.RootParallelList.ParllelLists?.ForEach(l =>
-            {
-                l.Populator.Bind(l);
-            });
-
-            this.Populator.Bind();
-
-            return this.RootList.RecordObjects;
+            this.Children.Add(result);
+            return result;
         }
 
         public virtual IEnumerable<TListElement> Make()
         {
-            this.RootParallelList.ParllelLists?.ForEach(l =>
-            {
-                l.Populator.Bind(l);
-            });
-
-            this.RootParallelList.Populator.Bind(this.RootParallelList);
-
-            return this.RootList.RecordObjects;
+            this.Populate();
+            return this.RecordObjects;
         }
 
-        public virtual OperableList<TListElement> SetRange<TPropertyValue>(
-            Expression<Func<TListElement, TPropertyValue>> fieldExpression,
-            Func<IEnumerable<TPropertyValue>> rangeFactory)
+        public virtual IEnumerable<TListElement> BindAndMake()
         {
-            this.AddRange(fieldExpression, rangeFactory);
+            this.Populator.Bind();
+            return this.RecordObjects;
+        }
+
+        public virtual ListParentOperableList<TPropertyElement, OperableList<TListElement>, TListElement> SetList<TPropertyElement>(
+            Expression<Func<TListElement, IEnumerable<TPropertyElement>>> listFieldExpression, int size)
+        {
+            List<RecordReference<TPropertyElement>> input = this.CreateRecordReferences<TPropertyElement>(size);
+
+            ListParentOperableList<
+                TPropertyElement,
+                OperableList<TListElement>,
+                TListElement> result = this.CreateChild(input);
+
+            this.Children.Add(result);
+            return result;
+        }
+
+        public virtual OperableList<TListElement> Set<TProperty>(
+            Expression<Func<TListElement, TProperty>> fieldExpression, TProperty value)
+        {
+            return this.Set(fieldExpression, () => value);
+        }
+
+        public virtual OperableList<TListElement> Set<TProperty>(
+            Expression<Func<TListElement, TProperty>> fieldExpression, Func<TProperty> valueFactory)
+        {
+            this.InternalList.ForEach(reference => reference.Set(fieldExpression, valueFactory));
             return this;
         }
 
-        public virtual OperableList<TListElement> SetRange<TPropertyValue>(
-            Expression<Func<TListElement, TPropertyValue>> fieldExpression,
-            IEnumerable<TPropertyValue> range)
+        public virtual FieldExpression<TListElement, TProperty> Set<TProperty>(
+            Expression<Func<TListElement, TProperty>> expression)
         {
-            return this.SetRange(fieldExpression, () => range);
+            var fieldExpression =
+                new FieldExpression<TListElement, TProperty>(expression, this,
+                    this.ObjectGraphService);
+
+            return fieldExpression;
+        }
+
+        public virtual ListParentMakeableEnumerable<ListParentOperableList<TResult,
+                OperableList<TListElement>, TListElement>, TListElement>
+
+            Select<TResult>(Expression<Func<TListElement, IEnumerable<TResult>>> selector, int listSize,
+                int listCollectionSize)
+        {
+            var listCollection =
+                new ListParentOperableList<TResult,
+                    OperableList<TListElement>, TListElement>[listCollectionSize];
+
+            for (int i = 0; i < listCollection.Length; i++)
+            {
+                ListParentOperableList<TResult,
+                    OperableList<TListElement>, TListElement> list = this.SetList(selector, listSize);
+
+                listCollection[i] = list;
+            }
+
+            var result =
+                new ListParentMakeableEnumerable<ListParentOperableList<TResult, OperableList<TListElement>, TListElement>, TListElement>(
+                    listCollection, this);
+
+            return result;
+        }
+
+        public virtual OperableList<TListElement> GuaranteeByPercentageOfTotal(IEnumerable<object> guaranteedValues,
+            int frequencyPercentage,
+            ValueCountRequestOption valueCountRequestOption =
+                ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
+        {
+            this.GuaranteedValues.Add(new GuaranteedValues
+            {
+                FrequencyPercentage = frequencyPercentage,
+                Values = guaranteedValues,
+                ValueCountRequestOption = valueCountRequestOption
+            });
+
+            return this;
+        }
+
+        public virtual OperableList<TListElement> GuaranteeByFixedQuantity(IEnumerable<object> guaranteedValues,
+            int fixedQuantity,
+            ValueCountRequestOption valueCountRequestOption =
+                ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
+        {
+            guaranteedValues = guaranteedValues.ToList();
+
+            if (fixedQuantity == 0)
+                fixedQuantity = guaranteedValues.Count();
+
+            this.GuaranteedValues.Add(new GuaranteedValues
+            {
+                TotalFrequency = fixedQuantity,
+                Values = guaranteedValues,
+                ValueCountRequestOption = valueCountRequestOption
+            });
+
+            return this;
+        }
+
+        public virtual OperableList<TListElement> GuaranteeByPercentageOfTotal(
+            IEnumerable<object> guaranteedValues,
+            ValueCountRequestOption valueCountRequestOption =
+                ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
+        {
+            return this.GuaranteeByPercentageOfTotal(guaranteedValues, 10, valueCountRequestOption);
+        }
+
+        public virtual OperableList<TListElement> GuaranteeByPercentageOfTotal(
+            IEnumerable<Func<TListElement>> guaranteedValues,
+            ValueCountRequestOption valueCountRequestOption =
+                ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
+        {
+            return this.GuaranteeByPercentageOfTotal(guaranteedValues.Cast<object>(), 10, valueCountRequestOption);
+        }
+
+        public virtual OperableList<TListElement> GuaranteeByPercentageOfTotal(
+            IEnumerable<Func<TListElement>> guaranteedValues,
+            int frequencyPercentage,
+            ValueCountRequestOption valueCountRequestOption =
+                ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
+        {
+            this.GuaranteeByPercentageOfTotal(guaranteedValues.Cast<object>(), frequencyPercentage, valueCountRequestOption);
+            return this;
+        }
+
+        public virtual OperableList<TListElement> GuaranteeByPercentageOfTotal(
+            IEnumerable<TListElement> guaranteedValues,
+            ValueCountRequestOption valueCountRequestOption =
+                ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
+        {
+            return this.GuaranteeByPercentageOfTotal(guaranteedValues.Cast<object>(), 10, valueCountRequestOption);
+        }
+
+        public virtual OperableList<TListElement> GuaranteeByPercentageOfTotal(
+            IEnumerable<TListElement> guaranteedValues,
+            int frequencyPercentage,
+            ValueCountRequestOption valueCountRequestOption =
+                ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
+        {
+            this.GuaranteeByPercentageOfTotal(guaranteedValues.Cast<object>(), frequencyPercentage, valueCountRequestOption);
+            return this;
+        }
+
+        public virtual OperableList<TListElement> GuaranteeByFixedQuantity(
+            IEnumerable<object> guaranteedValues,
+            ValueCountRequestOption valueCountRequestOption =
+                ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
+        {
+            return this.GuaranteeByFixedQuantity(guaranteedValues, 0, valueCountRequestOption);
+        }
+
+        public virtual OperableList<TListElement> GuaranteeByFixedQuantity(
+            IEnumerable<Func<TListElement>> guaranteedValues,
+            ValueCountRequestOption valueCountRequestOption =
+                ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
+        {
+            return this.GuaranteeByFixedQuantity(guaranteedValues.Cast<object>(), 0, valueCountRequestOption);
+        }
+
+        public virtual OperableList<TListElement> GuaranteeByFixedQuantity(
+            IEnumerable<Func<TListElement>> guaranteedValues,
+            int fixedQuantity,
+            ValueCountRequestOption valueCountRequestOption =
+                ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
+        {
+            this.GuaranteeByFixedQuantity(guaranteedValues.Cast<object>(), fixedQuantity, valueCountRequestOption);
+            return this;
+        }
+
+        public virtual OperableList<TListElement> GuaranteeByFixedQuantity(
+            IEnumerable<TListElement> guaranteedValues,
+            int fixedQuantity,
+            ValueCountRequestOption valueCountRequestOption =
+                ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
+        {
+            this.GuaranteeByFixedQuantity(guaranteedValues.Cast<object>(), fixedQuantity, valueCountRequestOption);
+            return this;
+        }
+
+        public virtual OperableList<TListElement> GuaranteeByFixedQuantity(
+            IEnumerable<TListElement> guaranteedValues,
+            ValueCountRequestOption valueCountRequestOption =
+                ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
+        {
+            this.GuaranteeByFixedQuantity(guaranteedValues.Cast<object>(), 0, valueCountRequestOption);
+            return this;
         }
 
         #region IList<> members
@@ -365,7 +417,7 @@ namespace TestDataFramework.Populator
 
         public int Count => this.InternalList.Count;
 
-        public bool IsReadOnly => ((IList)this.InternalList).IsReadOnly;
+        public bool IsReadOnly => ((IList) this.InternalList).IsReadOnly;
 
         public void Clear()
         {

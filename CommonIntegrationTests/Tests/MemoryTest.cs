@@ -479,7 +479,7 @@ namespace CommonIntegrationTests.Tests
 
             RecordReference<ListSetterBaseType> listSetterBaseTypeReference = populator.Add<ListSetterBaseType>();
 
-            ReferenceParentOperableList<ListElementType, ListSetterBaseType> operableList =
+            RootReferenceParentOperableList<ListElementType, ListSetterBaseType> operableList = 
                 listSetterBaseTypeReference.SetList(p => p.B.WithCollection.ElementList, 10);
 
             MemoryTest.PopulateForSetTest(operableList, populator);
@@ -507,7 +507,7 @@ namespace CommonIntegrationTests.Tests
 
             RecordReference<ListSetterBaseType> listSetterBaseTypeReference = populator.Add<ListSetterBaseType>();
 
-            ReferenceParentOperableList<ListElementType, ListSetterBaseType> operableList =
+            RootReferenceParentOperableList<ListElementType, ListSetterBaseType> operableList =
                 listSetterBaseTypeReference.SetList(p => p.B.WithCollection.ElementArray, 10);
 
             MemoryTest.PopulateForSetTest(operableList, populator);
@@ -529,7 +529,7 @@ namespace CommonIntegrationTests.Tests
         }
 
         private static void PopulateForSetTest(
-            ReferenceParentOperableList<ListElementType, ListSetterBaseType> operableList, IPopulator populator)
+            RootReferenceParentOperableList<ListElementType, ListSetterBaseType> operableList, IPopulator populator)
         {
             operableList.Skip(2).Set(p => p.SubElement.AString, "Me")
                 .Skip(3).Set(p => p.AString, "Hello")
@@ -541,7 +541,7 @@ namespace CommonIntegrationTests.Tests
         private IMakeable<DeepA> GetMakeable(IPopulator populator)
         {
             IMakeable<DeepA> makeable = populator.Add<DeepA>().SetList(m => m.DeepB.DeepCList, 5)
-                .Select(q => q.DeepDList, 5).Skip(1).Take(3)
+                .Select(q => q.DeepDList, 5, 3).Skip(1).Take(3)
                 .Set(r => r.Skip(1).Set(m => m.Integer, 7));
 
             return makeable;
@@ -616,7 +616,7 @@ namespace CommonIntegrationTests.Tests
         private IMakeableCollectionContainer<DeepA> DeepPropertySetting_ListParent_SettersTest(IPopulator populator)
         {
             IMakeableCollectionContainer<DeepA> result = populator.Add<DeepA>(5)
-                .Select(q => q.DeepB.DeepCList, 10).Skip(2).Take(3)
+                .Select(q => q.DeepB.DeepCList, 5, 3).Skip(2).Take(3)
                 .Set(r => r.Skip(2).Take(2).Set(s => s.DeepString, "I"))
                 .Set(r => r.Skip(4).Take(2).Set(s => s.DeepString, "II"));
 

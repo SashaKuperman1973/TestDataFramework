@@ -58,7 +58,7 @@ namespace TestDataFramework.Populator
 
         public abstract void Bind();
 
-        public abstract ListParentOperableList<T> Add<T>(int copies, params RecordReference[] primaryRecordReferences);
+        public abstract OperableList<T> Add<T>(int copies, params RecordReference[] primaryRecordReferences);
 
         public abstract RecordReference<T> Add<T>(params RecordReference[] primaryRecordReferences);
 

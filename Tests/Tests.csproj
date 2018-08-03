@@ -107,8 +107,6 @@
     <Compile Include="Tests\MemoryValueGeneratorTests.cs" />
     <Compile Include="Tests\MinAttributeTests.cs" />
     <Compile Include="Tests\ObjectGraphServiceTest.cs" />
-    <Compile Include="Tests\OperableListTests\ListParentOperableListTests.cs" />
-    <Compile Include="Tests\OperableListTests\ReferenceParentOperableListTests.cs" />
     <Compile Include="Tests\SqlClientValueGeneratorTests.cs" />
     <Compile Include="Tests\StandardHandledTypeGeneratorTests.cs" />
     <Compile Include="Tests\MemoryUniqueValueGeneratorTests.cs" />
@@ -142,7 +140,7 @@
     <Compile Include="Tests\UniqueValueTypeGeneratorTests.cs" />
     <Compile Include="Tests\ValueGuaranteePopulatorTests.cs" />
     <Compile Include="Tests\GenericRecordReferenceTests.cs" />
-    <Compile Include="Tests\OperableListTests\OperableListTests.cs" />
+    <Compile Include="Tests\OperableListTests.cs" />
     <Compile Include="Tests\LargeIntegerTests.cs" />
     <Compile Include="Tests\SqlWriterDictionaryTests.cs" />
     <Compile Include="Tests\KeyTypeUniqueValueGeneratorTests.cs" />

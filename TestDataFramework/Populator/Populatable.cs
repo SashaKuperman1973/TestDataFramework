@@ -25,8 +25,16 @@ namespace TestDataFramework.Populator
     {
         public virtual bool IsPopulated { get; protected internal set; }
 
-        protected internal abstract void Populate();
+        protected internal virtual void Populate()
+        {
+            this.Children.ForEach(c =>
+            {
+                c.Populate();
+            });
+        }
 
         internal abstract void AddToReferences(IList<RecordReference> collection);
+
+        protected readonly List<Populatable> Children = new List<Populatable>();
     }
 }

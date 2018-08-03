@@ -24,6 +24,7 @@ using CommonIntegrationTests.TestModels;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.Factories;
+using TestDataFramework.Populator;
 using TestDataFramework.Populator.Interfaces;
 
 namespace CommonIntegrationTests.Tests.GuaranteePropertiesTests
@@ -52,8 +53,6 @@ namespace CommonIntegrationTests.Tests.GuaranteePropertiesTests
             Assert.AreEqual(fixedQuantityToCheckFor,
                 resultList.Count(l => new[] {"A", "B", "C"}.Contains(l.DeepString)));
         }
-
-        // Straight
 
         [TestMethod]
         public void FixedQuantity_ByValue_DefaultElementCount_Test()

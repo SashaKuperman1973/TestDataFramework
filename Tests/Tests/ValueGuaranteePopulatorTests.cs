@@ -102,7 +102,7 @@ namespace Tests.Tests
                 valuesByFixedAmount2,
             };
 
-            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
+            var operableList = Helpers.GetObject<OperableList<SubjectClass>>();
 
             for (int i = 0; i < 20; i++)
             {
@@ -161,11 +161,11 @@ namespace Tests.Tests
 
             var valueGuaranteePopulator = new ValueGuaranteePopulator();
 
-            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
+            var operableList = Helpers.GetObject<OperableList<SubjectClass>>();
 
             for (int i = 0; i < 20; i++)
             {
-                var reference = new RecordReference<SubjectClass>(null, null, null, null, null, null);
+                var reference = Helpers.GetObject<RecordReference<SubjectClass>>();
 
                 operableList.InternalList.Add(reference);
             }
@@ -201,7 +201,7 @@ namespace Tests.Tests
 
             var valueGuaranteePopulator = new ValueGuaranteePopulator();
 
-            var operableList = new OperableList<SubjectClass>(null, null, null, null, null, null);
+            var operableList = Helpers.GetObject<OperableList<SubjectClass>>();
 
             for (int i = 0; i < 20; i++)
             {

@@ -204,5 +204,37 @@ namespace Tests
             for (int i = 0; i < leftArray.Length; i++)
                 Assert.AreEqual(leftArray[i], rightArray[i]);
         }
+
+        private static Tuple<IEnumerable<object>, ConstructorInfo> GetArguments<T>() where T : class
+        {
+            ConstructorInfo[] constructors =
+                typeof(T).GetConstructors(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+            ConstructorInfo constructor = constructors.OrderBy(ci => ci.GetParameters().Length).First();
+
+            IEnumerable<object> arguments = constructor.GetParameters()
+                .Select(parameter => parameter.ParameterType.IsValueType
+                    ? Activator.CreateInstance(parameter.ParameterType)
+                    : null);
+
+            return new Tuple<IEnumerable<object>, ConstructorInfo>(arguments, constructor);
+        }
+
+        public static Mock<T> GetMock<T>() where T : class
+        {
+            object[] arguments = Helpers.GetArguments<T>().Item1.ToArray();
+
+            var result = new Mock<T>(arguments);
+            return result;
+        }
+
+        public static T GetObject<T>() where T : class
+        {
+            Tuple<IEnumerable<object>, ConstructorInfo> arguments = Helpers.GetArguments<T>();
+
+            object result = arguments.Item2.Invoke(arguments.Item1.ToArray());
+
+            return (T)result;
+        }
     }
 }

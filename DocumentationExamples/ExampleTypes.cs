@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ExplicitlySettingProperties
+namespace ExampleTypes
 {
     public class Subject
     {
@@ -21,9 +21,13 @@ namespace ExplicitlySettingProperties
 
     public class DeepB
     {
+        public string TextC { get; set; }
+
         public DeepC DeepC { get; set; }
 
         public DateTime ADateTime { get; set; }
+
+        public List<DeepC> DeepCCollection { get; set; }
     }
 
     public class DeepC
@@ -31,5 +35,7 @@ namespace ExplicitlySettingProperties
         public int AnInteger { get; set; }
 
         public string ATextProperty { get; set; }
+
+        public List<string> DeepCStringCollection { get; set; }
     }
 }

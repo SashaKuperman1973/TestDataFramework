@@ -7,6 +7,7 @@ using TestDataFramework.DeepSetting;
 using TestDataFramework.ListOperations.Concrete;
 using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete.FieldExpression;
+using TestDataFramework.Populator.Concrete.OperableList;
 using Tests.TestModels;
 
 namespace Tests.Tests.FieldExpressionTests.ReferenceParentTests
@@ -153,7 +154,8 @@ namespace Tests.Tests.FieldExpressionTests.ReferenceParentTests
 
             // Act
 
-            ReferenceParentFieldExpression<ElementType, ElementType.PropertyType, SubjectClass> result =
+            ReferenceParentFieldExpression<ElementType, ElementType.PropertyType,
+                RootReferenceParentOperableList<ElementType, SubjectClass>, ElementType, SubjectClass> result =
                 this.referenceParentFieldExpression.GuaranteePropertiesByFixedQuantity(guaranteedValues);
 
             // Assert
@@ -178,7 +180,9 @@ namespace Tests.Tests.FieldExpressionTests.ReferenceParentTests
 
             // Act
 
-            ReferenceParentFieldExpression<ElementType, ElementType.PropertyType, SubjectClass> result = this.referenceParentFieldExpression.GuaranteePropertiesByFixedQuantity(guaranteedValues);
+            ReferenceParentFieldExpression<ElementType, ElementType.PropertyType,
+                RootReferenceParentOperableList<ElementType, SubjectClass>, ElementType, SubjectClass> result =
+                this.referenceParentFieldExpression.GuaranteePropertiesByFixedQuantity(guaranteedValues);
 
             // Assert
 
@@ -205,7 +209,8 @@ namespace Tests.Tests.FieldExpressionTests.ReferenceParentTests
 
             // Act
 
-            ReferenceParentFieldExpression<ElementType, ElementType.PropertyType, SubjectClass> result = this.referenceParentFieldExpression.GuaranteePropertiesByFixedQuantity(guaranteedValues);
+            ReferenceParentFieldExpression<ElementType, ElementType.PropertyType,
+            RootReferenceParentOperableList<ElementType, SubjectClass>, ElementType, SubjectClass> result = this.referenceParentFieldExpression.GuaranteePropertiesByFixedQuantity(guaranteedValues);
 
             // Assert
 
@@ -217,7 +222,8 @@ namespace Tests.Tests.FieldExpressionTests.ReferenceParentTests
         {
             // Act
 
-            ReferenceParentFieldExpression<ElementType, ElementType.PropertyType, SubjectClass> result =
+            ReferenceParentFieldExpression<ElementType, ElementType.PropertyType,
+                RootReferenceParentOperableList<ElementType, SubjectClass>, ElementType, SubjectClass> result =
                 this.referenceParentFieldExpression.GuaranteePropertiesByPercentageOfTotal(new List<Func<ElementType.PropertyType>>());
 
             // Assert
@@ -230,7 +236,8 @@ namespace Tests.Tests.FieldExpressionTests.ReferenceParentTests
         {
             // Act
 
-            ReferenceParentFieldExpression<ElementType, ElementType.PropertyType, SubjectClass> result =
+            ReferenceParentFieldExpression<ElementType, ElementType.PropertyType,
+                RootReferenceParentOperableList<ElementType, SubjectClass>, ElementType, SubjectClass> result =
                 this.referenceParentFieldExpression.GuaranteePropertiesByPercentageOfTotal(new List<ElementType.PropertyType>());
 
             // Assert
@@ -256,7 +263,8 @@ namespace Tests.Tests.FieldExpressionTests.ReferenceParentTests
 
             // Act
 
-            ReferenceParentFieldExpression<ElementType, ElementType.PropertyType, SubjectClass> result =
+            ReferenceParentFieldExpression<ElementType, ElementType.PropertyType,
+                RootReferenceParentOperableList<ElementType, SubjectClass>, ElementType, SubjectClass> result =
                 this.referenceParentFieldExpression.GuaranteePropertiesByPercentageOfTotal(guaranteedValues);
 
             // Assert

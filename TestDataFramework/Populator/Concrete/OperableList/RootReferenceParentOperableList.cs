@@ -31,145 +31,169 @@ using TestDataFramework.TypeGenerator.Interfaces;
 
 namespace TestDataFramework.Populator.Concrete.OperableList
 {
-    public class ListParentOperableList<TListElement, TParentList, TRootListElement> : OperableList<TListElement>,
-        IMakeableCollectionContainer<TRootListElement>
+    public class RootReferenceParentOperableList<TListElement, TRootElement> : OperableList<TListElement>,
+        IMakeable<TRootElement>
     {
-        public ListParentOperableList(
-            OperableList<TRootListElement> rootList,
-            TParentList parentList,
+        public RootReferenceParentOperableList(
+            RecordReference<TRootElement> root,
             IEnumerable<RecordReference<TListElement>> input, ValueGuaranteePopulator valueGuaranteePopulator,
             BasePopulator populator, IObjectGraphService objectGraphService, IAttributeDecorator attributeDecorator,
             DeepCollectionSettingConverter deepCollectionSettingConverter, ITypeGenerator typeGenerator) : 
-            base(input, valueGuaranteePopulator, populator, objectGraphService, attributeDecorator, 
+            base(input, valueGuaranteePopulator, populator, objectGraphService, attributeDecorator,
                 deepCollectionSettingConverter, typeGenerator)
         {
-            this.RootList = rootList;
-            this.ParentList = parentList;
+            this.Root = root;
         }
 
-        private ListParentOperableList<
+        private ReferenceParentOperableList<
                 TChildListElement,
-                ListParentOperableList<TListElement, TParentList, TRootListElement>,
-                TRootListElement>
+                RootReferenceParentOperableList<TListElement, TRootElement>,
+                TListElement, 
+                TRootElement>
 
             CreateChild<TChildListElement>(
                 IEnumerable<RecordReference<TChildListElement>> input
             )
         {
-            var result = new ListParentOperableList<
-                TChildListElement,
-                ListParentOperableList<TListElement, TParentList, TRootListElement>,
-                TRootListElement>(
-                
-                this.RootList,
-                this,
-                input,
-                this.ValueGuaranteePopulator,
-                this.Populator,
-                this.ObjectGraphService,
-                this.AttributeDecorator,
-                this.DeepCollectionSettingConverter,
-                this.TypeGenerator
-            );
+            var result =
+                new ReferenceParentOperableList<
+                    TChildListElement,
+                    RootReferenceParentOperableList<TListElement, TRootElement>,
+                    TListElement, 
+                    TRootElement>
+                (
+                    this,
+                    this.Root,
+                    this,
+                    input,
+                    this.ValueGuaranteePopulator,
+                    this.Populator,
+                    this.ObjectGraphService,
+                    this.AttributeDecorator,
+                    this.DeepCollectionSettingConverter,
+                    this.TypeGenerator
+                );
 
             return result;
         }
 
-        private ListParentOperableList<TListElement, TParentList, TRootListElement> CreateSubset(
-            IEnumerable<RecordReference<TListElement>> input)
-        {
-            var result = new ListParentOperableList<TListElement, TParentList, TRootListElement>
-            (
-                this.RootList,
-                this.ParentList,
-                input,
-                this.ValueGuaranteePopulator,
-                this.Populator,
-                this.ObjectGraphService,
-                this.AttributeDecorator,
-                this.DeepCollectionSettingConverter,
-                this.TypeGenerator
-            );
+        private ReferenceParentOperableList<
+                TListElement,
+                RootReferenceParentOperableList<TListElement, TRootElement>,
+                TListElement,
+                TRootElement>
 
-            return result;
+            CreateSubset(RootReferenceParentOperableList<TListElement, TRootElement> rootList,
+                IEnumerable<RecordReference<TListElement>> input
+            )
+        {
+            var subset =
+                new ReferenceParentOperableList<
+                    TListElement,
+                    RootReferenceParentOperableList<TListElement, TRootElement>,
+                    TListElement,
+                    TRootElement>(
+                    rootList,
+                    this.Root,
+                    this,
+                    input,
+                    this.ValueGuaranteePopulator,
+                    this.Populator,
+                    this.ObjectGraphService,
+                    this.AttributeDecorator,
+                    this.DeepCollectionSettingConverter,
+                    this.TypeGenerator
+                );
+
+            return subset;
         }
 
-        public virtual OperableList<TRootListElement> RootList
+        public RecordReference<TRootElement> Root { get; set; }
+
+        public new virtual TRootElement Make()
         {
-            get;
+            this.Root.Populate();
+            return this.Root.RecordObject;
         }
 
-        public virtual TParentList ParentList { get; }
-
-        public new virtual IEnumerable<TRootListElement> Make()
+        public new virtual TRootElement BindAndMake()
         {
-            this.RootList.Populate();
-            return this.RootList.RecordObjects;
+            this.Populator.Bind();
+            return this.Root.RecordObject;
         }
 
-        public new virtual IEnumerable<TRootListElement> BindAndMake()
-        {
-            this.RootList.Populator.Bind();
-            return this.RootList.RecordObjects;
-        }
+        public new ReferenceParentOperableList<
+                TListElement,
+                RootReferenceParentOperableList<TListElement, TRootElement>,
+                TListElement,
+                TRootElement>
 
-        public new ListParentOperableList<TListElement, TParentList, TRootListElement> Take(int count)
+            Take(int count)
         {
             IEnumerable<RecordReference<TListElement>> input = this.InternalList.Take(count);
 
-            ListParentOperableList<TListElement, TParentList, TRootListElement> result = this.CreateSubset(input);
+            ReferenceParentOperableList<TListElement, RootReferenceParentOperableList<TListElement, TRootElement>,
+                TListElement, TRootElement> result = this.CreateSubset(this, input);
 
             this.Children.Add(result);
             return result;
         }
 
-        public new ListParentOperableList<TListElement, TParentList, TRootListElement> Skip(int count)
+        public new ReferenceParentOperableList<
+                TListElement,
+                RootReferenceParentOperableList<TListElement, TRootElement>,
+                TListElement,
+                TRootElement>
+
+            Skip(int count)
         {
             IEnumerable<RecordReference<TListElement>> input = this.InternalList.Skip(count);
 
-            ListParentOperableList<TListElement, TParentList, TRootListElement> result = this.CreateSubset(input);
+            ReferenceParentOperableList<TListElement, RootReferenceParentOperableList<TListElement, TRootElement>,
+                TListElement, TRootElement> result = this.CreateSubset(this, input);
 
             this.Children.Add(result);
             return result;
         }
 
-        public new virtual ListParentOperableList<TPropertyElement,
-            ListParentOperableList<TListElement, TParentList, TRootListElement>, TRootListElement> SetList<TPropertyElement>(
+        public new virtual ReferenceParentOperableList<TPropertyElement,
+            RootReferenceParentOperableList<TListElement, TRootElement>,
+            TListElement, TRootElement> SetList<TPropertyElement>(
             Expression<Func<TListElement, IEnumerable<TPropertyElement>>> listFieldExpression, int size)
         {
             List<RecordReference<TPropertyElement>> list = this.CreateRecordReferences<TPropertyElement>(size);
 
-            ListParentOperableList<TPropertyElement, ListParentOperableList<TListElement, TParentList, TRootListElement>,
-                TRootListElement> result = this.CreateChild(list);
+            ReferenceParentOperableList<TPropertyElement, RootReferenceParentOperableList<TListElement, TRootElement>,
+                TListElement, TRootElement> result = this.CreateChild(list);
 
             this.Children.Add(result);
             return result;
         }
 
-        public new virtual ListParentOperableList<TListElement, TParentList, TRootListElement> Set<TProperty>(
+        public new virtual RootReferenceParentOperableList<TListElement, TRootElement> Set<TProperty>(
             Expression<Func<TListElement, TProperty>> fieldExpression, TProperty value)
         {
             return this.Set(fieldExpression, () => value);
         }
 
-        public new virtual ListParentOperableList<TListElement, TParentList, TRootListElement> Set<TProperty>(
+        public new virtual RootReferenceParentOperableList<TListElement, TRootElement> Set<TProperty>(
             Expression<Func<TListElement, TProperty>> fieldExpression, Func<TProperty> valueFactory)
         {
             base.Set(fieldExpression, valueFactory);
             return this;
         }
 
-        public new virtual ListParentFieldExpression<TListElement, TParentList, TRootListElement, TProperty> Set<TProperty>(
+        public new virtual RootReferenceParentFieldExpression<TListElement, TProperty, TRootElement> Set<TProperty>(
             Expression<Func<TListElement, TProperty>> expression)
         {
             var fieldExpression =
-                new ListParentFieldExpression<TListElement, TParentList, TRootListElement, TProperty>(expression, this,
+                new RootReferenceParentFieldExpression<TListElement, TProperty, TRootElement>(expression, this,
                     this.ObjectGraphService);
 
             return fieldExpression;
         }
 
-        public new virtual ListParentOperableList<TListElement, TParentList, TRootListElement> GuaranteeByPercentageOfTotal(
+        public new virtual RootReferenceParentOperableList<TListElement, TRootElement> GuaranteeByPercentageOfTotal(
             IEnumerable<object> guaranteedValues,
             ValueCountRequestOption valueCountRequestOption =
                 ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
@@ -178,7 +202,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             return this;
         }
 
-        public new virtual ListParentOperableList<TListElement, TParentList, TRootListElement> GuaranteeByPercentageOfTotal(
+        public new virtual RootReferenceParentOperableList<TListElement, TRootElement> GuaranteeByPercentageOfTotal(
             IEnumerable<object> guaranteedValues,
             int frequencyPercentage,
             ValueCountRequestOption valueCountRequestOption =
@@ -188,7 +212,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             return this;
         }
 
-        public new virtual ListParentOperableList<TListElement, TParentList, TRootListElement> GuaranteeByPercentageOfTotal(
+        public new virtual RootReferenceParentOperableList<TListElement, TRootElement> GuaranteeByPercentageOfTotal(
             IEnumerable<Func<TListElement>> guaranteedValues,
             ValueCountRequestOption valueCountRequestOption =
                 ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
@@ -197,7 +221,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             return this;
         }
 
-        public new virtual ListParentOperableList<TListElement, TParentList, TRootListElement> GuaranteeByPercentageOfTotal(
+        public new virtual RootReferenceParentOperableList<TListElement, TRootElement> GuaranteeByPercentageOfTotal(
             IEnumerable<Func<TListElement>> guaranteedValues,
             int frequencyPercentage,
             ValueCountRequestOption valueCountRequestOption =
@@ -207,7 +231,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             return this;
         }
 
-        public new virtual ListParentOperableList<TListElement, TParentList, TRootListElement> GuaranteeByPercentageOfTotal(
+        public new virtual RootReferenceParentOperableList<TListElement, TRootElement> GuaranteeByPercentageOfTotal(
             IEnumerable<TListElement> guaranteedValues,
             ValueCountRequestOption valueCountRequestOption =
                 ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
@@ -216,7 +240,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             return this;
         }
 
-        public new virtual ListParentOperableList<TListElement, TParentList, TRootListElement> GuaranteeByPercentageOfTotal(
+        public new virtual RootReferenceParentOperableList<TListElement, TRootElement> GuaranteeByPercentageOfTotal(
             IEnumerable<TListElement> guaranteedValues,
             int frequencyPercentage,
             ValueCountRequestOption valueCountRequestOption =
@@ -226,7 +250,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             return this;
         }
 
-        public new virtual ListParentOperableList<TListElement, TParentList, TRootListElement> GuaranteeByFixedQuantity(
+        public new virtual RootReferenceParentOperableList<TListElement, TRootElement> GuaranteeByFixedQuantity(
             IEnumerable<object> guaranteedValues,
             ValueCountRequestOption valueCountRequestOption =
                 ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
@@ -235,7 +259,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             return this;
         }
 
-        public new virtual ListParentOperableList<TListElement, TParentList, TRootListElement> GuaranteeByFixedQuantity(
+        public new virtual RootReferenceParentOperableList<TListElement, TRootElement> GuaranteeByFixedQuantity(
             IEnumerable<object> guaranteedValues,
             int fixedQuantity,
             ValueCountRequestOption valueCountRequestOption =
@@ -245,7 +269,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             return this;
         }
 
-        public new virtual ListParentOperableList<TListElement, TParentList, TRootListElement> GuaranteeByFixedQuantity(
+        public new virtual RootReferenceParentOperableList<TListElement, TRootElement> GuaranteeByFixedQuantity(
             IEnumerable<Func<TListElement>> guaranteedValues,
             ValueCountRequestOption valueCountRequestOption =
                 ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
@@ -254,7 +278,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             return this;
         }
 
-        public new virtual ListParentOperableList<TListElement, TParentList, TRootListElement> GuaranteeByFixedQuantity(
+        public new virtual RootReferenceParentOperableList<TListElement, TRootElement> GuaranteeByFixedQuantity(
             IEnumerable<Func<TListElement>> guaranteedValues,
             int fixedQuantity,
             ValueCountRequestOption valueCountRequestOption =
@@ -264,7 +288,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             return this;
         }
 
-        public new virtual ListParentOperableList<TListElement, TParentList, TRootListElement> GuaranteeByFixedQuantity(
+        public new virtual RootReferenceParentOperableList<TListElement, TRootElement> GuaranteeByFixedQuantity(
             IEnumerable<TListElement> guaranteedValues,
             ValueCountRequestOption valueCountRequestOption =
                 ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
@@ -273,34 +297,35 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             return this;
         }
 
-        public new virtual ListParentMakeableEnumerable<ListParentOperableList<TResult,
-                ListParentOperableList<TListElement, TParentList, TRootListElement>, TRootListElement>, TRootListElement>
+        public new virtual ReferenceParentMakeableEnumerable<ReferenceParentOperableList<TResult,
+                RootReferenceParentOperableList<TListElement, TRootElement>, TListElement, TRootElement>, TRootElement>
 
             Select<TResult>(Expression<Func<TListElement, IEnumerable<TResult>>> selector, int listSize,
                 int listCollectionSize)
         {
             var listCollection =
-                new ListParentOperableList<TResult, ListParentOperableList<TListElement, TParentList, TRootListElement>,
-                    TRootListElement>[listCollectionSize];
+                new ReferenceParentOperableList<TResult, RootReferenceParentOperableList<TListElement, TRootElement>,
+                    TListElement, TRootElement>[listCollectionSize];
 
             for (int i = 0; i < listCollection.Length; i++)
             {
-                ListParentOperableList<TResult, ListParentOperableList<TListElement, TParentList, TRootListElement>,
-                    TRootListElement> list
+                ReferenceParentOperableList<TResult, RootReferenceParentOperableList<TListElement, TRootElement>,
+                    TListElement, TRootElement> list
                     = this.SetList(selector, listSize);
 
                 listCollection[i] = list;
             }
 
             var result =
-                new ListParentMakeableEnumerable<ListParentOperableList<TResult,
-                    ListParentOperableList<TListElement, TParentList, TRootListElement>, TRootListElement>, TRootListElement>(
-                    listCollection, this.RootList);
+                new ReferenceParentMakeableEnumerable<ReferenceParentOperableList<TResult,
+                    RootReferenceParentOperableList<TListElement, TRootElement>,
+                    TListElement, TRootElement>, TRootElement>(
+                    listCollection, this.Root);
 
             return result;
         }
 
-        public new virtual ListParentOperableList<TListElement, TParentList, TRootListElement> Ignore<TPropertyType>(
+        public new virtual RootReferenceParentOperableList<TListElement, TRootElement> Ignore<TPropertyType>(
             Expression<Func<TListElement, TPropertyType>> fieldExpression)
         {
             base.Ignore(fieldExpression);

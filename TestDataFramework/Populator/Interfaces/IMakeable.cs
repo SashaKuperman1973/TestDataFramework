@@ -19,10 +19,10 @@
 
 namespace TestDataFramework.Populator.Interfaces
 {
-    public interface IMakeable<out TParent>
+    public interface IMakeable<out TRoot>
     {
-        TParent Make();
+        TRoot Make();
 
-        TParent BindAndMake();
+        TRoot BindAndMake();
     }
 }

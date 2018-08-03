@@ -109,7 +109,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
 
         public new virtual IEnumerable<TRootListElement> BindAndMake()
         {
-            this.RootList.Populator.Bind();
+            this.Populator.Bind();
             return this.RootList.RecordObjects;
         }
 

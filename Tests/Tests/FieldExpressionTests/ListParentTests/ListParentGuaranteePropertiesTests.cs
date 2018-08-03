@@ -18,7 +18,8 @@ namespace Tests.Tests.FieldExpressionTests.ListParentTests
         {
             var values = new[] { new ElementType.PropertyType(), };
 
-            Func<FieldExpression<ElementType, ElementType.PropertyType>> action = () => this.listParentFieldExpression.GuaranteePropertiesByFixedQuantity(values, 5);
+            Func<FieldExpression<ElementType, ElementType.PropertyType>> action =
+                () => this.listParentFieldExpression.GuaranteePropertiesByFixedQuantity(values, 5);
 
             this.GuaranteePropertiesByFixedQuantity_Test(action, values);
         }
@@ -57,6 +58,13 @@ namespace Tests.Tests.FieldExpressionTests.ListParentTests
             }
 
             this.GuaranteeProperties_Test(action, values, AssertFrequency);
+        }
+
+        [TestMethod]
+        public void GuaranteePropertiesByPercentageOfTotal_TProperty_Test2()
+        {
+            var values = new[] { new ElementType.PropertyType(), };
+            this.listParentFieldExpression.GuaranteePropertiesByPercentageOfTotal(values, 5);
         }
 
         [TestMethod]

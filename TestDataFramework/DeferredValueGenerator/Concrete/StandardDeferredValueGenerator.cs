@@ -37,7 +37,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
 
         private readonly IPropertyDataGenerator<T> dataSource;
 
-        internal readonly Dictionary<PropertyInfo, Data<T>> PropertyDataDictionary =
+        private readonly Dictionary<PropertyInfo, Data<T>> propertyDataDictionary =
             new Dictionary<PropertyInfo, Data<T>>();
 
         public StandardDeferredValueGenerator(IPropertyDataGenerator<T> dataSource)
@@ -54,14 +54,14 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
             StandardDeferredValueGenerator<T>.Logger.Debug(
                 $"Entering AddDelegate. targetPropertyInfo: {targetPropertyInfo.GetExtendedMemberInfoString()}");
 
-            if (this.PropertyDataDictionary.ContainsKey(targetPropertyInfo))
+            if (this.propertyDataDictionary.ContainsKey(targetPropertyInfo))
             {
                 StandardDeferredValueGenerator<T>.Logger.Debug("AddDelegate. Duplicate property. Exiting");
 
                 return;
             }
 
-            this.PropertyDataDictionary.Add(targetPropertyInfo, new Data<T>(valueGetter));
+            this.propertyDataDictionary.Add(targetPropertyInfo, new Data<T>(valueGetter));
 
             StandardDeferredValueGenerator<T>.Logger.Debug("Exiting AddDelegate");
         }
@@ -70,7 +70,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
         {
             StandardDeferredValueGenerator<T>.Logger.Debug("Entering Execute");
 
-            this.dataSource.FillData(this.PropertyDataDictionary);
+            this.dataSource.FillData(this.propertyDataDictionary);
 
             IEnumerable<RecordReference> uniqueTargets = StandardDeferredValueGenerator<T>.GetUniqueTargets(targets);
 
@@ -93,7 +93,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
                     }
 
                     Data<T> data;
-                    if (!this.PropertyDataDictionary.TryGetValue(propertyInfo, out data))
+                    if (!this.propertyDataDictionary.TryGetValue(propertyInfo, out data))
                     {
                         StandardDeferredValueGenerator<T>.Logger.Debug(
                             "Property not in deferred properties dictionary. Continuing to next iteration.");
@@ -112,7 +112,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
                 });
             });
 
-            this.PropertyDataDictionary.Clear();
+            this.propertyDataDictionary.Clear();
 
             StandardDeferredValueGenerator<T>.Logger.Debug("Exiting Execute");
         }

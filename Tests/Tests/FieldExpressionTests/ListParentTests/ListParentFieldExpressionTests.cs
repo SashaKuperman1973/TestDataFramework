@@ -31,7 +31,8 @@ namespace Tests.Tests.FieldExpressionTests.ListParentTests
 
             this.objectGraphServiceMock = new Mock<IObjectGraphService>();
 
-            this.listParentOperableListMock = Helpers.GetMock<ListParentOperableList<ElementType, OperableList<ElementType>, ElementType>>();
+            this.listParentOperableListMock = Helpers
+                .GetMock<ListParentOperableList<ElementType, OperableList<ElementType>, ElementType>>();
 
             this.listParentFieldExpression =
                 new ListParentFieldExpression<ElementType, OperableList<ElementType>, ElementType,

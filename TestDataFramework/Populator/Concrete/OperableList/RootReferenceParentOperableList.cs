@@ -108,7 +108,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             return subset;
         }
 
-        public RecordReference<TRootElement> Root { get; set; }
+        public virtual RecordReference<TRootElement> Root { get; }
 
         public new virtual TRootElement Make()
         {
@@ -122,7 +122,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             return this.Root.RecordObject;
         }
 
-        public new ReferenceParentOperableList<
+        public new virtual ReferenceParentOperableList<
                 TListElement,
                 RootReferenceParentOperableList<TListElement, TRootElement>,
                 TListElement,
@@ -139,7 +139,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             return result;
         }
 
-        public new ReferenceParentOperableList<
+        public new virtual ReferenceParentOperableList<
                 TListElement,
                 RootReferenceParentOperableList<TListElement, TRootElement>,
                 TListElement,

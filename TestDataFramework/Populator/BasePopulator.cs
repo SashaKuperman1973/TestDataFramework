@@ -80,9 +80,7 @@ namespace TestDataFramework.Populator
             return result;
         }
 
-        protected internal abstract void Bind(RecordReference recordReference);
-
-        protected internal abstract void Bind<T>(OperableList<T> operableList);
+        public abstract void Bind(RecordReference recordReference);
 
         public class Decorator
         {

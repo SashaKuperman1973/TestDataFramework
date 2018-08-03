@@ -22,7 +22,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Castle.Core.Internal;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.ListOperations.Concrete;
@@ -35,7 +34,10 @@ using TestDataFramework.TypeGenerator.Interfaces;
 
 namespace TestDataFramework.Populator
 {
-    public class OperableList<TListElement> : Populatable, IList<RecordReference<TListElement>>, IMakeableCollectionContainer<TListElement>
+    public class OperableList<TListElement> : 
+        Populatable, 
+        IList<RecordReference<TListElement>>, 
+        IMakeableCollectionContainer<TListElement>
     {
         protected readonly IAttributeDecorator AttributeDecorator;
         protected readonly DeepCollectionSettingConverter DeepCollectionSettingConverter;
@@ -48,11 +50,11 @@ namespace TestDataFramework.Populator
 
         private readonly IValueGauranteePopulatorContextService valueSetContextService = new ValueSetContextService();
 
-        protected internal readonly BasePopulator Populator;
+        protected readonly BasePopulator Populator;
 
         internal readonly List<GuaranteedValues> GuaranteedPropertySetters = new List<GuaranteedValues>();
-        internal readonly List<GuaranteedValues> GuaranteedValues = new List<GuaranteedValues>();
-        internal List<RecordReference<TListElement>> InternalList;
+        private readonly List<GuaranteedValues> privateGuaranteedValues = new List<GuaranteedValues>();
+        protected List<RecordReference<TListElement>> InternalList;
 
         public OperableList(IEnumerable<RecordReference<TListElement>> input,
             ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator,
@@ -83,19 +85,19 @@ namespace TestDataFramework.Populator
             }
         }
 
-        protected internal override void Populate()
+        internal override void Populate()
         {
             if (this.IsPopulated)
                 return;
 
-            base.Populate();
+            this.PopulateChildren();
 
             if (this.GuaranteedPropertySetters.Any())
                 this.ValueGuaranteePopulator.Bind(this, this.GuaranteedPropertySetters,
                     this.explicitPropertySetterContextService);
 
-            if (this.GuaranteedValues.Any())
-                this.ValueGuaranteePopulator.Bind(this, this.GuaranteedValues, this.valueSetContextService);
+            if (this.privateGuaranteedValues.Any())
+                this.ValueGuaranteePopulator.Bind(this, this.privateGuaranteedValues, this.valueSetContextService);
 
             this.InternalList.ForEach(recordReference => recordReference.Populate());
             this.IsPopulated = true;
@@ -104,18 +106,6 @@ namespace TestDataFramework.Populator
         internal override void AddToReferences(IList<RecordReference> collection)
         {
             this.InternalList.ForEach(collection.Add);
-        }
-
-        internal void AddRange<TPropertyValue>(Expression<Func<TListElement, TPropertyValue>> fieldExpression,
-            Func<IEnumerable<TPropertyValue>> rangeFactory)
-        {
-            this.InternalList.ForEach(l => l.SetRange(fieldExpression, rangeFactory));
-        }
-
-        public OperableList<TListElement> Ignore<TPropertyType>(Expression<Func<TListElement, TPropertyType>> fieldExpression)
-        {
-            this.InternalList.ForEach(reference => reference.Ignore(fieldExpression));
-            return this;
         }
 
         private RecordReference<TCustomListElement> CreateRecordReference<TCustomListElement>()
@@ -155,6 +145,25 @@ namespace TestDataFramework.Populator
             return result;
         }
 
+        private ListParentOperableList<TListElement, OperableList<TListElement>, TListElement> CreateSubset(
+            IEnumerable<RecordReference<TListElement>> input)
+        {
+            var result = new ListParentOperableList<TListElement, OperableList<TListElement>, TListElement>
+            (
+                this,
+                this,
+                input,
+                this.ValueGuaranteePopulator,
+                this.Populator,
+                this.ObjectGraphService,
+                this.AttributeDecorator,
+                this.DeepCollectionSettingConverter,
+                this.TypeGenerator
+            );
+
+            return result;
+        }
+
         protected List<RecordReference<TCustomListElement>> CreateRecordReferences<TCustomListElement>(int count)
         {
             var list = new List<RecordReference<TCustomListElement>>(count);
@@ -164,19 +173,24 @@ namespace TestDataFramework.Populator
             return list;
         }
 
+        public virtual void AddRange<TPropertyValue>(Expression<Func<TListElement, TPropertyValue>> fieldExpression,
+            Func<IEnumerable<TPropertyValue>> rangeFactory)
+        {
+            this.InternalList.ForEach(l => l.SetRange(fieldExpression, rangeFactory));
+        }
+
+        public virtual OperableList<TListElement> Ignore<TPropertyType>(Expression<Func<TListElement, TPropertyType>> fieldExpression)
+        {
+            this.InternalList.ForEach(reference => reference.Ignore(fieldExpression));
+            return this;
+        }
+
         public virtual OperableList<TListElement> Take(int count)
         {
             IEnumerable<RecordReference<TListElement>> input = this.InternalList.Take(count);
 
-            var result = new OperableList<TListElement>(
-                input,
-                this.ValueGuaranteePopulator,
-                this.Populator,
-                this.ObjectGraphService,
-                this.AttributeDecorator,
-                this.DeepCollectionSettingConverter,
-                this.TypeGenerator
-                );
+            ListParentOperableList<TListElement, OperableList<TListElement>, TListElement> result =
+                this.CreateSubset(input);
 
             this.Children.Add(result);
             return result;
@@ -186,15 +200,8 @@ namespace TestDataFramework.Populator
         {
             IEnumerable<RecordReference<TListElement>> input = this.InternalList.Skip(count);
 
-            var result = new OperableList<TListElement>(
-                input,
-                this.ValueGuaranteePopulator,
-                this.Populator,
-                this.ObjectGraphService,
-                this.AttributeDecorator,
-                this.DeepCollectionSettingConverter,
-                this.TypeGenerator
-            );
+            ListParentOperableList<TListElement, OperableList<TListElement>, TListElement> result =
+                this.CreateSubset(input);
 
             this.Children.Add(result);
             return result;
@@ -279,7 +286,7 @@ namespace TestDataFramework.Populator
             ValueCountRequestOption valueCountRequestOption =
                 ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
-            this.GuaranteedValues.Add(new GuaranteedValues
+            this.privateGuaranteedValues.Add(new GuaranteedValues
             {
                 FrequencyPercentage = frequencyPercentage,
                 Values = guaranteedValues,
@@ -299,7 +306,7 @@ namespace TestDataFramework.Populator
             if (fixedQuantity == 0)
                 fixedQuantity = guaranteedValues.Count();
 
-            this.GuaranteedValues.Add(new GuaranteedValues
+            this.privateGuaranteedValues.Add(new GuaranteedValues
             {
                 TotalFrequency = fixedQuantity,
                 Values = guaranteedValues,
@@ -422,7 +429,7 @@ namespace TestDataFramework.Populator
         public void Clear()
         {
             this.InternalList.Clear();
-            this.GuaranteedValues.Clear();
+            this.privateGuaranteedValues.Clear();
         }
 
         public bool Contains(RecordReference<TListElement> item)

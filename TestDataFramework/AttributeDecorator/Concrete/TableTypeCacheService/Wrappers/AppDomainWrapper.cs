@@ -24,11 +24,11 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wr
 {
     public class AppDomainWrapper
     {
-        internal readonly AppDomain AppDomain;
+        private readonly AppDomain appDomain;
 
         public AppDomainWrapper(AppDomain appDomain)
         {
-            this.AppDomain = appDomain ?? throw new ArgumentNullException(nameof(appDomain));
+            this.appDomain = appDomain ?? throw new ArgumentNullException(nameof(appDomain));
         }
 
         public AppDomainWrapper()
@@ -37,14 +37,14 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wr
 
         public virtual AssemblyWrapper LoadAssembly(AssemblyNameWrapper assemblyName)
         {
-            Assembly assembly = this.AppDomain?.Load(assemblyName.Name);
+            Assembly assembly = this.appDomain?.Load(assemblyName.Name);
             AssemblyWrapper result = assembly == null ? new AssemblyWrapper() : new AssemblyWrapper(assembly);
             return result;
         }
 
         public virtual void Unload()
         {
-            AppDomain.Unload(this.AppDomain);
+            AppDomain.Unload(this.appDomain);
         }
     }
 }

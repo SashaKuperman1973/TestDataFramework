@@ -26,44 +26,44 @@ namespace TestDataFramework.Populator.Concrete.MakeableEnumerable
 {
     public class ReferenceParentMakeableEnumerable<TListElement, TRoot> : List<TListElement>, IMakeable<TRoot>
     {
-        internal readonly IMakeable<TRoot> Parent;
+        private readonly IMakeable<TRoot> parent;
 
         public ReferenceParentMakeableEnumerable(IEnumerable<TListElement> collection,
             IMakeable<TRoot> parent) : base(collection)
         {
-            this.Parent = parent;
+            this.parent = parent;
         }
 
-        public TRoot Make()
+        public virtual TRoot Make()
         {
-            return this.Parent.Make();
+            return this.parent.Make();
         }
 
-        public TRoot BindAndMake()
+        public virtual TRoot BindAndMake()
         {
-            return this.Parent.BindAndMake();
+            return this.parent.BindAndMake();
         }
 
-        public ReferenceParentMakeableEnumerable<TListElement, TRoot> Set<TResultElement>(
+        public virtual ReferenceParentMakeableEnumerable<TListElement, TRoot> Set<TResultElement>(
             Func<TListElement, TResultElement> selector)
         {
             this.Select(selector).ToList();
             return this;
         }
 
-        public ReferenceParentMakeableEnumerable<TListElement, TRoot> Take(int count)
+        public virtual ReferenceParentMakeableEnumerable<TListElement, TRoot> Take(int count)
         {
             IEnumerable<TListElement> taken = Enumerable.Take(this, count);
 
-            var result = new ReferenceParentMakeableEnumerable<TListElement, TRoot>(taken, this.Parent);
+            var result = new ReferenceParentMakeableEnumerable<TListElement, TRoot>(taken, this.parent);
             return result;
         }
 
-        public ReferenceParentMakeableEnumerable<TListElement, TRoot> Skip(int count)
+        public virtual ReferenceParentMakeableEnumerable<TListElement, TRoot> Skip(int count)
         {
             IEnumerable<TListElement> afterSkip = Enumerable.Skip(this, count);
 
-            var result = new ReferenceParentMakeableEnumerable<TListElement, TRoot>(afterSkip, this.Parent);
+            var result = new ReferenceParentMakeableEnumerable<TListElement, TRoot>(afterSkip, this.parent);
             return result;
         }
     }

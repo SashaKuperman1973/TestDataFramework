@@ -40,7 +40,7 @@ namespace TestDataFramework.Populator.Concrete
         private readonly IHandledTypeGenerator handledTypeGenerator;
         private readonly IObjectGraphService objectGraphService;
         private readonly IPersistence persistence;
-        internal readonly List<Populatable> Populatables = new List<Populatable>();
+        private readonly List<Populatable> populatables = new List<Populatable>();
 
         private readonly ITypeGenerator typeGenerator;
         private readonly ValueGuaranteePopulator valueGuaranteePopulator;
@@ -68,7 +68,7 @@ namespace TestDataFramework.Populator.Concrete
 
         public override void Clear()
         {
-            this.Populatables.Clear();
+            this.populatables.Clear();
         }
 
         public override void Extend(Type type, HandledTypeValueGetter valueGetter)
@@ -91,7 +91,7 @@ namespace TestDataFramework.Populator.Concrete
                 this.typeGenerator
                 );
 
-            this.Populatables.Add(result);
+            this.populatables.Add(result);
 
             for (int i = 0; i < copies; i++)
                 result.Add(this.Get<T>(primaryRecordReferences));
@@ -106,7 +106,7 @@ namespace TestDataFramework.Populator.Concrete
                 $"Entering Add. T: {typeof(T)}, primaryRecordReference: {primaryRecordReferences}");
 
             RecordReference<T> recordReference = this.Get<T>(primaryRecordReferences);
-            this.Populatables.Add(recordReference);
+            this.populatables.Add(recordReference);
 
             StandardPopulator.Logger.Debug("Exiting Add<T>(primaryRecordReference, propertyExpressionDictionary)");
 
@@ -134,13 +134,13 @@ namespace TestDataFramework.Populator.Concrete
         {
             StandardPopulator.Logger.Debug("Entering Bind()");
 
-            this.Populatables.ForEach(populatable => populatable.Populate());
+            this.populatables.ForEach(populatable => populatable.Populate());
             this.Persist();
 
             StandardPopulator.Logger.Debug("Exiting Bind()");
         }
 
-        protected internal override void Bind(RecordReference recordReference)
+        public override void Bind(RecordReference recordReference)
         {
             if (recordReference.IsPopulated)
             {
@@ -154,25 +154,10 @@ namespace TestDataFramework.Populator.Concrete
             recordReference.IsPopulated = true;
         }
 
-        protected internal override void Bind<T>(OperableList<T> operableList)
-        {
-            if (!operableList.IsPopulated)
-                operableList.Populate();
-
-            List<RecordReference<T>> unprocessedReferences =
-                operableList.Where(reference => !reference.IsPopulated).ToList();
-
-            unprocessedReferences.ForEach(recordReference => recordReference.Populate());
-
-            this.persistence.Persist(unprocessedReferences);
-
-            unprocessedReferences.ForEach(reference => reference.IsPopulated = true);
-        }
-
         private void Persist()
         {
             var recordReferences = new List<RecordReference>();
-            this.Populatables.ForEach(populatable => populatable.AddToReferences(recordReferences));
+            this.populatables.ForEach(populatable => populatable.AddToReferences(recordReferences));
             this.persistence.Persist(recordReferences);
         }
     }

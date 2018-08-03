@@ -19,7 +19,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.ListOperations.Concrete;
@@ -30,7 +29,7 @@ namespace TestDataFramework.Populator.Concrete.FieldExpression
     public class ReferenceParentFieldExpression<TListElement, TProperty, TParentList, TRootListElement, TRootElement> 
         : FieldExpression<TListElement, TProperty>
     {
-        public new ReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement> OperableList
+        public new virtual ReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement> OperableList
             =>
                 (ReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>) base
                     .OperableList;

@@ -37,7 +37,7 @@ namespace TestDataFramework.Populator
         private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(RecordReference));
         protected readonly IAttributeDecorator AttributeDecorator;
 
-        protected internal readonly List<RecordReference> PrimaryKeyReferences = new List<RecordReference>();
+        internal readonly List<RecordReference> PrimaryKeyReferences = new List<RecordReference>();
 
         protected readonly ITypeGenerator TypeGenerator;
 
@@ -47,9 +47,9 @@ namespace TestDataFramework.Populator
             this.AttributeDecorator = attributeDecorator;
         }
 
-        public virtual object RecordObject { get; protected internal set; }
+        internal object RecordObject { get; set; }
 
-        protected internal virtual Type RecordType { get; protected set; }
+        public abstract Type RecordType { get; }
 
         public virtual void AddPrimaryRecordReference(params RecordReference[] primaryRecordReferences)
         {
@@ -68,14 +68,14 @@ namespace TestDataFramework.Populator
             if (!this.ValidateRelationship(primaryRecordReference))
                 throw new NoReferentialIntegrityException(primaryRecordReference.RecordType, this.RecordType);
 
-            ((List<RecordReference>) this.PrimaryKeyReferences).Add(primaryRecordReference);
+            this.PrimaryKeyReferences.Add(primaryRecordReference);
 
             RecordReference.Logger.Debug("Exiting AddPrimaryRecordReference(RecordReference)");
         }
 
-        protected internal abstract bool IsExplicitlySet(PropertyInfo propertyInfo);
+        public abstract bool IsExplicitlySet(PropertyInfo propertyInfo);
 
-        protected virtual bool ValidateRelationship(RecordReference primaryRecordReference)
+        private bool ValidateRelationship(RecordReference primaryRecordReference)
         {
             RecordReference.Logger.Debug("Entering ValidateRelationship");
 

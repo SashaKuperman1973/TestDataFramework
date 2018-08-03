@@ -318,7 +318,7 @@ namespace Tests.Tests
             {
             }
 
-            protected internal override void Populate()
+            internal override void Populate()
             {
                 throw new NotImplementedException();
             }
@@ -328,7 +328,9 @@ namespace Tests.Tests
                 throw new NotImplementedException();
             }
 
-            protected internal override bool IsExplicitlySet(PropertyInfo propertyInfo)
+            public override Type RecordType { get; }
+
+            public override bool IsExplicitlySet(PropertyInfo propertyInfo)
             {
                 throw new NotImplementedException();
             }

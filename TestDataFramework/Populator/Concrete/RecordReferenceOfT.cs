@@ -39,13 +39,13 @@ namespace TestDataFramework.Populator.Concrete
         private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(RecordReference<T>));
         private readonly DeepCollectionSettingConverter deepCollectionSettingConverter;
 
-        protected internal readonly List<ExplicitPropertySetter> ExplicitPropertySetters =
+        internal readonly List<ExplicitPropertySetter> ExplicitPropertySetters =
             new List<ExplicitPropertySetter>();
 
         private readonly IObjectGraphService objectGraphService;
         private readonly ValueGuaranteePopulator valueGuaranteePopulator;
 
-        protected BasePopulator Populator;
+        private readonly BasePopulator populator;
 
         public RecordReference(ITypeGenerator typeGenerator, IAttributeDecorator attributeDecorator,
             BasePopulator populator, IObjectGraphService objectGraphService,
@@ -55,7 +55,7 @@ namespace TestDataFramework.Populator.Concrete
             RecordReference<T>.Logger.Debug($"Entering constructor. T: {typeof(T)}");
 
             this.RecordType = typeof(T);
-            this.Populator = populator;
+            this.populator = populator;
             this.objectGraphService = objectGraphService;
             this.valueGuaranteePopulator = valueGuaranteePopulator;
             this.deepCollectionSettingConverter = deepCollectionSettingConverter;
@@ -65,10 +65,12 @@ namespace TestDataFramework.Populator.Concrete
 
         public new virtual T RecordObject => (T) (base.RecordObject ?? default(T));
 
+        public override Type RecordType { get; }
+
         // Caller is responsible for ensuring Declaring Type is a type of the property being set.
         // This method only checks if the given property on the record reference object is set, 
         // not sub-properties.
-        protected internal override bool IsExplicitlySet(PropertyInfo propertyInfo)
+        public override bool IsExplicitlySet(PropertyInfo propertyInfo)
         {
             RecordReference<T>.Logger.Debug($"Entering IsExplicitlySet. propertyInfo: {propertyInfo}");
 
@@ -79,7 +81,7 @@ namespace TestDataFramework.Populator.Concrete
             return result;
         }
 
-        protected internal override void Populate()
+        internal override void Populate()
         {
             RecordReference<T>.Logger.Debug("Entering Populate");
 
@@ -88,8 +90,6 @@ namespace TestDataFramework.Populator.Concrete
                 RecordReference<T>.Logger.Debug("Is Populated. Exiting.");
                 return;
             }
-
-            base.Populate();
 
             base.RecordObject = this.TypeGenerator.GetObject<T>(this.ExplicitPropertySetters);
             this.IsPopulated = true;
@@ -132,7 +132,7 @@ namespace TestDataFramework.Populator.Concrete
                 this, 
                 new RecordReference<TListElement>[size],
                 this.valueGuaranteePopulator,
-                this.Populator,
+                this.populator,
                 this.objectGraphService,
                 this.AttributeDecorator,
                 this.deepCollectionSettingConverter,
@@ -189,13 +189,13 @@ namespace TestDataFramework.Populator.Concrete
 
         public virtual T BindAndMake()
         {
-            this.Populator.Bind();
+            this.populator.Bind();
             return this.RecordObject;
         }
 
         public virtual T Make()
         {
-            this.Populator.Bind(this);
+            this.populator.Bind(this);
             return this.RecordObject;
         }
 

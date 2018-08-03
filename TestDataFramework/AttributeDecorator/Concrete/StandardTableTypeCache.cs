@@ -35,7 +35,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete
 
         private readonly ITableTypeCacheService tableTypeCacheService;
 
-        internal readonly ConcurrentDictionary<AssemblyWrapper, AssemblyLookupContext> TableTypeDictionary =
+        private readonly ConcurrentDictionary<AssemblyWrapper, AssemblyLookupContext> tableTypeDictionary =
             new ConcurrentDictionary<AssemblyWrapper, AssemblyLookupContext>();
 
         public StandardTableTypeCache(ITableTypeCacheService tableTypeCacheService)
@@ -47,7 +47,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete
         {
             StandardTableTypeCache.Logger.Debug("Entering IsAssemblyCachePopulated");
 
-            bool result = this.TableTypeDictionary.ContainsKey(assembly);
+            bool result = this.tableTypeDictionary.ContainsKey(assembly);
 
             StandardTableTypeCache.Logger.Debug("Exiting IsAssemblyCachePopulated");
             return result;
@@ -60,7 +60,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete
         {
             StandardTableTypeCache.Logger.Debug("Entering GetCachedTableType");
 
-            AssemblyLookupContext assemblyLookupContext = this.TableTypeDictionary.GetOrAdd(initialAssemblyToScan, a =>
+            AssemblyLookupContext assemblyLookupContext = this.tableTypeDictionary.GetOrAdd(initialAssemblyToScan, a =>
                 throw new TableTypeLookupException(Messages.AssemblyCacheNotPopulated, initialAssemblyToScan));
 
             TableAttribute tableAttribute = getTableAttibute(foreignType);
@@ -75,7 +75,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete
             if (canScanAllCachedAssemblies)
                 result = this.tableTypeCacheService.GetCachedTableTypeUsingAllAssemblies(foreignKeyAttribute,
                     tableAttribute,
-                    this.tableTypeCacheService.GetCachedTableType, this.TableTypeDictionary);
+                    this.tableTypeCacheService.GetCachedTableType, this.tableTypeDictionary);
 
             StandardTableTypeCache.Logger.Debug("Exiting GetCachedTableType");
             return result;
@@ -86,7 +86,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete
         {
             StandardTableTypeCache.Logger.Debug("Entering PopulateAssemblyCache");
 
-            AssemblyLookupContext assemblyLookupContext = this.TableTypeDictionary.GetOrAdd(
+            AssemblyLookupContext assemblyLookupContext = this.tableTypeDictionary.GetOrAdd(
                 assembly,
                 a => new AssemblyLookupContext());
 

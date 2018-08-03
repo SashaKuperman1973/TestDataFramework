@@ -22,7 +22,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using TestDataFramework.DeepSetting;
 using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.ListOperations.Concrete;
 using TestDataFramework.Populator.Concrete;
@@ -35,7 +34,7 @@ namespace TestDataFramework.Populator
 
         protected readonly IObjectGraphService ObjectGraphService;
 
-        public OperableList<TListElement> OperableList { get; }
+        public virtual OperableList<TListElement> OperableList { get; }
 
         public FieldExpression(Expression<Func<TListElement, TProperty>> expression,
             OperableList<TListElement> operableList, IObjectGraphService objectGraphService)

@@ -23,18 +23,18 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
     {
         // Note: If HasCatlogueName then HasTableAttribute
 
-        internal static bool CompleteCatalogueMatchCriteria(Table fromSet, Table input)
+        public static bool CompleteCatalogueMatchCriteria(Table fromSet, Table input)
         {
             return fromSet.HasCatalogueName && input.HasCatalogueName &&
                    fromSet.CatalogueName.Equals(input.CatalogueName);
         }
 
-        internal static bool MatchOnWhatIsDecorated(Table fromSet, Table input)
+        public static bool MatchOnWhatIsDecorated(Table fromSet, Table input)
         {
             return (!input.HasCatalogueName || !fromSet.HasCatalogueName) && fromSet.HasTableAttribute;
         }
 
-        internal static bool MatchOnEverythingNotAlreadyTried(Table fromSet, Table input)
+        public static bool MatchOnEverythingNotAlreadyTried(Table fromSet, Table input)
         {
             return !input.HasCatalogueName || !fromSet.HasCatalogueName;
         }

@@ -99,14 +99,14 @@ namespace TestDataFramework.Factories
         private const string GetUniqueValueTypeGenerator = "GetUniqueValueTypeGenerator";
         private const string StandardTypeGenerator = "StandardTypeGenerator";
         private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(PopulatorFactory));
-        internal DisposableContainer MemoryPopulatorContainer;
+        private DisposableContainer memoryPopulatorContainer;
 
-        internal DisposableContainer SqlClientPopulatorContainer;
+        private DisposableContainer sqlClientPopulatorContainer;
 
         public void Dispose()
         {
-            this.SqlClientPopulatorContainer?.Dispose();
-            this.MemoryPopulatorContainer?.Dispose();
+            this.sqlClientPopulatorContainer?.Dispose();
+            this.memoryPopulatorContainer?.Dispose();
         }
 
         public IPopulator CreateSqlClientPopulator(string connectionStringWithDefaultCatalogue,
@@ -169,17 +169,17 @@ namespace TestDataFramework.Factories
         {
             PopulatorFactory.Logger.Debug("Entering GetSqlClientPopulatorContainer");
 
-            if (this.SqlClientPopulatorContainer != null && !this.SqlClientPopulatorContainer.IsDisposed)
+            if (this.sqlClientPopulatorContainer != null && !this.sqlClientPopulatorContainer.IsDisposed)
             {
                 PopulatorFactory.Logger.Debug("Returning existing DI container");
-                return this.SqlClientPopulatorContainer.Container;
+                return this.sqlClientPopulatorContainer.Container;
             }
 
-            this.SqlClientPopulatorContainer =
+            this.sqlClientPopulatorContainer =
                 new DisposableContainer(PopulatorFactory.GetCommonContainer(callingAssembly, defaultSchema,
                     deepCollectionSettingConverter));
 
-            this.SqlClientPopulatorContainer.Container.Register(
+            this.sqlClientPopulatorContainer.Container.Register(
                 Component.For<IWritePrimitives>().ImplementedBy<SqlClientWritePrimitives>()
                     .DependsOn(new
                     {
@@ -213,11 +213,11 @@ namespace TestDataFramework.Factories
                 Component.For<SqlWriterCommandText>().ImplementedBy<SqlWriterCommandText>()
             );
 
-            PopulatorFactory.InstanceBugWorkAround<ITypeGenerator>(this.SqlClientPopulatorContainer.Container,
+            PopulatorFactory.InstanceBugWorkAround<ITypeGenerator>(this.sqlClientPopulatorContainer.Container,
                 PopulatorFactory.StandardTypeGenerator, PopulatorFactory.GetStandardTypeGenerator);
 
             PopulatorFactory.Logger.Debug("Exiting GetSqlClientPopulatorContainer");
-            return this.SqlClientPopulatorContainer.Container;
+            return this.sqlClientPopulatorContainer.Container;
         }
 
         private IWindsorContainer GetMemoryPopulatorContainer(AssemblyWrapper callingAssembly,
@@ -226,17 +226,17 @@ namespace TestDataFramework.Factories
         {
             PopulatorFactory.Logger.Debug("Entering GetMemoryPopulatorContainer");
 
-            if (this.MemoryPopulatorContainer != null && !this.MemoryPopulatorContainer.IsDisposed)
+            if (this.memoryPopulatorContainer != null && !this.memoryPopulatorContainer.IsDisposed)
             {
                 PopulatorFactory.Logger.Debug("Returning existing DI container");
-                return this.MemoryPopulatorContainer.Container;
+                return this.memoryPopulatorContainer.Container;
             }
 
-            this.MemoryPopulatorContainer =
+            this.memoryPopulatorContainer =
                 new DisposableContainer(PopulatorFactory.GetCommonContainer(callingAssembly, defaultSchema,
                     deepCollectionSettingConverter));
 
-            this.MemoryPopulatorContainer.Container.Register(
+            this.memoryPopulatorContainer.Container.Register(
                 Component.For<IPropertyDataGenerator<LargeInteger>>().ImplementedBy<DefaultInitialCountGenerator>(),
                 Component.For<IPersistence>().ImplementedBy<MemoryPersistence>(),
                 Component.For<IUniqueValueGenerator>().ImplementedBy<MemoryUniqueValueGenerator>()
@@ -257,12 +257,12 @@ namespace TestDataFramework.Factories
                     .Named(PopulatorFactory.StandardValueGenerator)
             );
 
-            PopulatorFactory.InstanceBugWorkAround<ITypeGenerator>(this.MemoryPopulatorContainer.Container,
+            PopulatorFactory.InstanceBugWorkAround<ITypeGenerator>(this.memoryPopulatorContainer.Container,
                 PopulatorFactory.StandardTypeGenerator, PopulatorFactory.GetStandardTypeGenerator);
 
             PopulatorFactory.Logger.Debug("Exiting GetMemoryPopulatorContainer");
 
-            return this.MemoryPopulatorContainer.Container;
+            return this.memoryPopulatorContainer.Container;
         }
 
         private static IWindsorContainer GetCommonContainer(AssemblyWrapper callingAssembly, Schema defaultSchema,

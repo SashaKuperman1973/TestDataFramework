@@ -30,7 +30,7 @@ namespace TestDataFramework.Populator.Concrete.FieldExpression
     public class RootReferenceParentFieldExpression<TListElement, TProperty, TRootElement> 
         : FieldExpression<TListElement, TProperty>
     {
-        public new RootReferenceParentOperableList<TListElement, TRootElement> OperableList
+        public new virtual RootReferenceParentOperableList<TListElement, TRootElement> OperableList
             =>
                 (RootReferenceParentOperableList<TListElement, TRootElement>) base
                     .OperableList;
@@ -42,12 +42,12 @@ namespace TestDataFramework.Populator.Concrete.FieldExpression
         {
         }
 
-        public new TRootElement Make()
+        public new virtual TRootElement Make()
         {
             return this.OperableList.Make();
         }
 
-        public new TRootElement BindAndMake()
+        public new virtual TRootElement BindAndMake()
         {
             return this.OperableList.BindAndMake();
         }

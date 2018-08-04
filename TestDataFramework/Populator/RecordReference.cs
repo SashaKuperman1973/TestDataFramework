@@ -47,7 +47,7 @@ namespace TestDataFramework.Populator
             this.AttributeDecorator = attributeDecorator;
         }
 
-        internal object RecordObject { get; set; }
+        protected internal virtual object RecordObjectBase { get; set; }
 
         public abstract Type RecordType { get; }
 
@@ -63,7 +63,7 @@ namespace TestDataFramework.Populator
         public virtual void AddPrimaryRecordReference(RecordReference primaryRecordReference)
         {
             RecordReference.Logger.Debug(
-                $"Entering AddPrimaryRecordReference(RecordReference). record object: {primaryRecordReference.RecordObject}");
+                $"Entering AddPrimaryRecordReference(RecordReference). record object: {primaryRecordReference.RecordObjectBase}");
 
             if (!this.ValidateRelationship(primaryRecordReference))
                 throw new NoReferentialIntegrityException(primaryRecordReference.RecordType, this.RecordType);

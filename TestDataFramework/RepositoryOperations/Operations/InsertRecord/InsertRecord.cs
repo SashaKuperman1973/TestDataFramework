@@ -132,7 +132,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
                 try
                 {
-                    property.SetValue(this.RecordReference.RecordObject,
+                    property.SetValue(this.RecordReference.RecordObjectBase,
                         data[readStreamPointer.Value] is IConvertible
                             ? Convert.ChangeType(data[readStreamPointer.Value++], property.PropertyType)
                             : data[readStreamPointer.Value++]);
@@ -169,8 +169,8 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
                 InsertRecord.Logger.Debug($"primaryKeyProperty : {primaryKeyProperty.GetExtendedMemberInfoString()}");
 
-                fkColumn.PropertyAttribute.PropertyInfo.SetValue(this.RecordReference.RecordObject,
-                    primaryKeyProperty.GetValue(primaryKeyOperation.RecordReference.RecordObject));
+                fkColumn.PropertyAttribute.PropertyInfo.SetValue(this.RecordReference.RecordObjectBase,
+                    primaryKeyProperty.GetValue(primaryKeyOperation.RecordReference.RecordObjectBase));
             });
 
             InsertRecord.Logger.Debug("Exiting Read");

@@ -65,7 +65,7 @@ namespace TestDataFramework.Persistence.Concrete
             }
 
             SqlClientPersistence.Logger.Debug(
-                $"Records: {string.Join(", ", recordReferences.Select(r => r?.RecordObject))}");
+                $"Records: {string.Join(", ", recordReferences.Select(r => r?.RecordObjectBase))}");
 
             this.deferredValueGenerator.Execute(recordReferences);
 

@@ -57,7 +57,7 @@ namespace TestDataFramework.Persistence.Concrete
             recordReferences = recordReferences.ToList();
 
             MemoryPersistence.Logger.Debug(
-                $"Records: {string.Join(", ", recordReferences.Select(r => r?.RecordObject))}");
+                $"Records: {string.Join(", ", recordReferences.Select(r => r?.RecordObjectBase))}");
 
             this.deferredValueGenerator.Execute(recordReferences);
 
@@ -76,7 +76,7 @@ namespace TestDataFramework.Persistence.Concrete
             var primaryKeys = recordReference.PrimaryKeyReferences.SelectMany(
                 pkRef =>
                     this.attributeDecorator.GetPropertyAttributes<PrimaryKeyAttribute>(pkRef.RecordType)
-                        .Select(pkpa => new {Object = pkRef.RecordObject, PkProperty = pkpa.PropertyInfo}));
+                        .Select(pkpa => new {Object = pkRef.RecordObjectBase, PkProperty = pkpa.PropertyInfo}));
 
             IEnumerable<PropertyAttribute<ForeignKeyAttribute>> foreignKeyPropertyAttributes =
                 this.attributeDecorator.GetPropertyAttributes<ForeignKeyAttribute>(recordReference.RecordType);
@@ -99,7 +99,7 @@ namespace TestDataFramework.Persistence.Concrete
                 MemoryPersistence.Logger.Debug($"primaryKeyPropertyValue: {primaryKeyPropertyValue}");
 
                 MemoryPersistence.Logger.Debug($"PropertyInfo to set: {fkpa.PropertyInfo}");
-                fkpa.PropertyInfo.SetValue(recordReference.RecordObject, primaryKeyPropertyValue);
+                fkpa.PropertyInfo.SetValue(recordReference.RecordObjectBase, primaryKeyPropertyValue);
             });
         }
     }

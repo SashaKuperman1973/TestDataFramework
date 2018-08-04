@@ -42,7 +42,7 @@ namespace TestDataFramework.RepositoryOperations
         public override string ToString()
         {
             string result =
-                $"IsWriteDone: {this.IsWriteDone}, Order: {this.Order}. Record object: {Helper.DumpObject(this.RecordReference.RecordObject)}";
+                $"IsWriteDone: {this.IsWriteDone}, Order: {this.Order}. Record object: {Helper.DumpObject(this.RecordReference.RecordObjectBase)}";
 
             return result;
         }

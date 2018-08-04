@@ -66,7 +66,7 @@ namespace TestDataFramework.Populator
             if (fixedQuantity == 0)
                 fixedQuantity = guaranteedValues.Count();
 
-            this.OperableList.GuaranteedPropertySetters.Add(new GuaranteedValues
+            this.OperableList.AddGuaranteedPropertySetter(new GuaranteedValues
             {
                 TotalFrequency = fixedQuantity,
 
@@ -126,7 +126,7 @@ namespace TestDataFramework.Populator
 
             guaranteedValues = guaranteedValues.ToList();
 
-            this.OperableList.GuaranteedPropertySetters.Add(new GuaranteedValues
+            this.OperableList.AddGuaranteedPropertySetter(new GuaranteedValues
             {
                 FrequencyPercentage = frequencyPercentage,
 

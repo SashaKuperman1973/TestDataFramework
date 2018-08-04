@@ -1,5 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
+using System.Linq;
 using ExampleTypes;
 using TestDataFramework.Factories;
 using TestDataFramework.Populator;
@@ -79,17 +81,15 @@ namespace DocumentationExamples
         {
             IPopulator populator = StaticPopulatorFactory.CreateMemoryPopulator();
 
-            RecordReference<int> iRef = populator.Add<int>();
+            IEnumerable<string> list = populator.Add<string>(10)
 
-            IEnumerable<string> list = populator.Add<string>(20)
-
-                .Skip(2).Take(5).GuaranteeByFixedQuantity(new[] {"Hello", "Goodbye"}, 3)
+                .Skip(2).Take(5).GuaranteeByFixedQuantity(new[] {"Hello", "Goodbye"}, 3).ParentList
 
                 .Skip(12).Take(8).GuaranteeByFixedQuantity(new[] { "Greetings", "Fairwell" }, 4)
                 
-                .BindAndMake();
+                .BindAndMake();            
 
-            int i = iRef.RecordObject;
+            list.ToList().ForEach(Console.WriteLine);
         }
 
         [TestMethod]

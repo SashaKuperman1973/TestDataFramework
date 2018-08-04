@@ -63,7 +63,7 @@ namespace TestDataFramework.Populator.Concrete
             RecordReference<T>.Logger.Debug("Exiting constructor");
         }
 
-        public new virtual T RecordObject => (T) (base.RecordObject ?? default(T));
+        public virtual T RecordObject => (T) (base.RecordObjectBase ?? default(T));
 
         public override Type RecordType { get; }
 
@@ -91,7 +91,7 @@ namespace TestDataFramework.Populator.Concrete
                 return;
             }
 
-            base.RecordObject = this.TypeGenerator.GetObject<T>(this.ExplicitPropertySetters);
+            base.RecordObjectBase = this.TypeGenerator.GetObject<T>(this.ExplicitPropertySetters);
             this.IsPopulated = true;
 
             RecordReference<T>.Logger.Debug("Exiting Populate");

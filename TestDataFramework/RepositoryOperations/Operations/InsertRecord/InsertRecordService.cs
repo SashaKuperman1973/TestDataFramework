@@ -147,7 +147,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
                 InsertRecordService.Logger.Debug($"targetProperty: {targetProperty.GetExtendedMemberInfoString()}");
 
-                targetProperty.SetValue(this.recordReference.RecordObject, c.Value);
+                targetProperty.SetValue(this.recordReference.RecordObjectBase, c.Value);
             });
 
             InsertRecordService.Logger.Debug("Exiting PopulatePrimaryKeyValues");
@@ -207,7 +207,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                     {
                         PkColumnValue =
                         isExplicitlySet
-                            ? fkpa.PropertyInfo.GetValue(this.recordReference.RecordObject)
+                            ? fkpa.PropertyInfo.GetValue(this.recordReference.RecordObjectBase)
                             : isForeignKeyPrimaryKeyMatch
                                 ? pkColumnMatch.Value
                                 : Helper.GetDefaultValue(fkpa.PropertyInfo.PropertyType),
@@ -263,7 +263,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                                 Value =
                                     p.PropertyType.IsGuid() && !this.recordReference.IsExplicitlySet(p)
                                         ? writer.WriteGuid(columnName)
-                                        : p.GetValue(this.recordReference.RecordObject)
+                                        : p.GetValue(this.recordReference.RecordObjectBase)
                             };
 
                             return column;

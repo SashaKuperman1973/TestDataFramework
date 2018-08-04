@@ -52,7 +52,7 @@ namespace TestDataFramework.Populator
 
         protected readonly BasePopulator Populator;
 
-        internal readonly List<GuaranteedValues> GuaranteedPropertySetters = new List<GuaranteedValues>();
+        private readonly List<GuaranteedValues> guaranteedPropertySetters = new List<GuaranteedValues>();
         private readonly List<GuaranteedValues> privateGuaranteedValues = new List<GuaranteedValues>();
         protected List<RecordReference<TListElement>> InternalList;
 
@@ -92,8 +92,8 @@ namespace TestDataFramework.Populator
 
             this.PopulateChildren();
 
-            if (this.GuaranteedPropertySetters.Any())
-                this.ValueGuaranteePopulator.Bind(this, this.GuaranteedPropertySetters,
+            if (this.guaranteedPropertySetters.Any())
+                this.ValueGuaranteePopulator.Bind(this, this.guaranteedPropertySetters,
                     this.explicitPropertySetterContextService);
 
             if (this.privateGuaranteedValues.Any())
@@ -106,6 +106,11 @@ namespace TestDataFramework.Populator
         internal override void AddToReferences(IList<RecordReference> collection)
         {
             this.InternalList.ForEach(collection.Add);
+        }
+
+        protected internal virtual void AddGuaranteedPropertySetter(GuaranteedValues values)
+        {
+            this.guaranteedPropertySetters.Add(values);
         }
 
         private RecordReference<TCustomListElement> CreateRecordReference<TCustomListElement>()
@@ -185,7 +190,7 @@ namespace TestDataFramework.Populator
             return this;
         }
 
-        public virtual OperableList<TListElement> Take(int count)
+        public virtual ListParentOperableList<TListElement, OperableList<TListElement>, TListElement> Take(int count)
         {
             IEnumerable<RecordReference<TListElement>> input = this.InternalList.Take(count);
 
@@ -196,7 +201,7 @@ namespace TestDataFramework.Populator
             return result;
         }
 
-        public virtual OperableList<TListElement> Skip(int count)
+        public virtual ListParentOperableList<TListElement, OperableList<TListElement>, TListElement> Skip(int count)
         {
             IEnumerable<RecordReference<TListElement>> input = this.InternalList.Skip(count);
 

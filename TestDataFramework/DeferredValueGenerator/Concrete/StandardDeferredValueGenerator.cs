@@ -108,7 +108,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
 
                     value = value ?? Helper.GetDefaultValue(propertyInfo.PropertyType);
 
-                    propertyInfo.SetValue(targetRecordReference.RecordObject, value);
+                    propertyInfo.SetValue(targetRecordReference.RecordObjectBase, value);
                 });
             });
 
@@ -122,11 +122,11 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
             targets = targets.ToList();
 
             IEnumerable<RecordReference> distinctReferenceTypes =
-                targets.Where(t => !t.RecordObject?.GetType().IsValueType ?? false)
+                targets.Where(t => !t.RecordObjectBase?.GetType().IsValueType ?? false)
                     .Distinct(StandardDeferredValueGenerator<T>.ReferenceRecordObjectEqualityComparerObject);
 
             IEnumerable<RecordReference> valueTypes =
-                targets.Where(t => t.RecordObject?.GetType().IsValueType ?? false);
+                targets.Where(t => t.RecordObjectBase?.GetType().IsValueType ?? false);
 
             IEnumerable<RecordReference> result = distinctReferenceTypes.Concat(valueTypes);
 
@@ -137,12 +137,12 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
         {
             public bool Equals(RecordReference x, RecordReference y)
             {
-                return x.RecordObject == y.RecordObject;
+                return x.RecordObjectBase == y.RecordObjectBase;
             }
 
             public int GetHashCode(RecordReference obj)
             {
-                return obj.RecordObject.GetHashCode();
+                return obj.RecordObjectBase.GetHashCode();
             }
         }
     }

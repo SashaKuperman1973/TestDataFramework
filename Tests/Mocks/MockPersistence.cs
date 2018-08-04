@@ -34,7 +34,7 @@ namespace Tests.Mocks
         {
             this.Storage.Clear();
 
-            recordReferences.Select(r => r.RecordObject).ToList().ForEach(recordObject =>
+            recordReferences.Select(r => r.RecordObjectBase).ToList().ForEach(recordObject =>
             {
                 var propertyDictionary = new Dictionary<string, object>();
 

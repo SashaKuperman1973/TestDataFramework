@@ -96,6 +96,12 @@
     <Compile Include="Tests\ExplicitlyIgnoredValueTests.cs" />
     <Compile Include="Tests\ExplicitPropertySetterContextServiceTests.cs" />
     <Compile Include="Tests\FieldExpressionHelperTests.cs" />
+    <Compile Include="Tests\FieldExpressionTests\ReferenceParentFieldExpression\GuaranteePropertiesByFixedQuantity\DoNotThrowCountRequestOption.cs" />
+    <Compile Include="Tests\FieldExpressionTests\ReferenceParentFieldExpression\GuaranteePropertiesByFixedQuantity\ThrowCountRequestOption.cs" />
+    <Compile Include="Tests\FieldExpressionTests\ReferenceParentFieldExpression\GuaranteePropertiesByPercentageOfTotal\DoNotThrowCountRequestOption.cs" />
+    <Compile Include="Tests\FieldExpressionTests\ReferenceParentFieldExpression\GuaranteePropertiesByPercentageOfTotal\ThrowCountRequestOption.cs" />
+    <Compile Include="Tests\FieldExpressionTests\ReferenceParentFieldExpression\ReferenceParentFieldExpressionTests.cs" />
+    <Compile Include="Tests\FieldExpressionTests\ReferenceParentFieldExpression\TestContext.cs" />
     <Compile Include="Tests\FieldExpressionTests\ListParentFieldExpression\TestContext.cs" />
     <Compile Include="Tests\FieldExpressionTests\ListParentFieldExpression\ListParentFieldExpressionTests.cs" />
     <Compile Include="Tests\FieldExpressionTests\ListParentFieldExpression\GuaranteePropertiesByPercentageOfTotal\DoNotThrowCountRequestOption.cs" />

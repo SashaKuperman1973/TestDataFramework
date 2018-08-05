@@ -122,6 +122,11 @@ namespace Tests.TestModels
         public AnEnum AnEnumeration { get; set; }
     }
 
+    public class ElementTypeBase
+    {
+        public ElementType ElementType { get; set; }
+    }
+
     public class ElementType
     {
         public PropertyType AProperty { get; set; }

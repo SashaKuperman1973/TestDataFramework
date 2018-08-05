@@ -184,7 +184,8 @@ namespace TestDataFramework.Populator
             Expression<Func<TListElement, TPropertyValue>> fieldExpression,
             IEnumerable<TPropertyValue> range)
         {
-            return this.SetRange(fieldExpression, () => range);
+            this.OperableList.AddRange(fieldExpression, range);
+            return this;
         }
 
         public virtual FieldExpression<TListElement, TProperty> SetRange<TPropertyValue>(

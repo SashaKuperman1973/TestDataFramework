@@ -278,7 +278,7 @@ namespace Tests.Tests
 
             // Act
 
-            OperableList<int> result = recordReference.SetList(m => m.IntegerList, 5);
+            OperableListEx<int> result = recordReference.SetList(m => m.IntegerList, 5);
 
             // Assert
 

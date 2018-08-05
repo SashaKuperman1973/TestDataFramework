@@ -98,7 +98,7 @@ namespace Tests.Tests
                 throw new NotImplementedException();
             }
 
-            public override OperableList<T> Add<T>(int copies, params RecordReference[] primaryRecordReferences)
+            public override OperableListEx<T> Add<T>(int copies, params RecordReference[] primaryRecordReferences)
             {
                 throw new NotImplementedException();
             }

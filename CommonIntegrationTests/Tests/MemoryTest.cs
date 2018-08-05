@@ -166,7 +166,7 @@ namespace CommonIntegrationTests.Tests
             IPopulator populator = this.factory.CreateMemoryPopulator();
 
             IList<RecordReference<SqlSubjectClass>> subjectReference = populator.Add<SqlSubjectClass>(2);
-            OperableList<ForeignSubjectClass> foreignReference =
+            OperableListEx<ForeignSubjectClass> foreignReference =
                 populator.Add<ForeignSubjectClass>(20, subjectReference[1])
                     .GuaranteeByPercentageOfTotal(new object[]
                     {
@@ -199,7 +199,7 @@ namespace CommonIntegrationTests.Tests
         {
             IPopulator populator = this.factory.CreateMemoryPopulator();
 
-            OperableList<ForeignSubjectClass> foreignReference =
+            OperableListEx<ForeignSubjectClass> foreignReference =
                 populator.Add<ForeignSubjectClass>(20)
                     .GuaranteeByFixedQuantity(new object[]
                     {
@@ -218,7 +218,7 @@ namespace CommonIntegrationTests.Tests
         {
             IPopulator populator = this.factory.CreateMemoryPopulator();
 
-            OperableList<ForeignSubjectClass> foreignReference =
+            OperableListEx<ForeignSubjectClass> foreignReference =
                 populator.Add<ForeignSubjectClass>(20)
                     .GuaranteeByPercentageOfTotal(new object[]
                     {
@@ -275,7 +275,7 @@ namespace CommonIntegrationTests.Tests
         {
             IPopulator populator = StaticPopulatorFactory.CreateMemoryPopulator();
 
-            OperableList<SubjectClass> subjectReferences = populator.Add<SubjectClass>(4)
+            OperableListEx<SubjectClass> subjectReferences = populator.Add<SubjectClass>(4)
                 .GuaranteeByPercentageOfTotal(
                     new[] {new SubjectClass {AnEmailAddress = "myemailAddress@here.com", Text = "Guaranteed Text"}},
                     75);
@@ -347,7 +347,7 @@ namespace CommonIntegrationTests.Tests
             // Act
 
             RecordReference<SubjectClass> singleSubjectReferenceBeforeBind = populator.Add<SubjectClass>();
-            OperableList<SubjectClass> subjectReferenceSetBeforeBind = populator.Add<SubjectClass>(4);
+            OperableListEx<SubjectClass> subjectReferenceSetBeforeBind = populator.Add<SubjectClass>(4);
 
             T result = bindAndMake(populator);
 
@@ -357,7 +357,7 @@ namespace CommonIntegrationTests.Tests
                 subjectReferenceSetBeforeBind.Select(reference => reference.RecordObject).ToList();
 
             RecordReference<SubjectClass> singleSubjectAfterBind = populator.Add<SubjectClass>();
-            OperableList<SubjectClass> subjectSetAfterBind = populator.Add<SubjectClass>(4);
+            OperableListEx<SubjectClass> subjectSetAfterBind = populator.Add<SubjectClass>(4);
 
             // Assert
 
@@ -414,12 +414,12 @@ namespace CommonIntegrationTests.Tests
             // Act
 
             RecordReference<SubjectClass> singleSubjectReferenceBeforeBind = populator.Add<SubjectClass>();
-            OperableList<SubjectClass> subjectReferenceSetBeforeBind = populator.Add<SubjectClass>(4);
+            OperableListEx<SubjectClass> subjectReferenceSetBeforeBind = populator.Add<SubjectClass>(4);
 
             T result = make(populator);
 
             RecordReference<SubjectClass> singleSubjectAfterBind = populator.Add<SubjectClass>();
-            OperableList<SubjectClass> subjectSetAfterBind = populator.Add<SubjectClass>(4);
+            OperableListEx<SubjectClass> subjectSetAfterBind = populator.Add<SubjectClass>(4);
 
             // Assert
 
@@ -711,7 +711,7 @@ namespace CommonIntegrationTests.Tests
         {
             IPopulator populator = this.factory.CreateMemoryPopulator();
 
-            OperableList<ManualKeyPrimaryTableClass> resultReference = populator.Add<ManualKeyPrimaryTableClass>(2);
+            OperableListEx<ManualKeyPrimaryTableClass> resultReference = populator.Add<ManualKeyPrimaryTableClass>(2);
 
             populator.Bind();;
         }

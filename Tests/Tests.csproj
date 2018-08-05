@@ -96,10 +96,12 @@
     <Compile Include="Tests\ExplicitlyIgnoredValueTests.cs" />
     <Compile Include="Tests\ExplicitPropertySetterContextServiceTests.cs" />
     <Compile Include="Tests\FieldExpressionHelperTests.cs" />
-    <Compile Include="Tests\FieldExpressionTests\ListParentFieldExpressionTests\ListParentFieldExpressionTests.cs" />
-    <Compile Include="Tests\FieldExpressionTests\ListParentFieldExpressionTests\ListParentGuaranteePropertiesFixedQuantityTests.cs" />
-    <Compile Include="Tests\FieldExpressionTests\ReferenceParentTests\ReferenceParentFieldExpressionTests.cs" />
-    <Compile Include="Tests\FieldExpressionTests\ReferenceParentTests\ReferenceParentGuaranteePropertiesTests.cs" />
+    <Compile Include="Tests\FieldExpressionTests\ListParentFieldExpression\TestContext.cs" />
+    <Compile Include="Tests\FieldExpressionTests\ListParentFieldExpression\ListParentFieldExpressionTests.cs" />
+    <Compile Include="Tests\FieldExpressionTests\ListParentFieldExpression\GuaranteePropertiesByPercentageOfTotal\DoNotThrowCountRequestOption.cs" />
+    <Compile Include="Tests\FieldExpressionTests\ListParentFieldExpression\GuaranteePropertiesByPercentageOfTotal\ThrowCountRequestOption.cs" />
+    <Compile Include="Tests\FieldExpressionTests\ListParentFieldExpression\GuaranteePropertiesByFixedQuantity\DoNotThrowCountRequestOption.cs" />
+    <Compile Include="Tests\FieldExpressionTests\ListParentFieldExpression\GuaranteePropertiesByFixedQuantity\ThrowCountRequestOption.cs" />
     <Compile Include="Tests\FieldExpressionValidatorTests.cs" />
     <Compile Include="Tests\MakeableEnumerableTests\ReferenceParentMakeableEnumerableTests.cs" />
     <Compile Include="Tests\MakeableEnumerableTests\ListParentMakeableEnumerableTests.cs" />

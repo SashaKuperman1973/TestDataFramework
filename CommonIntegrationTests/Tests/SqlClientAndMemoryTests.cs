@@ -57,12 +57,12 @@ namespace CommonIntegrationTests.Tests
         {
             IPopulator populator = this.factory.CreateMemoryPopulator();
 
-            OperableList<PrimaryTable> primaryA = populator.Add<PrimaryTable>(2);
-            OperableList<PrimaryTableB> primaryB = populator.Add<PrimaryTableB>(2);
+            OperableListEx<PrimaryTable> primaryA = populator.Add<PrimaryTable>(2);
+            OperableListEx<PrimaryTableB> primaryB = populator.Add<PrimaryTableB>(2);
 
-            OperableList<ForeignTable> foreignA = populator.Add<ForeignTable>(2, primaryA[0], primaryB[0]);
+            OperableListEx<ForeignTable> foreignA = populator.Add<ForeignTable>(2, primaryA[0], primaryB[0]);
 
-            OperableList<ForeignTable> foreignB = populator.Add<ForeignTable>(2);
+            OperableListEx<ForeignTable> foreignB = populator.Add<ForeignTable>(2);
             foreignB.ToList().ForEach(foreign => foreign.AddPrimaryRecordReference(primaryA[1], primaryB[1]));
 
             RecordReference<ForeignTable> foreignC = populator.Add<ForeignTable>(primaryA[1], primaryB[0]);
@@ -77,7 +77,7 @@ namespace CommonIntegrationTests.Tests
         {
             IPopulator populator = this.factory.CreateMemoryPopulator();
 
-            OperableList<PrimaryTable> primary = populator.Add<PrimaryTable>(2);
+            OperableListEx<PrimaryTable> primary = populator.Add<PrimaryTable>(2);
 
             populator.Bind();
 
@@ -161,7 +161,7 @@ namespace CommonIntegrationTests.Tests
                 @"Data Source=localhost;Initial Catalog=TestDataFramework;Integrated Security=SSPI;",
                 false);
 
-            OperableList<SqlSubjectClass> result = populator.Add<SqlSubjectClass>(2);
+            OperableListEx<SqlSubjectClass> result = populator.Add<SqlSubjectClass>(2);
             populator.Bind();
         }
     }

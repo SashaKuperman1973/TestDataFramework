@@ -32,7 +32,7 @@ using TestDataFramework.TypeGenerator.Interfaces;
 namespace TestDataFramework.Populator.Concrete.OperableList
 {
     public class ReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement> :
-        OperableList<TListElement>,
+        OperableListEx<TListElement>,
         IMakeable<TRootElement>
     {
         public ReferenceParentOperableList(

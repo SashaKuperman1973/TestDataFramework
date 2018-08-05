@@ -36,7 +36,7 @@ namespace TestDataFramework.Populator.Interfaces
 
         IEnumerable<T> Make<T>(int count);
             
-        OperableList<T> Add<T>(int copies, params RecordReference[] primaryRecordReferences);
+        OperableListEx<T> Add<T>(int copies, params RecordReference[] primaryRecordReferences);
 
         RecordReference<T> Add<T>(params RecordReference[] primaryRecordReferences);
 

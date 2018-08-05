@@ -68,7 +68,7 @@ namespace DocumentationExamples
         [TestMethod]
         public void List_Root_Guaranteed_Collection_With_Take_And_Skip()
         {
-            OperableList<string> list =
+            OperableListEx<string> list =
                 StaticPopulatorFactory.CreateMemoryPopulator().Add<string>(20);
 
             list.Skip(2).Take(5).GuaranteeByFixedQuantity(new[] { "Hello", "Goodbye" }, 3);

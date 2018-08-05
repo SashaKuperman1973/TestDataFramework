@@ -31,11 +31,11 @@ using TestDataFramework.TypeGenerator.Interfaces;
 
 namespace TestDataFramework.Populator.Concrete.OperableList
 {
-    public class ListParentOperableList<TListElement, TParentList, TRootListElement> : OperableList<TListElement>,
+    public class ListParentOperableList<TListElement, TParentList, TRootListElement> : OperableListEx<TListElement>,
         IMakeableCollectionContainer<TRootListElement>
     {
         public ListParentOperableList(
-            OperableList<TRootListElement> rootList,
+            OperableListEx<TRootListElement> rootList,
             TParentList parentList,
             IEnumerable<RecordReference<TListElement>> input, ValueGuaranteePopulator valueGuaranteePopulator,
             BasePopulator populator, IObjectGraphService objectGraphService, IAttributeDecorator attributeDecorator,
@@ -94,7 +94,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             return result;
         }
 
-        public virtual OperableList<TRootListElement> RootList
+        public virtual OperableListEx<TRootListElement> RootList
         {
             get;
         }

@@ -34,10 +34,10 @@ namespace TestDataFramework.Populator
 
         protected readonly IObjectGraphService ObjectGraphService;
 
-        public virtual OperableList<TListElement> OperableList { get; }
+        public virtual OperableListEx<TListElement> OperableList { get; }
 
         public FieldExpression(Expression<Func<TListElement, TProperty>> expression,
-            OperableList<TListElement> operableList, IObjectGraphService objectGraphService)
+            OperableListEx<TListElement> operableList, IObjectGraphService objectGraphService)
         {
             this.Expression = expression;
             this.OperableList = operableList;

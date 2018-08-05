@@ -24,6 +24,24 @@ namespace Tests.Tests.FieldExpressionTests.ListParentFieldExpressionTests
             return result;
         }
 
+        private void DoAssert(
+            ListParentFieldExpression<ElementType, OperableList<ElementType>, ElementType, ElementType.PropertyType> returnResult,
+            int quantity
+            )
+        {
+            Assert.IsNotNull(returnResult);
+            Assert.AreEqual(this.listParentFieldExpression, returnResult);
+
+            this.objectGraphServiceMock.Verify(m => m.GetObjectGraph(this.expression));
+
+            this.listParentOperableListMock.Verify(m => m.AddGuaranteedPropertySetter(It.IsAny<GuaranteedValues>()));
+
+            this.listParentOperableListMock.Verify(
+                m => m.AddGuaranteedPropertySetter(It.Is<GuaranteedValues>(
+                    guaranteedValues => ListParentFieldExpressionTests.Check(guaranteedValues, quantity)
+                )));
+        }
+
         [TestMethod]
         public void PropertyFuncs_DefaultQuantity_Test()
         {
@@ -36,17 +54,7 @@ namespace Tests.Tests.FieldExpressionTests.ListParentFieldExpressionTests
 
             // Assert
 
-            Assert.IsNotNull(returnResult);
-            Assert.AreEqual(this.listParentFieldExpression, returnResult);
-
-            this.objectGraphServiceMock.Verify(m => m.GetObjectGraph(this.expression));
-
-            this.listParentOperableListMock.Verify(m => m.AddGuaranteedPropertySetter(It.IsAny<GuaranteedValues>()));
-
-            this.listParentOperableListMock.Verify(
-                m => m.AddGuaranteedPropertySetter(It.Is<GuaranteedValues>(
-                    guaranteedValues => ListParentFieldExpressionTests.Check(guaranteedValues, 2)
-                )));
+            this.DoAssert(returnResult, 2);
         }
 
         [TestMethod]
@@ -62,17 +70,43 @@ namespace Tests.Tests.FieldExpressionTests.ListParentFieldExpressionTests
 
             // Assert
 
-            Assert.IsNotNull(returnResult);
-            Assert.AreEqual(this.listParentFieldExpression, returnResult);
+            this.DoAssert(returnResult, 5);
+        }
+        
+        [TestMethod]
+        public void PropertiesAndFuncs_DefaultQuantity_Test()
+        {
+            // Act
 
-            this.objectGraphServiceMock.Verify(m => m.GetObjectGraph(this.expression));
+            ListParentFieldExpression<ElementType, OperableList<ElementType>, ElementType, ElementType.PropertyType>
+                returnResult = this.listParentFieldExpression.GuaranteePropertiesByFixedQuantity(
+                    new object[]
+                    {
+                        new ElementType.PropertyType(),
+                        (Func<ElementType.PropertyType>) (() => new ElementType.PropertyType())
+                    });
 
-            this.listParentOperableListMock.Verify(m => m.AddGuaranteedPropertySetter(It.IsAny<GuaranteedValues>()));
+            // Assert
 
-            this.listParentOperableListMock.Verify(
-                m => m.AddGuaranteedPropertySetter(It.Is<GuaranteedValues>(
-                    guaranteedValues => ListParentFieldExpressionTests.Check(guaranteedValues, 5)
-                )));
+            this.DoAssert(returnResult, 2);
+        }
+
+        [TestMethod]
+        public void PropertiesAndFuncs_ExplicitQuantity_Test()
+        {
+            // Act
+
+            ListParentFieldExpression<ElementType, OperableList<ElementType>, ElementType, ElementType.PropertyType>
+                returnResult = this.listParentFieldExpression.GuaranteePropertiesByFixedQuantity(
+                    new object[]
+                    {
+                        new ElementType.PropertyType(),
+                        (Func<ElementType.PropertyType>) (() => new ElementType.PropertyType())
+                    }, 5);
+
+            // Assert
+
+            this.DoAssert(returnResult, 5);
         }
     }
 }

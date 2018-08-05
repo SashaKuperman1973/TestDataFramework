@@ -23,13 +23,13 @@ namespace Tests.Tests.FieldExpressionTests.ListParentFieldExpression.GuaranteePr
             // Act
 
             ListParentFieldExpression<ElementType, OperableListEx<ElementType>, ElementType, ElementType.PropertyType>
-                returnResult = this.testContext.ListParentFieldExpression.GuaranteePropertiesByFixedQuantity(
+                returnResult = this.testContext.ListParentFieldExpression.GuaranteePropertiesByPercentageOfTotal(
                     new Func<ElementType.PropertyType>[]
                         {() => new ElementType.PropertyType(), () => new ElementType.PropertyType()});
 
             // Assert
 
-            this.testContext.DoAssert(returnResult, 2, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
+            this.testContext.AssertPercentage(returnResult, 2, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
         }
 
         [TestMethod]
@@ -38,14 +38,14 @@ namespace Tests.Tests.FieldExpressionTests.ListParentFieldExpression.GuaranteePr
             // Act
 
             ListParentFieldExpression<ElementType, OperableListEx<ElementType>, ElementType, ElementType.PropertyType>
-                returnResult = this.testContext.ListParentFieldExpression.GuaranteePropertiesByFixedQuantity(
+                returnResult = this.testContext.ListParentFieldExpression.GuaranteePropertiesByPercentageOfTotal(
                     new Func<ElementType.PropertyType>[]
                         {() => new ElementType.PropertyType(), () => new ElementType.PropertyType()},
                     5);
 
             // Assert
 
-            this.testContext.DoAssert(returnResult, 5, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
+            this.testContext.AssertPercentage(returnResult, 5, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
         }
         
         [TestMethod]
@@ -54,7 +54,7 @@ namespace Tests.Tests.FieldExpressionTests.ListParentFieldExpression.GuaranteePr
             // Act
 
             ListParentFieldExpression<ElementType, OperableListEx<ElementType>, ElementType, ElementType.PropertyType>
-                returnResult = this.testContext.ListParentFieldExpression.GuaranteePropertiesByFixedQuantity(
+                returnResult = this.testContext.ListParentFieldExpression.GuaranteePropertiesByPercentageOfTotal(
                     new object[]
                     {
                         new ElementType.PropertyType(),
@@ -63,7 +63,7 @@ namespace Tests.Tests.FieldExpressionTests.ListParentFieldExpression.GuaranteePr
 
             // Assert
 
-            this.testContext.DoAssert(returnResult, 2, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
+            this.testContext.AssertPercentage(returnResult, 2, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
         }
 
         [TestMethod]
@@ -72,7 +72,7 @@ namespace Tests.Tests.FieldExpressionTests.ListParentFieldExpression.GuaranteePr
             // Act
 
             ListParentFieldExpression<ElementType, OperableListEx<ElementType>, ElementType, ElementType.PropertyType>
-                returnResult = this.testContext.ListParentFieldExpression.GuaranteePropertiesByFixedQuantity(
+                returnResult = this.testContext.ListParentFieldExpression.GuaranteePropertiesByPercentageOfTotal(
                     new object[]
                     {
                         new ElementType.PropertyType(),
@@ -81,7 +81,7 @@ namespace Tests.Tests.FieldExpressionTests.ListParentFieldExpression.GuaranteePr
 
             // Assert
 
-            this.testContext.DoAssert(returnResult, 5, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
+            this.testContext.AssertPercentage(returnResult, 5, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
         }
 
         [TestMethod]
@@ -90,7 +90,7 @@ namespace Tests.Tests.FieldExpressionTests.ListParentFieldExpression.GuaranteePr
             // Act
 
             ListParentFieldExpression<ElementType, OperableListEx<ElementType>, ElementType, ElementType.PropertyType>
-                returnResult = this.testContext.ListParentFieldExpression.GuaranteePropertiesByFixedQuantity(
+                returnResult = this.testContext.ListParentFieldExpression.GuaranteePropertiesByPercentageOfTotal(
                     new object[]
                     {
                         new ElementType.PropertyType(),
@@ -99,7 +99,7 @@ namespace Tests.Tests.FieldExpressionTests.ListParentFieldExpression.GuaranteePr
 
             // Assert
 
-            this.testContext.DoAssert(returnResult, 2, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
+            this.testContext.AssertPercentage(returnResult, 2, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
         }
 
         [TestMethod]
@@ -108,7 +108,7 @@ namespace Tests.Tests.FieldExpressionTests.ListParentFieldExpression.GuaranteePr
             // Act
 
             ListParentFieldExpression<ElementType, OperableListEx<ElementType>, ElementType, ElementType.PropertyType>
-                returnResult = this.testContext.ListParentFieldExpression.GuaranteePropertiesByFixedQuantity(
+                returnResult = this.testContext.ListParentFieldExpression.GuaranteePropertiesByPercentageOfTotal(
                     new object[]
                     {
                         new ElementType.PropertyType(),
@@ -117,7 +117,7 @@ namespace Tests.Tests.FieldExpressionTests.ListParentFieldExpression.GuaranteePr
 
             // Assert
 
-            this.testContext.DoAssert(returnResult, 5, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
+            this.testContext.AssertPercentage(returnResult, 5, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
         }
     }
 }

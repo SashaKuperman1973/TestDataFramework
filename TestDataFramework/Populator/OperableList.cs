@@ -44,9 +44,7 @@ namespace TestDataFramework.Populator
         protected readonly ValueGuaranteePopulator ValueGuaranteePopulator;
 
         private readonly IValueGauranteePopulatorContextService explicitPropertySetterContextService =
-            new ExplicitPropertySetterContextService();
-
-        private readonly IValueGauranteePopulatorContextService valueSetContextService = new ValueSetContextService();
+            new ExplicitPropertySetterContextService();        
 
         protected readonly BasePopulator Populator;
 
@@ -86,7 +84,7 @@ namespace TestDataFramework.Populator
                     this.explicitPropertySetterContextService);
 
             if (this.privateGuaranteedValues.Any())
-                this.ValueGuaranteePopulator.Bind(this, this.privateGuaranteedValues, this.valueSetContextService);
+                this.ValueGuaranteePopulator.Bind(this, this.privateGuaranteedValues, new ValueSetContextService());
 
             this.InternalList.ForEach(recordReference => recordReference.Populate());
             this.IsPopulated = true;

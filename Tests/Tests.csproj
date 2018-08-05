@@ -121,6 +121,12 @@
     <Compile Include="Tests\MemoryValueGeneratorTests.cs" />
     <Compile Include="Tests\MinAttributeTests.cs" />
     <Compile Include="Tests\ObjectGraphServiceTest.cs" />
+    <Compile Include="Tests\OperableListTests\OperableList\GuaranteePropertiesByPercentageOfTotal\DoNotThrowCountRequestOption.cs" />
+    <Compile Include="Tests\OperableListTests\OperableList\GuaranteePropertiesByPercentageOfTotal\ThrowCountRequestOption.cs" />
+    <Compile Include="Tests\OperableListTests\OperableList\GuaranteePropertiesByFixedQuantity\DoNotThrowCountRequestOption.cs" />
+    <Compile Include="Tests\OperableListTests\OperableList\GuaranteePropertiesByFixedQuantity\ThrowCountRequestOption.cs" />
+    <Compile Include="Tests\OperableListTests\OperableList\OperableListTests.cs" />
+    <Compile Include="Tests\OperableListTests\OperableList\TestContext.cs" />
     <Compile Include="Tests\SqlClientValueGeneratorTests.cs" />
     <Compile Include="Tests\StandardHandledTypeGeneratorTests.cs" />
     <Compile Include="Tests\MemoryUniqueValueGeneratorTests.cs" />
@@ -154,7 +160,6 @@
     <Compile Include="Tests\UniqueValueTypeGeneratorTests.cs" />
     <None Include="Tests\ValueGuaranteePopulatorTests.cs" />
     <Compile Include="Tests\GenericRecordReferenceTests.cs" />
-    <None Include="Tests\OperableListTests.cs" />
     <Compile Include="Tests\LargeIntegerTests.cs" />
     <Compile Include="Tests\SqlWriterDictionaryTests.cs" />
     <Compile Include="Tests\KeyTypeUniqueValueGeneratorTests.cs" />

@@ -40,10 +40,10 @@ namespace Tests.Tests.FieldExpressionTests.ListParentFieldExpression
                     this.ObjectGraphServiceMock.Object);
         }
 
-        private static bool Check(GuaranteedValues guaranteedValues, int count, ValueCountRequestOption option)
+        private static bool Check(GuaranteedValues guaranteedValues, int? total, int? percentage, ValueCountRequestOption option)
         {
-            bool result = guaranteedValues.FrequencyPercentage == null &&
-                          guaranteedValues.TotalFrequency == count &&
+            bool result = guaranteedValues.FrequencyPercentage == percentage &&
+                          guaranteedValues.TotalFrequency == total &&
                           guaranteedValues.ValueCountRequestOption == option &&
 
                           guaranteedValues.Values != null &&
@@ -52,9 +52,23 @@ namespace Tests.Tests.FieldExpressionTests.ListParentFieldExpression
             return result;
         }
 
-        public void DoAssert(
+        public void AssertPercentage(ListParentFieldExpression<ElementType, OperableListEx<ElementType>, ElementType, ElementType.PropertyType> returnResult,
+            int percentage,
+            ValueCountRequestOption option)
+        {
+            this.DoAssert(returnResult, null, percentage, option);
+        }
+
+        public void AssertTotal(ListParentFieldExpression<ElementType, OperableListEx<ElementType>, ElementType, ElementType.PropertyType> returnResult,
+            int total,
+            ValueCountRequestOption option)
+        {
+            this.DoAssert(returnResult, total, null, option);
+        }
+
+        private void DoAssert(
             ListParentFieldExpression<ElementType, OperableListEx<ElementType>, ElementType, ElementType.PropertyType> returnResult,
-            int quantity,
+            int? total, int? percentage,
             ValueCountRequestOption option
         )
         {
@@ -65,9 +79,8 @@ namespace Tests.Tests.FieldExpressionTests.ListParentFieldExpression
 
             this.ListParentOperableListMock.Verify(
                 m => m.AddGuaranteedPropertySetter(It.Is<GuaranteedValues>(
-                    guaranteedValues => TestContext.Check(guaranteedValues, quantity, option)
+                    guaranteedValues => TestContext.Check(guaranteedValues, total, percentage, option)
                 )));
         }
-
     }
 }

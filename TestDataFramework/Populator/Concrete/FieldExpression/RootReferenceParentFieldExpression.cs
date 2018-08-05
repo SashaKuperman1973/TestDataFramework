@@ -56,7 +56,7 @@ namespace TestDataFramework.Populator.Concrete.FieldExpression
             Expression<Func<TListElement, TPropertyValue>> fieldExpression,
             IEnumerable<TPropertyValue> range)
         {
-            base.SetRange(fieldExpression, () => range);
+            base.SetRange(fieldExpression, range);
             return this;
         }
 

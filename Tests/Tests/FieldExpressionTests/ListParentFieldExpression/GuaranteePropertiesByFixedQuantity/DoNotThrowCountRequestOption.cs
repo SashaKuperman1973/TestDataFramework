@@ -31,7 +31,7 @@ namespace Tests.Tests.FieldExpressionTests.ListParentFieldExpression.GuaranteePr
 
             // Assert
 
-            this.testContext.DoAssert(returnResult, 2, ValueCountRequestOption.DoNotThrow);
+            this.testContext.AssertTotal(returnResult, 2, ValueCountRequestOption.DoNotThrow);
         }
 
         [TestMethod]
@@ -47,7 +47,7 @@ namespace Tests.Tests.FieldExpressionTests.ListParentFieldExpression.GuaranteePr
 
             // Assert
 
-            this.testContext.DoAssert(returnResult, 5, ValueCountRequestOption.DoNotThrow);
+            this.testContext.AssertTotal(returnResult, 5, ValueCountRequestOption.DoNotThrow);
         }
 
         [TestMethod]
@@ -65,7 +65,7 @@ namespace Tests.Tests.FieldExpressionTests.ListParentFieldExpression.GuaranteePr
 
             // Assert
 
-            this.testContext.DoAssert(returnResult, 2, ValueCountRequestOption.DoNotThrow);
+            this.testContext.AssertTotal(returnResult, 2, ValueCountRequestOption.DoNotThrow);
         }
 
         [TestMethod]
@@ -83,7 +83,7 @@ namespace Tests.Tests.FieldExpressionTests.ListParentFieldExpression.GuaranteePr
 
             // Assert
 
-            this.testContext.DoAssert(returnResult, 5, ValueCountRequestOption.DoNotThrow);
+            this.testContext.AssertTotal(returnResult, 5, ValueCountRequestOption.DoNotThrow);
         }
 
         [TestMethod]
@@ -101,7 +101,7 @@ namespace Tests.Tests.FieldExpressionTests.ListParentFieldExpression.GuaranteePr
 
             // Assert
 
-            this.testContext.DoAssert(returnResult, 2, ValueCountRequestOption.DoNotThrow);
+            this.testContext.AssertTotal(returnResult, 2, ValueCountRequestOption.DoNotThrow);
         }
 
         [TestMethod]
@@ -119,7 +119,7 @@ namespace Tests.Tests.FieldExpressionTests.ListParentFieldExpression.GuaranteePr
 
             // Assert
 
-            this.testContext.DoAssert(returnResult, 5, ValueCountRequestOption.DoNotThrow);
+            this.testContext.AssertTotal(returnResult, 5, ValueCountRequestOption.DoNotThrow);
         }
     }
 }

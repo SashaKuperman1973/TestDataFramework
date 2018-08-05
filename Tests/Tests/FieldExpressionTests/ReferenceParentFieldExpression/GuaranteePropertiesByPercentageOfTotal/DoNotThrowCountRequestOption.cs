@@ -30,7 +30,7 @@ namespace Tests.Tests.FieldExpressionTests.ReferenceParentFieldExpression.Guaran
 
             // Assert
 
-            this.testContext.DoAssert(returnResult, 2, ValueCountRequestOption.DoNotThrow);
+            this.testContext.AssertPercentage(returnResult, 2, ValueCountRequestOption.DoNotThrow);
         }
 
         [TestMethod]
@@ -46,7 +46,7 @@ namespace Tests.Tests.FieldExpressionTests.ReferenceParentFieldExpression.Guaran
 
             // Assert
 
-            this.testContext.DoAssert(returnResult, 5, ValueCountRequestOption.DoNotThrow);
+            this.testContext.AssertPercentage(returnResult, 5, ValueCountRequestOption.DoNotThrow);
         }
 
         [TestMethod]
@@ -64,7 +64,7 @@ namespace Tests.Tests.FieldExpressionTests.ReferenceParentFieldExpression.Guaran
 
             // Assert
 
-            this.testContext.DoAssert(returnResult, 2, ValueCountRequestOption.DoNotThrow);
+            this.testContext.AssertPercentage(returnResult, 2, ValueCountRequestOption.DoNotThrow);
         }
 
         [TestMethod]
@@ -82,7 +82,7 @@ namespace Tests.Tests.FieldExpressionTests.ReferenceParentFieldExpression.Guaran
 
             // Assert
 
-            this.testContext.DoAssert(returnResult, 5, ValueCountRequestOption.DoNotThrow);
+            this.testContext.AssertPercentage(returnResult, 5, ValueCountRequestOption.DoNotThrow);
         }
 
         [TestMethod]
@@ -100,7 +100,7 @@ namespace Tests.Tests.FieldExpressionTests.ReferenceParentFieldExpression.Guaran
 
             // Assert
 
-            this.testContext.DoAssert(returnResult, 2, ValueCountRequestOption.DoNotThrow);
+            this.testContext.AssertPercentage(returnResult, 2, ValueCountRequestOption.DoNotThrow);
         }
 
         [TestMethod]
@@ -118,7 +118,7 @@ namespace Tests.Tests.FieldExpressionTests.ReferenceParentFieldExpression.Guaran
 
             // Assert
 
-            this.testContext.DoAssert(returnResult, 5, ValueCountRequestOption.DoNotThrow);
+            this.testContext.AssertPercentage(returnResult, 5, ValueCountRequestOption.DoNotThrow);
         }
     }
 }

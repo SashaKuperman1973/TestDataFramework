@@ -1,7 +1,6 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using TestDataFramework.ListOperations.Concrete;
-using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete.FieldExpression;
 using Tests.TestModels;
 
@@ -23,13 +22,13 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression.Gu
             // Act
 
             RootReferenceParentFieldExpression<ElementType, ElementType.PropertyType, ElementTypeBase> 
-                returnResult = this.testContext.ReferenceParentFieldExpression.GuaranteePropertiesByFixedQuantity(
+                returnResult = this.testContext.RootReferenceParentFieldExpression.GuaranteePropertiesByFixedQuantity(
                     new Func<ElementType.PropertyType>[]
                         {() => new ElementType.PropertyType(), () => new ElementType.PropertyType()});
 
             // Assert
 
-            this.testContext.DoAssert(returnResult, 2, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
+            this.testContext.AssertPercentage(returnResult, 2, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
         }
 
         [TestMethod]
@@ -38,14 +37,14 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression.Gu
             // Act
 
             RootReferenceParentFieldExpression<ElementType, ElementType.PropertyType, ElementTypeBase> 
-                returnResult = this.testContext.ReferenceParentFieldExpression.GuaranteePropertiesByFixedQuantity(
+                returnResult = this.testContext.RootReferenceParentFieldExpression.GuaranteePropertiesByFixedQuantity(
                     new Func<ElementType.PropertyType>[]
                         {() => new ElementType.PropertyType(), () => new ElementType.PropertyType()},
                     5);
 
             // Assert
 
-            this.testContext.DoAssert(returnResult, 5, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
+            this.testContext.AssertPercentage(returnResult, 5, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
         }
         
         [TestMethod]
@@ -54,7 +53,7 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression.Gu
             // Act
 
             RootReferenceParentFieldExpression<ElementType, ElementType.PropertyType, ElementTypeBase> 
-                returnResult = this.testContext.ReferenceParentFieldExpression.GuaranteePropertiesByFixedQuantity(
+                returnResult = this.testContext.RootReferenceParentFieldExpression.GuaranteePropertiesByFixedQuantity(
                     new object[]
                     {
                         new ElementType.PropertyType(),
@@ -63,7 +62,7 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression.Gu
 
             // Assert
 
-            this.testContext.DoAssert(returnResult, 2, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
+            this.testContext.AssertPercentage(returnResult, 2, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
         }
 
         [TestMethod]
@@ -72,7 +71,7 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression.Gu
             // Act
 
             RootReferenceParentFieldExpression<ElementType, ElementType.PropertyType, ElementTypeBase> 
-                returnResult = this.testContext.ReferenceParentFieldExpression.GuaranteePropertiesByFixedQuantity(
+                returnResult = this.testContext.RootReferenceParentFieldExpression.GuaranteePropertiesByFixedQuantity(
                     new object[]
                     {
                         new ElementType.PropertyType(),
@@ -81,7 +80,7 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression.Gu
 
             // Assert
 
-            this.testContext.DoAssert(returnResult, 5, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
+            this.testContext.AssertPercentage(returnResult, 5, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
         }
 
         [TestMethod]
@@ -90,7 +89,7 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression.Gu
             // Act
 
             RootReferenceParentFieldExpression<ElementType, ElementType.PropertyType, ElementTypeBase> 
-                returnResult = this.testContext.ReferenceParentFieldExpression.GuaranteePropertiesByFixedQuantity(
+                returnResult = this.testContext.RootReferenceParentFieldExpression.GuaranteePropertiesByFixedQuantity(
                     new object[]
                     {
                         new ElementType.PropertyType(),
@@ -99,7 +98,7 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression.Gu
 
             // Assert
 
-            this.testContext.DoAssert(returnResult, 2, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
+            this.testContext.AssertPercentage(returnResult, 2, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
         }
 
         [TestMethod]
@@ -108,7 +107,7 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression.Gu
             // Act
 
             RootReferenceParentFieldExpression<ElementType, ElementType.PropertyType, ElementTypeBase> 
-                returnResult = this.testContext.ReferenceParentFieldExpression.GuaranteePropertiesByFixedQuantity(
+                returnResult = this.testContext.RootReferenceParentFieldExpression.GuaranteePropertiesByFixedQuantity(
                     new object[]
                     {
                         new ElementType.PropertyType(),
@@ -117,7 +116,7 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression.Gu
 
             // Assert
 
-            this.testContext.DoAssert(returnResult, 5, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
+            this.testContext.AssertPercentage(returnResult, 5, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
         }
     }
 }

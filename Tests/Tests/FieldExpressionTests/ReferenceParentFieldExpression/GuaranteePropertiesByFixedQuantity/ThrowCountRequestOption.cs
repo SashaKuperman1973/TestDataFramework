@@ -29,7 +29,7 @@ namespace Tests.Tests.FieldExpressionTests.ReferenceParentFieldExpression.Guaran
 
             // Assert
 
-            this.testContext.DoAssert(returnResult, 2, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
+            this.testContext.AssertTotal(returnResult, 2, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
         }
 
         [TestMethod]
@@ -45,7 +45,7 @@ namespace Tests.Tests.FieldExpressionTests.ReferenceParentFieldExpression.Guaran
 
             // Assert
 
-            this.testContext.DoAssert(returnResult, 5, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
+            this.testContext.AssertTotal(returnResult, 5, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
         }
         
         [TestMethod]
@@ -63,7 +63,7 @@ namespace Tests.Tests.FieldExpressionTests.ReferenceParentFieldExpression.Guaran
 
             // Assert
 
-            this.testContext.DoAssert(returnResult, 2, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
+            this.testContext.AssertTotal(returnResult, 2, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
         }
 
         [TestMethod]
@@ -81,7 +81,7 @@ namespace Tests.Tests.FieldExpressionTests.ReferenceParentFieldExpression.Guaran
 
             // Assert
 
-            this.testContext.DoAssert(returnResult, 5, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
+            this.testContext.AssertTotal(returnResult, 5, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
         }
 
         [TestMethod]
@@ -99,7 +99,7 @@ namespace Tests.Tests.FieldExpressionTests.ReferenceParentFieldExpression.Guaran
 
             // Assert
 
-            this.testContext.DoAssert(returnResult, 2, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
+            this.testContext.AssertTotal(returnResult, 2, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
         }
 
         [TestMethod]
@@ -117,7 +117,7 @@ namespace Tests.Tests.FieldExpressionTests.ReferenceParentFieldExpression.Guaran
 
             // Assert
 
-            this.testContext.DoAssert(returnResult, 5, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
+            this.testContext.AssertTotal(returnResult, 5, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
         }
     }
 }

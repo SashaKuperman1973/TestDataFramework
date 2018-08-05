@@ -24,10 +24,10 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression
         public void OperableList_Test()
         {
             RootReferenceParentOperableList<ElementType, ElementTypeBase> actual =
-                this.testContext.ReferenceParentFieldExpression.OperableList;
+                this.testContext.RootReferenceParentFieldExpression.OperableList;
 
             Assert.IsNotNull(actual);
-            Assert.AreEqual(this.testContext.ReferenceParentOperableListMock.Object, actual);
+            Assert.AreEqual(this.testContext.RootReferenceParentOperableListMock.Object, actual);
         }
 
         [TestMethod]
@@ -35,11 +35,11 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression
         {
             // Arrange
             var element = new ElementType();
-            this.testContext.ReferenceParentOperableListMock.SetupGet(m => m.RecordObjects).Returns(new[] {element});
+            this.testContext.RootReferenceParentOperableListMock.SetupGet(m => m.RecordObjects).Returns(new[] {element});
 
             // Act
 
-            IEnumerable<ElementType> result = this.testContext.ReferenceParentFieldExpression.RecordObjects;
+            IEnumerable<ElementType> result = this.testContext.RootReferenceParentFieldExpression.RecordObjects;
 
             // Assert
 
@@ -57,15 +57,15 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression
             // Arrange
 
             var expected = new ElementTypeBase();
-            this.testContext.ReferenceParentOperableListMock.Setup(m => m.Make()).Returns(expected);
+            this.testContext.RootReferenceParentOperableListMock.Setup(m => m.Make()).Returns(expected);
 
             // Act
 
-            ElementTypeBase actual = this.testContext.ReferenceParentFieldExpression.Make();
+            ElementTypeBase actual = this.testContext.RootReferenceParentFieldExpression.Make();
 
             // Assert
 
-            this.testContext.ReferenceParentOperableListMock.Verify(m => m.Make());
+            this.testContext.RootReferenceParentOperableListMock.Verify(m => m.Make());
 
             Assert.IsNotNull(actual);
             Assert.AreEqual(expected, actual);
@@ -77,15 +77,15 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression
             // Arrange
 
             var expected = new ElementTypeBase();
-            this.testContext.ReferenceParentOperableListMock.Setup(m => m.BindAndMake()).Returns(expected);
+            this.testContext.RootReferenceParentOperableListMock.Setup(m => m.BindAndMake()).Returns(expected);
 
             // Act
 
-            ElementTypeBase actual = this.testContext.ReferenceParentFieldExpression.BindAndMake();
+            ElementTypeBase actual = this.testContext.RootReferenceParentFieldExpression.BindAndMake();
 
             // Assert
 
-            this.testContext.ReferenceParentOperableListMock.Verify(m => m.BindAndMake());
+            this.testContext.RootReferenceParentOperableListMock.Verify(m => m.BindAndMake());
 
             Assert.IsNotNull(actual);
             Assert.AreEqual(expected, actual);
@@ -102,14 +102,14 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression
             });
 
             RootReferenceParentFieldExpression<ElementType, ElementType.PropertyType, ElementTypeBase> 
-                actual = this.testContext.ReferenceParentFieldExpression.SetRange(m => m.AProperty, rangeFactory);
+                actual = this.testContext.RootReferenceParentFieldExpression.SetRange(m => m.AProperty, rangeFactory);
 
             // Assert
 
             Assert.IsNotNull(actual);
-            Assert.AreEqual(this.testContext.ReferenceParentFieldExpression, actual);
+            Assert.AreEqual(this.testContext.RootReferenceParentFieldExpression, actual);
 
-            this.testContext.ReferenceParentOperableListMock.Verify(m => m.AddRange(n => n.AProperty, rangeFactory));
+            this.testContext.RootReferenceParentOperableListMock.Verify(m => m.AddRange(n => n.AProperty, rangeFactory));
         }
 
         [TestMethod]
@@ -123,14 +123,14 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression
             };
 
             RootReferenceParentFieldExpression<ElementType, ElementType.PropertyType, ElementTypeBase> 
-                actual = this.testContext.ReferenceParentFieldExpression.SetRange(m => m.AProperty, range);
+                actual = this.testContext.RootReferenceParentFieldExpression.SetRange(m => m.AProperty, range);
 
             // Assert
 
             Assert.IsNotNull(actual);
-            Assert.AreEqual(this.testContext.ReferenceParentFieldExpression, actual);
+            Assert.AreEqual(this.testContext.RootReferenceParentFieldExpression, actual);
 
-            this.testContext.ReferenceParentOperableListMock.Verify(m => m.AddRange(n => n.AProperty, range));
+            this.testContext.RootReferenceParentOperableListMock.Verify(m => m.AddRange(n => n.AProperty, range));
         }
     }
 }

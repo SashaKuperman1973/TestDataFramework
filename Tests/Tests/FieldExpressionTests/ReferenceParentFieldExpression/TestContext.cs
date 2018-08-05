@@ -41,10 +41,10 @@ namespace Tests.Tests.FieldExpressionTests.ReferenceParentFieldExpression
                     this.ObjectGraphServiceMock.Object);
         }
 
-        private static bool Check(GuaranteedValues guaranteedValues, int count, ValueCountRequestOption option)
+        private static bool Check(GuaranteedValues guaranteedValues, int? total, int? percentage, ValueCountRequestOption option)
         {
-            bool result = guaranteedValues.FrequencyPercentage == null &&
-                          guaranteedValues.TotalFrequency == count &&
+            bool result = guaranteedValues.FrequencyPercentage == percentage &&
+                          guaranteedValues.TotalFrequency == total &&
                           guaranteedValues.ValueCountRequestOption == option &&
 
                           guaranteedValues.Values != null &&
@@ -53,9 +53,23 @@ namespace Tests.Tests.FieldExpressionTests.ReferenceParentFieldExpression
             return result;
         }
 
-        public void DoAssert(
+        public void AssertPercentage(ReferenceParentFieldExpression<ElementType, ElementType.PropertyType, OperableListEx<ElementType>, ElementType, ElementTypeBase> returnResult,
+            int percentage,
+            ValueCountRequestOption option)
+        {
+            this.DoAssert(returnResult, null, percentage, option);
+        }
+
+        public void AssertTotal(ReferenceParentFieldExpression<ElementType, ElementType.PropertyType, OperableListEx<ElementType>, ElementType, ElementTypeBase> returnResult,
+            int total,
+            ValueCountRequestOption option)
+        {
+            this.DoAssert(returnResult, total, null, option);
+        }
+
+        private void DoAssert(
             ReferenceParentFieldExpression<ElementType, ElementType.PropertyType, OperableListEx<ElementType>, ElementType, ElementTypeBase> returnResult,
-            int quantity,
+            int? total, int? percentage,
             ValueCountRequestOption option
         )
         {
@@ -66,9 +80,8 @@ namespace Tests.Tests.FieldExpressionTests.ReferenceParentFieldExpression
 
             this.ReferenceParentOperableListMock.Verify(
                 m => m.AddGuaranteedPropertySetter(It.Is<GuaranteedValues>(
-                    guaranteedValues => TestContext.Check(guaranteedValues, quantity, option)
+                    guaranteedValues => TestContext.Check(guaranteedValues, total, percentage, option)
                 )));
         }
-
     }
 }

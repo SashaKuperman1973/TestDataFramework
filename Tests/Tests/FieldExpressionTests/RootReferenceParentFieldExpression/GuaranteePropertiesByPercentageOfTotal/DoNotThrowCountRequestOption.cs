@@ -23,14 +23,14 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression.Gu
             // Act
 
             RootReferenceParentFieldExpression<ElementType, ElementType.PropertyType, ElementTypeBase> 
-                returnResult = this.testContext.ReferenceParentFieldExpression.GuaranteePropertiesByFixedQuantity(
+                returnResult = this.testContext.RootReferenceParentFieldExpression.GuaranteePropertiesByFixedQuantity(
                     new Func<ElementType.PropertyType>[]
                         {() => new ElementType.PropertyType(), () => new ElementType.PropertyType()},
                     ValueCountRequestOption.DoNotThrow);
 
             // Assert
 
-            this.testContext.DoAssert(returnResult, 2, ValueCountRequestOption.DoNotThrow);
+            this.testContext.AssertPercentage(returnResult, 2, ValueCountRequestOption.DoNotThrow);
         }
 
         [TestMethod]
@@ -39,14 +39,14 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression.Gu
             // Act
 
             RootReferenceParentFieldExpression<ElementType, ElementType.PropertyType, ElementTypeBase> 
-                returnResult = this.testContext.ReferenceParentFieldExpression.GuaranteePropertiesByFixedQuantity(
+                returnResult = this.testContext.RootReferenceParentFieldExpression.GuaranteePropertiesByFixedQuantity(
                     new Func<ElementType.PropertyType>[]
                         {() => new ElementType.PropertyType(), () => new ElementType.PropertyType()},
                     5, ValueCountRequestOption.DoNotThrow);
 
             // Assert
 
-            this.testContext.DoAssert(returnResult, 5, ValueCountRequestOption.DoNotThrow);
+            this.testContext.AssertPercentage(returnResult, 5, ValueCountRequestOption.DoNotThrow);
         }
 
         [TestMethod]
@@ -55,7 +55,7 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression.Gu
             // Act
 
             RootReferenceParentFieldExpression<ElementType, ElementType.PropertyType, ElementTypeBase> 
-                returnResult = this.testContext.ReferenceParentFieldExpression.GuaranteePropertiesByFixedQuantity(
+                returnResult = this.testContext.RootReferenceParentFieldExpression.GuaranteePropertiesByFixedQuantity(
                     new object[]
                     {
                         new ElementType.PropertyType(),
@@ -64,7 +64,7 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression.Gu
 
             // Assert
 
-            this.testContext.DoAssert(returnResult, 2, ValueCountRequestOption.DoNotThrow);
+            this.testContext.AssertPercentage(returnResult, 2, ValueCountRequestOption.DoNotThrow);
         }
 
         [TestMethod]
@@ -73,7 +73,7 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression.Gu
             // Act
 
             RootReferenceParentFieldExpression<ElementType, ElementType.PropertyType, ElementTypeBase> 
-                returnResult = this.testContext.ReferenceParentFieldExpression.GuaranteePropertiesByFixedQuantity(
+                returnResult = this.testContext.RootReferenceParentFieldExpression.GuaranteePropertiesByFixedQuantity(
                     new object[]
                     {
                         new ElementType.PropertyType(),
@@ -82,7 +82,7 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression.Gu
 
             // Assert
 
-            this.testContext.DoAssert(returnResult, 5, ValueCountRequestOption.DoNotThrow);
+            this.testContext.AssertPercentage(returnResult, 5, ValueCountRequestOption.DoNotThrow);
         }
 
         [TestMethod]
@@ -91,7 +91,7 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression.Gu
             // Act
 
             RootReferenceParentFieldExpression<ElementType, ElementType.PropertyType, ElementTypeBase> 
-                returnResult = this.testContext.ReferenceParentFieldExpression.GuaranteePropertiesByFixedQuantity(
+                returnResult = this.testContext.RootReferenceParentFieldExpression.GuaranteePropertiesByFixedQuantity(
                     new object[]
                     {
                         new ElementType.PropertyType(),
@@ -100,7 +100,7 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression.Gu
 
             // Assert
 
-            this.testContext.DoAssert(returnResult, 2, ValueCountRequestOption.DoNotThrow);
+            this.testContext.AssertPercentage(returnResult, 2, ValueCountRequestOption.DoNotThrow);
         }
 
         [TestMethod]
@@ -109,7 +109,7 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression.Gu
             // Act
 
             RootReferenceParentFieldExpression<ElementType, ElementType.PropertyType, ElementTypeBase> 
-                returnResult = this.testContext.ReferenceParentFieldExpression.GuaranteePropertiesByFixedQuantity(
+                returnResult = this.testContext.RootReferenceParentFieldExpression.GuaranteePropertiesByFixedQuantity(
                     new object[]
                     {
                         new ElementType.PropertyType(),
@@ -118,7 +118,7 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression.Gu
 
             // Assert
 
-            this.testContext.DoAssert(returnResult, 5, ValueCountRequestOption.DoNotThrow);
+            this.testContext.AssertPercentage(returnResult, 5, ValueCountRequestOption.DoNotThrow);
         }
     }
 }

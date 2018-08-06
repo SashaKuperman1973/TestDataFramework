@@ -125,6 +125,8 @@ namespace Tests.TestModels
     public class ElementTypeBase
     {
         public ElementType ElementType { get; set; }
+
+        public IEnumerable<ElementType> ElementList { get; set; }
     }
 
     public class ElementType

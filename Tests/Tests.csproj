@@ -121,6 +121,12 @@
     <Compile Include="Tests\MemoryValueGeneratorTests.cs" />
     <Compile Include="Tests\MinAttributeTests.cs" />
     <Compile Include="Tests\ObjectGraphServiceTest.cs" />
+    <Compile Include="Tests\OperableListTests\ListParentOperableList\GuaranteePropertiesByFixedQuantity\DoNotThrowCountRequestOption.cs" />
+    <Compile Include="Tests\OperableListTests\ListParentOperableList\GuaranteePropertiesByFixedQuantity\ThrowCountRequestOption.cs" />
+    <Compile Include="Tests\OperableListTests\ListParentOperableList\GuaranteePropertiesByPercentageOfTotal\DoNotThrowCountRequestOption.cs" />
+    <Compile Include="Tests\OperableListTests\ListParentOperableList\GuaranteePropertiesByPercentageOfTotal\ThrowCountRequestOption.cs" />
+    <Compile Include="Tests\OperableListTests\ListParentOperableList\OperableListTests.cs" />
+    <Compile Include="Tests\OperableListTests\ListParentOperableList\TestContext.cs" />
     <Compile Include="Tests\OperableListTests\OperableList\GuaranteePropertiesByPercentageOfTotal\DoNotThrowCountRequestOption.cs" />
     <Compile Include="Tests\OperableListTests\OperableList\GuaranteePropertiesByPercentageOfTotal\ThrowCountRequestOption.cs" />
     <Compile Include="Tests\OperableListTests\OperableList\GuaranteePropertiesByFixedQuantity\DoNotThrowCountRequestOption.cs" />

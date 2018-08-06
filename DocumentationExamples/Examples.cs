@@ -92,6 +92,7 @@ namespace DocumentationExamples
             list.ToList().ForEach(Console.WriteLine);
         }
 
+        // TODO
         [TestMethod]
         public void ListOffAList()
         {
@@ -102,13 +103,7 @@ namespace DocumentationExamples
                 .SetList(s => s.DeepA.DeepBCollection, 20)
                 .GuaranteeByFixedQuantity(new[] {new DeepB {TextC = "I"}, new DeepB {TextC = "II"}}, 3)
 
-                    .SetList(deepB => deepB.DeepCCollection, 10)
-                    .GuaranteeByFixedQuantity(new[] {new DeepC {ATextProperty = "X"}, new DeepC {ATextProperty = "XX"},}, 5)
 
-                        .SetList(deepC => deepC.DeepCStringCollection, 10)
-                        .GuaranteeByFixedQuantity(new [] {"V", "VV"})
-
-                .RootList
                 .Set(deepA => deepA)
                 .Make();
         }

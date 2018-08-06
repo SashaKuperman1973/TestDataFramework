@@ -7,6 +7,7 @@ using Tests.TestModels;
 
 namespace Tests.Tests.FieldExpressionTests.ListParentFieldExpression.GuaranteePropertiesByPercentageOfTotal
 {
+    [TestClass]
     public class Throw
     {
         private TestContext testContext;
@@ -29,7 +30,7 @@ namespace Tests.Tests.FieldExpressionTests.ListParentFieldExpression.GuaranteePr
 
             // Assert
 
-            this.testContext.AssertPercentage(returnResult, 2, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
+            this.testContext.AssertPercentage(returnResult, 10, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
         }
 
         [TestMethod]
@@ -63,7 +64,7 @@ namespace Tests.Tests.FieldExpressionTests.ListParentFieldExpression.GuaranteePr
 
             // Assert
 
-            this.testContext.AssertPercentage(returnResult, 2, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
+            this.testContext.AssertPercentage(returnResult, 10, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
         }
 
         [TestMethod]
@@ -99,7 +100,7 @@ namespace Tests.Tests.FieldExpressionTests.ListParentFieldExpression.GuaranteePr
 
             // Assert
 
-            this.testContext.AssertPercentage(returnResult, 2, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
+            this.testContext.AssertPercentage(returnResult, 10, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
         }
 
         [TestMethod]

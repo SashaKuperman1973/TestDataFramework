@@ -6,6 +6,7 @@ using Tests.TestModels;
 
 namespace Tests.Tests.OperableListTests.ListParentOperableList.GuaranteePropertiesByPercentageOfTotal
 {
+    [TestClass]
     public class ThrowCountRequestOption
     {
         private TestContext testContext;
@@ -24,13 +25,13 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList.GuaranteeProperti
             var guaranteedValues = new Func<ElementType>[] { () => new ElementType(), () => new ElementType(), };
 
             TestDataFramework.Populator.Concrete.OperableList.ListParentOperableList<ElementType, OperableListEx<ElementTypeBase>, ElementTypeBase> actual =
-                operableList.GuaranteeByFixedQuantity(guaranteedValues);
+                operableList.GuaranteeByPercentageOfTotal(guaranteedValues);
 
             actual.Make();
 
             // Assert
 
-            this.testContext.AssertPercentage(operableList, actual, guaranteedValues, 2, ValueCountRequestOption.DoNotThrow);
+            this.testContext.AssertPercentage(operableList, actual, guaranteedValues, 10, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
         }
 
         [TestMethod]
@@ -41,13 +42,13 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList.GuaranteeProperti
             var guaranteedValues = new Func<ElementType>[] { () => new ElementType(), () => new ElementType(), };
 
             TestDataFramework.Populator.Concrete.OperableList.ListParentOperableList<ElementType, OperableListEx<ElementTypeBase>, ElementTypeBase> actual =
-                operableList.GuaranteeByFixedQuantity(guaranteedValues, 5);
+                operableList.GuaranteeByPercentageOfTotal(guaranteedValues, 5);
 
             actual.Make();
 
             // Assert
 
-            this.testContext.AssertPercentage(operableList, actual, guaranteedValues, 5, ValueCountRequestOption.DoNotThrow);
+            this.testContext.AssertPercentage(operableList, actual, guaranteedValues, 5, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
         }
 
         [TestMethod]
@@ -58,13 +59,13 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList.GuaranteeProperti
             var guaranteedValues = new object[] { new ElementType(), (Func<ElementType>)(() => new ElementType()), };
 
             TestDataFramework.Populator.Concrete.OperableList.ListParentOperableList<ElementType, OperableListEx<ElementTypeBase>, ElementTypeBase> actual =
-                operableList.GuaranteeByFixedQuantity(guaranteedValues);
+                operableList.GuaranteeByPercentageOfTotal(guaranteedValues);
 
             actual.Make();
 
             // Assert
 
-            this.testContext.AssertPercentage(operableList, actual, guaranteedValues, 2, ValueCountRequestOption.DoNotThrow);
+            this.testContext.AssertPercentage(operableList, actual, guaranteedValues, 10, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
         }
 
         [TestMethod]
@@ -75,13 +76,13 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList.GuaranteeProperti
             var guaranteedValues = new object[] { new ElementType(), (Func<ElementType>)(() => new ElementType()), };
 
             TestDataFramework.Populator.Concrete.OperableList.ListParentOperableList<ElementType, OperableListEx<ElementTypeBase>, ElementTypeBase> actual =
-                operableList.GuaranteeByFixedQuantity(guaranteedValues, 5);
+                operableList.GuaranteeByPercentageOfTotal(guaranteedValues, 5);
 
             actual.Make();
 
             // Assert
 
-            this.testContext.AssertPercentage(operableList, actual, guaranteedValues, 5, ValueCountRequestOption.DoNotThrow);
+            this.testContext.AssertPercentage(operableList, actual, guaranteedValues, 5, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
         }
 
         [TestMethod]
@@ -92,13 +93,13 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList.GuaranteeProperti
             var guaranteedValues = new[] { new ElementType(), new ElementType(), };
 
             TestDataFramework.Populator.Concrete.OperableList.ListParentOperableList<ElementType, OperableListEx<ElementTypeBase>, ElementTypeBase> actual =
-                operableList.GuaranteeByFixedQuantity(guaranteedValues);
+                operableList.GuaranteeByPercentageOfTotal(guaranteedValues);
 
             actual.Make();
 
             // Assert
 
-            this.testContext.AssertPercentage(operableList, actual, guaranteedValues, 2, ValueCountRequestOption.DoNotThrow);
+            this.testContext.AssertPercentage(operableList, actual, guaranteedValues, 10, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
         }
 
         [TestMethod]
@@ -109,13 +110,13 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList.GuaranteeProperti
             var guaranteedValues = new[] { new ElementType(), new ElementType(), };
 
             TestDataFramework.Populator.Concrete.OperableList.ListParentOperableList<ElementType, OperableListEx<ElementTypeBase>, ElementTypeBase> actual =
-                operableList.GuaranteeByFixedQuantity(guaranteedValues, 5);
+                operableList.GuaranteeByPercentageOfTotal(guaranteedValues, 5);
 
             actual.Make();
 
             // Assert
 
-            this.testContext.AssertPercentage(operableList, actual, guaranteedValues, 5, ValueCountRequestOption.DoNotThrow);
+            this.testContext.AssertPercentage(operableList, actual, guaranteedValues, 5, ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall);
         }
     }
 }

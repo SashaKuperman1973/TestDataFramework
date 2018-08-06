@@ -7,6 +7,7 @@ using Tests.TestModels;
 
 namespace Tests.Tests.FieldExpressionTests.ListParentFieldExpression.GuaranteePropertiesByFixedQuantity
 {
+    [TestClass]
     public class Throw
     {
         private TestContext testContext;

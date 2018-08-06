@@ -82,7 +82,7 @@ namespace TestDataFramework.Populator.Concrete
                 $"Entering Add. T: {typeof(T)}, copies: {copies}, primaryRecordReference: {primaryRecordReferences}");
 
             var result = new OperableListEx<T>(
-                new RecordReference<T>[copies],
+                Enumerable.Empty<RecordReference<T>>(),
                 this.valueGuaranteePopulator,
                 this,
                 this.objectGraphService,

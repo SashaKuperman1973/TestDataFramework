@@ -91,10 +91,22 @@ namespace TestDataFramework.Populator.Concrete
                 return;
             }
 
+            this.PopulateChildren();
+
             base.RecordObjectBase = this.TypeGenerator.GetObject<T>(this.ExplicitPropertySetters);
             this.IsPopulated = true;
 
             RecordReference<T>.Logger.Debug("Exiting Populate");
+        }
+
+        internal void AddToExplicitPropertySetters<TResultElement>(
+            Expression<Func<T, IEnumerable<TResultElement>>> listFieldExpression,
+            OperableList<TResultElement> list)
+        {
+            List<PropertyInfo> objectPropertyGraph = this.objectGraphService.GetObjectGraph(listFieldExpression);
+
+            this.AddToExplicitPropertySetters(listFieldExpression,
+                () => this.deepCollectionSettingConverter.Convert(list.RecordObjects, objectPropertyGraph.Last()));
         }
 
         public virtual RecordReference<T> Set<TBasePropertyValue, TPropertyValue>(
@@ -126,8 +138,6 @@ namespace TestDataFramework.Populator.Concrete
         public virtual RootReferenceParentOperableList<TListElement, T> SetList<TListElement>(
             Expression<Func<T, IEnumerable<TListElement>>> listFieldExpression, int size)
         {
-            List<PropertyInfo> objectPropertyGraph = this.objectGraphService.GetObjectGraph(listFieldExpression);
-
             var operableList = new RootReferenceParentOperableList<TListElement, T>(
                 this, 
                 new RecordReference<TListElement>[size],
@@ -139,14 +149,9 @@ namespace TestDataFramework.Populator.Concrete
                 this.TypeGenerator
                 );
 
-            this.AddToExplicitPropertySetters(listFieldExpression, () =>
-            {
-                operableList.Populate();
-                IEnumerable<TListElement> setterResult =
-                    this.deepCollectionSettingConverter.Convert(operableList.RecordObjects, objectPropertyGraph.Last());
-                return setterResult;
-            });
+            this.Children.Add(operableList);
 
+            this.AddToExplicitPropertySetters(listFieldExpression, operableList);
             return operableList;
         }
 

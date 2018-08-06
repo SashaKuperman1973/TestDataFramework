@@ -151,10 +151,9 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             return result;
         }
 
-        public new virtual ReferenceParentOperableList<TPropertyElement,
+        private ReferenceParentOperableList<TPropertyElement,
             ReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>, TRootListElement,
-            TRootElement> SetList<TPropertyElement>(
-            Expression<Func<TListElement, IEnumerable<TPropertyElement>>> listFieldExpression, int size)
+            TRootElement> SetList<TPropertyElement>(int size)
         {
             List<RecordReference<TPropertyElement>> list = this.CreateRecordReferences<TPropertyElement>(size);
 
@@ -307,29 +306,29 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             return this;
         }
 
-        public new virtual ReferenceParentMakeableEnumerable<ReferenceParentOperableList<TResult,
+        public new virtual ReferenceParentMakeableEnumerable<ReferenceParentOperableList<TResultElement,
                 ReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>, TRootListElement
                 , TRootElement>, TRootElement>
-            Select<TResult>(Expression<Func<TListElement, IEnumerable<TResult>>> selector, int listSize,
-                int listCollectionSize)
+            SelectListSet<TResultElement>(Expression<Func<TListElement, IEnumerable<TResultElement>>> selector, int listSize)
         {
             var listCollection =
-                new ReferenceParentOperableList<TResult, ReferenceParentOperableList<TListElement, TParentList,
+                new ReferenceParentOperableList<TResultElement, ReferenceParentOperableList<TListElement, TParentList,
                         TRootListElement, TRootElement>,
-                    TRootListElement, TRootElement>[listCollectionSize];
+                    TRootListElement, TRootElement>[this.Count];
 
             for (int i = 0; i < listCollection.Length; i++)
             {
-                ReferenceParentOperableList<TResult, ReferenceParentOperableList<TListElement, TParentList,
+                ReferenceParentOperableList<TResultElement, ReferenceParentOperableList<TListElement, TParentList,
                         TRootListElement, TRootElement>,
                     TRootListElement, TRootElement> list
-                    = this.SetList(selector, listSize);
+                    = this.SetList<TResultElement>(listSize);
 
                 listCollection[i] = list;
+                this.InternalList[i].AddToExplicitPropertySetters(selector, list);
             }
 
             var result =
-                new ReferenceParentMakeableEnumerable<ReferenceParentOperableList<TResult,
+                new ReferenceParentMakeableEnumerable<ReferenceParentOperableList<TResultElement,
                     ReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>,
                     TRootListElement, TRootElement>, TRootElement>(
                     listCollection, this.Root);

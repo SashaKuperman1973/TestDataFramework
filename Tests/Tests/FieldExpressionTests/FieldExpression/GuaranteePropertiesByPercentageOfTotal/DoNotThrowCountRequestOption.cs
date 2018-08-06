@@ -5,7 +5,7 @@ using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete.FieldExpression;
 using Tests.TestModels;
 
-namespace Tests.Tests.FieldExpressionTests.ReferenceParentFieldExpression.GuaranteePropertiesByPercentageOfTotal
+namespace Tests.Tests.FieldExpressionTests.FieldExpression.GuaranteePropertiesByPercentageOfTotal
 {
     [TestClass]
     public class DoNotThrow
@@ -23,8 +23,8 @@ namespace Tests.Tests.FieldExpressionTests.ReferenceParentFieldExpression.Guaran
         {
             // Act
 
-            ReferenceParentFieldExpression<ElementType, ElementType.PropertyType, OperableListEx<ElementType>, ElementType, ElementTypeBase>
-                returnResult = this.testContext.ReferenceParentFieldExpression.GuaranteePropertiesByPercentageOfTotal(
+            FieldExpression<ElementType, ElementType.PropertyType>
+                returnResult = this.testContext.FieldExpression.GuaranteePropertiesByPercentageOfTotal(
                     new Func<ElementType.PropertyType>[]
                         {() => new ElementType.PropertyType(), () => new ElementType.PropertyType()},
                     ValueCountRequestOption.DoNotThrow);
@@ -39,8 +39,8 @@ namespace Tests.Tests.FieldExpressionTests.ReferenceParentFieldExpression.Guaran
         {
             // Act
 
-            ReferenceParentFieldExpression<ElementType, ElementType.PropertyType, OperableListEx<ElementType>, ElementType, ElementTypeBase>
-                returnResult = this.testContext.ReferenceParentFieldExpression.GuaranteePropertiesByPercentageOfTotal(
+            FieldExpression<ElementType, ElementType.PropertyType>
+                returnResult = this.testContext.FieldExpression.GuaranteePropertiesByPercentageOfTotal(
                     new Func<ElementType.PropertyType>[]
                         {() => new ElementType.PropertyType(), () => new ElementType.PropertyType()},
                     5, ValueCountRequestOption.DoNotThrow);
@@ -55,8 +55,8 @@ namespace Tests.Tests.FieldExpressionTests.ReferenceParentFieldExpression.Guaran
         {
             // Act
 
-            ReferenceParentFieldExpression<ElementType, ElementType.PropertyType, OperableListEx<ElementType>, ElementType, ElementTypeBase>
-                returnResult = this.testContext.ReferenceParentFieldExpression.GuaranteePropertiesByPercentageOfTotal(
+            FieldExpression<ElementType, ElementType.PropertyType>
+                returnResult = this.testContext.FieldExpression.GuaranteePropertiesByPercentageOfTotal(
                     new object[]
                     {
                         new ElementType.PropertyType(),
@@ -73,8 +73,8 @@ namespace Tests.Tests.FieldExpressionTests.ReferenceParentFieldExpression.Guaran
         {
             // Act
 
-            ReferenceParentFieldExpression<ElementType, ElementType.PropertyType, OperableListEx<ElementType>, ElementType, ElementTypeBase>
-                returnResult = this.testContext.ReferenceParentFieldExpression.GuaranteePropertiesByPercentageOfTotal(
+            FieldExpression<ElementType, ElementType.PropertyType>
+                returnResult = this.testContext.FieldExpression.GuaranteePropertiesByPercentageOfTotal(
                     new object[]
                     {
                         new ElementType.PropertyType(),
@@ -91,8 +91,8 @@ namespace Tests.Tests.FieldExpressionTests.ReferenceParentFieldExpression.Guaran
         {
             // Act
 
-            ReferenceParentFieldExpression<ElementType, ElementType.PropertyType, OperableListEx<ElementType>, ElementType, ElementTypeBase>
-                returnResult = this.testContext.ReferenceParentFieldExpression.GuaranteePropertiesByPercentageOfTotal(
+            FieldExpression<ElementType, ElementType.PropertyType>
+                returnResult = this.testContext.FieldExpression.GuaranteePropertiesByPercentageOfTotal(
                     new object[]
                     {
                         new ElementType.PropertyType(),
@@ -109,8 +109,8 @@ namespace Tests.Tests.FieldExpressionTests.ReferenceParentFieldExpression.Guaran
         {
             // Act
 
-            ReferenceParentFieldExpression<ElementType, ElementType.PropertyType, OperableListEx<ElementType>, ElementType, ElementTypeBase>
-                returnResult = this.testContext.ReferenceParentFieldExpression.GuaranteePropertiesByPercentageOfTotal(
+            FieldExpression<ElementType, ElementType.PropertyType>
+                returnResult = this.testContext.FieldExpression.GuaranteePropertiesByPercentageOfTotal(
                     new object[]
                     {
                         new ElementType.PropertyType(),

@@ -46,7 +46,7 @@ namespace Tests.Tests.OperableListTests.OperableList.GuaranteePropertiesByFixedQ
             OperableList<ElementType> actual =
                 operableList.GuaranteeByFixedQuantity(guaranteedValues, ValueCountRequestOption.DoNotThrow);
 
-            actual.Make();
+            actual.Populate();
 
             // Assert
 
@@ -63,7 +63,7 @@ namespace Tests.Tests.OperableListTests.OperableList.GuaranteePropertiesByFixedQ
             OperableList<ElementType> actual =
                 operableList.GuaranteeByFixedQuantity(guaranteedValues, 5, ValueCountRequestOption.DoNotThrow);
 
-            actual.Make();
+            actual.Populate();
 
             // Assert
 
@@ -80,7 +80,7 @@ namespace Tests.Tests.OperableListTests.OperableList.GuaranteePropertiesByFixedQ
             OperableList<ElementType> actual =
                 operableList.GuaranteeByFixedQuantity(guaranteedValues, ValueCountRequestOption.DoNotThrow);
 
-            actual.Make();
+            actual.Populate();
 
             // Assert
 
@@ -97,7 +97,7 @@ namespace Tests.Tests.OperableListTests.OperableList.GuaranteePropertiesByFixedQ
             OperableList<ElementType> actual =
                 operableList.GuaranteeByFixedQuantity(guaranteedValues, 5, ValueCountRequestOption.DoNotThrow);
 
-            actual.Make();
+            actual.Populate();
 
             // Assert
 
@@ -114,7 +114,7 @@ namespace Tests.Tests.OperableListTests.OperableList.GuaranteePropertiesByFixedQ
             OperableList<ElementType> actual =
                 operableList.GuaranteeByFixedQuantity(guaranteedValues, ValueCountRequestOption.DoNotThrow);
 
-            actual.Make();
+            actual.Populate();
 
             // Assert
 
@@ -131,7 +131,7 @@ namespace Tests.Tests.OperableListTests.OperableList.GuaranteePropertiesByFixedQ
             OperableList<ElementType> actual =
                 operableList.GuaranteeByFixedQuantity(guaranteedValues, 5, ValueCountRequestOption.DoNotThrow);
 
-            actual.Make();
+            actual.Populate();
 
             // Assert
 

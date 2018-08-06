@@ -64,7 +64,7 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList.GuaranteeProperti
             TestDataFramework.Populator.Concrete.OperableList.ListParentOperableList<ElementType, OperableListEx<ElementTypeBase>, ElementTypeBase> actual =
                 operableList.GuaranteeByFixedQuantity(guaranteedValues, 5, ValueCountRequestOption.DoNotThrow);
 
-            actual.Make();
+            actual.Populate();
 
             // Assert
 
@@ -78,10 +78,10 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList.GuaranteeProperti
 
             var guaranteedValues = new object[] { new ElementType(), (Func<ElementType>)(() => new ElementType()), };
 
-            TestDataFramework.Populator.Concrete.OperableList.ListParentOperableList<ElementType, OperableListEx<ElementTypeBase>, ElementTypeBase> actual =
+            ListParentOperableList<ElementType, OperableListEx<ElementTypeBase>, ElementTypeBase> actual =
                 operableList.GuaranteeByFixedQuantity(guaranteedValues, ValueCountRequestOption.DoNotThrow);
 
-            actual.Make();
+            actual.Populate();
 
             // Assert
 
@@ -95,10 +95,10 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList.GuaranteeProperti
 
             var guaranteedValues = new object[] { new ElementType(), (Func<ElementType>)(() => new ElementType()), };
 
-            TestDataFramework.Populator.Concrete.OperableList.ListParentOperableList<ElementType, OperableListEx<ElementTypeBase>, ElementTypeBase> actual =
+            ListParentOperableList<ElementType, OperableListEx<ElementTypeBase>, ElementTypeBase> actual =
                 operableList.GuaranteeByFixedQuantity(guaranteedValues, 5, ValueCountRequestOption.DoNotThrow);
 
-            actual.Make();
+            actual.Populate();
 
             // Assert
 
@@ -112,10 +112,10 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList.GuaranteeProperti
 
             var guaranteedValues = new[] { new ElementType(), new ElementType(), };
 
-            TestDataFramework.Populator.Concrete.OperableList.ListParentOperableList<ElementType, OperableListEx<ElementTypeBase>, ElementTypeBase> actual =
+            ListParentOperableList<ElementType, OperableListEx<ElementTypeBase>, ElementTypeBase> actual =
                 operableList.GuaranteeByFixedQuantity(guaranteedValues, ValueCountRequestOption.DoNotThrow);
 
-            actual.Make();
+            actual.Populate();
 
             // Assert
 
@@ -125,14 +125,14 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList.GuaranteeProperti
         [TestMethod]
         public void Properties_ExplicitQuantity_Test()
         {
-            TestDataFramework.Populator.Concrete.OperableList.ListParentOperableList<ElementType, OperableListEx<ElementTypeBase>, ElementTypeBase> operableList = this.testContext.CreateOperableList();
+            ListParentOperableList<ElementType, OperableListEx<ElementTypeBase>, ElementTypeBase> operableList = this.testContext.CreateOperableList();
 
             var guaranteedValues = new[] { new ElementType(), new ElementType(), };
 
-            TestDataFramework.Populator.Concrete.OperableList.ListParentOperableList<ElementType, OperableListEx<ElementTypeBase>, ElementTypeBase> actual =
+            ListParentOperableList<ElementType, OperableListEx<ElementTypeBase>, ElementTypeBase> actual =
                 operableList.GuaranteeByFixedQuantity(guaranteedValues, 5, ValueCountRequestOption.DoNotThrow);
 
-            actual.Make();
+            actual.Populate();
 
             // Assert
 

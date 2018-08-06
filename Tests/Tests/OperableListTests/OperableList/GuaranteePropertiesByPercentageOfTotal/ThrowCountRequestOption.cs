@@ -27,7 +27,7 @@ namespace Tests.Tests.OperableListTests.OperableList.GuaranteePropertiesByPercen
             OperableList<ElementType> actual =
                 operableList.GuaranteeByPercentageOfTotal(guaranteedValues);
 
-            actual.Make();
+            actual.Populate();
 
             // Assert
 
@@ -44,7 +44,7 @@ namespace Tests.Tests.OperableListTests.OperableList.GuaranteePropertiesByPercen
             OperableList<ElementType> actual =
                 operableList.GuaranteeByPercentageOfTotal(guaranteedValues, 5);
 
-            actual.Make();
+            actual.Populate();
 
             // Assert
 
@@ -61,7 +61,7 @@ namespace Tests.Tests.OperableListTests.OperableList.GuaranteePropertiesByPercen
             OperableList<ElementType> actual =
                 operableList.GuaranteeByPercentageOfTotal(guaranteedValues);
 
-            actual.Make();
+            actual.Populate();
 
             // Assert
 
@@ -78,7 +78,7 @@ namespace Tests.Tests.OperableListTests.OperableList.GuaranteePropertiesByPercen
             OperableList<ElementType> actual =
                 operableList.GuaranteeByPercentageOfTotal(guaranteedValues, 5);
 
-            actual.Make();
+            actual.Populate();
 
             // Assert
 
@@ -95,7 +95,7 @@ namespace Tests.Tests.OperableListTests.OperableList.GuaranteePropertiesByPercen
             OperableList<ElementType> actual =
                 operableList.GuaranteeByPercentageOfTotal(guaranteedValues);
 
-            actual.Make();
+            actual.Populate();
 
             // Assert
 
@@ -112,7 +112,7 @@ namespace Tests.Tests.OperableListTests.OperableList.GuaranteePropertiesByPercen
             OperableList<ElementType> actual =
                 operableList.GuaranteeByPercentageOfTotal(guaranteedValues, 5);
 
-            actual.Make();
+            actual.Populate();
 
             // Assert
 

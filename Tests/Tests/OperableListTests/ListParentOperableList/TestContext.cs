@@ -36,17 +36,16 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList
         public ListParentOperableList<ElementType,
             OperableListEx<ElementTypeBase>, ElementTypeBase> CreateOperableList()
         {
-            var operableList = new OperableListEx<ElementTypeBase>(
-                new RecordReference<ElementTypeBase>[1],
+            var result = new ListParentOperableList<ElementType, OperableListEx<ElementTypeBase>, ElementTypeBase>(
+                null,
+                null,
+                new RecordReference<ElementType>[1],
                 this.ValueGuaranteePopulatorMock.Object,
                 null,
                 this.ObjectGraphServiceMock.Object,
                 null,
                 null,
                 this.TypeGeneratorMock.Object);
-
-            ListParentOperableList<ElementType, OperableListEx<ElementTypeBase>, ElementTypeBase> result =
-                operableList.SelectListSet(m => m.ElementList, 1)[0];
 
             return result;
         }

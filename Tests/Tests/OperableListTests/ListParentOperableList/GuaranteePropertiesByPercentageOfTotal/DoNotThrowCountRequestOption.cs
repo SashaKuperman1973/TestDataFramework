@@ -27,7 +27,7 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList.GuaranteeProperti
             TestDataFramework.Populator.Concrete.OperableList.ListParentOperableList<ElementType, OperableListEx<ElementTypeBase>, ElementTypeBase> actual =
                 operableList.GuaranteeByPercentageOfTotal(guaranteedValues, ValueCountRequestOption.DoNotThrow);
 
-            actual.Make();
+            actual.Populate();
 
             // Assert
 
@@ -44,7 +44,7 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList.GuaranteeProperti
             TestDataFramework.Populator.Concrete.OperableList.ListParentOperableList<ElementType, OperableListEx<ElementTypeBase>, ElementTypeBase> actual =
                 operableList.GuaranteeByPercentageOfTotal(guaranteedValues, 5, ValueCountRequestOption.DoNotThrow);
 
-            actual.Make();
+            actual.Populate();
 
             // Assert
 
@@ -62,7 +62,7 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList.GuaranteeProperti
             TestDataFramework.Populator.Concrete.OperableList.ListParentOperableList<ElementType, OperableListEx<ElementTypeBase>, ElementTypeBase> actual =
                 operableList.GuaranteeByPercentageOfTotal(guaranteedValues, ValueCountRequestOption.DoNotThrow);
 
-            actual.Make();
+            actual.Populate();
 
             // Assert
 
@@ -79,7 +79,7 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList.GuaranteeProperti
             TestDataFramework.Populator.Concrete.OperableList.ListParentOperableList<ElementType, OperableListEx<ElementTypeBase>, ElementTypeBase> actual =
                 operableList.GuaranteeByPercentageOfTotal(guaranteedValues, 5, ValueCountRequestOption.DoNotThrow);
 
-            actual.Make();
+            actual.Populate();
 
             // Assert
 
@@ -96,7 +96,7 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList.GuaranteeProperti
             TestDataFramework.Populator.Concrete.OperableList.ListParentOperableList<ElementType, OperableListEx<ElementTypeBase>, ElementTypeBase> actual =
                 operableList.GuaranteeByPercentageOfTotal(guaranteedValues, ValueCountRequestOption.DoNotThrow);
 
-            actual.Make();
+            actual.Populate();
 
             // Assert
 
@@ -113,7 +113,7 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList.GuaranteeProperti
             TestDataFramework.Populator.Concrete.OperableList.ListParentOperableList<ElementType, OperableListEx<ElementTypeBase>, ElementTypeBase> actual =
                 operableList.GuaranteeByPercentageOfTotal(guaranteedValues, 5, ValueCountRequestOption.DoNotThrow);
 
-            actual.Make();
+            actual.Populate();
 
             // Assert
 

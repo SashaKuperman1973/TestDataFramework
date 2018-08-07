@@ -50,7 +50,7 @@ namespace TestDataFramework.Populator
 
         private readonly List<GuaranteedValues> guaranteedPropertySetters = new List<GuaranteedValues>();
         private readonly List<GuaranteedValues> privateGuaranteedValues = new List<GuaranteedValues>();
-        protected List<RecordReference<TListElement>> InternalList;
+        protected List<RecordReference<TListElement>> InternalList { get; }
 
         public OperableList(IEnumerable<RecordReference<TListElement>> input,
             ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator,

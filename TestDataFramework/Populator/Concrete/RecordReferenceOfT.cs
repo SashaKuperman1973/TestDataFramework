@@ -149,7 +149,7 @@ namespace TestDataFramework.Populator.Concrete
                 this.TypeGenerator
                 );
 
-            this.Children.Add(operableList);
+            this.AddChild(operableList);
 
             this.AddToExplicitPropertySetters(listFieldExpression, operableList);
             return operableList;

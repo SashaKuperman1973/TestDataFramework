@@ -27,7 +27,7 @@ namespace TestDataFramework.Populator
 
         protected void PopulateChildren()
         {
-            this.Children.ForEach(c =>
+            this.children.ForEach(c =>
             {
                 c.Populate();
             });
@@ -37,6 +37,11 @@ namespace TestDataFramework.Populator
 
         internal abstract void AddToReferences(IList<RecordReference> collection);
 
-        protected readonly List<Populatable> Children = new List<Populatable>();
+        private readonly List<Populatable> children = new List<Populatable>();
+
+        protected internal void AddChild(Populatable populatable)
+        {
+            this.children.Add(populatable);
+        }
     }
 }

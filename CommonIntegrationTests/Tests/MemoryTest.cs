@@ -616,7 +616,7 @@ namespace CommonIntegrationTests.Tests
         private IMakeableCollectionContainer<DeepA> DeepPropertySetting_ListParent_SettersTest(IPopulator populator)
         {
             IMakeableCollectionContainer<DeepA> result = populator.Add<DeepA>(5)
-                .SelectListSet(q => q.DeepB.DeepCList, 3).Skip(1).Take(2)
+                .SelectListSet(q => q.DeepB.DeepCList, 7).Skip(1).Take(2)
                 .Set(r => r.Skip(2).Take(2).Set(s => s.DeepString, "I"))
                 .Set(r => r.Skip(4).Take(2).Set(s => s.DeepString, "II"));
 
@@ -662,9 +662,9 @@ namespace CommonIntegrationTests.Tests
             int deepACount = 0;
             list.ForEach(deepA =>
             {
-                Assert.AreEqual(3, deepA.DeepB.DeepCList.Count);
+                Assert.AreEqual(7, deepA.DeepB.DeepCList.Count);
 
-                if (deepACount < 2)
+                if (deepACount < 1 || deepACount >= 3)
                 {
                     deepA.DeepB.DeepCList.ForEach(deepC =>
                     {

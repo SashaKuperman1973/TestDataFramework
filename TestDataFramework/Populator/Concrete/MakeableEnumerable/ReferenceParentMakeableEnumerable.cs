@@ -26,22 +26,22 @@ namespace TestDataFramework.Populator.Concrete.MakeableEnumerable
 {
     public class ReferenceParentMakeableEnumerable<TListElement, TRoot> : List<TListElement>, IMakeable<TRoot>
     {
-        private readonly IMakeable<TRoot> parent;
+        private readonly IMakeable<TRoot> rootContainer;
 
         public ReferenceParentMakeableEnumerable(IEnumerable<TListElement> collection,
-            IMakeable<TRoot> parent) : base(collection)
+            IMakeable<TRoot> rootContainer) : base(collection)
         {
-            this.parent = parent;
+            this.rootContainer = rootContainer;
         }
 
         public virtual TRoot Make()
         {
-            return this.parent.Make();
+            return this.rootContainer.Make();
         }
 
         public virtual TRoot BindAndMake()
         {
-            return this.parent.BindAndMake();
+            return this.rootContainer.BindAndMake();
         }
 
         public virtual ReferenceParentMakeableEnumerable<TListElement, TRoot> Set<TResultElement>(
@@ -55,7 +55,7 @@ namespace TestDataFramework.Populator.Concrete.MakeableEnumerable
         {
             IEnumerable<TListElement> taken = Enumerable.Take(this, count);
 
-            var result = new ReferenceParentMakeableEnumerable<TListElement, TRoot>(taken, this.parent);
+            var result = new ReferenceParentMakeableEnumerable<TListElement, TRoot>(taken, this.rootContainer);
             return result;
         }
 
@@ -63,7 +63,7 @@ namespace TestDataFramework.Populator.Concrete.MakeableEnumerable
         {
             IEnumerable<TListElement> afterSkip = Enumerable.Skip(this, count);
 
-            var result = new ReferenceParentMakeableEnumerable<TListElement, TRoot>(afterSkip, this.parent);
+            var result = new ReferenceParentMakeableEnumerable<TListElement, TRoot>(afterSkip, this.rootContainer);
             return result;
         }
     }

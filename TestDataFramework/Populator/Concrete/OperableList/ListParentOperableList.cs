@@ -119,7 +119,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
 
             ListParentOperableList<TListElement, TParentList, TRootListElement> result = this.CreateSubset(input);
 
-            this.Children.Add(result);
+            this.AddChild(result);
             return result;
         }
 
@@ -129,7 +129,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
 
             ListParentOperableList<TListElement, TParentList, TRootListElement> result = this.CreateSubset(input);
 
-            this.Children.Add(result);
+            this.AddChild(result);
             return result;
         }
 
@@ -141,7 +141,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             ListParentOperableList<TPropertyElement, ListParentOperableList<TListElement, TParentList, TRootListElement>,
                 TRootListElement> result = this.CreateChild(list);
 
-            this.Children.Add(result);
+            this.AddChild(result);
             return result;
         }
 

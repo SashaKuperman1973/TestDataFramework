@@ -77,7 +77,7 @@ namespace TestDataFramework.Populator
             ListParentOperableList<TListElement, OperableListEx<TListElement>, TListElement> result =
                 this.CreateSubset(input);
 
-            this.Children.Add(result);
+            this.AddChild(result);
             return result;
         }
 
@@ -88,7 +88,7 @@ namespace TestDataFramework.Populator
             ListParentOperableList<TListElement, OperableListEx<TListElement>, TListElement> result =
                 this.CreateSubset(input);
 
-            this.Children.Add(result);
+            this.AddChild(result);
             return result;
         }
 
@@ -101,7 +101,7 @@ namespace TestDataFramework.Populator
                 OperableListEx<TListElement>,
                 TListElement> result = this.CreateChild(input);
 
-            this.Children.Add(result);
+            this.AddChild(result);
             return result;
         }
 

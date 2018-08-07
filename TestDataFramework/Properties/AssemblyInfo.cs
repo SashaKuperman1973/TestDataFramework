@@ -38,6 +38,12 @@ using System.Runtime.InteropServices;
                               "77e27ada756b2bd36900a478d8e4ce16c2d6dd56bbd682bcb9d8b3caee1195101e5ce5b0e02094" +
                               "fc9b8e3ea1f242890967288f8a18689618ab072ad78ceb80bed9b98247b04294eef2dda38cc2e4" +
                               "dbbdc1b5")]
+[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2, PublicKey="+
+                              "0024000004800000940000000602000000240000525341310004000001000100c547cac37abd99" +
+                              "c8db225ef2f6c8a3602f3b3606cc9891605d02baa56104f4cfc0734aa39b93bf7852f7d9266654" +
+                              "753cc297e7d2edfe0bac1cdcf9f717241550e0a7b191195b7667bb4f64bcb8e2121380fd1d9d46" +
+                              "ad2d92d2d15605093924cceaf74c4861eff62abf69b9291ed0a340e113be11e6a7d3113e92484c" +
+                              "f7045cc7")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 

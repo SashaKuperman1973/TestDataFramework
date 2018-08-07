@@ -122,7 +122,7 @@ namespace Tests.TestModels
         public AnEnum AnEnumeration { get; set; }
     }
 
-    public class ElementTypeBase
+    public class ElementParentType
     {
         public ElementType ElementType { get; set; }
 
@@ -138,6 +138,11 @@ namespace Tests.TestModels
         }
 
         public IEnumerable<PropertyType> AnEnumerable { get; set; }
+    }
+
+    public class ElementSubType
+    {
+        
     }
 
     public class SecondClass

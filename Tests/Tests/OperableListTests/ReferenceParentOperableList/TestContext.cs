@@ -21,7 +21,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.ListOperations.Concrete;
 using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete;
@@ -29,46 +28,52 @@ using TestDataFramework.Populator.Concrete.OperableList;
 using TestDataFramework.TypeGenerator.Interfaces;
 using Tests.TestModels;
 
-namespace Tests.Tests.OperableListTests.ListParentOperableList
+namespace Tests.Tests.OperableListTests.ReferenceParentOperableList
 {
     public class TestContext
     {
-        public ListParentOperableList<ElementType,
-            OperableListEx<ElementParentType>, ElementParentType> CreateOperableList()
+        public ReferenceParentOperableList<ElementSubType,
+                RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType>
+            CreateOperableList()
         {
-            var result = new ListParentOperableList<ElementType, OperableListEx<ElementParentType>, ElementParentType>(
-                null,
-                null,
-                new RecordReference<ElementType>[1],
+            var rootList = Helpers.GetObject<RootReferenceParentOperableList<ElementType, ElementParentType>>();
+
+            var result = new ReferenceParentOperableList<ElementSubType,
+                RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType>(
+                rootList,
+                Helpers.GetObject<RecordReference<ElementParentType>>(),
+                rootList,
+                this.InputMocks.Select(m => m.Object),
                 this.ValueGuaranteePopulatorMock.Object,
                 null,
-                this.ObjectGraphServiceMock.Object,
                 null,
                 null,
-                this.TypeGeneratorMock.Object);
+                null,
+                null
+            );
 
             return result;
         }
 
-        private List<Mock<RecordReference<ElementType>>> inputMocks;
+        private List<Mock<RecordReference<ElementSubType>>> inputMocks;
 
-        public List<Mock<RecordReference<ElementType>>> InputMocks
+        public List<Mock<RecordReference<ElementSubType>>> InputMocks
         {
             get
             {
                 if (this.inputMocks != null) return this.inputMocks;
 
-                var result = new List<Mock<RecordReference<ElementType>>>(3);
+                var result = new List<Mock<RecordReference<ElementSubType>>>(3);
 
-                for (int i = 0; i < 3; i++)
-                    result.Add(new Mock<RecordReference<ElementType>>(
+                for (int i=0; i<3; i++)
+                    result.Add(new Mock<RecordReference<ElementSubType>>(
                         this.TypeGeneratorMock.Object,
                         null,
                         null,
                         null,
                         null,
                         null
-                    ));
+                        ));
 
                 this.inputMocks = result;
                 return result;
@@ -77,13 +82,11 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList
 
         public Mock<ValueGuaranteePopulator> ValueGuaranteePopulatorMock;
         public Mock<ITypeGenerator> TypeGeneratorMock;
-        public Mock<IObjectGraphService> ObjectGraphServiceMock;
         
         public TestContext()
         {
             this.ValueGuaranteePopulatorMock = new Mock<ValueGuaranteePopulator>();
             this.TypeGeneratorMock = new Mock<ITypeGenerator>();
-            this.ObjectGraphServiceMock = new Mock<IObjectGraphService>();
         }
 
         private static bool Check(IEnumerable<GuaranteedValues> guaranteedValues,
@@ -104,11 +107,11 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList
         }
 
         public void AssertPercentage(
-            ListParentOperableList<ElementType,
-                OperableListEx<ElementParentType>, ElementParentType> operableList,
+            ReferenceParentOperableList<ElementSubType,
+                RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> operableList,
 
-            ListParentOperableList<ElementType,
-                OperableListEx<ElementParentType>, ElementParentType> returnResult,
+            ReferenceParentOperableList<ElementSubType,
+                RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> returnResult,
 
             object[] guaranteedValues,
 
@@ -119,11 +122,11 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList
         }
 
         public void AssertTotal(
-            ListParentOperableList<ElementType,
-                OperableListEx<ElementParentType>, ElementParentType> operableList,
+            ReferenceParentOperableList<ElementSubType,
+                RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> operableList,
 
-            ListParentOperableList<ElementType,
-                OperableListEx<ElementParentType>, ElementParentType> returnResult,
+            ReferenceParentOperableList<ElementSubType,
+                RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> returnResult,
 
             object[] guaranteedValues,
 
@@ -134,11 +137,11 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList
         }
 
         private void DoAssert(
-            ListParentOperableList<ElementType,
-                OperableListEx<ElementParentType>, ElementParentType> operableList,
+            ReferenceParentOperableList<ElementSubType,
+                RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> operableList,
 
-            ListParentOperableList<ElementType,
-                OperableListEx<ElementParentType>, ElementParentType> returnResult,
+            ReferenceParentOperableList<ElementSubType,
+                RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> returnResult,
 
             object[] guaranteedValues,
 

@@ -23,7 +23,7 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression.Gu
         {
             // Act
 
-            RootReferenceParentFieldExpression<ElementType, ElementType.PropertyType, ElementTypeBase> 
+            RootReferenceParentFieldExpression<ElementType, ElementType.PropertyType, ElementParentType> 
                 returnResult = this.testContext.RootReferenceParentFieldExpression.GuaranteePropertiesByFixedQuantity(
                     new Func<ElementType.PropertyType>[]
                         {() => new ElementType.PropertyType(), () => new ElementType.PropertyType()});
@@ -38,7 +38,7 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression.Gu
         {
             // Act
 
-            RootReferenceParentFieldExpression<ElementType, ElementType.PropertyType, ElementTypeBase> 
+            RootReferenceParentFieldExpression<ElementType, ElementType.PropertyType, ElementParentType> 
                 returnResult = this.testContext.RootReferenceParentFieldExpression.GuaranteePropertiesByFixedQuantity(
                     new Func<ElementType.PropertyType>[]
                         {() => new ElementType.PropertyType(), () => new ElementType.PropertyType()},
@@ -54,7 +54,7 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression.Gu
         {
             // Act
 
-            RootReferenceParentFieldExpression<ElementType, ElementType.PropertyType, ElementTypeBase> 
+            RootReferenceParentFieldExpression<ElementType, ElementType.PropertyType, ElementParentType> 
                 returnResult = this.testContext.RootReferenceParentFieldExpression.GuaranteePropertiesByFixedQuantity(
                     new object[]
                     {
@@ -72,7 +72,7 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression.Gu
         {
             // Act
 
-            RootReferenceParentFieldExpression<ElementType, ElementType.PropertyType, ElementTypeBase> 
+            RootReferenceParentFieldExpression<ElementType, ElementType.PropertyType, ElementParentType> 
                 returnResult = this.testContext.RootReferenceParentFieldExpression.GuaranteePropertiesByFixedQuantity(
                     new object[]
                     {
@@ -90,7 +90,7 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression.Gu
         {
             // Act
 
-            RootReferenceParentFieldExpression<ElementType, ElementType.PropertyType, ElementTypeBase> 
+            RootReferenceParentFieldExpression<ElementType, ElementType.PropertyType, ElementParentType> 
                 returnResult = this.testContext.RootReferenceParentFieldExpression.GuaranteePropertiesByFixedQuantity(
                     new object[]
                     {
@@ -108,7 +108,7 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression.Gu
         {
             // Act
 
-            RootReferenceParentFieldExpression<ElementType, ElementType.PropertyType, ElementTypeBase> 
+            RootReferenceParentFieldExpression<ElementType, ElementType.PropertyType, ElementParentType> 
                 returnResult = this.testContext.RootReferenceParentFieldExpression.GuaranteePropertiesByFixedQuantity(
                     new object[]
                     {

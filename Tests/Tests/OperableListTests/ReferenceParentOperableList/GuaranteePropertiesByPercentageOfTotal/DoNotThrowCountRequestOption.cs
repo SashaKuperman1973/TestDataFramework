@@ -1,10 +1,10 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using TestDataFramework.ListOperations.Concrete;
-using TestDataFramework.Populator;
+using TestDataFramework.Populator.Concrete.OperableList;
 using Tests.TestModels;
 
-namespace Tests.Tests.OperableListTests.ListParentOperableList.GuaranteePropertiesByPercentageOfTotal
+namespace Tests.Tests.OperableListTests.ReferenceParentOperableList.GuaranteePropertiesByPercentageOfTotal
 {
     [TestClass]
     public class DoNotThrowCountRequestOption
@@ -20,11 +20,11 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList.GuaranteeProperti
         [TestMethod]
         public void PropertyFuncs_DefaultQuantity_Test()
         {
-            TestDataFramework.Populator.Concrete.OperableList.ListParentOperableList<ElementType, OperableListEx<ElementParentType>, ElementParentType> operableList = this.testContext.CreateOperableList();
+            ReferenceParentOperableList<ElementSubType, RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> operableList = this.testContext.CreateOperableList();
 
             var guaranteedValues = new Func<ElementType>[] { () => new ElementType(), () => new ElementType(), };
 
-            TestDataFramework.Populator.Concrete.OperableList.ListParentOperableList<ElementType, OperableListEx<ElementParentType>, ElementParentType> actual =
+            ReferenceParentOperableList<ElementSubType, RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> actual =
                 operableList.GuaranteeByPercentageOfTotal(guaranteedValues, ValueCountRequestOption.DoNotThrow);
 
             actual.Populate();
@@ -37,11 +37,11 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList.GuaranteeProperti
         [TestMethod]
         public void PropertyFuncs_ExpicitQuantity_Test()
         {
-            TestDataFramework.Populator.Concrete.OperableList.ListParentOperableList<ElementType, OperableListEx<ElementParentType>, ElementParentType> operableList = this.testContext.CreateOperableList();
+            ReferenceParentOperableList<ElementSubType, RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> operableList = this.testContext.CreateOperableList();
 
             var guaranteedValues = new Func<ElementType>[] { () => new ElementType(), () => new ElementType(), };
 
-            TestDataFramework.Populator.Concrete.OperableList.ListParentOperableList<ElementType, OperableListEx<ElementParentType>, ElementParentType> actual =
+            ReferenceParentOperableList<ElementSubType, RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> actual =
                 operableList.GuaranteeByPercentageOfTotal(guaranteedValues, 5, ValueCountRequestOption.DoNotThrow);
 
             actual.Populate();
@@ -54,12 +54,11 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList.GuaranteeProperti
         [TestMethod]
         public void PropertiesAndFuncs_DefaultQuantity_Test()
         {
-            TestDataFramework.Populator.Concrete.OperableList.ListParentOperableList<ElementType,
-                OperableListEx<ElementParentType>, ElementParentType> operableList = this.testContext.CreateOperableList();
+            ReferenceParentOperableList<ElementSubType, RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> operableList = this.testContext.CreateOperableList();
 
             var guaranteedValues = new object[] { new ElementType(), (Func<ElementType>)(() => new ElementType()), };
 
-            TestDataFramework.Populator.Concrete.OperableList.ListParentOperableList<ElementType, OperableListEx<ElementParentType>, ElementParentType> actual =
+            ReferenceParentOperableList<ElementSubType, RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> actual =
                 operableList.GuaranteeByPercentageOfTotal(guaranteedValues, ValueCountRequestOption.DoNotThrow);
 
             actual.Populate();
@@ -72,11 +71,11 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList.GuaranteeProperti
         [TestMethod]
         public void PropertiesAndFuncs_ExplicitQuantity_Test()
         {
-            TestDataFramework.Populator.Concrete.OperableList.ListParentOperableList<ElementType, OperableListEx<ElementParentType>, ElementParentType> operableList = this.testContext.CreateOperableList();
+            ReferenceParentOperableList<ElementSubType, RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> operableList = this.testContext.CreateOperableList();
 
             var guaranteedValues = new object[] { new ElementType(), (Func<ElementType>)(() => new ElementType()), };
 
-            TestDataFramework.Populator.Concrete.OperableList.ListParentOperableList<ElementType, OperableListEx<ElementParentType>, ElementParentType> actual =
+            ReferenceParentOperableList<ElementSubType, RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> actual =
                 operableList.GuaranteeByPercentageOfTotal(guaranteedValues, 5, ValueCountRequestOption.DoNotThrow);
 
             actual.Populate();
@@ -89,11 +88,11 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList.GuaranteeProperti
         [TestMethod]
         public void Properties_DefaultQuantity_Test()
         {
-            TestDataFramework.Populator.Concrete.OperableList.ListParentOperableList<ElementType, OperableListEx<ElementParentType>, ElementParentType> operableList = this.testContext.CreateOperableList();
+            ReferenceParentOperableList<ElementSubType, RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> operableList = this.testContext.CreateOperableList();
 
             var guaranteedValues = new[] { new ElementType(), new ElementType(), };
 
-            TestDataFramework.Populator.Concrete.OperableList.ListParentOperableList<ElementType, OperableListEx<ElementParentType>, ElementParentType> actual =
+            ReferenceParentOperableList<ElementSubType, RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> actual =
                 operableList.GuaranteeByPercentageOfTotal(guaranteedValues, ValueCountRequestOption.DoNotThrow);
 
             actual.Populate();
@@ -106,11 +105,11 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList.GuaranteeProperti
         [TestMethod]
         public void Properties_ExplicitQuantity_Test()
         {
-            TestDataFramework.Populator.Concrete.OperableList.ListParentOperableList<ElementType, OperableListEx<ElementParentType>, ElementParentType> operableList = this.testContext.CreateOperableList();
+            ReferenceParentOperableList<ElementSubType, RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> operableList = this.testContext.CreateOperableList();
 
             var guaranteedValues = new[] { new ElementType(), new ElementType(), };
 
-            TestDataFramework.Populator.Concrete.OperableList.ListParentOperableList<ElementType, OperableListEx<ElementParentType>, ElementParentType> actual =
+            ReferenceParentOperableList<ElementSubType, RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> actual =
                 operableList.GuaranteeByPercentageOfTotal(guaranteedValues, 5, ValueCountRequestOption.DoNotThrow);
 
             actual.Populate();

@@ -14,12 +14,12 @@ namespace Tests.Tests.FieldExpressionTests.ReferenceParentFieldExpression
 {
     public class TestContext
     {
-        public ReferenceParentFieldExpression<ElementType, ElementType.PropertyType, OperableListEx<ElementType>, ElementType, ElementTypeBase> 
+        public ReferenceParentFieldExpression<ElementType, ElementType.PropertyType, OperableListEx<ElementType>, ElementType, ElementParentType> 
             ReferenceParentFieldExpression;
 
         public Expression<Func<ElementType, ElementType.PropertyType>> Expression;
 
-        public Mock<ReferenceParentOperableList<ElementType, OperableListEx<ElementType>, ElementType, ElementTypeBase>>
+        public Mock<ReferenceParentOperableList<ElementType, OperableListEx<ElementType>, ElementType, ElementParentType>>
             ReferenceParentOperableListMock;
 
         public Mock<IObjectGraphService> ObjectGraphServiceMock;
@@ -31,11 +31,11 @@ namespace Tests.Tests.FieldExpressionTests.ReferenceParentFieldExpression
             this.ObjectGraphServiceMock = new Mock<IObjectGraphService>();
 
             this.ReferenceParentOperableListMock = Helpers
-                .GetMock<ReferenceParentOperableList<ElementType, OperableListEx<ElementType>, ElementType, ElementTypeBase>>();
+                .GetMock<ReferenceParentOperableList<ElementType, OperableListEx<ElementType>, ElementType, ElementParentType>>();
 
             this.ReferenceParentFieldExpression =
                 new ReferenceParentFieldExpression<ElementType, ElementType.PropertyType, OperableListEx<ElementType>,
-                    ElementType, ElementTypeBase>(
+                    ElementType, ElementParentType>(
                     this.Expression,
                     this.ReferenceParentOperableListMock.Object,
                     this.ObjectGraphServiceMock.Object);
@@ -53,14 +53,14 @@ namespace Tests.Tests.FieldExpressionTests.ReferenceParentFieldExpression
             return result;
         }
 
-        public void AssertPercentage(ReferenceParentFieldExpression<ElementType, ElementType.PropertyType, OperableListEx<ElementType>, ElementType, ElementTypeBase> returnResult,
+        public void AssertPercentage(ReferenceParentFieldExpression<ElementType, ElementType.PropertyType, OperableListEx<ElementType>, ElementType, ElementParentType> returnResult,
             int percentage,
             ValueCountRequestOption option)
         {
             this.DoAssert(returnResult, null, percentage, option);
         }
 
-        public void AssertTotal(ReferenceParentFieldExpression<ElementType, ElementType.PropertyType, OperableListEx<ElementType>, ElementType, ElementTypeBase> returnResult,
+        public void AssertTotal(ReferenceParentFieldExpression<ElementType, ElementType.PropertyType, OperableListEx<ElementType>, ElementType, ElementParentType> returnResult,
             int total,
             ValueCountRequestOption option)
         {
@@ -68,7 +68,7 @@ namespace Tests.Tests.FieldExpressionTests.ReferenceParentFieldExpression
         }
 
         private void DoAssert(
-            ReferenceParentFieldExpression<ElementType, ElementType.PropertyType, OperableListEx<ElementType>, ElementType, ElementTypeBase> returnResult,
+            ReferenceParentFieldExpression<ElementType, ElementType.PropertyType, OperableListEx<ElementType>, ElementType, ElementParentType> returnResult,
             int? total, int? percentage,
             ValueCountRequestOption option
         )

@@ -23,7 +23,7 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression
         [TestMethod]
         public void OperableList_Test()
         {
-            RootReferenceParentOperableList<ElementType, ElementTypeBase> actual =
+            RootReferenceParentOperableList<ElementType, ElementParentType> actual =
                 this.testContext.RootReferenceParentFieldExpression.OperableList;
 
             Assert.IsNotNull(actual);
@@ -56,12 +56,12 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression
         {
             // Arrange
 
-            var expected = new ElementTypeBase();
+            var expected = new ElementParentType();
             this.testContext.RootReferenceParentOperableListMock.Setup(m => m.Make()).Returns(expected);
 
             // Act
 
-            ElementTypeBase actual = this.testContext.RootReferenceParentFieldExpression.Make();
+            ElementParentType actual = this.testContext.RootReferenceParentFieldExpression.Make();
 
             // Assert
 
@@ -76,12 +76,12 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression
         {
             // Arrange
 
-            var expected = new ElementTypeBase();
+            var expected = new ElementParentType();
             this.testContext.RootReferenceParentOperableListMock.Setup(m => m.BindAndMake()).Returns(expected);
 
             // Act
 
-            ElementTypeBase actual = this.testContext.RootReferenceParentFieldExpression.BindAndMake();
+            ElementParentType actual = this.testContext.RootReferenceParentFieldExpression.BindAndMake();
 
             // Assert
 
@@ -101,7 +101,7 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression
                 new ElementType.PropertyType(), new ElementType.PropertyType(), new ElementType.PropertyType(),
             });
 
-            RootReferenceParentFieldExpression<ElementType, ElementType.PropertyType, ElementTypeBase> 
+            RootReferenceParentFieldExpression<ElementType, ElementType.PropertyType, ElementParentType> 
                 actual = this.testContext.RootReferenceParentFieldExpression.SetRange(m => m.AProperty, rangeFactory);
 
             // Assert
@@ -122,7 +122,7 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression
                 new ElementType.PropertyType(), new ElementType.PropertyType(), new ElementType.PropertyType(),
             };
 
-            RootReferenceParentFieldExpression<ElementType, ElementType.PropertyType, ElementTypeBase> 
+            RootReferenceParentFieldExpression<ElementType, ElementType.PropertyType, ElementParentType> 
                 actual = this.testContext.RootReferenceParentFieldExpression.SetRange(m => m.AProperty, range);
 
             // Assert

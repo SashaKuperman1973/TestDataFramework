@@ -21,34 +21,27 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.ListOperations.Concrete;
 using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete;
-using TestDataFramework.Populator.Concrete.OperableList;
 using TestDataFramework.TypeGenerator.Interfaces;
 using Tests.TestModels;
 
-namespace Tests.Tests.OperableListTests.ListParentOperableList
+namespace Tests.Tests.OperableListTests.RootReferenceParentOperableList
 {
     public class TestContext
     {
-        public ListParentOperableList<ElementType,
-            OperableListEx<ElementParentType>, ElementParentType> CreateOperableList()
-        {
-            var result = new ListParentOperableList<ElementType, OperableListEx<ElementParentType>, ElementParentType>(
-                null,
-                null,
-                new RecordReference<ElementType>[1],
+        public TestDataFramework.Populator.Concrete.OperableList.RootReferenceParentOperableList<ElementType, ElementParentType> CreateOperableList() =>
+            new TestDataFramework.Populator.Concrete.OperableList.RootReferenceParentOperableList<ElementType,ElementParentType>(
+                Helpers.GetObject<RecordReference<ElementParentType>>(),
+                Enumerable.Empty<RecordReference<ElementType>>(),
                 this.ValueGuaranteePopulatorMock.Object,
                 null,
-                this.ObjectGraphServiceMock.Object,
                 null,
                 null,
-                this.TypeGeneratorMock.Object);
-
-            return result;
-        }
+                null,
+                this.TypeGeneratorMock.Object
+                );
 
         private List<Mock<RecordReference<ElementType>>> inputMocks;
 
@@ -60,7 +53,7 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList
 
                 var result = new List<Mock<RecordReference<ElementType>>>(3);
 
-                for (int i = 0; i < 3; i++)
+                for (int i=0; i<3; i++)
                     result.Add(new Mock<RecordReference<ElementType>>(
                         this.TypeGeneratorMock.Object,
                         null,
@@ -68,7 +61,7 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList
                         null,
                         null,
                         null
-                    ));
+                        ));
 
                 this.inputMocks = result;
                 return result;
@@ -77,13 +70,11 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList
 
         public Mock<ValueGuaranteePopulator> ValueGuaranteePopulatorMock;
         public Mock<ITypeGenerator> TypeGeneratorMock;
-        public Mock<IObjectGraphService> ObjectGraphServiceMock;
         
         public TestContext()
         {
             this.ValueGuaranteePopulatorMock = new Mock<ValueGuaranteePopulator>();
             this.TypeGeneratorMock = new Mock<ITypeGenerator>();
-            this.ObjectGraphServiceMock = new Mock<IObjectGraphService>();
         }
 
         private static bool Check(IEnumerable<GuaranteedValues> guaranteedValues,
@@ -104,11 +95,9 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList
         }
 
         public void AssertPercentage(
-            ListParentOperableList<ElementType,
-                OperableListEx<ElementParentType>, ElementParentType> operableList,
+            OperableList<ElementType> operableList,
 
-            ListParentOperableList<ElementType,
-                OperableListEx<ElementParentType>, ElementParentType> returnResult,
+            OperableList<ElementType> returnResult,
 
             object[] guaranteedValues,
 
@@ -119,11 +108,9 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList
         }
 
         public void AssertTotal(
-            ListParentOperableList<ElementType,
-                OperableListEx<ElementParentType>, ElementParentType> operableList,
+            OperableList<ElementType> operableList,
 
-            ListParentOperableList<ElementType,
-                OperableListEx<ElementParentType>, ElementParentType> returnResult,
+            OperableList<ElementType> returnResult,
 
             object[] guaranteedValues,
 
@@ -134,11 +121,9 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList
         }
 
         private void DoAssert(
-            ListParentOperableList<ElementType,
-                OperableListEx<ElementParentType>, ElementParentType> operableList,
+            OperableList<ElementType> operableList,
 
-            ListParentOperableList<ElementType,
-                OperableListEx<ElementParentType>, ElementParentType> returnResult,
+            OperableList<ElementType> returnResult,
 
             object[] guaranteedValues,
 

@@ -39,7 +39,7 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList
             var result = new ListParentOperableList<ElementType, OperableListEx<ElementParentType>, ElementParentType>(
                 this.RootListMock.Object,
                 this.ParentListMock.Object,
-                new RecordReference<ElementType>[1],
+                this.Inputs,
                 this.ValueGuaranteePopulatorMock.Object,
                 this.PopulatorMock.Object,
                 this.ObjectGraphServiceMock.Object,
@@ -66,7 +66,7 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList
                         this.TypeGeneratorMock.Object,
                         null,
                         null,
-                        null,
+                        this.ObjectGraphServiceMock.Object,
                         null,
                         null
                     ));
@@ -75,6 +75,9 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList
                 return result;
             }
         }
+
+        public List<RecordReference<ElementType>> Inputs => this.InputMocks.Select(m => m.Object).ToList();
+        public List<ElementType> InputObjects => this.Inputs.Select(i => i.RecordObject).ToList();
 
         public Mock<OperableListEx<ElementParentType>> RootListMock;
         public Mock<OperableListEx<ElementParentType>> ParentListMock;

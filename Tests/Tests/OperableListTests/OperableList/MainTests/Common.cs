@@ -1,5 +1,26 @@
-﻿using System.Collections.Generic;
+﻿/*
+    Copyright 2016, 2017, 2018 Alexander Kuperman
+
+    This file is part of TestDataFramework.
+
+    TestDataFramework is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    TestDataFramework is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.ListOperations.Concrete;
@@ -78,6 +99,44 @@ namespace Tests.Tests.OperableListTests.OperableList.MainTests
             // Assert
 
             Helpers.AssertSetsAreEqual(this.testContext.InputObjects, result);
+        }
+
+        [TestMethod]
+        public void AddRange_RangeCollection_Test()
+        {
+            // Arrange
+
+            OperableList<ElementType> operableList = this.testContext.CreateOperableList();
+            IEnumerable<ElementType.PropertyType> range = Enumerable.Empty<ElementType.PropertyType>();
+
+            var expression = (Expression<Func<ElementType, ElementType.PropertyType>>)(m => m.AProperty);
+
+            // Act
+
+            operableList.AddRange(expression, range);
+
+            // Assert
+
+            this.testContext.InputMocks.ForEach(m => m.Verify(n => n.SetRange(expression, range)));
+        }
+
+        [TestMethod]
+        public void AddRange_RangeFactory_Test()
+        {
+            // Arrange
+
+            OperableList<ElementType> operableList = this.testContext.CreateOperableList();
+            Func<IEnumerable<ElementType.PropertyType>> rangeFactory = Enumerable.Empty<ElementType.PropertyType>;
+
+            var expression = (Expression<Func<ElementType, ElementType.PropertyType>>)(m => m.AProperty);
+
+            // Act
+
+            operableList.AddRange(expression, rangeFactory);
+
+            // Assert
+
+            this.testContext.InputMocks.ForEach(m => m.Verify(n => n.SetRange(expression, rangeFactory)));
         }
     }
 }

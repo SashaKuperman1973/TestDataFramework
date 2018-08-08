@@ -146,7 +146,7 @@ namespace TestDataFramework.Populator
         public virtual void AddRange<TPropertyValue>(Expression<Func<TListElement, TPropertyValue>> fieldExpression,
             IEnumerable<TPropertyValue> range)
         {
-            this.AddRange(fieldExpression, () => range);
+            this.InternalList.ForEach(l => l.SetRange(fieldExpression, range));
         }
 
         public virtual void AddRange<TPropertyValue>(Expression<Func<TListElement, TPropertyValue>> fieldExpression,

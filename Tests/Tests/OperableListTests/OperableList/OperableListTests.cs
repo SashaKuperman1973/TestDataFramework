@@ -102,5 +102,38 @@ namespace Tests.Tests.OperableListTests.OperableList
                     s => s is ValueSetContextService)
             ));
         }
+
+        [TestMethod]
+        public void Populate_DoesNotPopualte_IfAlreadyPopulated_Test()
+        {
+            // Arrange
+
+            OperableList<ElementType> operableList = this.testContext.CreateOperableList();
+            operableList.IsPopulated = true;
+
+            // Act
+
+            operableList.Populate();
+
+            // Assert
+
+            this.testContext.InputMocks.ForEach(m => m.Verify(n => n.Populate(), Times.Never));
+        }
+
+        [TestMethod]
+        public void Populate_DoesNotPopualte_IfShallowCopy_Test()
+        {
+            // Arrange
+
+            OperableList<ElementType> operableList = this.testContext.CreateOperableList(isShallowCopy: true);
+
+            // Act
+
+            operableList.Populate();
+
+            // Assert
+
+            this.testContext.InputMocks.ForEach(m => m.Verify(n => n.Populate(), Times.Never));
+        }
     }
 }

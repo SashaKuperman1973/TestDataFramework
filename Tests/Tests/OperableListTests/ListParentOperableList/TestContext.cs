@@ -37,11 +37,11 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList
             OperableListEx<ElementParentType>, ElementParentType> CreateOperableList()
         {
             var result = new ListParentOperableList<ElementType, OperableListEx<ElementParentType>, ElementParentType>(
-                null,
-                null,
+                this.RootListMock.Object,
+                this.ParentListMock.Object,
                 new RecordReference<ElementType>[1],
                 this.ValueGuaranteePopulatorMock.Object,
-                null,
+                this.PopulatorMock.Object,
                 this.ObjectGraphServiceMock.Object,
                 null,
                 null,
@@ -76,15 +76,22 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList
             }
         }
 
+        public Mock<OperableListEx<ElementParentType>> RootListMock;
+        public Mock<OperableListEx<ElementParentType>> ParentListMock;
+
         public Mock<ValueGuaranteePopulator> ValueGuaranteePopulatorMock;
         public Mock<ITypeGenerator> TypeGeneratorMock;
         public Mock<IObjectGraphService> ObjectGraphServiceMock;
-        
+        public Mock<BasePopulator> PopulatorMock;
+
         public TestContext()
         {
             this.ValueGuaranteePopulatorMock = new Mock<ValueGuaranteePopulator>();
             this.TypeGeneratorMock = new Mock<ITypeGenerator>();
             this.ObjectGraphServiceMock = new Mock<IObjectGraphService>();
+            this.RootListMock = Helpers.GetMock<OperableListEx<ElementParentType>>();
+            this.ParentListMock = Helpers.GetMock<OperableListEx<ElementParentType>>();
+            this.PopulatorMock = Helpers.GetMock<BasePopulator>();
         }
 
         private static bool Check(IEnumerable<GuaranteedValues> guaranteedValues,

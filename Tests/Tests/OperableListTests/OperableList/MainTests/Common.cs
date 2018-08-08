@@ -180,7 +180,7 @@ namespace Tests.Tests.OperableListTests.OperableList.MainTests
         }
 
         [TestMethod]
-        public void BinaAndMake_Test()
+        public void BindAndMake_Test()
         {
             // Arrange
 

@@ -45,7 +45,8 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList
                 this.ObjectGraphServiceMock.Object,
                 null,
                 null,
-                this.TypeGeneratorMock.Object);
+                this.TypeGeneratorMock.Object,
+                isShallowCopy: false);
 
             return result;
         }

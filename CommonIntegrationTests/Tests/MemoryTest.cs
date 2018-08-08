@@ -616,9 +616,27 @@ namespace CommonIntegrationTests.Tests
         private IMakeableCollectionContainer<DeepA> DeepPropertySetting_ListParent_SettersTest(IPopulator populator)
         {
             IMakeableCollectionContainer<DeepA> result = populator.Add<DeepA>(5)
-                .SelectListSet(q => q.DeepB.DeepCList, 7).Skip(1).Take(2)
+                .Skip(1).Take(2)
+                .SelectListSet(q => q.DeepB.DeepCList, 7)
                 .Set(r => r.Skip(2).Take(2).Set(s => s.DeepString, "I"))
-                .Set(r => r.Skip(4).Take(2).Set(s => s.DeepString, "II"));
+                .Set(r => r.Skip(4).Take(2).Set(s => s.DeepString, "II"))
+                .Set(r => r.Skip(6).SelectListSet(s => s.DeepDList, 3)
+                    .Set(dl => dl.Skip(2).Take(2).Set(d => d.Integer, 7))
+                );
+
+            return result;
+        }
+
+        private IMakeableCollectionContainer<DeepA> Test(IPopulator populator)
+        {
+            IMakeableCollectionContainer<DeepA> result = populator.Add<DeepA>(5)
+                //.Skip(1)
+                .SelectListSet(q => q.DeepB.DeepCList, 7)
+                //.Set(r => r.Skip(2).Take(2).Set(s => s.DeepString, "I"))
+                .Set(r => r.Skip(2).Take(2).Set(s => s.DeepString, "II"))
+                .Set(r => r.Skip(6).SelectListSet(s => s.DeepDList, 3)
+                    .Set(dl => dl.Set(d => d.Integer, 7))
+                );
 
             return result;
         }
@@ -628,7 +646,7 @@ namespace CommonIntegrationTests.Tests
         {
             IPopulator populator = this.factory.CreateMemoryPopulator();
 
-            IMakeableCollectionContainer<DeepA> makeable = this.DeepPropertySetting_ListParent_SettersTest(populator);
+            IMakeableCollectionContainer<DeepA> makeable = this.Test(populator);//this.DeepPropertySetting_ListParent_SettersTest(populator));
             IEnumerable<DeepA> result = makeable.Make();
 
             MemoryTest.DeepPropertySetting_Test(result);

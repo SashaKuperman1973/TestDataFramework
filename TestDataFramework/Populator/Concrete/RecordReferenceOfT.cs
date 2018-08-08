@@ -146,7 +146,8 @@ namespace TestDataFramework.Populator.Concrete
                 this.objectGraphService,
                 this.AttributeDecorator,
                 this.deepCollectionSettingConverter,
-                this.TypeGenerator
+                this.TypeGenerator,
+                isShallowCopy: false
                 );
 
             this.AddChild(operableList);
@@ -220,11 +221,7 @@ namespace TestDataFramework.Populator.Concrete
         private void AddToExplicitPropertySetters<TBasePropertyValue, TPropertyValue>(
             Expression<Func<T, TBasePropertyValue>> fieldExpression, Func<TPropertyValue> valueFactory)
         {
-            object ObjectValueFactory()
-            {
-                TPropertyValue objectValueFactoryResult = valueFactory();
-                return objectValueFactoryResult;
-            }
+            object ObjectValueFactory() => valueFactory();
 
             this.AddToExplicitPropertySetters(fieldExpression, ObjectValueFactory);
         }

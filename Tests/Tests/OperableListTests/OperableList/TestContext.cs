@@ -38,7 +38,8 @@ namespace Tests.Tests.OperableListTests.OperableList
                 null,
                 null,
                 null,
-                null
+                null,
+                isShalowCopy: false
                 );
 
         private List<Mock<RecordReference<ElementType>>> inputMocks;

@@ -40,7 +40,8 @@ namespace Tests.Tests.OperableListTests.RootReferenceParentOperableList
                 null,
                 null,
                 null,
-                this.TypeGeneratorMock.Object
+                this.TypeGeneratorMock.Object,
+                isShallowCopy: false
                 );
 
         private List<Mock<RecordReference<ElementType>>> inputMocks;

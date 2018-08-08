@@ -35,15 +35,16 @@ namespace TestDataFramework.Populator.Concrete.OperableList
         OperableListEx<TListElement>,
         IMakeable<TRootElement>
     {
-        public ReferenceParentOperableList(
+        public ReferenceParentOperableList(            
             RootReferenceParentOperableList<TRootListElement, TRootElement> rootList,
             RecordReference<TRootElement> root,
             TParentList parentList,
             IEnumerable<RecordReference<TListElement>> input, ValueGuaranteePopulator valueGuaranteePopulator,
             BasePopulator populator, IObjectGraphService objectGraphService, IAttributeDecorator attributeDecorator,
-            DeepCollectionSettingConverter deepCollectionSettingConverter, ITypeGenerator typeGenerator) :
+            DeepCollectionSettingConverter deepCollectionSettingConverter, ITypeGenerator typeGenerator,
+            bool isShallowCopy) :
             base(input, valueGuaranteePopulator, populator, objectGraphService, attributeDecorator,
-                deepCollectionSettingConverter, typeGenerator)
+                deepCollectionSettingConverter, typeGenerator, isShallowCopy)
         {
             this.Root = root;
             this.RootList = rootList;
@@ -76,7 +77,8 @@ namespace TestDataFramework.Populator.Concrete.OperableList
                     this.ObjectGraphService,
                     this.AttributeDecorator,
                     this.DeepCollectionSettingConverter,
-                    this.TypeGenerator
+                    this.TypeGenerator,
+                    isShallowCopy: false
                 );
 
             return result;
@@ -103,7 +105,8 @@ namespace TestDataFramework.Populator.Concrete.OperableList
                     this.ObjectGraphService,
                     this.AttributeDecorator,
                     this.DeepCollectionSettingConverter,
-                    this.TypeGenerator
+                    this.TypeGenerator,
+                    isShallowCopy: true
                 );
 
             return subset;
@@ -130,7 +133,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
         public new virtual ReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>
             Take(int count)
         {
-            IEnumerable<RecordReference<TListElement>> input = this.InternalList.Take(count);
+            IEnumerable<RecordReference<TListElement>> input = this.InternalEnumerable.Take(count);
 
             ReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement> result =
                 this.CreateSubset(input);
@@ -142,7 +145,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
         public new virtual ReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>
             Skip(int count)
         {
-            IEnumerable<RecordReference<TListElement>> input = this.InternalList.Skip(count);
+            IEnumerable<RecordReference<TListElement>> input = this.InternalEnumerable.Skip(count);
 
             ReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement> result =
                 this.CreateSubset(input);
@@ -169,7 +172,8 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             Set<TProperty>(
                 Expression<Func<TListElement, TProperty>> fieldExpression, TProperty value)
         {
-            return this.Set(fieldExpression, () => value);
+            base.Set(fieldExpression, value);
+            return this;
         }
 
         public new virtual ReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>
@@ -324,7 +328,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
                     = this.SetList<TResultElement>(listSize);
 
                 listCollection[i] = list;
-                this.InternalList[i].AddToExplicitPropertySetters(selector, list);
+                this[i].AddToExplicitPropertySetters(selector, list);
             }
 
             var result =

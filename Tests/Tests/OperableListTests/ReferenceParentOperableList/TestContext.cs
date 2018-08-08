@@ -49,7 +49,8 @@ namespace Tests.Tests.OperableListTests.ReferenceParentOperableList
                 null,
                 null,
                 null,
-                null
+                null,
+                isShallowCopy: false
             );
 
             return result;

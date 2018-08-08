@@ -50,14 +50,28 @@ namespace TestDataFramework.Populator
 
         private readonly List<GuaranteedValues> guaranteedPropertySetters = new List<GuaranteedValues>();
         private readonly List<GuaranteedValues> privateGuaranteedValues = new List<GuaranteedValues>();
-        protected List<RecordReference<TListElement>> InternalList { get; }
+
+        protected bool IsShallowCopy { get; } = false;
+
+        protected IEnumerable<RecordReference<TListElement>> InternalEnumerable { get; }
+
+        private List<RecordReference<TListElement>> InternalList
+        {
+            get
+            {
+                var list = (List<RecordReference<TListElement>>) this.InternalEnumerable;
+                return list;
+            }
+        }
 
         public OperableList(IEnumerable<RecordReference<TListElement>> input,
             ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator,
             IObjectGraphService objectGraphService, IAttributeDecorator attributeDecorator,
             DeepCollectionSettingConverter deepCollectionSettingConverter,
-            ITypeGenerator typeGenerator)
+            ITypeGenerator typeGenerator,
+            bool isShalowCopy)
         {
+            this.IsShallowCopy = isShalowCopy;
             this.Populator = populator;
             this.ValueGuaranteePopulator = valueGuaranteePopulator;
             this.ObjectGraphService = objectGraphService;
@@ -65,18 +79,17 @@ namespace TestDataFramework.Populator
             this.DeepCollectionSettingConverter = deepCollectionSettingConverter;
             this.TypeGenerator = typeGenerator;
 
-            this.InternalList = input?.ToList() ?? new List<RecordReference<TListElement>>();
+            List<RecordReference<TListElement>> list = input?.ToList() ?? new List<RecordReference<TListElement>>();
 
-            for (int i = 0; i < this.InternalList.Count; i++)
-                if (this.InternalList[i] == null)
-                    this.InternalList[i] = this.CreateRecordReference<TListElement>();
+            for (int i = 0; i < list.Count; i++)
+                if (list[i] == null)
+                    list[i] = this.CreateRecordReference<TListElement>();
+
+            this.InternalEnumerable = list;
         }
 
         internal override void Populate()
         {
-            if (this.IsPopulated)
-                return;
-
             this.PopulateChildren();
 
             if (this.guaranteedPropertySetters.Any())
@@ -85,6 +98,9 @@ namespace TestDataFramework.Populator
 
             if (this.privateGuaranteedValues.Any())
                 this.ValueGuaranteePopulator.Bind(this, this.privateGuaranteedValues, new ValueSetContextService());
+
+            if (this.IsPopulated || this.IsShallowCopy)
+                return;
 
             this.InternalList.ForEach(recordReference => recordReference.Populate());
             this.IsPopulated = true;

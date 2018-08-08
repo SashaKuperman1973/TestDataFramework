@@ -88,7 +88,8 @@ namespace TestDataFramework.Populator.Concrete
                 this.objectGraphService,
                 this.AttributeDecorator,
                 this.deepCollectionSettingConverter,
-                this.typeGenerator
+                this.typeGenerator,
+                isShallowCopy: false
                 );
 
             this.populatables.Add(result);

@@ -31,15 +31,15 @@ namespace Tests.Tests.OperableListTests.OperableList
 {
     public class TestContext
     {
-        public OperableList<ElementType> CreateOperableList() =>
+        public OperableList<ElementType> CreateOperableList(bool isShallowCopy = false) =>
             new OperableList<ElementType>(this.InputMocks.Select(m => m.Object), 
-                this.MockValueGuaranteePopulator.Object,
+                this.ValueGuaranteePopulatorMock.Object,
                 null,
                 null,
                 null,
                 null,
                 null,
-                isShalowCopy: false
+                isShallowCopy
                 );
 
         private List<Mock<RecordReference<ElementType>>> inputMocks;
@@ -54,7 +54,7 @@ namespace Tests.Tests.OperableListTests.OperableList
 
                 for (int i=0; i<3; i++)
                     result.Add(new Mock<RecordReference<ElementType>>(
-                        this.MockTypeGenerator.Object,
+                        this.TypeGeneratorMock.Object,
                         null,
                         null,
                         null,
@@ -67,13 +67,13 @@ namespace Tests.Tests.OperableListTests.OperableList
             }
         }
 
-        public Mock<ValueGuaranteePopulator> MockValueGuaranteePopulator;
-        public Mock<ITypeGenerator> MockTypeGenerator;
+        public Mock<ValueGuaranteePopulator> ValueGuaranteePopulatorMock;
+        public Mock<ITypeGenerator> TypeGeneratorMock;
         
         public TestContext()
         {
-            this.MockValueGuaranteePopulator = new Mock<ValueGuaranteePopulator>();
-            this.MockTypeGenerator = new Mock<ITypeGenerator>();
+            this.ValueGuaranteePopulatorMock = new Mock<ValueGuaranteePopulator>();
+            this.TypeGeneratorMock = new Mock<ITypeGenerator>();
         }
 
         private static bool Check(IEnumerable<GuaranteedValues> guaranteedValues,
@@ -133,7 +133,7 @@ namespace Tests.Tests.OperableListTests.OperableList
             Assert.IsNotNull(returnResult);
             Assert.AreEqual(operableList, returnResult);
 
-            this.MockValueGuaranteePopulator.Verify(m => m.Bind(operableList,
+            this.ValueGuaranteePopulatorMock.Verify(m => m.Bind(operableList,
                 It.Is<IEnumerable<GuaranteedValues>>(n => TestContext.Check(n, guaranteedValues, total, percentage, option)),
                 It.IsAny<ValueSetContextService>()));
         }

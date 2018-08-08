@@ -627,26 +627,12 @@ namespace CommonIntegrationTests.Tests
             return result;
         }
 
-        private IMakeableCollectionContainer<DeepA> Test(IPopulator populator)
-        {
-            IMakeableCollectionContainer<DeepA> result = populator.Add<DeepA>(5)
-                //.Skip(1)
-                .SelectListSet(q => q.DeepB.DeepCList, 7)
-                //.Set(r => r.Skip(2).Take(2).Set(s => s.DeepString, "I"))
-                .Set(r => r.Skip(2).Take(2).Set(s => s.DeepString, "II"))
-                .Set(r => r.Skip(6).SelectListSet(s => s.DeepDList, 3)
-                    .Set(dl => dl.Set(d => d.Integer, 7))
-                );
-
-            return result;
-        }
-
         [TestMethod]
         public void DeepPropertySetting_Make_Test()
         {
             IPopulator populator = this.factory.CreateMemoryPopulator();
 
-            IMakeableCollectionContainer<DeepA> makeable = this.Test(populator);//this.DeepPropertySetting_ListParent_SettersTest(populator));
+            IMakeableCollectionContainer<DeepA> makeable = this.DeepPropertySetting_ListParent_SettersTest(populator);
             IEnumerable<DeepA> result = makeable.Make();
 
             MemoryTest.DeepPropertySetting_Test(result);
@@ -680,10 +666,10 @@ namespace CommonIntegrationTests.Tests
             int deepACount = 0;
             list.ForEach(deepA =>
             {
-                Assert.AreEqual(7, deepA.DeepB.DeepCList.Count);
-
                 if (deepACount < 1 || deepACount >= 3)
                 {
+                    Assert.AreEqual(5, deepA.DeepB.DeepCList.Count);
+
                     deepA.DeepB.DeepCList.ForEach(deepC =>
                     {
                         Assert.AreNotEqual("I", deepC.DeepString);
@@ -692,6 +678,10 @@ namespace CommonIntegrationTests.Tests
 
                     deepACount++;
                     return;
+                }
+                else
+                {
+                    Assert.AreEqual(7, deepA.DeepB.DeepCList.Count);
                 }
 
                 deepCCount = 0;

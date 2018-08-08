@@ -7,10 +7,10 @@ using TestDataFramework.ListOperations.Interfaces;
 using TestDataFramework.Populator;
 using Tests.TestModels;
 
-namespace Tests.Tests.OperableListTests.OperableList
+namespace Tests.Tests.OperableListTests.OperableList.MainTests
 {
     [TestClass]
-    public class OperableListTests
+    public class Populate
     {
         private TestContext testContext;
 

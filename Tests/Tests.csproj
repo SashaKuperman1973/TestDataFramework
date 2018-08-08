@@ -133,6 +133,7 @@
     <Compile Include="Tests\OperableListTests\ListParentOperableList\GuaranteePropertiesByPercentageOfTotal\ThrowCountRequestOption.cs" />
     <Compile Include="Tests\OperableListTests\ListParentOperableList\OperableListTests.cs" />
     <Compile Include="Tests\OperableListTests\ListParentOperableList\TestContext.cs" />
+    <Compile Include="Tests\OperableListTests\OperableList\MainTests\Common.cs" />
     <Compile Include="Tests\OperableListTests\RootReferenceParentOperableList\GuaranteePropertiesByFixedQuantity\DoNotThrowCountRequestOption.cs" />
     <Compile Include="Tests\OperableListTests\RootReferenceParentOperableList\GuaranteePropertiesByFixedQuantity\ThrowCountRequestOption.cs" />
     <Compile Include="Tests\OperableListTests\RootReferenceParentOperableList\GuaranteePropertiesByPercentageOfTotal\DoNotThrowCountRequestOption.cs" />
@@ -155,7 +156,7 @@
     <Compile Include="Tests\OperableListTests\OperableList\GuaranteePropertiesByPercentageOfTotal\ThrowCountRequestOption.cs" />
     <Compile Include="Tests\OperableListTests\OperableList\GuaranteePropertiesByFixedQuantity\DoNotThrowCountRequestOption.cs" />
     <Compile Include="Tests\OperableListTests\OperableList\GuaranteePropertiesByFixedQuantity\ThrowCountRequestOption.cs" />
-    <Compile Include="Tests\OperableListTests\OperableList\OperableListTests.cs" />
+    <Compile Include="Tests\OperableListTests\OperableList\MainTests\Populate.cs" />
     <Compile Include="Tests\OperableListTests\OperableList\TestContext.cs" />
     <Compile Include="Tests\SqlClientValueGeneratorTests.cs" />
     <Compile Include="Tests\StandardHandledTypeGeneratorTests.cs" />

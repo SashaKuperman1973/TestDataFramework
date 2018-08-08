@@ -32,7 +32,7 @@ namespace Tests.Tests.OperableListTests.OperableList
     public class TestContext
     {
         public OperableList<ElementType> CreateOperableList(bool isShallowCopy = false) =>
-            new OperableList<ElementType>(this.InputMocks.Select(m => m.Object), 
+            new OperableList<ElementType>(this.Inputs, 
                 this.ValueGuaranteePopulatorMock.Object,
                 null,
                 null,
@@ -66,6 +66,9 @@ namespace Tests.Tests.OperableListTests.OperableList
                 return result;
             }
         }
+
+        public List<RecordReference<ElementType>> Inputs => this.InputMocks.Select(m => m.Object).ToList();
+        public List<ElementType> InputObjects => this.Inputs.Select(i => i.RecordObject).ToList();
 
         public Mock<ValueGuaranteePopulator> ValueGuaranteePopulatorMock;
         public Mock<ITypeGenerator> TypeGeneratorMock;

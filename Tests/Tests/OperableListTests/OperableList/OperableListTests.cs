@@ -41,6 +41,15 @@ namespace Tests.Tests.OperableListTests.OperableList
                 It.IsAny<IValueGauranteePopulatorContextService>()
                 ), 
                 Times.Never);
+
+            this.testContext.ValueGuaranteePopulatorMock.Verify(m => m.Bind(
+                operableList,
+                It.IsAny<IEnumerable<GuaranteedValues>>(),
+                It.Is<IValueGauranteePopulatorContextService>(
+                    s => s is ValueSetContextService)
+            ), Times.Never);
+
+            Assert.IsTrue(operableList.IsPopulated);
         }
 
         [TestMethod]
@@ -111,6 +120,9 @@ namespace Tests.Tests.OperableListTests.OperableList
             OperableList<ElementType> operableList = this.testContext.CreateOperableList();
             operableList.IsPopulated = true;
 
+            operableList.GuaranteeByFixedQuantity(Enumerable.Empty<ElementType>());
+            operableList.AddGuaranteedPropertySetter(It.IsAny<GuaranteedValues>());
+
             // Act
 
             operableList.Populate();
@@ -118,6 +130,20 @@ namespace Tests.Tests.OperableListTests.OperableList
             // Assert
 
             this.testContext.InputMocks.ForEach(m => m.Verify(n => n.Populate(), Times.Never));
+
+            this.testContext.ValueGuaranteePopulatorMock.Verify(m => m.Bind(
+                operableList,
+                It.IsAny<IEnumerable<GuaranteedValues>>(),
+                It.Is<IValueGauranteePopulatorContextService>(
+                    s => s is ExplicitPropertySetterContextService)
+            ));
+
+            this.testContext.ValueGuaranteePopulatorMock.Verify(m => m.Bind(
+                operableList,
+                It.IsAny<IEnumerable<GuaranteedValues>>(),
+                It.Is<IValueGauranteePopulatorContextService>(
+                    s => s is ValueSetContextService)
+            ));
         }
 
         [TestMethod]
@@ -127,6 +153,9 @@ namespace Tests.Tests.OperableListTests.OperableList
 
             OperableList<ElementType> operableList = this.testContext.CreateOperableList(isShallowCopy: true);
 
+            operableList.GuaranteeByFixedQuantity(Enumerable.Empty<ElementType>());
+            operableList.AddGuaranteedPropertySetter(It.IsAny<GuaranteedValues>());
+
             // Act
 
             operableList.Populate();
@@ -134,6 +163,20 @@ namespace Tests.Tests.OperableListTests.OperableList
             // Assert
 
             this.testContext.InputMocks.ForEach(m => m.Verify(n => n.Populate(), Times.Never));
+
+            this.testContext.ValueGuaranteePopulatorMock.Verify(m => m.Bind(
+                operableList,
+                It.IsAny<IEnumerable<GuaranteedValues>>(),
+                It.Is<IValueGauranteePopulatorContextService>(
+                    s => s is ExplicitPropertySetterContextService)
+            ));
+
+            this.testContext.ValueGuaranteePopulatorMock.Verify(m => m.Bind(
+                operableList,
+                It.IsAny<IEnumerable<GuaranteedValues>>(),
+                It.Is<IValueGauranteePopulatorContextService>(
+                    s => s is ValueSetContextService)
+            ));
         }
     }
 }

@@ -196,5 +196,60 @@ namespace Tests.Tests.OperableListTests.OperableList.MainTests
 
             Helpers.AssertSetsAreEqual(this.testContext.InputObjects, result);
         }
+
+        [TestMethod]
+        public void Set_Value_Test()
+        {
+            // Arrange
+
+            OperableList<ElementType> operableList = this.testContext.CreateOperableList();
+
+            var aPropertyValue = new ElementType.PropertyType();
+            Expression<Func<ElementType, ElementType.PropertyType>> fieldExpression = m => m.AProperty;
+
+            // Act
+
+            operableList.Set(fieldExpression, aPropertyValue);
+
+            // Assert
+
+            this.testContext.InputMocks.ForEach(m => m.Verify(n => n.Set(fieldExpression, aPropertyValue)));
+        }
+
+        [TestMethod]
+        public void Set_ValueFactory_Test()
+        {
+            // Arrange
+
+            OperableList<ElementType> operableList = this.testContext.CreateOperableList();
+
+            Func<ElementType.PropertyType> valueFactory = () => new ElementType.PropertyType();
+            Expression<Func<ElementType, ElementType.PropertyType>> fieldExpression = m => m.AProperty;
+
+            // Act
+
+            operableList.Set(fieldExpression, valueFactory);
+
+            // Assert
+
+            this.testContext.InputMocks.ForEach(m => m.Verify(n => n.Set(fieldExpression, valueFactory)));
+        }
+
+        [TestMethod]
+        public void AddItem_Test()
+        {
+            // Arrange
+
+            OperableList<ElementType> operableList = this.testContext.CreateOperableList();
+            var item = Helpers.GetObject<RecordReference<ElementType>>();
+
+            // Act
+
+            operableList.AddItem(item);
+
+            // Assert
+
+            Assert.IsTrue(operableList.Contains(item));
+        }
     }
 }

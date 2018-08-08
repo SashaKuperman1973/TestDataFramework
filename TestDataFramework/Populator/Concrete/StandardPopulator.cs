@@ -95,7 +95,7 @@ namespace TestDataFramework.Populator.Concrete
             this.populatables.Add(result);
 
             for (int i = 0; i < copies; i++)
-                result.Add(this.Get<T>(primaryRecordReferences));
+                result.AddItem(this.Get<T>(primaryRecordReferences));
 
             StandardPopulator.Logger.Debug("Exiting Add");
             return result;

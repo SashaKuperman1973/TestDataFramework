@@ -149,5 +149,7 @@ namespace TestDataFramework.Exceptions
         public const string TotalFrequencyTooSmall =
                 "Frequency requested is less than number of values given. Value count: {0}, Total count requested: {1}, Number of total populatable values in set: {2}"
             ;
+
+        public const string OperableListIsReadOnly = "List is read-only";
     }
 }

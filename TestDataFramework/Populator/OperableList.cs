@@ -24,6 +24,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeepSetting.Interfaces;
+using TestDataFramework.Exceptions;
 using TestDataFramework.ListOperations.Concrete;
 using TestDataFramework.ListOperations.Interfaces;
 using TestDataFramework.Populator.Concrete;
@@ -176,7 +177,8 @@ namespace TestDataFramework.Populator
         public virtual OperableList<TListElement> Set<TProperty>(
             Expression<Func<TListElement, TProperty>> fieldExpression, TProperty value)
         {
-            return this.Set(fieldExpression, () => value);
+            this.InternalList.ForEach(reference => reference.Set(fieldExpression, value));
+            return this;
         }
 
         public virtual OperableList<TListElement> Set<TProperty>(
@@ -310,6 +312,11 @@ namespace TestDataFramework.Populator
             return this;
         }
 
+        protected internal void AddItem(RecordReference<TListElement> item)
+        {
+            this.InternalList.Add(item);
+        }
+
         #region IList<> members
 
         public IEnumerator<RecordReference<TListElement>> GetEnumerator()
@@ -324,17 +331,16 @@ namespace TestDataFramework.Populator
 
         public void Add(RecordReference<TListElement> item)
         {
-            this.InternalList.Add(item);
+            throw new NotSupportedException(Messages.OperableListIsReadOnly);
         }
 
         public int Count => this.InternalList.Count;
 
-        public bool IsReadOnly => ((IList) this.InternalList).IsReadOnly;
+        public bool IsReadOnly => true;
 
         public void Clear()
         {
-            this.InternalList.Clear();
-            this.privateGuaranteedValues.Clear();
+            throw new NotSupportedException(Messages.OperableListIsReadOnly);
         }
 
         public bool Contains(RecordReference<TListElement> item)
@@ -349,7 +355,7 @@ namespace TestDataFramework.Populator
 
         public bool Remove(RecordReference<TListElement> item)
         {
-            return this.InternalList.Remove(item);
+            throw new NotSupportedException(Messages.OperableListIsReadOnly);
         }
 
         public int IndexOf(RecordReference<TListElement> item)
@@ -359,18 +365,18 @@ namespace TestDataFramework.Populator
 
         public void Insert(int index, RecordReference<TListElement> item)
         {
-            this.InternalList.Insert(index, item);
+            throw new NotSupportedException(Messages.OperableListIsReadOnly);
         }
 
         public void RemoveAt(int index)
         {
-            this.InternalList.RemoveAt(index);
+            throw new NotSupportedException(Messages.OperableListIsReadOnly);
         }
 
         public RecordReference<TListElement> this[int index]
         {
             get => this.InternalList[index];
-            set => this.InternalList[index] = value;
+            set => throw new NotSupportedException(Messages.OperableListIsReadOnly);
         }
 
         #endregion IList<> members

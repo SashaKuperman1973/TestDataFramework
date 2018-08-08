@@ -134,6 +134,7 @@
     <Compile Include="Tests\OperableListTests\ListParentOperableList\OperableListTests.cs" />
     <Compile Include="Tests\OperableListTests\ListParentOperableList\TestContext.cs" />
     <Compile Include="Tests\OperableListTests\OperableList\MainTests\Common.cs" />
+    <Compile Include="Tests\OperableListTests\OperableList\MainTests\ListInterfaceImplementation.cs" />
     <Compile Include="Tests\OperableListTests\RootReferenceParentOperableList\GuaranteePropertiesByFixedQuantity\DoNotThrowCountRequestOption.cs" />
     <Compile Include="Tests\OperableListTests\RootReferenceParentOperableList\GuaranteePropertiesByFixedQuantity\ThrowCountRequestOption.cs" />
     <Compile Include="Tests\OperableListTests\RootReferenceParentOperableList\GuaranteePropertiesByPercentageOfTotal\DoNotThrowCountRequestOption.cs" />

@@ -34,7 +34,7 @@ namespace Tests.Tests.OperableListTests.OperableList
         public OperableList<ElementType> CreateOperableList(bool isShallowCopy = false) =>
             new OperableList<ElementType>(this.Inputs, 
                 this.ValueGuaranteePopulatorMock.Object,
-                null,
+                this.PopulatorMock.Object,
                 null,
                 null,
                 null,
@@ -72,11 +72,13 @@ namespace Tests.Tests.OperableListTests.OperableList
 
         public Mock<ValueGuaranteePopulator> ValueGuaranteePopulatorMock;
         public Mock<ITypeGenerator> TypeGeneratorMock;
+        public Mock<BasePopulator> PopulatorMock;
         
         public TestContext()
         {
             this.ValueGuaranteePopulatorMock = new Mock<ValueGuaranteePopulator>();
             this.TypeGeneratorMock = new Mock<ITypeGenerator>();
+            this.PopulatorMock = Helpers.GetMock<BasePopulator>();
         }
 
         private static bool Check(IEnumerable<GuaranteedValues> guaranteedValues,

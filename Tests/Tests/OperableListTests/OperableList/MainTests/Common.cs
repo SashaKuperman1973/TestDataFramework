@@ -42,6 +42,11 @@ namespace Tests.Tests.OperableListTests.OperableList.MainTests
             this.testContext = new TestContext();
         }
 
+        private void PopulateInputMocks()
+        {
+            this.testContext.InputMocks.ForEach(m => m.Setup(n => n.RecordObject).Returns(new ElementType()));
+        }
+
         [TestMethod]
         public void AddToReferences_Test()
         {
@@ -87,10 +92,7 @@ namespace Tests.Tests.OperableListTests.OperableList.MainTests
 
             OperableList<ElementType> operableList = this.testContext.CreateOperableList();
 
-            foreach (Mock<RecordReference<ElementType>> inputMock in this.testContext.InputMocks)
-            {
-                inputMock.Setup(m => m.RecordObject).Returns(new ElementType());
-            }
+            this.PopulateInputMocks();
 
             // Act
 
@@ -126,6 +128,7 @@ namespace Tests.Tests.OperableListTests.OperableList.MainTests
             // Arrange
 
             OperableList<ElementType> operableList = this.testContext.CreateOperableList();
+
             Func<IEnumerable<ElementType.PropertyType>> rangeFactory = Enumerable.Empty<ElementType.PropertyType>;
 
             var expression = (Expression<Func<ElementType, ElementType.PropertyType>>)(m => m.AProperty);
@@ -137,6 +140,61 @@ namespace Tests.Tests.OperableListTests.OperableList.MainTests
             // Assert
 
             this.testContext.InputMocks.ForEach(m => m.Verify(n => n.SetRange(expression, rangeFactory)));
+        }
+
+        [TestMethod]
+        public void Ignore_Test()
+        {
+            // Arrange
+
+            OperableList<ElementType> operableList = this.testContext.CreateOperableList();
+            var expression = (Expression<Func<ElementType, ElementType.PropertyType>>)(m => m.AProperty);
+            
+            // Act
+
+            operableList.Ignore(expression);
+
+            // Assert
+
+            this.testContext.InputMocks.ForEach(m => m.Verify(n => n.Ignore(expression)));
+        }
+
+        [TestMethod]
+        public void Make_Test()
+        {
+            // Arrange
+
+            OperableList<ElementType> operableList = this.testContext.CreateOperableList();
+
+            this.PopulateInputMocks();
+
+            // Act
+
+            IEnumerable<ElementType> result = operableList.Make();
+
+            // Assert
+
+            this.testContext.InputMocks.ForEach(m => m.Verify(n => n.Populate()));
+
+            Helpers.AssertSetsAreEqual(this.testContext.InputObjects, result);
+        }
+
+        [TestMethod]
+        public void BinaAndMake_Test()
+        {
+            // Arrange
+
+            OperableList<ElementType> operableList = this.testContext.CreateOperableList();
+
+            // Act
+
+            IEnumerable<ElementType> result = operableList.BindAndMake();
+
+            // Assert
+
+            this.testContext.PopulatorMock.Verify(m => m.Bind());
+
+            Helpers.AssertSetsAreEqual(this.testContext.InputObjects, result);
         }
     }
 }

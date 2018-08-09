@@ -28,6 +28,7 @@ using TestDataFramework.ListOperations.Concrete;
 using TestDataFramework.ListOperations.Interfaces;
 using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete;
+using TestDataFramework.Populator.Concrete.OperableList;
 using Tests.TestModels;
 
 namespace Tests.Tests
@@ -113,7 +114,7 @@ namespace Tests.Tests
                     reference.ExplicitPropertySetters.Add(new ExplicitPropertySetter());
                 }
 
-                operableList.InternalList.Add(reference);
+                operableList.AddItem(reference);
             }
 
             var results = new List<Tuple<RecordReference<SubjectClass>, object>>();
@@ -167,7 +168,7 @@ namespace Tests.Tests
             {
                 var reference = Helpers.GetObject<RecordReference<SubjectClass>>();
 
-                operableList.InternalList.Add(reference);
+                operableList.AddItem(reference);
             }
 
             // Act/Assert
@@ -207,7 +208,7 @@ namespace Tests.Tests
             {
                 var reference = new RecordReference<SubjectClass>(null, null, null, null, null, null);
 
-                operableList.InternalList.Add(reference);
+                operableList.AddItem(reference);
             }
 
             // Act/Assert

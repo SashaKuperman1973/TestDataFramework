@@ -90,6 +90,7 @@
     <Compile Include="TestModels\SubjectClasses.cs" />
     <Compile Include="Tests\CircularReferenceBreakerTests.cs" />
     <Compile Include="Tests\ColumnAttributeTests.cs" />
+    <Compile Include="Tests\DataTests.cs" />
     <Compile Include="Tests\DbProviderWritePrimitivesTests.cs" />
     <Compile Include="Tests\DeepCollectionSettingConverterTests.cs" />
     <Compile Include="Tests\DefaultInitialCountGeneratorTests.cs" />
@@ -190,14 +191,14 @@
     <Compile Include="Tests\TableTypeCacheServiceTests\TypeInfoWrapperTests.cs" />
     <Compile Include="Tests\TableTypeCriteriaTests.cs" />
     <Compile Include="Tests\UniqueValueTypeGeneratorTests.cs" />
-    <None Include="Tests\ValueGuaranteePopulatorTests.cs" />
+    <Compile Include="Tests\ValueGuaranteePopulatorTests.cs" />
     <Compile Include="Tests\GenericRecordReferenceTests.cs" />
     <Compile Include="Tests\LargeIntegerTests.cs" />
     <Compile Include="Tests\SqlWriterDictionaryTests.cs" />
     <Compile Include="Tests\KeyTypeUniqueValueGeneratorTests.cs" />
     <Compile Include="Tests\BaseUniqueValueGeneratorTests.cs" />
     <Compile Include="Tests\SqlClientValueFormatterTests.cs" />
-    <None Include="Tests\AccumulatorValueProviderTests.cs" />
+    <Compile Include="Tests\AccumulatorValueProviderTests.cs" />
     <Compile Include="Tests\StandardAttributeDecoratorTests.cs" />
     <None Include="Tests\StandardTableTypeCacheTests.cs" />
     <Compile Include="Tests\TableTests.cs" />

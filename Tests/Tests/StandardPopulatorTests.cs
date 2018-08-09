@@ -127,13 +127,13 @@ namespace Tests.Tests
             Helpers.SetupTypeGeneratorMock(this.typeGeneratorMock, inputRecord);
 
             var mockPersistence = new MockPersistence();
-            var populator = new StandardPopulator(this.typeGeneratorMock.Object, mockPersistence,
+            this.populator = new StandardPopulator(this.typeGeneratorMock.Object, mockPersistence,
                 this.attributeDecorator, null, null, null, null, null);
 
             // Act
 
-            populator.Add<SubjectClass>();
-            populator.Bind();
+            this.populator.Add<SubjectClass>();
+            this.populator.Bind();
 
             // Assert
 
@@ -162,51 +162,6 @@ namespace Tests.Tests
             referenceMock.Verify(m => m.Populate());
             this.persistenceMock.Verify(m => m.Persist(
                 It.Is<IEnumerable<RecordReference>>(referenceSet => referenceSet.Single() == referenceMock.Object)));
-        }
-
-        [TestMethod]
-        public void Bind_ResultSet_Test()
-        {
-            // Arrange
-
-            var referenceMock1 = new Mock<RecordReference<SubjectClass>>(null, null, null, null, null, null);
-            var referenceMock2 = new Mock<RecordReference<SubjectClass>>(null, null, null, null, null, null);
-
-            Mock<RecordReference<SubjectClass>>[] input = new[] {referenceMock1, referenceMock2};
-
-            var set = new OperableList<SubjectClass>(
-                input.Select(i => i.Object),
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-                );
-
-            // Act
-
-            this.populator.Bind(set);
-
-            // Assert
-
-            referenceMock1.VerifyGet(m => m.IsPopulated);
-            referenceMock1.Verify(m => m.Populate());
-
-            referenceMock2.VerifyGet(m => m.IsPopulated);
-            referenceMock2.Verify(m => m.Populate());
-
-            Func<IEnumerable<RecordReference>, bool> verifyPersistence = referenceSet =>
-            {
-                referenceSet = referenceSet.ToList();
-
-                return referenceSet.Count() == 2 &&
-                       referenceSet.Contains(referenceMock1.Object) &&
-                       referenceSet.Contains(referenceMock2.Object);
-            };
-
-            this.persistenceMock.Verify(m => m.Persist(
-                It.Is<IEnumerable<RecordReference>>(referenceSet => verifyPersistence(referenceSet))));
         }
 
         [TestMethod]
@@ -319,15 +274,16 @@ namespace Tests.Tests
         [TestMethod]
         public void Clear_Test()
         {
-            this.populator.Populatables.Add(new RecordReference<SubjectClass>(null, null, null, null, null, null));
+            RecordReference<SubjectClass> reference = this.populator.Add<SubjectClass>();
 
             // Act
 
             this.populator.Clear();
+            this.populator.Bind();
 
             // Assert
 
-            Assert.AreEqual(0, this.populator.Populatables.Count);
+            Assert.IsNull(reference.RecordObject);
         }
     }
 }

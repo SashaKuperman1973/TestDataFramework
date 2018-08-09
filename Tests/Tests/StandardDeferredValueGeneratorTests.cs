@@ -97,21 +97,15 @@ namespace Tests.Tests
         public void AddDelegate_KeyAlreadyExists_Test()
         {
             PropertyInfo targetPropertyInfo = typeof(SubjectClass).GetProperty(nameof(SubjectClass.Integer));
-            object value = new object();
-            DeferredValueGetterDelegate<LargeInteger> valueGetter = i => value;
+            DeferredValueGetterDelegate<LargeInteger> valueGetter = i => new object();
 
             var generator = new StandardDeferredValueGenerator<LargeInteger>(null);
 
             // Act
+            // Assert - No duplicate key exception means the duplicatre key was ignored.
 
             generator.AddDelegate(targetPropertyInfo, valueGetter);
             generator.AddDelegate(targetPropertyInfo, valueGetter);
-
-            // Assert
-
-            Assert.AreEqual(1, generator.PropertyDataDictionary.Count);
-            Assert.IsTrue(generator.PropertyDataDictionary.TryGetValue(targetPropertyInfo, out Data<LargeInteger> dictionaryValue));
-            Assert.AreEqual(value, dictionaryValue.ValueGetter(new LargeInteger()));
         }
 
         [TestMethod]
@@ -119,11 +113,17 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var dataSource = new Mock<IPropertyDataGenerator<SubjectClass>>();
-            var generator = new StandardDeferredValueGenerator<SubjectClass>(dataSource.Object);
+            var dataSource = new Mock<IPropertyDataGenerator<LargeInteger>>();
+            PropertyInfo targetPropertyInfo = typeof(SubjectClass).GetProperty(nameof(SubjectClass.Integer));
 
-            var recordObject = new RecordReference<SubjectClass>(null, null, null, null, null, null);
-            ((RecordReference) recordObject).RecordObject = new SubjectClass();
+            var generator = new StandardDeferredValueGenerator<LargeInteger>(dataSource.Object);
+            generator.AddDelegate(targetPropertyInfo, i => 7);
+
+            var recordObject =
+                new RecordReference<SubjectClass>(null, null, null, null, null, null)
+                {
+                    RecordObjectBase = new SubjectClass()
+                };
 
             var propertySetter = new ExplicitPropertySetter
             {
@@ -136,7 +136,72 @@ namespace Tests.Tests
 
             generator.Execute(new[] {recordObject});
 
-            // Assert - No exceptions signifies success
+            // Assert
+
+            Assert.AreNotEqual(7, recordObject.RecordObject.Integer);
+        }
+
+        [TestMethod]
+        public void ReferenceRecordObjectEqualityComparer_Equals_AreEqual_Test()
+        {
+            // Arrange
+
+            var subject = Helpers.GetObject<RecordReference<SubjectClass>>();
+            subject.RecordObjectBase = new SubjectClass();
+
+            var comparer = new StandardDeferredValueGenerator<LargeInteger>.ReferenceRecordObjectEqualityComparer();
+
+            // Act
+
+            bool result = comparer.Equals(subject, subject);
+
+            // Assert
+
+            Assert.IsTrue(result);
+        }
+
+        [TestMethod]
+        public void ReferenceRecordObjectEqualityComparer_Equals_AreNotEqual_Test()
+        {
+            // Arrange
+
+            var a = Helpers.GetObject<RecordReference<SubjectClass>>();
+            a.RecordObjectBase = new SubjectClass();
+
+            var b = Helpers.GetObject<RecordReference<SubjectClass>>();
+            b.RecordObjectBase = new SubjectClass();
+
+            var comparer = new StandardDeferredValueGenerator<LargeInteger>.ReferenceRecordObjectEqualityComparer();
+
+            // Act
+
+            bool result = comparer.Equals(a, b);
+
+            // Assert
+
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod]
+        public void ReferenceRecordObjectEqualityComparer_GetHashCode_Test()
+        {
+            // Arrange
+
+            var reference = Helpers.GetObject<RecordReference<SubjectClass>>();
+            var subject = new SubjectClass();
+            reference.RecordObjectBase = subject;
+
+            var comparer = new StandardDeferredValueGenerator<LargeInteger>.ReferenceRecordObjectEqualityComparer();
+
+            int expected = subject.GetHashCode();
+
+            // Act
+
+            int actual = comparer.GetHashCode(reference);
+
+            // Assert
+
+            Assert.AreEqual(expected, actual);
         }
     }
 }

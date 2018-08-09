@@ -227,5 +227,17 @@ namespace Tests.Tests
 
             Assert.AreEqual(1, this.valueProvider.GetByte());
         }
+
+        [TestMethod]
+        public void GetEmailAddress_Throws_Test()
+        {
+            Helpers.ExceptionTest(() => this.valueProvider.GetEmailAddress(), typeof(NotSupportedException));
+        }
+
+        [TestMethod]
+        public void GetEnum_Throws_Test()
+        {
+            Helpers.ExceptionTest(() => this.valueProvider.GetEnum(null), typeof(NotImplementedException));
+        }
     }
 }

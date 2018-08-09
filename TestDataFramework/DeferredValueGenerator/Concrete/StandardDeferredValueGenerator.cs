@@ -133,7 +133,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
             return result;
         }
 
-        private class ReferenceRecordObjectEqualityComparer : IEqualityComparer<RecordReference>
+        internal class ReferenceRecordObjectEqualityComparer : IEqualityComparer<RecordReference>
         {
             public bool Equals(RecordReference x, RecordReference y)
             {

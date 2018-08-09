@@ -164,7 +164,7 @@
     <Compile Include="Tests\StandardHandledTypeGeneratorTests.cs" />
     <Compile Include="Tests\MemoryUniqueValueGeneratorTests.cs" />
     <Compile Include="Tests\StandardLogManagerTests.cs" />
-    <None Include="Tests\StandardPopulatorTests.cs" />
+    <Compile Include="Tests\StandardPopulatorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tests\StandardPropertyValueAccumulatorTests.cs" />
     <Compile Include="Tests\StandardTypeGeneratorServiceTests.cs" />
@@ -181,7 +181,7 @@
     <None Include="Tests\PopulatorFactoryTests.cs" />
     <Compile Include="Tests\BaseValueGeneratorTests.cs" />
     <Compile Include="Tests\LetterEncoderTest.cs" />
-    <None Include="Tests\StandardDeferredValueGeneratorTests.cs" />
+    <Compile Include="Tests\StandardDeferredValueGeneratorTests.cs" />
     <Compile Include="Tests\SqlClientInitialCountGeneratorTests.cs" />
     <Compile Include="Tests\MemoryPersistenceTests.cs" />
     <Compile Include="Tests\StaticPopulatorFactoryTests.cs" />

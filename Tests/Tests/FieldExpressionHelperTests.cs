@@ -24,6 +24,7 @@ using System.Reflection;
 using TestDataFramework.DeepSetting;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Populator.Concrete;
+using TestDataFramework.Populator.Concrete.FieldExpression;
 using Tests.TestModels;
 
 namespace Tests.Tests

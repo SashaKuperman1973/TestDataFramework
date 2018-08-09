@@ -24,6 +24,7 @@ using TestDataFramework.Exceptions;
 using TestDataFramework.ListOperations.Interfaces;
 using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete;
+using TestDataFramework.Populator.Concrete.OperableList;
 
 namespace TestDataFramework.ListOperations.Concrete
 {

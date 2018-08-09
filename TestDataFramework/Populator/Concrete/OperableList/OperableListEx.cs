@@ -5,12 +5,11 @@ using System.Linq.Expressions;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.ListOperations.Concrete;
-using TestDataFramework.Populator.Concrete;
+using TestDataFramework.Populator.Concrete.FieldExpression;
 using TestDataFramework.Populator.Concrete.MakeableEnumerable;
-using TestDataFramework.Populator.Concrete.OperableList;
 using TestDataFramework.TypeGenerator.Interfaces;
 
-namespace TestDataFramework.Populator
+namespace TestDataFramework.Populator.Concrete.OperableList
 {
     public class OperableListEx<TListElement> : OperableList<TListElement>
     {

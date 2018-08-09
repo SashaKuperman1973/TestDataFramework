@@ -5,6 +5,7 @@ using Moq;
 using TestDataFramework.ListOperations.Concrete;
 using TestDataFramework.ListOperations.Interfaces;
 using TestDataFramework.Populator;
+using TestDataFramework.Populator.Concrete.OperableList;
 using Tests.TestModels;
 
 namespace Tests.Tests.OperableListTests.OperableList.MainTests

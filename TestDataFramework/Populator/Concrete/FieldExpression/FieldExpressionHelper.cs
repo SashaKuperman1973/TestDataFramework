@@ -1,4 +1,4 @@
-﻿/*
+/*
     Copyright 2016, 2017, 2018 Alexander Kuperman
 
     This file is part of TestDataFramework.
@@ -24,7 +24,7 @@ using System.Reflection;
 using TestDataFramework.DeepSetting;
 using TestDataFramework.Exceptions;
 
-namespace TestDataFramework.Populator.Concrete
+namespace TestDataFramework.Populator.Concrete.FieldExpression
 {
     public static class FieldExpressionHelper
     {

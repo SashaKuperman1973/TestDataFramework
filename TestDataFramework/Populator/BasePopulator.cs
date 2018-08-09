@@ -26,6 +26,7 @@ using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.HandledTypeGenerator;
 using TestDataFramework.Logger;
 using TestDataFramework.Populator.Concrete;
+using TestDataFramework.Populator.Concrete.OperableList;
 using TestDataFramework.Populator.Interfaces;
 using TestDataFramework.ValueGenerator.Interfaces;
 

@@ -2,6 +2,7 @@
 using System;
 using TestDataFramework.ListOperations.Concrete;
 using TestDataFramework.Populator;
+using TestDataFramework.Populator.Concrete.OperableList;
 using Tests.TestModels;
 
 namespace Tests.Tests.OperableListTests.OperableList.GuaranteePropertiesByFixedQuantity

@@ -24,9 +24,9 @@ using System.Linq.Expressions;
 using System.Reflection;
 using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.ListOperations.Concrete;
-using TestDataFramework.Populator.Concrete;
+using TestDataFramework.Populator.Concrete.OperableList;
 
-namespace TestDataFramework.Populator
+namespace TestDataFramework.Populator.Concrete.FieldExpression
 {
     public class FieldExpression<TListElement, TProperty>
     {

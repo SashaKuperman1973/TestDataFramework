@@ -21,6 +21,7 @@ using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.ListOperations.Concrete;
 using TestDataFramework.Populator;
+using TestDataFramework.Populator.Concrete.OperableList;
 using Tests.TestModels;
 
 namespace Tests.Tests.OperableListTests.OperableListEx.GuaranteePropertiesByFixedQuantity

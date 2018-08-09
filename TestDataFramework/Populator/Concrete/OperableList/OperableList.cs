@@ -27,11 +27,10 @@ using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.Exceptions;
 using TestDataFramework.ListOperations.Concrete;
 using TestDataFramework.ListOperations.Interfaces;
-using TestDataFramework.Populator.Concrete;
 using TestDataFramework.Populator.Interfaces;
 using TestDataFramework.TypeGenerator.Interfaces;
 
-namespace TestDataFramework.Populator
+namespace TestDataFramework.Populator.Concrete.OperableList
 {
     public class OperableList<TListElement> : 
         Populatable, 

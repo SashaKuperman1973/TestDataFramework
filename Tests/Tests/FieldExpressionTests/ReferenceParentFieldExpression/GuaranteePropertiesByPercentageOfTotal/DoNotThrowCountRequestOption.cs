@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.ListOperations.Concrete;
 using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete.FieldExpression;
+using TestDataFramework.Populator.Concrete.OperableList;
 using Tests.TestModels;
 
 namespace Tests.Tests.FieldExpressionTests.ReferenceParentFieldExpression.GuaranteePropertiesByPercentageOfTotal

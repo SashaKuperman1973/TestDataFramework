@@ -26,6 +26,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.Factories;
 using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete;
+using TestDataFramework.Populator.Concrete.OperableList;
 using TestDataFramework.Populator.Interfaces;
 
 namespace CommonIntegrationTests.Tests

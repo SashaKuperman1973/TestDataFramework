@@ -6,6 +6,7 @@ using System.Security.Policy;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.Populator;
+using TestDataFramework.Populator.Concrete.FieldExpression;
 using TestDataFramework.Populator.Concrete.MakeableEnumerable;
 using TestDataFramework.Populator.Concrete.OperableList;
 using Tests.TestModels;
@@ -164,6 +165,19 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList
             // Assert
 
             Assert.AreEqual(this.operableList, result);
+        }
+
+        [TestMethod]
+        public void Set_ForAnIndividualProperty_Test()
+        {
+            // Act
+
+            ListParentFieldExpression<ElementType, OperableListEx<ElementParentType>, ElementParentType,
+                ElementType.PropertyType> fieldExpression = this.operableList.Set(m => m.AProperty);
+
+            // Assert
+
+            Assert.IsNotNull(fieldExpression);
         }
     }
 }

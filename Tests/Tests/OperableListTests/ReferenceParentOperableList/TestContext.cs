@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.ListOperations.Concrete;
 using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete;
@@ -41,12 +42,12 @@ namespace Tests.Tests.OperableListTests.ReferenceParentOperableList
             var result = new ReferenceParentOperableList<ElementSubType,
                 RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType>(
                 rootList,
-                Helpers.GetObject<RecordReference<ElementParentType>>(),
+                this.RootMock.Object,
                 rootList,
                 this.InputMocks.Select(m => m.Object),
                 this.ValueGuaranteePopulatorMock.Object,
-                null,
-                null,
+                this.PopulatorMock.Object,
+                this.ObjectGraphServiceMock.Object,
                 null,
                 null,
                 null,
@@ -71,7 +72,7 @@ namespace Tests.Tests.OperableListTests.ReferenceParentOperableList
                         this.TypeGeneratorMock.Object,
                         null,
                         null,
-                        null,
+                        this.ObjectGraphServiceMock.Object,
                         null,
                         null
                         ));
@@ -81,6 +82,12 @@ namespace Tests.Tests.OperableListTests.ReferenceParentOperableList
             }
         }
 
+        public List<RecordReference<ElementSubType>> Inputs => this.InputMocks.Select(i => i.Object).ToList();
+
+        public Mock<RecordReference<ElementParentType>> RootMock;
+        public Mock<BasePopulator> PopulatorMock;
+        public Mock<IObjectGraphService> ObjectGraphServiceMock;
+
         public Mock<ValueGuaranteePopulator> ValueGuaranteePopulatorMock;
         public Mock<ITypeGenerator> TypeGeneratorMock;
         
@@ -88,6 +95,9 @@ namespace Tests.Tests.OperableListTests.ReferenceParentOperableList
         {
             this.ValueGuaranteePopulatorMock = new Mock<ValueGuaranteePopulator>();
             this.TypeGeneratorMock = new Mock<ITypeGenerator>();
+            this.RootMock = Helpers.GetMock<RecordReference<ElementParentType>>();
+            this.PopulatorMock = Helpers.GetMock<BasePopulator>();
+            this.ObjectGraphServiceMock = new Mock<IObjectGraphService>();
         }
 
         private static bool Check(IEnumerable<GuaranteedValues> guaranteedValues,

@@ -142,7 +142,9 @@ namespace Tests.TestModels
 
     public class ElementSubType
     {
-        
+        public int ASubTypeProperty { get; set; }
+
+        public IEnumerable<int> ASubTypeEnumerable { get; set; }
     }
 
     public class SecondClass

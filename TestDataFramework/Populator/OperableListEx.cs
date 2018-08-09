@@ -110,7 +110,6 @@ namespace TestDataFramework.Populator
 
         public virtual ListParentMakeableEnumerable<ListParentOperableList<TResultElement,
                 OperableListEx<TListElement>, TListElement>, TListElement>
-
             SelectListSet<TResultElement>(Expression<Func<TListElement, IEnumerable<TResultElement>>> selector,
                 int listSize)
         {

@@ -61,7 +61,7 @@ namespace Tests.Tests.OperableListTests.RootReferenceParentOperableList
                         this.TypeGeneratorMock.Object,
                         null,
                         null,
-                        null,
+                        this.ObjectGraphServiceMock.Object,
                         null,
                         null
                         ));

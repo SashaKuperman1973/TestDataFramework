@@ -200,7 +200,7 @@
     <Compile Include="Tests\SqlClientValueFormatterTests.cs" />
     <Compile Include="Tests\AccumulatorValueProviderTests.cs" />
     <Compile Include="Tests\StandardAttributeDecoratorTests.cs" />
-    <None Include="Tests\StandardTableTypeCacheTests.cs" />
+    <Compile Include="Tests\StandardTableTypeCacheTests.cs" />
     <Compile Include="Tests\TableTests.cs" />
     <Compile Include="Tests\TableAttributeTests.cs" />
     <Compile Include="Tests\SqlWriterCommandTextGeneratorTests.cs" />

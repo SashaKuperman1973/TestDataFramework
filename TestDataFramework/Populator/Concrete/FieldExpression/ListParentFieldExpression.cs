@@ -152,7 +152,7 @@ namespace TestDataFramework.Populator.Concrete.FieldExpression
             IEnumerable<TProperty> guaranteedValues, int frequencyPercentage,
             ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
-            base.GuaranteePropertiesByPercentageOfTotal(guaranteedValues, valueCountRequestOption);
+            base.GuaranteePropertiesByPercentageOfTotal(guaranteedValues, frequencyPercentage, valueCountRequestOption);
             return this;
         }
 

@@ -91,7 +91,7 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression.Gu
 
             RootReferenceParentFieldExpression<ElementType, ElementType.PropertyType, ElementParentType> 
                 returnResult = this.testContext.RootReferenceParentFieldExpression.GuaranteePropertiesByPercentageOfTotal(
-                    new object[]
+                    new []
                     {
                         new ElementType.PropertyType(),
                         new ElementType.PropertyType(),
@@ -109,7 +109,7 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression.Gu
 
             RootReferenceParentFieldExpression<ElementType, ElementType.PropertyType, ElementParentType> 
                 returnResult = this.testContext.RootReferenceParentFieldExpression.GuaranteePropertiesByPercentageOfTotal(
-                    new object[]
+                    new []
                     {
                         new ElementType.PropertyType(),
                         new ElementType.PropertyType(),

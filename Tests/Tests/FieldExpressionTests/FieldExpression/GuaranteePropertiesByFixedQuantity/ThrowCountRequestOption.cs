@@ -92,7 +92,7 @@ namespace Tests.Tests.FieldExpressionTests.FieldExpression.GuaranteePropertiesBy
 
             FieldExpression<ElementType, ElementType.PropertyType>
                 returnResult = this.testContext.FieldExpression.GuaranteePropertiesByFixedQuantity(
-                    new object[]
+                    new []
                     {
                         new ElementType.PropertyType(),
                         new ElementType.PropertyType(),
@@ -110,7 +110,7 @@ namespace Tests.Tests.FieldExpressionTests.FieldExpression.GuaranteePropertiesBy
 
             FieldExpression<ElementType, ElementType.PropertyType>
                 returnResult = this.testContext.FieldExpression.GuaranteePropertiesByFixedQuantity(
-                    new object[]
+                    new []
                     {
                         new ElementType.PropertyType(),
                         new ElementType.PropertyType(),

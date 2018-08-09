@@ -75,7 +75,8 @@ namespace TestDataFramework.Populator.Concrete.FieldExpression
                 ValueCountRequestOption valueCountRequestOption =
                     ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
-            return this.GuaranteePropertiesByFixedQuantity(guaranteedValues, 0, valueCountRequestOption);
+            base.GuaranteePropertiesByFixedQuantity(guaranteedValues, 0, valueCountRequestOption);
+            return this;
         }
 
         public new virtual RootReferenceParentFieldExpression<TListElement, TProperty, TRootElement>
@@ -94,7 +95,8 @@ namespace TestDataFramework.Populator.Concrete.FieldExpression
                 ValueCountRequestOption valueCountRequestOption =
                     ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
-            return this.GuaranteePropertiesByFixedQuantity(guaranteedValues, 0, valueCountRequestOption);
+            base.GuaranteePropertiesByFixedQuantity(guaranteedValues, 0, valueCountRequestOption);
+            return this;
         }
 
         public new virtual RootReferenceParentFieldExpression<TListElement, TProperty, TRootElement>
@@ -113,7 +115,8 @@ namespace TestDataFramework.Populator.Concrete.FieldExpression
                 ValueCountRequestOption valueCountRequestOption =
                     ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
-            return this.GuaranteePropertiesByFixedQuantity(guaranteedValues, 0, valueCountRequestOption);
+            base.GuaranteePropertiesByFixedQuantity(guaranteedValues, 0, valueCountRequestOption);
+            return this;
         }
 
         public new virtual RootReferenceParentFieldExpression<TListElement, TProperty, TRootElement>
@@ -122,9 +125,10 @@ namespace TestDataFramework.Populator.Concrete.FieldExpression
                 ValueCountRequestOption valueCountRequestOption =
                     ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
-            return this.GuaranteePropertiesByFixedQuantity(
-                guaranteedValues.Select<TProperty, Func<TProperty>>(value => () => value), fixedQuantity,
+            base.GuaranteePropertiesByFixedQuantity(
+                guaranteedValues, fixedQuantity,
                 valueCountRequestOption);
+            return this;
         }
 
         public new virtual RootReferenceParentFieldExpression<TListElement, TProperty, TRootElement>
@@ -133,7 +137,8 @@ namespace TestDataFramework.Populator.Concrete.FieldExpression
                 ValueCountRequestOption valueCountRequestOption =
                     ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
-            return this.GuaranteePropertiesByPercentageOfTotal(guaranteedValues, 10, valueCountRequestOption);
+            base.GuaranteePropertiesByPercentageOfTotal(guaranteedValues, 10, valueCountRequestOption);
+            return this;
         }
 
         public new virtual RootReferenceParentFieldExpression<TListElement, TProperty, TRootElement>
@@ -152,7 +157,8 @@ namespace TestDataFramework.Populator.Concrete.FieldExpression
                 ValueCountRequestOption valueCountRequestOption =
                     ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
-            return this.GuaranteePropertiesByPercentageOfTotal(guaranteedValues, 10, valueCountRequestOption);
+            base.GuaranteePropertiesByPercentageOfTotal(guaranteedValues, 10, valueCountRequestOption);
+            return this;
         }
 
         public new virtual RootReferenceParentFieldExpression<TListElement, TProperty, TRootElement>
@@ -161,9 +167,10 @@ namespace TestDataFramework.Populator.Concrete.FieldExpression
                 ValueCountRequestOption valueCountRequestOption =
                     ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
-            return this.GuaranteePropertiesByPercentageOfTotal(
-                guaranteedValues.Select<TProperty, Func<TProperty>>(value => () => value), frequencyPercentage,
+            base.GuaranteePropertiesByPercentageOfTotal(
+                guaranteedValues, frequencyPercentage,
                 valueCountRequestOption);
+            return this;
         }
 
         public new virtual RootReferenceParentFieldExpression<TListElement, TProperty, TRootElement>
@@ -172,7 +179,8 @@ namespace TestDataFramework.Populator.Concrete.FieldExpression
                 ValueCountRequestOption valueCountRequestOption =
                     ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
-            return this.GuaranteePropertiesByPercentageOfTotal(guaranteedValues, 10, valueCountRequestOption);
+            base.GuaranteePropertiesByPercentageOfTotal(guaranteedValues, 10, valueCountRequestOption);
+            return this;
         }
 
         public new virtual RootReferenceParentFieldExpression<TListElement, TProperty, TRootElement>

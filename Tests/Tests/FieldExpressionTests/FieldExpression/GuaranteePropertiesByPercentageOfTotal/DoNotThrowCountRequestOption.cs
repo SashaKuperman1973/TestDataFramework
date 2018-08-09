@@ -1,7 +1,6 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using TestDataFramework.ListOperations.Concrete;
-using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete.FieldExpression;
 using Tests.TestModels;
 
@@ -93,7 +92,7 @@ namespace Tests.Tests.FieldExpressionTests.FieldExpression.GuaranteePropertiesBy
 
             FieldExpression<ElementType, ElementType.PropertyType>
                 returnResult = this.testContext.FieldExpression.GuaranteePropertiesByPercentageOfTotal(
-                    new object[]
+                    new []
                     {
                         new ElementType.PropertyType(),
                         new ElementType.PropertyType(),
@@ -111,7 +110,7 @@ namespace Tests.Tests.FieldExpressionTests.FieldExpression.GuaranteePropertiesBy
 
             FieldExpression<ElementType, ElementType.PropertyType>
                 returnResult = this.testContext.FieldExpression.GuaranteePropertiesByPercentageOfTotal(
-                    new object[]
+                    new []
                     {
                         new ElementType.PropertyType(),
                         new ElementType.PropertyType(),

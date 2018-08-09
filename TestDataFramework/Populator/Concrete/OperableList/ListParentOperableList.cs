@@ -176,7 +176,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             ValueCountRequestOption valueCountRequestOption =
                 ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
-            base.GuaranteeByPercentageOfTotal(guaranteedValues, 10, valueCountRequestOption);
+            base.GuaranteeByPercentageOfTotal(guaranteedValues, valueCountRequestOption);
             return this;
         }
 
@@ -195,7 +195,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             ValueCountRequestOption valueCountRequestOption =
                 ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
-            base.GuaranteeByPercentageOfTotal(guaranteedValues, 10, valueCountRequestOption);
+            base.GuaranteeByPercentageOfTotal(guaranteedValues, valueCountRequestOption);
             return this;
         }
 
@@ -214,7 +214,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             ValueCountRequestOption valueCountRequestOption =
                 ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
-            base.GuaranteeByPercentageOfTotal(guaranteedValues, 10, valueCountRequestOption);
+            base.GuaranteeByPercentageOfTotal(guaranteedValues, valueCountRequestOption);
             return this;
         }
 
@@ -233,7 +233,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             ValueCountRequestOption valueCountRequestOption =
                 ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
-            base.GuaranteeByFixedQuantity(guaranteedValues, 0, valueCountRequestOption);
+            base.GuaranteeByFixedQuantity(guaranteedValues, valueCountRequestOption);
             return this;
         }
 
@@ -252,7 +252,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             ValueCountRequestOption valueCountRequestOption =
                 ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
-            base.GuaranteeByFixedQuantity(guaranteedValues, 0, valueCountRequestOption);
+            base.GuaranteeByFixedQuantity(guaranteedValues, valueCountRequestOption);
             return this;
         }
 
@@ -271,7 +271,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             ValueCountRequestOption valueCountRequestOption =
                 ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
-            base.GuaranteeByFixedQuantity(guaranteedValues, 0, valueCountRequestOption);
+            base.GuaranteeByFixedQuantity(guaranteedValues, valueCountRequestOption);
             return this;
         }
 

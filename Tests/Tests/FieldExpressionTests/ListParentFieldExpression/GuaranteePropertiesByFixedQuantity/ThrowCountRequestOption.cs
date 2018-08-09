@@ -93,7 +93,7 @@ namespace Tests.Tests.FieldExpressionTests.ListParentFieldExpression.GuaranteePr
 
             ListParentFieldExpression<ElementType, OperableListEx<ElementType>, ElementType, ElementType.PropertyType>
                 returnResult = this.testContext.ListParentFieldExpression.GuaranteePropertiesByFixedQuantity(
-                    new object[]
+                    new []
                     {
                         new ElementType.PropertyType(),
                         new ElementType.PropertyType(),
@@ -111,7 +111,7 @@ namespace Tests.Tests.FieldExpressionTests.ListParentFieldExpression.GuaranteePr
 
             ListParentFieldExpression<ElementType, OperableListEx<ElementType>, ElementType, ElementType.PropertyType>
                 returnResult = this.testContext.ListParentFieldExpression.GuaranteePropertiesByFixedQuantity(
-                    new object[]
+                    new []
                     {
                         new ElementType.PropertyType(),
                         new ElementType.PropertyType(),

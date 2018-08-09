@@ -22,9 +22,10 @@ namespace Tests.Tests.OperableListTests.ReferenceParentOperableList.GuaranteePro
         {
             ReferenceParentOperableList<ElementSubType, RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> operableList = this.testContext.CreateOperableList();
 
-            var guaranteedValues = new Func<ElementType>[] { () => new ElementType(), () => new ElementType(), };
+            var guaranteedValues = new Func<ElementSubType>[] { () => new ElementSubType(), () => new ElementSubType(), };
 
-            ReferenceParentOperableList<ElementSubType, RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> actual =
+            ReferenceParentOperableList<ElementSubType, RootReferenceParentOperableList<ElementType, ElementParentType>,
+                ElementType, ElementParentType> actual =
                 operableList.GuaranteeByPercentageOfTotal(guaranteedValues);
 
             actual.Populate();
@@ -39,7 +40,7 @@ namespace Tests.Tests.OperableListTests.ReferenceParentOperableList.GuaranteePro
         {
             ReferenceParentOperableList<ElementSubType, RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> operableList = this.testContext.CreateOperableList();
 
-            var guaranteedValues = new Func<ElementType>[] { () => new ElementType(), () => new ElementType(), };
+            var guaranteedValues = new Func<ElementSubType>[] { () => new ElementSubType(), () => new ElementSubType(), };
 
             ReferenceParentOperableList<ElementSubType, RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> actual =
                 operableList.GuaranteeByPercentageOfTotal(guaranteedValues, 5);
@@ -56,7 +57,7 @@ namespace Tests.Tests.OperableListTests.ReferenceParentOperableList.GuaranteePro
         {
             ReferenceParentOperableList<ElementSubType, RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> operableList = this.testContext.CreateOperableList();
 
-            var guaranteedValues = new object[] { new ElementType(), (Func<ElementType>)(() => new ElementType()), };
+            var guaranteedValues = new object[] { new ElementSubType(), (Func<ElementSubType>)(() => new ElementSubType()), };
 
             ReferenceParentOperableList<ElementSubType, RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> actual =
                 operableList.GuaranteeByPercentageOfTotal(guaranteedValues);
@@ -73,7 +74,7 @@ namespace Tests.Tests.OperableListTests.ReferenceParentOperableList.GuaranteePro
         {
             ReferenceParentOperableList<ElementSubType, RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> operableList = this.testContext.CreateOperableList();
 
-            var guaranteedValues = new object[] { new ElementType(), (Func<ElementType>)(() => new ElementType()), };
+            var guaranteedValues = new object[] { new ElementSubType(), (Func<ElementSubType>)(() => new ElementSubType()), };
 
             ReferenceParentOperableList<ElementSubType, RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> actual =
                 operableList.GuaranteeByPercentageOfTotal(guaranteedValues, 5);
@@ -90,7 +91,7 @@ namespace Tests.Tests.OperableListTests.ReferenceParentOperableList.GuaranteePro
         {
             ReferenceParentOperableList<ElementSubType, RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> operableList = this.testContext.CreateOperableList();
 
-            var guaranteedValues = new[] { new ElementType(), new ElementType(), };
+            var guaranteedValues = new[] { new ElementSubType(), new ElementSubType(), };
 
             ReferenceParentOperableList<ElementSubType, RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> actual =
                 operableList.GuaranteeByPercentageOfTotal(guaranteedValues);
@@ -107,7 +108,7 @@ namespace Tests.Tests.OperableListTests.ReferenceParentOperableList.GuaranteePro
         {
             ReferenceParentOperableList<ElementSubType, RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> operableList = this.testContext.CreateOperableList();
 
-            var guaranteedValues = new[] { new ElementType(), new ElementType(), };
+            var guaranteedValues = new[] { new ElementSubType(), new ElementSubType(), };
 
             ReferenceParentOperableList<ElementSubType, RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> actual =
                 operableList.GuaranteeByPercentageOfTotal(guaranteedValues, 5);

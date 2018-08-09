@@ -142,9 +142,6 @@ namespace Tests.Tests
 
             Mock<AppDomainWrapper> mockDomain = Helpers.GetMock<AppDomainWrapper>();
 
-            // TODO 2
-            //this.tableTypeCache.TableTypeDictionary.TryAdd(initialAssemblyToScan, assemblyLookupContext);
-
             var foreignKeyAttribute = new ForeignKeyAttribute("tableName", "keyName");
             var mockGetTableAttibute = new Mock<GetTableAttribute>();
 
@@ -189,16 +186,20 @@ namespace Tests.Tests
             // Arrange
 
             var assemblyMock = new Mock<AssemblyWrapper>();
+
             GetTableAttribute getTableAttribute = type => null;
+
             string defaultSchema = "DefaultSchema";
 
-            var assemblyNames = new[]
-                {new AssemblyNameWrapper(), new AssemblyNameWrapper(), new AssemblyNameWrapper()};
+            var referencedAssemblyNames = new[]
+                {new AssemblyNameWrapper(), new AssemblyNameWrapper()};
+
+            var assemblyName = new AssemblyNameWrapper();
 
             assemblyMock.Setup(m => m.GetReferencedAssemblies())
-                .Returns(assemblyNames.Take(2).ToArray());
+                .Returns(referencedAssemblyNames.ToArray());
 
-            assemblyMock.Setup(m => m.GetName()).Returns(assemblyNames.Skip(2).Take(1).First());
+            assemblyMock.Setup(m => m.GetName()).Returns(assemblyName);
 
             var domainMock = new Mock<AppDomainWrapper>();
 
@@ -210,19 +211,21 @@ namespace Tests.Tests
 
             // Assert
 
-            // TODO 2
-            //KeyValuePair<AssemblyWrapper, AssemblyLookupContext> typeDictionaryEntry =
-            //    this.tableTypeCache.TableTypeDictionary.Single();
-            //Assert.AreEqual(assemblyMock.Object, typeDictionaryEntry.Key);
-            //Assert.IsInstanceOfType(typeDictionaryEntry.Value, typeof(AssemblyLookupContext));
+            referencedAssemblyNames.Concat(new[] {assemblyName}).ToList().ForEach(
 
-            //assemblyNames.ToList()
-            //    .ForEach(assemblyName => this.tableTypeCacheServiceMock.Verify(m => m.PopulateAssemblyCache(
-            //        domainMock.Object,
-            //        assemblyName, getTableAttribute, defaultSchema,
-            //        this.tableTypeCacheServiceMock.Object.TryAssociateTypeToTable, typeDictionaryEntry.Value)));
+                name => this.tableTypeCacheServiceMock.Verify(m => m.PopulateAssemblyCache(
+                        domainMock.Object,
+                        name,
+                        getTableAttribute,
+                        defaultSchema,
+                        this.tableTypeCacheServiceMock.Object.TryAssociateTypeToTable,
+                        It.IsAny<AssemblyLookupContext>()
+                    ),
 
-            //domainMock.Verify(m => m.Unload());
+                    Times.Once
+                ));
+
+            domainMock.Verify(m => m.Unload());
         }
     }
 }

@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.ListOperations.Concrete;
 using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete;
@@ -33,11 +34,11 @@ namespace Tests.Tests.OperableListTests.RootReferenceParentOperableList
     {
         public TestDataFramework.Populator.Concrete.OperableList.RootReferenceParentOperableList<ElementType, ElementParentType> CreateOperableList() =>
             new TestDataFramework.Populator.Concrete.OperableList.RootReferenceParentOperableList<ElementType,ElementParentType>(
-                Helpers.GetObject<RecordReference<ElementParentType>>(),
-                Enumerable.Empty<RecordReference<ElementType>>(),
+                this.RootMock.Object,
+                this.Inputs,
                 this.ValueGuaranteePopulatorMock.Object,
-                null,
-                null,
+                this.PopulatorMock.Object,
+                this.ObjectGraphServiceMock.Object,
                 null,
                 null,
                 this.TypeGeneratorMock.Object,
@@ -69,13 +70,21 @@ namespace Tests.Tests.OperableListTests.RootReferenceParentOperableList
             }
         }
 
+        public List<RecordReference<ElementType>> Inputs => this.InputMocks.Select(i => i.Object).ToList();
+
+        public Mock<BasePopulator> PopulatorMock;
+        public Mock<RecordReference<ElementParentType>> RootMock;
         public Mock<ValueGuaranteePopulator> ValueGuaranteePopulatorMock;
         public Mock<ITypeGenerator> TypeGeneratorMock;
-        
+        public Mock<IObjectGraphService> ObjectGraphServiceMock;
+
         public TestContext()
         {
             this.ValueGuaranteePopulatorMock = new Mock<ValueGuaranteePopulator>();
             this.TypeGeneratorMock = new Mock<ITypeGenerator>();
+            this.RootMock = Helpers.GetMock<RecordReference<ElementParentType>>();
+            this.PopulatorMock = Helpers.GetMock<BasePopulator>();
+            this.ObjectGraphServiceMock = new Mock<IObjectGraphService>();
         }
 
         private static bool Check(IEnumerable<GuaranteedValues> guaranteedValues,

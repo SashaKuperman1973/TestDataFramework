@@ -136,11 +136,11 @@
     <Compile Include="Tests\OperableListTests\OperableList\MainTests\Common.cs" />
     <Compile Include="Tests\OperableListTests\OperableList\MainTests\ListInterfaceImplementation.cs" />
     <Compile Include="Tests\OperableListTests\ReferenceParentOperableList\Common.cs" />
+    <Compile Include="Tests\OperableListTests\RootReferenceParentOperableList\Common.cs" />
     <Compile Include="Tests\OperableListTests\RootReferenceParentOperableList\GuaranteePropertiesByFixedQuantity\DoNotThrowCountRequestOption.cs" />
     <Compile Include="Tests\OperableListTests\RootReferenceParentOperableList\GuaranteePropertiesByFixedQuantity\ThrowCountRequestOption.cs" />
     <Compile Include="Tests\OperableListTests\RootReferenceParentOperableList\GuaranteePropertiesByPercentageOfTotal\DoNotThrowCountRequestOption.cs" />
     <Compile Include="Tests\OperableListTests\RootReferenceParentOperableList\GuaranteePropertiesByPercentageOfTotal\ThrowCountRequestOption.cs" />
-    <Compile Include="Tests\OperableListTests\RootReferenceParentOperableList\OperableListTests.cs" />
     <Compile Include="Tests\OperableListTests\RootReferenceParentOperableList\TestContext.cs" />
     <Compile Include="Tests\OperableListTests\ReferenceParentOperableList\GuaranteePropertiesByFixedQuantity\DoNotThrowCountRequestOption.cs" />
     <Compile Include="Tests\OperableListTests\ReferenceParentOperableList\GuaranteePropertiesByFixedQuantity\ThrowCountRequestOption.cs" />

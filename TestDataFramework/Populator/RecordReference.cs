@@ -35,11 +35,11 @@ namespace TestDataFramework.Populator
     public abstract class RecordReference : Populatable
     {
         private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(RecordReference));
-        protected readonly IAttributeDecorator AttributeDecorator;
+
+        protected IAttributeDecorator AttributeDecorator { get; }
+        protected ITypeGenerator TypeGenerator { get; }
 
         internal readonly List<RecordReference> PrimaryKeyReferences = new List<RecordReference>();
-
-        protected readonly ITypeGenerator TypeGenerator;
 
         protected RecordReference(ITypeGenerator typeGenerator, IAttributeDecorator attributeDecorator)
         {

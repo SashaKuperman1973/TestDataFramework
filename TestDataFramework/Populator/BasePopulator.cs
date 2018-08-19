@@ -36,9 +36,9 @@ namespace TestDataFramework.Populator
     {
         private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(BasePopulator));
 
-        protected readonly IAttributeDecorator AttributeDecorator;
+        protected IAttributeDecorator AttributeDecorator { get; }
 
-        protected readonly ConcurrentDictionary<Type, Decorator> DecoratorDictionary =
+        private readonly ConcurrentDictionary<Type, Decorator> decoratorDictionary =
             new ConcurrentDictionary<Type, Decorator>();
 
         protected BasePopulator(IAttributeDecorator attributeDecorator)
@@ -50,7 +50,7 @@ namespace TestDataFramework.Populator
         {
             BasePopulator.Logger.Debug("Entering DecorateType<T>");
 
-            Decorator result = this.DecoratorDictionary.GetOrAdd(typeof(T), new Decorator<T>(this.AttributeDecorator));
+            Decorator result = this.decoratorDictionary.GetOrAdd(typeof(T), new Decorator<T>(this.AttributeDecorator));
 
             BasePopulator.Logger.Debug("Exiting DecorateType<T>");
             return (Decorator<T>) result;

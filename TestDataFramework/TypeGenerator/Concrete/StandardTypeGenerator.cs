@@ -98,7 +98,7 @@ namespace TestDataFramework.TypeGenerator.Concrete
 
             if (this.complexTypeProcessingRecursionGuard.Contains(forType))
             {
-                if (!this.ExplicitSetterforCircularReference(objectGraphNode))
+                if (!this.IsThereAnExplicitSetterforCircularReference(objectGraphNode))
                 {
                     StandardTypeGenerator.Logger.Debug("Circular reference encountered. Type: " + forType);
 
@@ -139,7 +139,7 @@ namespace TestDataFramework.TypeGenerator.Concrete
             }
         }
 
-        private bool ExplicitSetterforCircularReference(ObjectGraphNode objectGraphNode)
+        private bool IsThereAnExplicitSetterforCircularReference(ObjectGraphNode objectGraphNode)
         {
             if (objectGraphNode == null)
                 return false;
@@ -271,6 +271,7 @@ namespace TestDataFramework.TypeGenerator.Concrete
 
         #region Public methods
 
+        // Main entry point.
         public virtual object GetObject<T>(IEnumerable<ExplicitPropertySetter> explicitProperySetters)
         {
             StandardTypeGenerator.Logger.Debug($"Entering GetObject. T: {typeof(T)}");
@@ -292,6 +293,7 @@ namespace TestDataFramework.TypeGenerator.Concrete
 
         private int blankSetterCount = 0;
 
+        // A secondary entry point.
         public virtual object GetObject(Type forType, ObjectGraphNode objectGraphNode)
         {
             StandardTypeGenerator.Logger.Debug($"Entering GetObject. forType: {forType}");

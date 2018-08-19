@@ -30,18 +30,18 @@ namespace TestDataFramework.Populator.Concrete.FieldExpression
 {
     public class FieldExpression<TListElement, TProperty>
     {
-        protected readonly Expression<Func<TListElement, TProperty>> Expression;
+        private readonly Expression<Func<TListElement, TProperty>> expression;
 
-        protected readonly IObjectGraphService ObjectGraphService;
+        private readonly IObjectGraphService objectGraphService;
 
         public virtual OperableListEx<TListElement> OperableList { get; }
 
         public FieldExpression(Expression<Func<TListElement, TProperty>> expression,
             OperableListEx<TListElement> operableList, IObjectGraphService objectGraphService)
         {
-            this.Expression = expression;
+            this.expression = expression;
             this.OperableList = operableList;
-            this.ObjectGraphService = objectGraphService;
+            this.objectGraphService = objectGraphService;
         }
 
         public virtual IEnumerable<TListElement> RecordObjects => this.OperableList.RecordObjects;
@@ -59,7 +59,7 @@ namespace TestDataFramework.Populator.Concrete.FieldExpression
         public virtual FieldExpression<TListElement, TProperty> GuaranteePropertiesByFixedQuantity(IEnumerable<object> guaranteedValues,
             int fixedQuantity, ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
-            List<PropertyInfo> setterObjectGraph = this.ObjectGraphService.GetObjectGraph(this.Expression);
+            List<PropertyInfo> setterObjectGraph = this.objectGraphService.GetObjectGraph(this.expression);
 
             guaranteedValues = guaranteedValues.ToList();
 
@@ -122,7 +122,7 @@ namespace TestDataFramework.Populator.Concrete.FieldExpression
             IEnumerable<object> guaranteedValues, int frequencyPercentage,
             ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
-            List<PropertyInfo> setterObjectGraph = this.ObjectGraphService.GetObjectGraph(this.Expression);
+            List<PropertyInfo> setterObjectGraph = this.objectGraphService.GetObjectGraph(this.expression);
 
             guaranteedValues = guaranteedValues.ToList();
 

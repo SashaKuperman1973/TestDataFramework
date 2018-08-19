@@ -46,7 +46,19 @@ namespace TestDataFramework.Populator.Concrete.OperableList
         {
             this.RootList = rootList;
             this.ParentList = parentList;
+
+            this.attributeDecorator = attributeDecorator;
+            this.deepCollectionSettingConverter = deepCollectionSettingConverter;
+            this.objectGraphService = objectGraphService;
+            this.typeGenerator = typeGenerator;
+            this.valueGuaranteePopulator = valueGuaranteePopulator;
         }
+
+        private readonly IAttributeDecorator attributeDecorator;
+        private readonly DeepCollectionSettingConverter deepCollectionSettingConverter;
+        private readonly IObjectGraphService objectGraphService;
+        private readonly ITypeGenerator typeGenerator;
+        private readonly ValueGuaranteePopulator valueGuaranteePopulator;
 
         private ListParentOperableList<
                 TChildListElement,
@@ -64,12 +76,12 @@ namespace TestDataFramework.Populator.Concrete.OperableList
                 this.RootList,
                 this,
                 input,
-                this.ValueGuaranteePopulator,
+                this.valueGuaranteePopulator,
                 this.Populator,
-                this.ObjectGraphService,
-                this.AttributeDecorator,
-                this.DeepCollectionSettingConverter,
-                this.TypeGenerator,
+                this.objectGraphService,
+                this.attributeDecorator,
+                this.deepCollectionSettingConverter,
+                this.typeGenerator,
                 isShallowCopy: false
             );
 
@@ -84,12 +96,12 @@ namespace TestDataFramework.Populator.Concrete.OperableList
                 this.RootList,
                 this.ParentList,
                 input,
-                this.ValueGuaranteePopulator,
+                this.valueGuaranteePopulator,
                 this.Populator,
-                this.ObjectGraphService,
-                this.AttributeDecorator,
-                this.DeepCollectionSettingConverter,
-                this.TypeGenerator,
+                this.objectGraphService,
+                this.attributeDecorator,
+                this.deepCollectionSettingConverter,
+                this.typeGenerator,
                 isShallowCopy:true
             );
 
@@ -166,7 +178,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
         {
             var fieldExpression =
                 new ListParentFieldExpression<TListElement, TParentList, TRootListElement, TProperty>(expression, this,
-                    this.ObjectGraphService);
+                    this.objectGraphService);
 
             return fieldExpression;
         }

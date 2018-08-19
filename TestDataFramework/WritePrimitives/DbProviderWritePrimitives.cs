@@ -43,7 +43,7 @@ namespace TestDataFramework.WritePrimitives
         private readonly IValueFormatter formatter;
         private readonly bool mustBeInATransaction;
 
-        protected StringBuilder ExecutionStatements = new StringBuilder();
+        protected readonly StringBuilder ExecutionStatements = new StringBuilder();
 
         protected DbProviderWritePrimitives(string connectionStringWithDefaultCatalogue,
             DbProviderFactory dbProviderFactory,
@@ -130,7 +130,7 @@ namespace TestDataFramework.WritePrimitives
                 }
             }
 
-            this.ExecutionStatements = new StringBuilder();
+            this.ExecutionStatements.Clear();
 
             DbProviderWritePrimitives.Logger.Debug($"Exiting Execute. result set count: {result.Count}");
             return result.ToArray();

@@ -25,7 +25,10 @@ using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.DeepSetting;
+using TestDataFramework.DeepSetting.Concrete;
 using TestDataFramework.HandledTypeGenerator;
+using TestDataFramework.Populator;
+using TestDataFramework.Populator.Concrete;
 using TestDataFramework.TypeGenerator.Concrete;
 using TestDataFramework.TypeGenerator.Interfaces;
 using TestDataFramework.ValueGenerator.Interfaces;
@@ -85,6 +88,8 @@ namespace Tests.Tests
         [TestMethod]
         public void GetObject_RecursionGuard_Test()
         {
+            // Arrange
+
             Type[] types =
             {
                 typeof(InfiniteRecursiveClass2),
@@ -92,17 +97,84 @@ namespace Tests.Tests
             };
 
             int i = 0;
+
             this.valueGeneratorMock.Setup(m => m.GetValue(It.IsAny<PropertyInfo>(), It.IsAny<ObjectGraphNode>()))
+
                 .Returns<PropertyInfo, ObjectGraphNode>((pi, objectGraphNode) =>
+
                     this.typeGenerator.GetObject(types[i++], null));
 
             var explicitPropertySetters = new List<ExplicitPropertySetter>();
+
+            // Act
 
             var result =
                 this.typeGenerator.GetObject<InfiniteRecursiveClass1>(explicitPropertySetters) as
                     InfiniteRecursiveClass1;
 
-            Assert.IsNull(result.InfinietRecursiveClassA.InfiniteRecursiveClassB);
+            // Assert
+
+            Assert.IsNull(result.InfinietRecursiveObjectA.InfiniteRecursiveObjectB);
+        }
+
+        [TestMethod]
+        public void GetObject_ExplicitSetter_RecursionGuard_Test()
+        {                
+            // Arrange
+
+            Type[] types =
+            {
+                typeof(InfiniteRecursiveClass1),
+                typeof(InfiniteRecursiveClass2),
+                typeof(InfiniteRecursiveClass1),
+            };
+
+            int i = 0;
+
+            this.valueGeneratorMock.Setup(m => m.GetValue(It.IsAny<PropertyInfo>(), It.IsAny<ObjectGraphNode>()))
+
+                .Returns<PropertyInfo, ObjectGraphNode>((pi, objectGraphNode) =>
+
+                    this.typeGenerator.GetObject(types[i++], objectGraphNode));
+
+            var objectGraphService = new ObjectGraphService();
+
+            List<PropertyInfo> objectGraph = objectGraphService.GetObjectGraph<RecursionRootClass, InfiniteRecursiveClass2>(
+                m => m.RecursionProperty1.InfinietRecursiveObjectA.InfiniteRecursiveObjectB.InfinietRecursiveObjectA);
+
+            var valueForSetting = new InfiniteRecursiveClass2();
+
+            var explicitPropertySetters = new List<ExplicitPropertySetter>
+            {
+                new ExplicitPropertySetter
+                {
+                    PropertyChain = objectGraph,
+
+                    Action = @object => typeof(InfiniteRecursiveClass1)
+                        .GetProperty(nameof(InfiniteRecursiveClass1.InfinietRecursiveObjectA))
+                        .SetValue(@object, valueForSetting)
+                }
+            };
+
+            this.typeGeneratorServiceMock.Setup(
+                    m => m.GetExplicitlySetPropertySetters(It.IsAny<List<ExplicitPropertySetter>>(),
+                        It.IsAny<ObjectGraphNode>()))
+                .Returns<List<ExplicitPropertySetter>, ObjectGraphNode>((l, n) =>
+                    i == 3
+                        ? explicitPropertySetters
+                        : Enumerable.Empty<ExplicitPropertySetter>());
+
+            // Act
+
+            var result =
+                this.typeGenerator.GetObject<RecursionRootClass>(explicitPropertySetters) as
+                    RecursionRootClass;
+
+            // Assert
+
+            Assert.IsNotNull(result.RecursionProperty1.InfinietRecursiveObjectA.InfiniteRecursiveObjectB.InfinietRecursiveObjectA);
+            Assert.IsNull(result.RecursionProperty1.InfinietRecursiveObjectA.InfiniteRecursiveObjectB.InfinietRecursiveObjectA.InfiniteRecursiveObjectB);
+            Assert.AreEqual(valueForSetting, result.RecursionProperty1.InfinietRecursiveObjectA.InfiniteRecursiveObjectB.InfinietRecursiveObjectA);
         }
 
         [TestMethod]

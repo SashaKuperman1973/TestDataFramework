@@ -168,14 +168,19 @@ namespace Tests.TestModels
         }
     }
 
+    public class RecursionRootClass
+    {
+        public InfiniteRecursiveClass1 RecursionProperty1 { get; set; }
+    }
+
     public class InfiniteRecursiveClass1
     {
-        public InfiniteRecursiveClass2 InfinietRecursiveClassA { get; set; }
+        public InfiniteRecursiveClass2 InfinietRecursiveObjectA { get; set; }
     }
 
     public class InfiniteRecursiveClass2
     {
-        public InfiniteRecursiveClass1 InfiniteRecursiveClassB { get; set; }
+        public InfiniteRecursiveClass1 InfiniteRecursiveObjectB { get; set; }
     }
 
     public class ClassWithoutADefaultConstructor

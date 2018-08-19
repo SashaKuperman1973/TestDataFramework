@@ -81,18 +81,18 @@ namespace DocumentationExamples
         {
             IPopulator populator = StaticPopulatorFactory.CreateMemoryPopulator();
 
-            IEnumerable<string> list = populator.Add<string>(10)
+            IEnumerable<string> list = populator.Add<string>(15)
 
                 .Skip(2).Take(5).GuaranteeByFixedQuantity(new[] {"Hello", "Goodbye"}, 3).ParentList
 
-                .Skip(12).Take(8).GuaranteeByFixedQuantity(new[] { "Greetings", "Fairwell" }, 4)
+                .Skip(8).Take(6).GuaranteeByFixedQuantity(new[] { "Greetings", "Fairwell" }, 4)
                 
                 .BindAndMake();            
 
             list.ToList().ForEach(Console.WriteLine);
         }
 
-        // TODO
+        // TODO 1
         [TestMethod]
         public void ListOffAList()
         {

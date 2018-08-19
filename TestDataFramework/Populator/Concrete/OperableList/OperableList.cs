@@ -37,11 +37,11 @@ namespace TestDataFramework.Populator.Concrete.OperableList
         IList<RecordReference<TListElement>>, 
         IMakeableCollectionContainer<TListElement>
     {
-        protected readonly IAttributeDecorator AttributeDecorator;
-        protected readonly DeepCollectionSettingConverter DeepCollectionSettingConverter;
-        protected readonly IObjectGraphService ObjectGraphService;
-        protected readonly ITypeGenerator TypeGenerator;
-        protected readonly ValueGuaranteePopulator ValueGuaranteePopulator;
+        private readonly IAttributeDecorator attributeDecorator;
+        private readonly DeepCollectionSettingConverter deepCollectionSettingConverter;
+        private readonly IObjectGraphService objectGraphService;
+        private readonly ITypeGenerator typeGenerator;
+        private readonly ValueGuaranteePopulator valueGuaranteePopulator;
 
         private readonly IValueGauranteePopulatorContextService explicitPropertySetterContextService =
             new ExplicitPropertySetterContextService();        
@@ -73,11 +73,11 @@ namespace TestDataFramework.Populator.Concrete.OperableList
         {
             this.IsShallowCopy = isShalowCopy;
             this.Populator = populator;
-            this.ValueGuaranteePopulator = valueGuaranteePopulator;
-            this.ObjectGraphService = objectGraphService;
-            this.AttributeDecorator = attributeDecorator;
-            this.DeepCollectionSettingConverter = deepCollectionSettingConverter;
-            this.TypeGenerator = typeGenerator;
+            this.valueGuaranteePopulator = valueGuaranteePopulator;
+            this.objectGraphService = objectGraphService;
+            this.attributeDecorator = attributeDecorator;
+            this.deepCollectionSettingConverter = deepCollectionSettingConverter;
+            this.typeGenerator = typeGenerator;
 
             List<RecordReference<TListElement>> list = input?.ToList() ?? new List<RecordReference<TListElement>>();
 
@@ -93,11 +93,11 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             this.PopulateChildren();
 
             if (this.guaranteedPropertySetters.Any())
-                this.ValueGuaranteePopulator.Bind(this, this.guaranteedPropertySetters,
+                this.valueGuaranteePopulator.Bind(this, this.guaranteedPropertySetters,
                     this.explicitPropertySetterContextService);
 
             if (this.privateGuaranteedValues.Any())
-                this.ValueGuaranteePopulator.Bind(this, this.privateGuaranteedValues, new ValueSetContextService());
+                this.valueGuaranteePopulator.Bind(this, this.privateGuaranteedValues, new ValueSetContextService());
 
             if (this.IsPopulated || this.IsShallowCopy)
                 return;
@@ -113,9 +113,9 @@ namespace TestDataFramework.Populator.Concrete.OperableList
 
         private RecordReference<TCustomListElement> CreateRecordReference<TCustomListElement>()
         {
-            var result = new RecordReference<TCustomListElement>(this.TypeGenerator, this.AttributeDecorator,
-                this.Populator, this.ObjectGraphService, this.ValueGuaranteePopulator,
-                this.DeepCollectionSettingConverter);
+            var result = new RecordReference<TCustomListElement>(this.typeGenerator, this.attributeDecorator,
+                this.Populator, this.objectGraphService, this.valueGuaranteePopulator,
+                this.deepCollectionSettingConverter);
 
             return result;
         }

@@ -43,6 +43,7 @@ namespace Tests.Tests
         private StandardTypeGenerator typeGenerator;
         private Mock<ITypeGeneratorService> typeGeneratorServiceMock;
         private Mock<IValueGenerator> valueGeneratorMock;
+        private Mock<RecursionGuard> recursionGuardMock;
 
         [TestInitialize]
         public void Initialize()
@@ -52,9 +53,15 @@ namespace Tests.Tests
             this.valueGeneratorMock = new Mock<IValueGenerator>();
             this.handledTypeGeneratorMock = new Mock<IHandledTypeGenerator>();
             this.typeGeneratorServiceMock = new Mock<ITypeGeneratorService>();
+            this.recursionGuardMock = new Mock<RecursionGuard>();
 
             this.typeGenerator = new StandardTypeGenerator(this.valueGeneratorMock.Object,
-                this.handledTypeGeneratorMock.Object, this.typeGeneratorServiceMock.Object);
+                this.handledTypeGeneratorMock.Object, this.typeGeneratorServiceMock.Object,
+                this.recursionGuardMock.Object);
+
+            this.recursionGuardMock.Setup(m => m.Push(It.IsAny<Type>(),
+                    It.IsAny<IEnumerable<ExplicitPropertySetter>>(), It.IsAny<ObjectGraphNode>()))
+                .Returns(true).Verifiable();
         }
 
         [TestMethod]
@@ -83,6 +90,9 @@ namespace Tests.Tests
             this.valueGeneratorMock.Verify(
                 m => m.GetValue(It.Is<PropertyInfo>(p => p.PropertyType == typeof(int)), It.IsAny<ObjectGraphNode>()),
                 Times.Once);
+
+            this.recursionGuardMock.Verify(m => m.Pop(), Times.Once);
+            this.recursionGuardMock.Verify();
         }
 
         [TestMethod]
@@ -90,35 +100,28 @@ namespace Tests.Tests
         {
             // Arrange
 
-            Type[] types =
-            {
-                typeof(InfiniteRecursiveClass2),
-                typeof(InfiniteRecursiveClass1)
-            };
+            this.recursionGuardMock.Setup(m => m.Push(typeof(InfiniteRecursiveClass1),
+                    It.IsAny<IEnumerable<ExplicitPropertySetter>>(), It.IsAny<ObjectGraphNode>()))
+                .Returns(false).Verifiable();
 
-            int i = 0;
-
-            this.valueGeneratorMock.Setup(m => m.GetValue(It.IsAny<PropertyInfo>(), It.IsAny<ObjectGraphNode>()))
-
-                .Returns<PropertyInfo, ObjectGraphNode>((pi, objectGraphNode) =>
-
-                    this.typeGenerator.GetObject(types[i++], null));
-
-            var explicitPropertySetters = new List<ExplicitPropertySetter>();
+            var explicitPropertySetters = new ExplicitPropertySetter[0];
 
             // Act
 
             var result =
                 this.typeGenerator.GetObject<InfiniteRecursiveClass1>(explicitPropertySetters) as
-                    InfiniteRecursiveClass1;
+                    RecursionRootClass;
 
             // Assert
 
-            Assert.IsNull(result.InfinietRecursiveObjectA.InfiniteRecursiveObjectB);
+            this.recursionGuardMock.Verify(m => m.Push(typeof(InfiniteRecursiveClass1),
+                It.IsAny<IEnumerable<ExplicitPropertySetter>>(), It.IsAny<ObjectGraphNode>()));
+
+            this.recursionGuardMock.Verify(m => m.Pop(), Times.Never);
         }
 
-        [TestMethod]
-        public void GetObject_ExplicitSetter_RecursionGuard_Test()
+        // TODO 2 - Remove this and put it tn the RecursionGuard tests
+        public void GetObject_ExplicitSetter_RecursionGuard_Test_ToReplace()
         {                
             // Arrange
 
@@ -211,6 +214,9 @@ namespace Tests.Tests
             // Assert
 
             Assert.AreEqual(expected, result.SecondInteger);
+
+            this.recursionGuardMock.Verify(m => m.Pop(), Times.Once);
+            this.recursionGuardMock.Verify();
         }
 
         [TestMethod]
@@ -223,6 +229,9 @@ namespace Tests.Tests
             // Assert
 
             Assert.IsTrue(result is AStruct);
+
+            this.recursionGuardMock.Verify(m => m.Pop(), Times.Once);
+            this.recursionGuardMock.Verify();
         }
 
         [TestMethod]
@@ -231,6 +240,9 @@ namespace Tests.Tests
             object result = this.typeGenerator.GetObject(typeof(ClassWithoutADefaultConstructor), null);
 
             Assert.IsNull(result);
+
+            this.recursionGuardMock.Verify(m => m.Pop(), Times.Once);
+            this.recursionGuardMock.Verify();
         }
 
         [TestMethod]
@@ -250,6 +262,11 @@ namespace Tests.Tests
 
             Assert.AreEqual(3, result.Key);
             Assert.AreEqual("ABCD", result.Value);
+
+            this.recursionGuardMock.Verify(m => m.Pop(), Times.Never);
+
+            this.recursionGuardMock.Verify(m => m.Push(It.IsAny<Type>(),
+                It.IsAny<IEnumerable<ExplicitPropertySetter>>(), It.IsAny<ObjectGraphNode>()), Times.Never);
         }
 
         [TestMethod]
@@ -263,6 +280,9 @@ namespace Tests.Tests
             // Assert
 
             Assert.IsNull(resultObject);
+
+            this.recursionGuardMock.Verify(m => m.Pop(), Times.Once);
+            this.recursionGuardMock.Verify();
         }
 
         [TestMethod]
@@ -292,6 +312,9 @@ namespace Tests.Tests
                 m => m.GetValue(null,
                     It.Is<Type>(p => p == typeof(SecondClass)))
                 , Times.Once);
+
+            this.recursionGuardMock.Verify(m => m.Pop(), Times.Once);
+            this.recursionGuardMock.Verify();
         }
 
         [TestMethod]
@@ -310,6 +333,11 @@ namespace Tests.Tests
             // Assert
 
             Assert.AreEqual(expected, result);
+
+            this.recursionGuardMock.Verify(m => m.Pop(), Times.Never);
+
+            this.recursionGuardMock.Verify(m => m.Push(It.IsAny<Type>(),
+                It.IsAny<IEnumerable<ExplicitPropertySetter>>(), It.IsAny<ObjectGraphNode>()), Times.Never);
         }
     }
 }

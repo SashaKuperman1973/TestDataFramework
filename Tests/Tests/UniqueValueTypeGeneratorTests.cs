@@ -39,6 +39,7 @@ namespace Tests.Tests
         private Mock<ITypeGeneratorService> typeGeneratorServiceMock;
         private UniqueValueTypeGenerator uniqueValueTypeGenerator;
         private Mock<IValueGenerator> valueGeneratorMock;
+        private Mock<RecursionGuard> recursionGuardMock;
 
         [TestInitialize]
         public void Initialize()
@@ -47,12 +48,14 @@ namespace Tests.Tests
             this.valueGeneratorMock = new Mock<IValueGenerator>();
             this.handledTypeGeneratorMock = new Mock<IHandledTypeGenerator>();
             this.typeGeneratorServiceMock = new Mock<ITypeGeneratorService>();
+            this.recursionGuardMock = new Mock<RecursionGuard>();
 
             this.uniqueValueTypeGenerator = new UniqueValueTypeGenerator(
                 typeGenerator => this.accumulatorValueGeneratorMock.Object,
                 this.valueGeneratorMock.Object,
                 this.handledTypeGeneratorMock.Object,
-                this.typeGeneratorServiceMock.Object);
+                this.typeGeneratorServiceMock.Object,
+                this.recursionGuardMock.Object);
         }
 
         [TestMethod]

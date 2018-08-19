@@ -160,6 +160,7 @@
     <Compile Include="Tests\OperableListTests\OperableList\GuaranteePropertiesByFixedQuantity\ThrowCountRequestOption.cs" />
     <Compile Include="Tests\OperableListTests\OperableList\MainTests\Populate.cs" />
     <Compile Include="Tests\OperableListTests\OperableList\TestContext.cs" />
+    <Compile Include="Tests\RecursionGuardTests.cs" />
     <Compile Include="Tests\SqlClientValueGeneratorTests.cs" />
     <Compile Include="Tests\StandardHandledTypeGeneratorTests.cs" />
     <Compile Include="Tests\MemoryUniqueValueGeneratorTests.cs" />

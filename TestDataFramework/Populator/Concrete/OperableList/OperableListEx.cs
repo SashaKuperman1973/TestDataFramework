@@ -36,7 +36,6 @@ namespace TestDataFramework.Populator.Concrete.OperableList
 
         private ListParentOperableList<
                 TChildListElement,
-                OperableListEx<TListElement>,
                 TListElement>
 
             CreateChild<TChildListElement>(
@@ -45,7 +44,6 @@ namespace TestDataFramework.Populator.Concrete.OperableList
         {
             var result = new ListParentOperableList<
                 TChildListElement,
-                OperableListEx<TListElement>,
                 TListElement>(
 
                 this,
@@ -63,10 +61,10 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             return result;
         }
 
-        private ListParentOperableList<TListElement, OperableListEx<TListElement>, TListElement> CreateSubset(
+        private ListParentOperableList<TListElement> CreateSubset(
             IEnumerable<RecordReference<TListElement>> input)
         {
-            var result = new ListParentOperableList<TListElement, OperableListEx<TListElement>, TListElement>
+            var result = new ListParentOperableList<TListElement>
             (
                 this,
                 this,
@@ -83,61 +81,56 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             return result;
         }
 
-        public virtual ListParentOperableList<TListElement, OperableListEx<TListElement>, TListElement> Take(int count)
+        public virtual ListParentOperableList<TListElement> Take(int count)
         {
             IEnumerable<RecordReference<TListElement>> input = this.InternalEnumerable.Take(count);
 
-            ListParentOperableList<TListElement, OperableListEx<TListElement>, TListElement> result =
+            ListParentOperableList<TListElement> result =
                 this.CreateSubset(input);
 
             this.AddChild(result);
             return result;
         }
 
-        public virtual ListParentOperableList<TListElement, OperableListEx<TListElement>, TListElement> Skip(int count)
+        public virtual ListParentOperableList<TListElement> Skip(int count)
         {
             IEnumerable<RecordReference<TListElement>> input = this.InternalEnumerable.Skip(count);
 
-            ListParentOperableList<TListElement, OperableListEx<TListElement>, TListElement> result =
+            ListParentOperableList<TListElement> result =
                 this.CreateSubset(input);
 
             this.AddChild(result);
             return result;
         }
 
-        private ListParentOperableList<TPropertyElement, OperableListEx<TListElement>, TListElement> SetList<TPropertyElement>(int size)
+        private ListParentOperableList<TPropertyElement, TListElement> SetList<TPropertyElement>(int size)
         {
             List<RecordReference<TPropertyElement>> input = this.CreateRecordReferences<TPropertyElement>(size);
 
-            ListParentOperableList<
-                TPropertyElement,
-                OperableListEx<TListElement>,
-                TListElement> result = this.CreateChild(input);
+            ListParentOperableList<TPropertyElement, TListElement> result = this.CreateChild(input);
 
             this.AddChild(result);
             return result;
         }
 
-        public virtual ListParentMakeableEnumerable<ListParentOperableList<TResultElement,
-                OperableListEx<TListElement>, TListElement>, TListElement, OperableListEx<TListElement>>
+        public virtual ListParentMakeableEnumerable<ListParentOperableList<TResultElement, TListElement>, TListElement>
             SelectListSet<TResultElement>(Expression<Func<TListElement, IEnumerable<TResultElement>>> selector,
                 int listSize)
         {
             var listCollection =
-                new ListParentOperableList<TResultElement,
-                    OperableListEx<TListElement>, TListElement>[this.Count];
+                new ListParentOperableList<TResultElement, TListElement>
+                    [this.Count];
 
             for (int i = 0; i < listCollection.Length; i++)
             {
-                ListParentOperableList<TResultElement,
-                    OperableListEx<TListElement>, TListElement> list = this.SetList<TResultElement>(listSize);
+                ListParentOperableList<TResultElement, TListElement> list = this.SetList<TResultElement>(listSize);
 
                 listCollection[i] = list;
                 this[i].AddToExplicitPropertySetters(selector, list);
             }
 
             var result =
-                new ListParentMakeableEnumerable<ListParentOperableList<TResultElement, OperableListEx<TListElement>, TListElement>, TListElement, OperableListEx<TListElement>>(
+                new ListParentMakeableEnumerable<ListParentOperableList<TResultElement, TListElement>, TListElement>(
                     listCollection, this, this);
 
             return result;

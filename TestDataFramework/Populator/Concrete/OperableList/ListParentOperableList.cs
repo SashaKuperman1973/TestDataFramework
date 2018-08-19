@@ -31,6 +31,33 @@ using TestDataFramework.TypeGenerator.Interfaces;
 
 namespace TestDataFramework.Populator.Concrete.OperableList
 {
+    public class ListParentOperableList<TListElement> : 
+        ListParentOperableList<TListElement, OperableListEx<TListElement>, TListElement>
+    {
+        public ListParentOperableList(OperableListEx<TListElement> rootList, OperableListEx<TListElement> parentList,
+            IEnumerable<RecordReference<TListElement>> input, ValueGuaranteePopulator valueGuaranteePopulator,
+            BasePopulator populator, IObjectGraphService objectGraphService, IAttributeDecorator attributeDecorator,
+            DeepCollectionSettingConverter deepCollectionSettingConverter, ITypeGenerator typeGenerator,
+            bool isShallowCopy) : base(rootList, parentList, input, valueGuaranteePopulator, populator,
+            objectGraphService, attributeDecorator, deepCollectionSettingConverter, typeGenerator, isShallowCopy)
+        {
+        }
+    }
+
+    public class ListParentOperableList<TListElement, TParentListElement> :
+        ListParentOperableList<TListElement, OperableListEx<TParentListElement>, TParentListElement>
+    {
+        public ListParentOperableList(OperableListEx<TParentListElement> rootList,
+            OperableListEx<TParentListElement> parentList, IEnumerable<RecordReference<TListElement>> input,
+            ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator,
+            IObjectGraphService objectGraphService, IAttributeDecorator attributeDecorator,
+            DeepCollectionSettingConverter deepCollectionSettingConverter, ITypeGenerator typeGenerator,
+            bool isShallowCopy) : base(rootList, parentList, input, valueGuaranteePopulator, populator,
+            objectGraphService, attributeDecorator, deepCollectionSettingConverter, typeGenerator, isShallowCopy)
+        {
+        }
+    }
+
     public class ListParentOperableList<TListElement, TParentList, TRootListElement> : OperableListEx<TListElement>,
         IMakeableCollectionContainer<TRootListElement>
     {

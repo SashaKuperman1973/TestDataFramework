@@ -25,6 +25,16 @@ using TestDataFramework.Populator.Interfaces;
 
 namespace TestDataFramework.Populator.Concrete.MakeableEnumerable
 {
+    public class ListParentMakeableEnumerable<TList, TRootListElement> :
+        ListParentMakeableEnumerable<TList, TRootListElement, OperableListEx<TRootListElement>>
+    {
+        public ListParentMakeableEnumerable(IEnumerable<TList> collection,
+            OperableListEx<TRootListElement> rootContainer, OperableListEx<TRootListElement> parentList) : base(
+            collection, rootContainer, parentList)
+        {
+        }
+    }
+
     public class ListParentMakeableEnumerable<TList, TRootListElement, TParentList> : List<TList>, IMakeableCollectionContainer<TRootListElement>
     {
         public ListParentMakeableEnumerable(IEnumerable<TList> collection,

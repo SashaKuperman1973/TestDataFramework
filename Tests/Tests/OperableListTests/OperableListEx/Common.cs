@@ -108,7 +108,8 @@ namespace Tests.Tests.OperableListTests.OperableListEx
             // Act
 
             ListParentMakeableEnumerable<ListParentOperableList<ElementType.PropertyType, OperableListEx<ElementType>,
-                ElementType>, ElementType> result = this.operableList.SelectListSet(m => m.AnEnumerable, 4);
+                ElementType>, ElementType,
+                OperableListEx<ElementType>> result = this.operableList.SelectListSet(m => m.AnEnumerable, 4);
 
             // Assert
 

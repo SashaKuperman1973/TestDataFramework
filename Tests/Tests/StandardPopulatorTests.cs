@@ -239,7 +239,8 @@ namespace Tests.Tests
             // Assert
 
             this.persistenceMock.Verify(m => m.Persist(It.IsAny<RecordReference[]>()), Times.Never);
-            this.typeGeneratorMock.Verify(m => m.GetObject<SubjectClass>(It.IsAny<List<ExplicitPropertySetter>>()), Times.Never);
+            this.typeGeneratorMock.Verify(m => m.GetObject<SubjectClass>(It.IsAny<List<ExplicitPropertySetter>>()),
+                Times.Never);
         }
 
         [TestMethod]
@@ -284,6 +285,35 @@ namespace Tests.Tests
             // Assert
 
             Assert.IsNull(reference.RecordObject);
+        }
+
+        [TestMethod]
+        public void MakeT_Test()
+        {
+            var subject = new SubjectClass();
+
+            this.typeGeneratorMock.Setup(m => m.GetObject<SubjectClass>(It.IsAny<List<ExplicitPropertySetter>>()))
+                .Returns(subject);
+
+            var result = this.populator.Make<SubjectClass>();
+
+            Assert.AreEqual(subject, result);
+        }
+
+        [TestMethod]
+        public void Make_Collection_Test()
+        {
+            var subject = new SubjectClass();
+
+            this.typeGeneratorMock.Setup(m => m.GetObject<SubjectClass>(It.IsAny<List<ExplicitPropertySetter>>()))
+                .Returns(subject);
+
+            List<SubjectClass> result = this.populator.Make<SubjectClass>(5).ToList();
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(5, result.Count);
+
+            result.ForEach(s => Assert.AreEqual(subject, s));
         }
     }
 }

@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using TestDataFramework.Populator.Concrete.MakeableEnumerable;
-using TestDataFramework.Populator.Interfaces;
 using Tests.TestModels;
+using TestDataFramework.Populator.Concrete.OperableList;
 
 namespace Tests.Tests.MakeableEnumerableTests
 {
@@ -18,10 +17,11 @@ namespace Tests.Tests.MakeableEnumerableTests
             var integerList = new List<int>();
             var setOfLists = new List<List<int>> {integerList};
 
-            var makeableCollecitonMock = new Mock<IMakeableCollectionContainer<SubjectClass>>();
+            var makeableCollecitonMock = Helpers.GetMock<OperableListEx<SubjectClass>>();
 
             var makeableEnumerable =
-                new ListParentMakeableEnumerable<List<int>, SubjectClass>(setOfLists, makeableCollecitonMock.Object);
+                new ListParentMakeableEnumerable<List<int>, SubjectClass, OperableListEx<SubjectClass>>(
+                    setOfLists, makeableCollecitonMock.Object, makeableCollecitonMock.Object);
 
             // Act
 
@@ -40,10 +40,11 @@ namespace Tests.Tests.MakeableEnumerableTests
             var integerList = new List<int>();
             var setOfLists = new List<List<int>> { integerList };
 
-            var makeableCollecitonMock = new Mock<IMakeableCollectionContainer<SubjectClass>>();
+            var makeableCollecitonMock = Helpers.GetMock<OperableListEx<SubjectClass>>();
 
             var makeableEnumerable =
-                new ListParentMakeableEnumerable<List<int>, SubjectClass>(setOfLists, makeableCollecitonMock.Object);
+                new ListParentMakeableEnumerable<List<int>, SubjectClass, OperableListEx<SubjectClass>>(
+                    setOfLists, makeableCollecitonMock.Object, makeableCollecitonMock.Object);
 
             // Act
 
@@ -60,19 +61,21 @@ namespace Tests.Tests.MakeableEnumerableTests
             // Arrange
 
             var setOfLists = new List<List<int>> {new List<int>(), new List<int>()};
-            var makeableCollecitonMock = new Mock<IMakeableCollectionContainer<SubjectClass>>();
+            var makeableCollecitonMock = Helpers.GetMock<OperableListEx<SubjectClass>>();
 
             var makeableEnumerable =
-                new ListParentMakeableEnumerable<List<int>, SubjectClass>(setOfLists, makeableCollecitonMock.Object);
+                new ListParentMakeableEnumerable<List<int>, SubjectClass, OperableListEx<SubjectClass>>(
+                    setOfLists, makeableCollecitonMock.Object, makeableCollecitonMock.Object);
 
             // Act
 
             int count = 0;
-            ListParentMakeableEnumerable<List<int>, SubjectClass> result = makeableEnumerable.Set(m =>
-            {
-                count++;
-                return new SubjectClass();
-            });
+            ListParentMakeableEnumerable<List<int>, SubjectClass, OperableListEx<SubjectClass>> result =
+                makeableEnumerable.Set(m =>
+                {
+                    count++;
+                    return new SubjectClass();
+                });
 
             // Assert
 
@@ -95,15 +98,16 @@ namespace Tests.Tests.MakeableEnumerableTests
                 new List<int>(),
             };
 
-            var makeableCollecitonMock = new Mock<IMakeableCollectionContainer<SubjectClass>>();
+            var makeableCollecitonMock = Helpers.GetMock<OperableListEx<SubjectClass>>();
 
             var makeableEnumerable =
-                new ListParentMakeableEnumerable<List<int>, SubjectClass>(setOfLists, makeableCollecitonMock.Object);
+                new ListParentMakeableEnumerable<List<int>, SubjectClass, OperableListEx<SubjectClass>>(
+                    setOfLists, makeableCollecitonMock.Object, makeableCollecitonMock.Object);
 
 
             // Act
 
-            ListParentMakeableEnumerable<List<int>, SubjectClass> result = makeableEnumerable.Take(3);
+            ListParentMakeableEnumerable<List<int>, SubjectClass, OperableListEx<SubjectClass>> result = makeableEnumerable.Take(3);
 
             // Assert
 
@@ -129,14 +133,15 @@ namespace Tests.Tests.MakeableEnumerableTests
                 new List<int>(),
             };
 
-            var makeableCollecitonMock = new Mock<IMakeableCollectionContainer<SubjectClass>>();
+            var makeableCollecitonMock = Helpers.GetMock<OperableListEx<SubjectClass>>();
 
             var makeableEnumerable =
-                new ListParentMakeableEnumerable<List<int>, SubjectClass>(setOfLists, makeableCollecitonMock.Object);
+                new ListParentMakeableEnumerable<List<int>, SubjectClass, OperableListEx<SubjectClass>>(
+                    setOfLists, makeableCollecitonMock.Object, makeableCollecitonMock.Object);
 
             // Act
 
-            ListParentMakeableEnumerable<List<int>, SubjectClass> result = makeableEnumerable.Skip(3);
+            ListParentMakeableEnumerable<List<int>, SubjectClass, OperableListEx<SubjectClass>> result = makeableEnumerable.Skip(3);
 
             // Assert
 

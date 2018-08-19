@@ -17,6 +17,7 @@
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -49,6 +50,9 @@ namespace Tests.Tests
             this.handledTypeGeneratorMock = new Mock<IHandledTypeGenerator>();
             this.typeGeneratorServiceMock = new Mock<ITypeGeneratorService>();
             this.recursionGuardMock = new Mock<RecursionGuard>();
+
+            this.recursionGuardMock.Setup(m => m.Push(It.IsAny<Type>(), It.IsAny<IEnumerable<ExplicitPropertySetter>>(),
+                It.IsAny<ObjectGraphNode>())).Returns(true);
 
             this.uniqueValueTypeGenerator = new UniqueValueTypeGenerator(
                 typeGenerator => this.accumulatorValueGeneratorMock.Object,

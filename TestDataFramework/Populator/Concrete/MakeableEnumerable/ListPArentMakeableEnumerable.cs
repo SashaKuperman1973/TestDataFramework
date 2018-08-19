@@ -20,50 +20,55 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TestDataFramework.Populator.Concrete.OperableList;
 using TestDataFramework.Populator.Interfaces;
 
 namespace TestDataFramework.Populator.Concrete.MakeableEnumerable
 {
-    public class ListParentMakeableEnumerable<TList, TRootListElement> : List<TList>, IMakeableCollectionContainer<TRootListElement>
+    public class ListParentMakeableEnumerable<TList, TRootListElement, TParentList> : List<TList>, IMakeableCollectionContainer<TRootListElement>
     {
-        private readonly IMakeableCollectionContainer<TRootListElement> rootContainer;
-
         public ListParentMakeableEnumerable(IEnumerable<TList> collection,
-            IMakeableCollectionContainer<TRootListElement> rootContainer) : base(collection)
+            OperableListEx<TRootListElement> rootContainer,
+            TParentList parentList) : base(collection)
         {
-            this.rootContainer = rootContainer;
+            this.Root = rootContainer;
+            this.ParentList = parentList;
         }
+
+        public virtual OperableListEx<TRootListElement> Root { get; }
+
+        public virtual TParentList ParentList { get; }
 
         public virtual IEnumerable<TRootListElement> Make()
         {
-            return this.rootContainer.Make();
+            return this.Root.Make();
         }
 
         public virtual IEnumerable<TRootListElement> BindAndMake()
         {
-            return this.rootContainer.BindAndMake();
+            return this.Root.BindAndMake();
         }
 
-        public virtual ListParentMakeableEnumerable<TList, TRootListElement> Set<TResultElement>(
+        public virtual ListParentMakeableEnumerable<TList, TRootListElement, TParentList> Set<TResultElement>(
             Func<TList, TResultElement> selector)
         {
             this.Select(selector).ToList();
             return this;
         }
 
-        public virtual ListParentMakeableEnumerable<TList, TRootListElement> Take(int count)
+        public virtual ListParentMakeableEnumerable<TList, TRootListElement, TParentList> Take(int count)
         {
             IEnumerable<TList> taken = Enumerable.Take(this, count);
 
-            var result = new ListParentMakeableEnumerable<TList, TRootListElement>(taken, this.rootContainer);
+            var result = new ListParentMakeableEnumerable<TList, TRootListElement, TParentList>(taken, this.Root, this.ParentList);
             return result;
         }
 
-        public virtual ListParentMakeableEnumerable<TList, TRootListElement> Skip(int count)
+        public virtual ListParentMakeableEnumerable<TList, TRootListElement, TParentList> Skip(int count)
         {
             IEnumerable<TList> afterSkip = Enumerable.Skip(this, count);
 
-            var result = new ListParentMakeableEnumerable<TList, TRootListElement>(afterSkip, this.rootContainer);
+            var result = new ListParentMakeableEnumerable<TList, TRootListElement, TParentList>(afterSkip, this.Root, this.ParentList);
             return result;
         }
     }

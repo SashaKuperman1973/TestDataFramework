@@ -122,7 +122,9 @@ namespace Tests.Tests.OperableListTests.ReferenceParentOperableList
             ReferenceParentMakeableEnumerable<ReferenceParentOperableList<int,
                 ReferenceParentOperableList<ElementSubType,
                     RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType>,
-                ElementType, ElementParentType>, ElementParentType> result =
+                ElementType, ElementParentType>, ElementParentType,
+                ReferenceParentOperableList<ElementSubType,
+                    RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType>> result =
                 this.operableList.SelectListSet(m => m.ASubTypeEnumerable, 4);
 
             // Assert

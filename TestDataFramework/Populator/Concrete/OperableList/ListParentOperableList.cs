@@ -288,7 +288,8 @@ namespace TestDataFramework.Populator.Concrete.OperableList
         }
 
         public new virtual ListParentMakeableEnumerable<ListParentOperableList<TResultElement,
-                ListParentOperableList<TListElement, TParentList, TRootListElement>, TRootListElement>, TRootListElement>
+                ListParentOperableList<TListElement, TParentList, TRootListElement>, TRootListElement>, TRootListElement,
+                ListParentOperableList<TListElement, TParentList, TRootListElement>>
             SelectListSet<TResultElement>(Expression<Func<TListElement, IEnumerable<TResultElement>>> selector, int listSize)
         {
             var listCollection =
@@ -307,8 +308,8 @@ namespace TestDataFramework.Populator.Concrete.OperableList
 
             var result =
                 new ListParentMakeableEnumerable<ListParentOperableList<TResultElement,
-                    ListParentOperableList<TListElement, TParentList, TRootListElement>, TRootListElement>, TRootListElement>(
-                    listCollection, this.RootList);
+                    ListParentOperableList<TListElement, TParentList, TRootListElement>, TRootListElement>, TRootListElement, ListParentOperableList<TListElement, TParentList, TRootListElement>>(
+                    listCollection, this.RootList, this);
 
             return result;
         }

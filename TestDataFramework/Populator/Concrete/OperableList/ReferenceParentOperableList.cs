@@ -31,6 +31,36 @@ using TestDataFramework.TypeGenerator.Interfaces;
 
 namespace TestDataFramework.Populator.Concrete.OperableList
 {
+    public class ReferenceParentOperableList<TListElement, TRootElement> :
+        ReferenceParentOperableList<TListElement, RootReferenceParentOperableList<TListElement, TRootElement>,
+            TListElement, TRootElement>
+    {
+        public ReferenceParentOperableList(RootReferenceParentOperableList<TListElement, TRootElement> rootList,
+            RecordReference<TRootElement> root, RootReferenceParentOperableList<TListElement, TRootElement> parentList,
+            IEnumerable<RecordReference<TListElement>> input, ValueGuaranteePopulator valueGuaranteePopulator,
+            BasePopulator populator, IObjectGraphService objectGraphService, IAttributeDecorator attributeDecorator,
+            DeepCollectionSettingConverter deepCollectionSettingConverter, ITypeGenerator typeGenerator,
+            bool isShallowCopy) : base(rootList, root, parentList, input, valueGuaranteePopulator, populator,
+            objectGraphService, attributeDecorator, deepCollectionSettingConverter, typeGenerator, isShallowCopy)
+        {
+        }
+    }
+
+    public class ReferenceParentOperableList<TListElement, TParentListElement, TRootElement> :
+        ReferenceParentOperableList<TListElement, RootReferenceParentOperableList<TParentListElement, TRootElement>, TParentListElement, TRootElement>
+    {
+        public ReferenceParentOperableList(RootReferenceParentOperableList<TParentListElement, TRootElement> rootList,
+            RecordReference<TRootElement> root,
+            RootReferenceParentOperableList<TParentListElement, TRootElement> parentList,
+            IEnumerable<RecordReference<TListElement>> input, ValueGuaranteePopulator valueGuaranteePopulator,
+            BasePopulator populator, IObjectGraphService objectGraphService, IAttributeDecorator attributeDecorator,
+            DeepCollectionSettingConverter deepCollectionSettingConverter, ITypeGenerator typeGenerator,
+            bool isShallowCopy) : base(rootList, root, parentList, input, valueGuaranteePopulator, populator,
+            objectGraphService, attributeDecorator, deepCollectionSettingConverter, typeGenerator, isShallowCopy)
+        {
+        }
+    }
+
     public class ReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement> :
         OperableListEx<TListElement>,
         IMakeable<TRootElement>

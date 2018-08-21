@@ -61,8 +61,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
         }
     }
 
-    public class ReferenceParentOperableList<TResultElement, TListElement, TParentList, TRootListElement,
-        TRootElement> :
+    public class ReferenceParentOperableList<TResultElement, TListElement, TParentList, TRootListElement, TRootElement> :
         ReferenceParentOperableList<
             TResultElement,
             ReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>,

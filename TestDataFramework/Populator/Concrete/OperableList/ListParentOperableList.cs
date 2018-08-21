@@ -58,6 +58,21 @@ namespace TestDataFramework.Populator.Concrete.OperableList
         }
     }
 
+    public class ListParentOperableList<TResultElement, TListElement, TParentList, TRootListElement> :
+        ListParentOperableList<TResultElement, ListParentOperableList<TListElement, TParentList, TRootListElement>,
+            TRootListElement>
+    {
+        public ListParentOperableList(OperableListEx<TRootListElement> rootList,
+            ListParentOperableList<TListElement, TParentList, TRootListElement> parentList,
+            IEnumerable<RecordReference<TResultElement>> input, ValueGuaranteePopulator valueGuaranteePopulator,
+            BasePopulator populator, IObjectGraphService objectGraphService, IAttributeDecorator attributeDecorator,
+            DeepCollectionSettingConverter deepCollectionSettingConverter, ITypeGenerator typeGenerator,
+            bool isShallowCopy) : base(rootList, parentList, input, valueGuaranteePopulator, populator,
+            objectGraphService, attributeDecorator, deepCollectionSettingConverter, typeGenerator, isShallowCopy)
+        {
+        }
+    }
+
     public class ListParentOperableList<TListElement, TParentList, TRootListElement> : OperableListEx<TListElement>,
         IMakeableCollectionContainer<TRootListElement>
     {
@@ -87,19 +102,13 @@ namespace TestDataFramework.Populator.Concrete.OperableList
         private readonly ITypeGenerator typeGenerator;
         private readonly ValueGuaranteePopulator valueGuaranteePopulator;
 
-        private ListParentOperableList<
-                TChildListElement,
-                ListParentOperableList<TListElement, TParentList, TRootListElement>,
-                TRootListElement>
-
+        private ListParentOperableList<TChildListElement, TListElement, TParentList, TRootListElement>
             CreateChild<TChildListElement>(
                 IEnumerable<RecordReference<TChildListElement>> input
             )
         {
-            var result = new ListParentOperableList<
-                TChildListElement,
-                ListParentOperableList<TListElement, TParentList, TRootListElement>,
-                TRootListElement>(
+            var result = new ListParentOperableList<TChildListElement, TListElement, TParentList, TRootListElement>
+            (
                 this.RootList,
                 this,
                 input,
@@ -174,13 +183,11 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             return result;
         }
 
-        private ListParentOperableList<TPropertyElement,
-            ListParentOperableList<TListElement, TParentList, TRootListElement>, TRootListElement> SetList<TPropertyElement>(int size)
+        private ListParentOperableList<TPropertyElement, TListElement, TParentList, TRootListElement> SetList<TPropertyElement>(int size)
         {
             List<RecordReference<TPropertyElement>> list = this.CreateRecordReferences<TPropertyElement>(size);
 
-            ListParentOperableList<TPropertyElement, ListParentOperableList<TListElement, TParentList, TRootListElement>,
-                TRootListElement> result = this.CreateChild(list);
+            ListParentOperableList<TPropertyElement, TListElement, TParentList, TRootListElement> result = this.CreateChild(list);
 
             this.AddChild(result);
             return result;
@@ -314,19 +321,15 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             return this;
         }
 
-        public new virtual ListParentMakeableEnumerable<ListParentOperableList<TResultElement,
-                ListParentOperableList<TListElement, TParentList, TRootListElement>, TRootListElement>, TRootListElement,
-                ListParentOperableList<TListElement, TParentList, TRootListElement>>
+        public new virtual ListParentMakeableEnumerable<TResultElement, TListElement, TParentList, TRootListElement>
             SelectListSet<TResultElement>(Expression<Func<TListElement, IEnumerable<TResultElement>>> selector, int listSize)
         {
             var listCollection =
-                new ListParentOperableList<TResultElement, ListParentOperableList<TListElement, TParentList, TRootListElement>,
-                    TRootListElement>[this.Count];
+                new ListParentOperableList<TResultElement, TListElement, TParentList, TRootListElement>[this.Count];
 
             for (int i = 0; i < listCollection.Length; i++)
             {
-                ListParentOperableList<TResultElement, ListParentOperableList<TListElement, TParentList, TRootListElement>,
-                    TRootListElement> list
+                ListParentOperableList<TResultElement, TListElement, TParentList, TRootListElement> list
                     = this.SetList<TResultElement>(listSize);
 
                 listCollection[i] = list;
@@ -334,8 +337,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             }
 
             var result =
-                new ListParentMakeableEnumerable<ListParentOperableList<TResultElement,
-                    ListParentOperableList<TListElement, TParentList, TRootListElement>, TRootListElement>, TRootListElement, ListParentOperableList<TListElement, TParentList, TRootListElement>>(
+                new ListParentMakeableEnumerable<TResultElement, TListElement, TParentList, TRootListElement>(
                     listCollection, this.RootList, this);
 
             return result;

@@ -35,6 +35,22 @@ namespace TestDataFramework.Populator.Concrete.MakeableEnumerable
         }
     }
 
+    public class ListParentMakeableEnumerable<TListElement, TParentListElement, TGrandParentList, TRootListElement> :
+        ListParentMakeableEnumerable<ListParentOperableList<TListElement,
+                ListParentOperableList<TParentListElement, TGrandParentList, TRootListElement>, TRootListElement>,
+            TRootListElement,
+            ListParentOperableList<TParentListElement, TGrandParentList, TRootListElement>>
+    {
+        public ListParentMakeableEnumerable(
+            IEnumerable<ListParentOperableList<TListElement,
+                    ListParentOperableList<TParentListElement, TGrandParentList, TRootListElement>, TRootListElement>>
+                collection, OperableListEx<TRootListElement> rootContainer,
+            ListParentOperableList<TParentListElement, TGrandParentList, TRootListElement> parentList) : base(
+            collection, rootContainer, parentList)
+        {
+        }
+    }
+
     public class ListParentMakeableEnumerable<TList, TRootListElement, TParentList> : List<TList>, IMakeableCollectionContainer<TRootListElement>
     {
         public ListParentMakeableEnumerable(IEnumerable<TList> collection,

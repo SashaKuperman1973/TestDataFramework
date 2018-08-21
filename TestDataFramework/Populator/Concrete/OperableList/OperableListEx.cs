@@ -37,7 +37,6 @@ namespace TestDataFramework.Populator.Concrete.OperableList
         private ListParentOperableList<
                 TChildListElement,
                 TListElement>
-
             CreateChild<TChildListElement>(
                 IEnumerable<RecordReference<TChildListElement>> input
             )

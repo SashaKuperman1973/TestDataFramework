@@ -36,7 +36,7 @@ namespace DocumentationExamples
         public void SetRange_OnCollection()
         {
             IEnumerable<Subject> subjectCollection = StaticPopulatorFactory.CreateMemoryPopulator()
-                .Add<Subject>(5).Set(m => m.DeepA.TextA).SetRange(m => m.DeepA.TextA, new[] {"A", "B", "C"})
+                .Add<Subject>(5).Set(m => m.DeepA.TextA).SetRange(new[] {"A", "B", "C"})
                 .Make();
         }
 

@@ -102,7 +102,7 @@ namespace Tests.Tests.FieldExpressionTests.ReferenceParentFieldExpression
             });
 
             ReferenceParentFieldExpression<ElementType, ElementType.PropertyType, OperableListEx<ElementType>, ElementType, ElementParentType>
-                actual = this.testContext.ReferenceParentFieldExpression.SetRange(m => m.AProperty, rangeFactory);
+                actual = this.testContext.ReferenceParentFieldExpression.SetRange(rangeFactory);
 
             // Assert
 
@@ -123,7 +123,7 @@ namespace Tests.Tests.FieldExpressionTests.ReferenceParentFieldExpression
             };
 
             ReferenceParentFieldExpression<ElementType, ElementType.PropertyType, OperableListEx<ElementType>, ElementType, ElementParentType>
-                actual = this.testContext.ReferenceParentFieldExpression.SetRange(m => m.AProperty, range);
+                actual = this.testContext.ReferenceParentFieldExpression.SetRange(range);
 
             // Assert
 

@@ -180,19 +180,17 @@ namespace TestDataFramework.Populator.Concrete.FieldExpression
                 valueCountRequestOption);
         }
 
-        public virtual FieldExpression<TListElement, TProperty> SetRange<TPropertyValue>(
-            Expression<Func<TListElement, TPropertyValue>> fieldExpression,
-            IEnumerable<TPropertyValue> range)
+        public virtual FieldExpression<TListElement, TProperty> SetRange(
+            IEnumerable<TProperty> range)
         {
-            this.OperableList.AddRange(fieldExpression, range);
+            this.OperableList.AddRange(this.expression, range);
             return this;
         }
 
-        public virtual FieldExpression<TListElement, TProperty> SetRange<TPropertyValue>(
-            Expression<Func<TListElement, TPropertyValue>> fieldExpression,
-            Func<IEnumerable<TPropertyValue>> rangeFactory)
+        public virtual FieldExpression<TListElement, TProperty> SetRange(
+            Func<IEnumerable<TProperty>> rangeFactory)
         {
-            this.OperableList.AddRange(fieldExpression, rangeFactory);
+            this.OperableList.AddRange(this.expression, rangeFactory);
             return this;
         }
     }

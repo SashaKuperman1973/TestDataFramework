@@ -48,19 +48,17 @@ namespace TestDataFramework.Populator.Concrete.FieldExpression
             return this.OperableList.BindAndMake();
         }
 
-        public new virtual ListParentFieldExpression<TListElement, TParentList, TRootListElement, TProperty> SetRange<TPropertyValue>(
-            Expression<Func<TListElement, TPropertyValue>> fieldExpression,
-            Func<IEnumerable<TPropertyValue>> rangeFactory)
+        public new virtual ListParentFieldExpression<TListElement, TParentList, TRootListElement, TProperty> SetRange(
+            Func<IEnumerable<TProperty>> rangeFactory)
         {
-            base.SetRange(fieldExpression, rangeFactory);
+            base.SetRange(rangeFactory);
             return this;
         }
 
-        public new virtual ListParentFieldExpression<TListElement, TParentList, TRootListElement, TProperty> SetRange<TPropertyValue>(
-            Expression<Func<TListElement, TPropertyValue>> fieldExpression,
-            IEnumerable<TPropertyValue> range)
+        public new virtual ListParentFieldExpression<TListElement, TParentList, TRootListElement, TProperty> SetRange(
+            IEnumerable<TProperty> range)
         {
-            base.SetRange(fieldExpression, range);
+            base.SetRange(range);
             return this;
         }
 

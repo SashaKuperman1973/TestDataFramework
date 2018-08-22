@@ -102,7 +102,7 @@ namespace Tests.Tests.FieldExpressionTests.FieldExpression
             });
 
             FieldExpression<ElementType, ElementType.PropertyType>
-                actual = this.testContext.FieldExpression.SetRange(m => m.AProperty, rangeFactory);
+                actual = this.testContext.FieldExpression.SetRange(rangeFactory);
 
             // Assert
 
@@ -123,7 +123,7 @@ namespace Tests.Tests.FieldExpressionTests.FieldExpression
             };
 
             FieldExpression<ElementType, ElementType.PropertyType>
-                actual = this.testContext.FieldExpression.SetRange(m => m.AProperty, range);
+                actual = this.testContext.FieldExpression.SetRange(range);
 
             // Assert
 

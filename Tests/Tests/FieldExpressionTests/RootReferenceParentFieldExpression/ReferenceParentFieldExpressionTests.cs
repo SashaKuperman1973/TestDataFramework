@@ -102,7 +102,7 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression
             });
 
             RootReferenceParentFieldExpression<ElementType, ElementType.PropertyType, ElementParentType> 
-                actual = this.testContext.RootReferenceParentFieldExpression.SetRange(m => m.AProperty, rangeFactory);
+                actual = this.testContext.RootReferenceParentFieldExpression.SetRange(rangeFactory);
 
             // Assert
 
@@ -123,7 +123,7 @@ namespace Tests.Tests.FieldExpressionTests.RootReferenceParentFieldExpression
             };
 
             RootReferenceParentFieldExpression<ElementType, ElementType.PropertyType, ElementParentType> 
-                actual = this.testContext.RootReferenceParentFieldExpression.SetRange(m => m.AProperty, range);
+                actual = this.testContext.RootReferenceParentFieldExpression.SetRange(range);
 
             // Assert
 

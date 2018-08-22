@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ExampleTypes
+namespace DocumentationExamples
 {
     public class Subject
     {

@@ -120,66 +120,6 @@ namespace Tests.Tests
             this.recursionGuardMock.Verify(m => m.Pop(), Times.Never);
         }
 
-        // TODO 2 - Remove this and put it tn the RecursionGuard tests
-        public void GetObject_ExplicitSetter_RecursionGuard_Test_ToReplace()
-        {                
-            // Arrange
-
-            Type[] types =
-            {
-                typeof(InfiniteRecursiveClass1),
-                typeof(InfiniteRecursiveClass2),
-                typeof(InfiniteRecursiveClass1),
-            };
-
-            int i = 0;
-
-            this.valueGeneratorMock.Setup(m => m.GetValue(It.IsAny<PropertyInfo>(), It.IsAny<ObjectGraphNode>()))
-
-                .Returns<PropertyInfo, ObjectGraphNode>((pi, objectGraphNode) =>
-
-                    this.typeGenerator.GetObject(types[i++], objectGraphNode));
-
-            var objectGraphService = new ObjectGraphService();
-
-            List<PropertyInfo> objectGraph = objectGraphService.GetObjectGraph<RecursionRootClass, InfiniteRecursiveClass2>(
-                m => m.RecursionProperty1.InfinietRecursiveObjectA.InfiniteRecursiveObjectB.InfinietRecursiveObjectA);
-
-            var valueForSetting = new InfiniteRecursiveClass2();
-
-            var explicitPropertySetters = new List<ExplicitPropertySetter>
-            {
-                new ExplicitPropertySetter
-                {
-                    PropertyChain = objectGraph,
-
-                    Action = @object => typeof(InfiniteRecursiveClass1)
-                        .GetProperty(nameof(InfiniteRecursiveClass1.InfinietRecursiveObjectA))
-                        .SetValue(@object, valueForSetting)
-                }
-            };
-
-            this.typeGeneratorServiceMock.Setup(
-                    m => m.GetExplicitlySetPropertySetters(It.IsAny<List<ExplicitPropertySetter>>(),
-                        It.IsAny<ObjectGraphNode>()))
-                .Returns<List<ExplicitPropertySetter>, ObjectGraphNode>((l, n) =>
-                    i == 3
-                        ? explicitPropertySetters
-                        : Enumerable.Empty<ExplicitPropertySetter>());
-
-            // Act
-
-            var result =
-                this.typeGenerator.GetObject<RecursionRootClass>(explicitPropertySetters) as
-                    RecursionRootClass;
-
-            // Assert
-
-            Assert.IsNotNull(result.RecursionProperty1.InfinietRecursiveObjectA.InfiniteRecursiveObjectB.InfinietRecursiveObjectA);
-            Assert.IsNull(result.RecursionProperty1.InfinietRecursiveObjectA.InfiniteRecursiveObjectB.InfinietRecursiveObjectA.InfiniteRecursiveObjectB);
-            Assert.AreEqual(valueForSetting, result.RecursionProperty1.InfinietRecursiveObjectA.InfiniteRecursiveObjectB.InfinietRecursiveObjectA);
-        }
-
         [TestMethod]
         public void GetObject_WithExplicitPropertySetters_Test()
         {

@@ -2,7 +2,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Linq;
-using ExampleTypes;
 using TestDataFramework.Factories;
 using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete;

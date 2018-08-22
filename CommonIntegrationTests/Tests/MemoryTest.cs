@@ -166,13 +166,12 @@ namespace CommonIntegrationTests.Tests
             IPopulator populator = this.factory.CreateMemoryPopulator();
 
             IList<RecordReference<SqlSubjectClass>> subjectReference = populator.Add<SqlSubjectClass>(2);
+
             OperableListEx<ForeignSubjectClass> foreignReference =
                 populator.Add<ForeignSubjectClass>(20, subjectReference[1])
-                    .GuaranteeByPercentageOfTotal(new object[]
+                    .GuaranteeByPercentageOfTotal(new[]
                     {
                         new ForeignSubjectClass {SecondInteger = 777},
-                        //(Func<ForeignSubjectClass>)
-                        //(() => new ForeignSubjectClass {SecondInteger = subjectReference[1].RecordObject.IntegerWithMax}),
                         new ForeignSubjectClass {SecondInteger = 999}
                     }, 50)
                     .GuaranteeByFixedQuantity(new object[]
@@ -192,6 +191,13 @@ namespace CommonIntegrationTests.Tests
             Console.WriteLine("SubjectClass[0].IntegerWithMax: " + subjectReference[0].RecordObject.IntegerWithMax);
             int i = 1;
             foreignReference.ToList().ForEach(r => Console.WriteLine(i++ + ".\r\n" + r.RecordObject.ToString()));
+
+            Assert.AreEqual(10, foreignReference.Count(r => new[] {777, 999}.Contains(r.RecordObject.SecondInteger)));
+
+            Assert.AreEqual(5,
+                foreignReference.Count(
+                    r => new[] {111, 222, subjectReference[0].RecordObject.IntegerWithMax}.Contains(r.RecordObject
+                        .SecondInteger)));
         }
 
         [TestMethod]
@@ -679,10 +685,8 @@ namespace CommonIntegrationTests.Tests
                     deepACount++;
                     return;
                 }
-                else
-                {
-                    Assert.AreEqual(7, deepA.DeepB.DeepCList.Count);
-                }
+
+                Assert.AreEqual(7, deepA.DeepB.DeepCList.Count);
 
                 deepCCount = 0;
                 deepA.DeepB.DeepCList.ForEach(deepC =>
@@ -715,7 +719,7 @@ namespace CommonIntegrationTests.Tests
         }
 
         [TestMethod]
-        public void Test2()
+        public void OperableListEx_Test()
         {
             IPopulator populator = this.factory.CreateMemoryPopulator();
 

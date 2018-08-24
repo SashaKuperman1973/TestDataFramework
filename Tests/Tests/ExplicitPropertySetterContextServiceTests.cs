@@ -36,7 +36,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var service = new ExplicitPropertySetterContextService();
+            var service = ExplicitPropertySetterContextService.Instance;
 
             var reference = new RecordReference<SubjectClass>(null, null, null, null, null, null);
             var propertySetter = new ExplicitPropertySetter();
@@ -55,7 +55,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var service = new ExplicitPropertySetterContextService();
+            var service = ExplicitPropertySetterContextService.Instance;
 
             var references = new List<RecordReference<SubjectClass>>();
 
@@ -104,7 +104,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var service = new ExplicitPropertySetterContextService();
+            var service = ExplicitPropertySetterContextService.Instance;
 
             var propertyChain1 = new List<PropertyInfo>
             {
@@ -161,7 +161,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var service = new ExplicitPropertySetterContextService();
+            var service = ExplicitPropertySetterContextService.Instance;
 
             var propertyChain1 = new List<PropertyInfo>
             {

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Reflection;
 using log4net;
 using TestDataFramework.DeepSetting;
+using TestDataFramework.DeepSetting.Concrete;
+using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.Logger;
 
 namespace TestDataFramework.TypeGenerator.Concrete
@@ -14,13 +16,19 @@ namespace TestDataFramework.TypeGenerator.Concrete
 
         private Stack<Type> guardTypes = new Stack<Type>();
         private readonly Stack<Stack<Type>> guardStack = new Stack<Stack<Type>>();
+        private readonly IObjectGraphService objectGraphService;
+
+        public RecursionGuard(IObjectGraphService objectGraphService)
+        {
+            this.objectGraphService = objectGraphService;
+        }
 
         public virtual bool Push(Type forType, IEnumerable<ExplicitPropertySetter> explicitPropertySetters,
             ObjectGraphNode objectGraphNode)
         {
             if (this.guardTypes.Contains(forType))
             {
-                if (!RecursionGuard.IsThereAnExplicitSetterforCircularReference(objectGraphNode, explicitPropertySetters))
+                if (!this.IsThereAnExplicitSetterforCircularReference(objectGraphNode, explicitPropertySetters))
                 {
                     RecursionGuard.Logger.Debug("Circular reference encountered. Type: " + forType);
                     return false;
@@ -43,7 +51,7 @@ namespace TestDataFramework.TypeGenerator.Concrete
             }
         }
 
-        private static bool IsThereAnExplicitSetterforCircularReference(ObjectGraphNode objectGraphNode,
+        private bool IsThereAnExplicitSetterforCircularReference(ObjectGraphNode objectGraphNode,
             IEnumerable<ExplicitPropertySetter> explicitPropertySetters)
         {
             if (objectGraphNode == null)
@@ -58,27 +66,9 @@ namespace TestDataFramework.TypeGenerator.Concrete
 
             objectGraphNodeList.Reverse();
 
-            foreach (ExplicitPropertySetter aSetter in explicitPropertySetters)
-            {
-                if (objectGraphNodeList.Count > aSetter.PropertyChain.Count)
-                    continue;
+            bool result = this.objectGraphService.DoesPropertyHaveSetter(objectGraphNodeList, explicitPropertySetters);
 
-                bool result = true;
-                for (int i = 0; i < objectGraphNodeList.Count; i++)
-                {
-                    if (objectGraphNodeList[i].PropertyType == aSetter.PropertyChain[i].PropertyType) continue;
-
-                    result = false;
-                    break;
-                }
-
-                if (result)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return result;
         }
     }
 }

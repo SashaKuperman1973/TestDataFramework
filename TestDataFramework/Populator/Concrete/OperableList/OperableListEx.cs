@@ -57,6 +57,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
                 isShallowCopy: false
             );
 
+            this.AddChild(result);
             return result;
         }
 
@@ -77,6 +78,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
                 isShallowCopy: true
             );
 
+            this.AddChild(result);
             return result;
         }
 
@@ -84,10 +86,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
         {
             IEnumerable<RecordReference<TListElement>> input = this.InternalEnumerable.Take(count);
 
-            ListParentOperableList<TListElement> result =
-                this.CreateSubset(input);
-
-            this.AddChild(result);
+            ListParentOperableList<TListElement> result = this.CreateSubset(input);
             return result;
         }
 
@@ -95,10 +94,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
         {
             IEnumerable<RecordReference<TListElement>> input = this.InternalEnumerable.Skip(count);
 
-            ListParentOperableList<TListElement> result =
-                this.CreateSubset(input);
-
-            this.AddChild(result);
+            ListParentOperableList<TListElement> result = this.CreateSubset(input);
             return result;
         }
 
@@ -107,8 +103,6 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             List<RecordReference<TPropertyElement>> input = this.CreateRecordReferences<TPropertyElement>(size);
 
             ListParentOperableList<TPropertyElement, TListElement> result = this.CreateChild(input);
-
-            this.AddChild(result);
             return result;
         }
 

@@ -32,7 +32,7 @@ namespace Tests.Tests
         [TestMethod]
         public void SetRecordReference_Test()
         {
-            var service = new ValueSetContextService();
+            var service = ValueSetContextService.Instance;
 
             var input = new RecordReference<SubjectClass>(null, null, null, null, null, null);
 
@@ -44,7 +44,7 @@ namespace Tests.Tests
         [TestMethod]
         public void FilterInWorkingListOfReferfences_Test()
         {
-            var service = new ValueSetContextService();
+            var service = ValueSetContextService.Instance;
 
             var references = new List<RecordReference<SubjectClass>>();
 

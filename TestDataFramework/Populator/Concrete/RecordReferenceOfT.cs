@@ -25,6 +25,7 @@ using System.Reflection;
 using log4net;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeepSetting;
+using TestDataFramework.DeepSetting.Concrete;
 using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.ListOperations.Concrete;
 using TestDataFramework.Logger;

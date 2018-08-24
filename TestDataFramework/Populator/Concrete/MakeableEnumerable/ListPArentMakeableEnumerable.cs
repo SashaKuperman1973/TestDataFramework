@@ -57,22 +57,22 @@ namespace TestDataFramework.Populator.Concrete.MakeableEnumerable
             OperableListEx<TRootListElement> rootContainer,
             TParentList parentList) : base(collection)
         {
-            this.Root = rootContainer;
+            this.RootList = rootContainer;
             this.ParentList = parentList;
         }
 
-        public virtual OperableListEx<TRootListElement> Root { get; }
+        public virtual OperableListEx<TRootListElement> RootList { get; }
 
         public virtual TParentList ParentList { get; }
 
         public virtual IEnumerable<TRootListElement> Make()
         {
-            return this.Root.Make();
+            return this.RootList.Make();
         }
 
         public virtual IEnumerable<TRootListElement> BindAndMake()
         {
-            return this.Root.BindAndMake();
+            return this.RootList.BindAndMake();
         }
 
         public virtual ListParentMakeableEnumerable<TList, TRootListElement, TParentList> Set<TResultElement>(
@@ -86,7 +86,7 @@ namespace TestDataFramework.Populator.Concrete.MakeableEnumerable
         {
             IEnumerable<TList> taken = Enumerable.Take(this, count);
 
-            var result = new ListParentMakeableEnumerable<TList, TRootListElement, TParentList>(taken, this.Root, this.ParentList);
+            var result = new ListParentMakeableEnumerable<TList, TRootListElement, TParentList>(taken, this.RootList, this.ParentList);
             return result;
         }
 
@@ -94,7 +94,7 @@ namespace TestDataFramework.Populator.Concrete.MakeableEnumerable
         {
             IEnumerable<TList> afterSkip = Enumerable.Skip(this, count);
 
-            var result = new ListParentMakeableEnumerable<TList, TRootListElement, TParentList>(afterSkip, this.Root, this.ParentList);
+            var result = new ListParentMakeableEnumerable<TList, TRootListElement, TParentList>(afterSkip, this.RootList, this.ParentList);
             return result;
         }
     }

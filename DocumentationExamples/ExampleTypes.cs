@@ -14,6 +14,8 @@ namespace DocumentationExamples
     {
         public string TextA { get; set; }
 
+        public DeepB DeepB { get; set; }
+
         public List<DeepB> DeepBCollection { get; set; }
 
         public string[] StringCollection { get; set; }
@@ -37,5 +39,14 @@ namespace DocumentationExamples
         public string ATextProperty { get; set; }
 
         public List<string> DeepCStringCollection { get; set; }
+    }
+
+    public class ExclusiveRangeTest
+    {
+        public int AnInteger { get; set; }
+
+        public string AString { get; set; }
+
+        public string AnotherString { get; set; }
     }
 }

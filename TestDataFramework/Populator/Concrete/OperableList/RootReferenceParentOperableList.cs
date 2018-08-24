@@ -79,6 +79,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
                     isShallowCopy: false
                 );
 
+            this.AddChild(result);
             return result;
         }
 
@@ -100,6 +101,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
                     isShallowCopy: true
                 );
 
+            this.AddChild(subset);
             return subset;
         }
 
@@ -123,8 +125,6 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             IEnumerable<RecordReference<TListElement>> input = this.InternalEnumerable.Take(count);
 
             ReferenceParentOperableList<TListElement, TRootElement> result = this.CreateSubset(input);
-
-            this.AddChild(result);
             return result;
         }
 
@@ -134,8 +134,6 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             IEnumerable<RecordReference<TListElement>> input = this.InternalEnumerable.Skip(count);
 
             ReferenceParentOperableList<TListElement, TRootElement> result = this.CreateSubset(input);
-
-            this.AddChild(result);
             return result;
         }
 
@@ -144,8 +142,6 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             List<RecordReference<TPropertyElement>> list = this.CreateRecordReferences<TPropertyElement>(size);
 
             ReferenceParentOperableList<TPropertyElement, TListElement, TRootElement> result = this.CreateChild(list);
-
-            this.AddChild(result);
             return result;
         }
 
@@ -277,7 +273,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             return this;
         }
 
-        public new virtual ShortReferenceParentMakeableEnumerable<TResultElement, TListElement, TRootElement>
+        public new virtual ShortReferenceParentMakeableEnumerable<TResultElement, TListElement, TRootElement, TListElement>
             SelectListSet<TResultElement>(Expression<Func<TListElement, IEnumerable<TResultElement>>> selector, int listSize)
         {
             var listCollection =
@@ -293,8 +289,8 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             }
 
             var result =
-                new ShortReferenceParentMakeableEnumerable<TResultElement, TListElement, TRootElement>(listCollection,
-                    this.Root, this);
+                new ShortReferenceParentMakeableEnumerable<TResultElement, TListElement, TRootElement, TListElement>(listCollection,
+                    this.Root, this, this);
 
             return result;
         }

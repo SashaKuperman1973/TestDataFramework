@@ -116,7 +116,7 @@ namespace Tests.Tests.OperableListTests.OperableList.MainTests
 
             // Act
 
-            operableList.AddRange(expression, range);
+            operableList.SetRange(expression, range);
 
             // Assert
 
@@ -136,7 +136,7 @@ namespace Tests.Tests.OperableListTests.OperableList.MainTests
 
             // Act
 
-            operableList.AddRange(expression, rangeFactory);
+            operableList.SetRange(expression, rangeFactory);
 
             // Assert
 

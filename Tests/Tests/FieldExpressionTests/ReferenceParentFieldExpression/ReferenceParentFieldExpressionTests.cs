@@ -90,47 +90,5 @@ namespace Tests.Tests.FieldExpressionTests.ReferenceParentFieldExpression
             Assert.IsNotNull(actual);
             Assert.AreEqual(expected, actual);
         }
-
-        [TestMethod]
-        public void SetRange_RangeFactory_Test()
-        {
-            // Act
-
-            var rangeFactory = (Func<IEnumerable<ElementType.PropertyType>>)(() => new[]
-            {
-                new ElementType.PropertyType(), new ElementType.PropertyType(), new ElementType.PropertyType(),
-            });
-
-            ReferenceParentFieldExpression<ElementType, ElementType.PropertyType, OperableListEx<ElementType>, ElementType, ElementParentType>
-                actual = this.testContext.ReferenceParentFieldExpression.SetRange(rangeFactory);
-
-            // Assert
-
-            Assert.IsNotNull(actual);
-            Assert.AreEqual(this.testContext.ReferenceParentFieldExpression, actual);
-
-            this.testContext.ReferenceParentOperableListMock.Verify(m => m.AddRange(n => n.AProperty, rangeFactory));
-        }
-
-        [TestMethod]
-        public void SetRange_Range_Test()
-        {
-            // Act
-
-            var range = new[]
-            {
-                new ElementType.PropertyType(), new ElementType.PropertyType(), new ElementType.PropertyType(),
-            };
-
-            ReferenceParentFieldExpression<ElementType, ElementType.PropertyType, OperableListEx<ElementType>, ElementType, ElementParentType>
-                actual = this.testContext.ReferenceParentFieldExpression.SetRange(range);
-
-            // Assert
-
-            Assert.IsNotNull(actual);
-            Assert.AreEqual(this.testContext.ReferenceParentFieldExpression, actual);
-
-            this.testContext.ReferenceParentOperableListMock.Verify(m => m.AddRange(n => n.AProperty, range));
-        }
     }
 }

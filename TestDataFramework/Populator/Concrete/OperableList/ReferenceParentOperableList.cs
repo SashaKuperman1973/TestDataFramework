@@ -80,6 +80,103 @@ namespace TestDataFramework.Populator.Concrete.OperableList
         }
     }
 
+    public class ShortReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement> :
+        ReferenceParentOperableList<TListElement, ReferenceParentOperableList<TListElement, TParentList,
+            TRootListElement, TRootElement>, TRootListElement, TRootElement>
+    {
+        public ShortReferenceParentOperableList(
+            RootReferenceParentOperableList<TRootListElement, TRootElement> rootList,
+            RecordReference<TRootElement> root,
+            ReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement> parentList,
+            IEnumerable<RecordReference<TListElement>> input, ValueGuaranteePopulator valueGuaranteePopulator,
+            BasePopulator populator, IObjectGraphService objectGraphService, IAttributeDecorator attributeDecorator,
+            DeepCollectionSettingConverter deepCollectionSettingConverter, ITypeGenerator typeGenerator,
+            bool isShallowCopy) : base(rootList, root, parentList, input, valueGuaranteePopulator, populator,
+            objectGraphService, attributeDecorator, deepCollectionSettingConverter, typeGenerator, isShallowCopy)
+        {
+        }
+    }
+
+    public class OperationReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement> :
+        ReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>
+    {
+        private readonly IAttributeDecorator attributeDecorator;
+        private readonly DeepCollectionSettingConverter deepCollectionSettingConverter;
+        private readonly IObjectGraphService objectGraphService;
+        private readonly ITypeGenerator typeGenerator;
+        private readonly ValueGuaranteePopulator valueGuaranteePopulator;
+
+        private readonly ReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>
+            preOperationList;
+
+        public OperationReferenceParentOperableList(
+            RootReferenceParentOperableList<TRootListElement, TRootElement> rootList,
+            RecordReference<TRootElement> root, TParentList parentList,
+            ReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement> preOperationList,
+            IEnumerable<RecordReference<TListElement>> input, ValueGuaranteePopulator valueGuaranteePopulator,
+            BasePopulator populator, IObjectGraphService objectGraphService, IAttributeDecorator attributeDecorator,
+            DeepCollectionSettingConverter deepCollectionSettingConverter, ITypeGenerator typeGenerator,
+            bool isShallowCopy) : base(rootList, root, parentList, input, valueGuaranteePopulator, populator,
+            objectGraphService, attributeDecorator, deepCollectionSettingConverter, typeGenerator, isShallowCopy)
+        {
+            this.Root = root;
+            this.RootList = rootList;
+            this.ParentList = parentList;
+
+            this.attributeDecorator = attributeDecorator;
+            this.deepCollectionSettingConverter = deepCollectionSettingConverter;
+            this.objectGraphService = objectGraphService;
+            this.typeGenerator = typeGenerator;
+            this.valueGuaranteePopulator = valueGuaranteePopulator;
+
+            this.preOperationList = preOperationList;
+        }
+
+        private ShortReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>
+            CreateSubsetForTakeOrSkip(
+                IEnumerable<RecordReference<TListElement>> input)
+        {
+            var result = new ShortReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>(
+                this.RootList,
+                this.Root,
+                this.preOperationList,
+                input,
+                this.valueGuaranteePopulator,
+                this.Populator,
+                this.objectGraphService,
+                this.attributeDecorator,
+                this.deepCollectionSettingConverter,
+                this.typeGenerator,
+                isShallowCopy: true
+                );
+
+            this.AddChild(result);
+            return result;
+        }
+
+        public new virtual ShortReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>
+            Take(int count)
+        {
+            IEnumerable<RecordReference<TListElement>> input = this.InternalEnumerable.Take(count);
+
+            ShortReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement> result =
+                this.CreateSubsetForTakeOrSkip(input);
+
+            return result;
+        }
+
+        public new virtual ShortReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>
+            Skip(int count)
+        {
+            IEnumerable<RecordReference<TListElement>> input = this.InternalEnumerable.Skip(count);
+
+            ShortReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement> result =
+                this.CreateSubsetForTakeOrSkip(input);
+
+            return result;
+        }
+    }
+
     public class ReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement> :
         OperableListEx<TListElement>,
         IMakeable<TRootElement>
@@ -133,11 +230,11 @@ namespace TestDataFramework.Populator.Concrete.OperableList
                     isShallowCopy: false
                 );
 
+            this.AddChild(result);
             return result;
         }
 
         private ReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>
-
             CreateSubset(
                 IEnumerable<RecordReference<TListElement>> input
             )
@@ -161,14 +258,36 @@ namespace TestDataFramework.Populator.Concrete.OperableList
                     isShallowCopy: true
                 );
 
+            this.AddChild(subset);
             return subset;
         }
 
-        public virtual RootReferenceParentOperableList<TRootListElement, TRootElement> RootList { get; }
+        private OperationReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement> CreateCopyWithThisParent()
+        {
+            var result = new OperationReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>(
+                this.RootList,
+                this.Root,
+                this.ParentList,
+                this,
+                this.InternalEnumerable,
+                this.valueGuaranteePopulator,
+                this.Populator,
+                this.objectGraphService,
+                this.attributeDecorator,
+                this.deepCollectionSettingConverter,
+                this.typeGenerator,
+                isShallowCopy: true
+            );
 
-        public virtual TParentList ParentList { get; }
+            this.AddChild(result);
+            return result;
+        }
 
-        public virtual RecordReference<TRootElement> Root { get; }
+        public virtual RootReferenceParentOperableList<TRootListElement, TRootElement> RootList { get; protected set; }
+
+        public virtual TParentList ParentList { get; protected set; }
+
+        public virtual RecordReference<TRootElement> Root { get; protected set; }
 
         public new virtual TRootElement Make()
         {
@@ -189,8 +308,6 @@ namespace TestDataFramework.Populator.Concrete.OperableList
 
             ReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement> result =
                 this.CreateSubset(input);
-
-            this.AddChild(result);
             return result;
         }
 
@@ -201,8 +318,6 @@ namespace TestDataFramework.Populator.Concrete.OperableList
 
             ReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement> result =
                 this.CreateSubset(input);
-
-            this.AddChild(result);
             return result;
         }
 
@@ -215,26 +330,25 @@ namespace TestDataFramework.Populator.Concrete.OperableList
         {
             List<RecordReference<TPropertyElement>> list = this.CreateRecordReferences<TPropertyElement>(size);
 
-            ReferenceParentOperableList<TPropertyElement, TListElement, TParentList, TRootListElement, TRootElement> result = this.CreateChild(list);
-
-            this.AddChild(result);
+            ReferenceParentOperableList<TPropertyElement, TListElement, TParentList, TRootListElement, TRootElement>
+                result = this.CreateChild(list);
             return result;
         }
 
-        public new virtual ReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>
+        public new virtual OperationReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>
             Set<TProperty>(
                 Expression<Func<TListElement, TProperty>> fieldExpression, TProperty value)
         {
             base.Set(fieldExpression, value);
-            return this;
+            return this.CreateCopyWithThisParent();
         }
 
-        public new virtual ReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>
+        public new virtual OperationReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>
             Set<TProperty>(
                 Expression<Func<TListElement, TProperty>> fieldExpression, Func<TProperty> valueFactory)
         {
             base.Set(fieldExpression, valueFactory);
-            return this;
+            return this.CreateCopyWithThisParent();
         }
 
         public new virtual ReferenceParentFieldExpression<TListElement, TProperty, TParentList, TRootListElement,
@@ -249,17 +363,17 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             return fieldExpression;
         }
 
-        public new virtual ReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>
+        public new virtual OperationReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>
             GuaranteeByPercentageOfTotal(
                 IEnumerable<object> guaranteedValues,
                 ValueCountRequestOption valueCountRequestOption =
                     ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
             base.GuaranteeByPercentageOfTotal(guaranteedValues, valueCountRequestOption);
-            return this;
+            return this.CreateCopyWithThisParent();
         }
 
-        public new virtual ReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>
+        public new virtual OperationReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>
             GuaranteeByPercentageOfTotal(
                 IEnumerable<object> guaranteedValues,
                 int frequencyPercentage,
@@ -267,20 +381,20 @@ namespace TestDataFramework.Populator.Concrete.OperableList
                     ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
             base.GuaranteeByPercentageOfTotal(guaranteedValues, frequencyPercentage, valueCountRequestOption);
-            return this;
+            return this.CreateCopyWithThisParent();
         }
 
-        public new virtual ReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>
+        public new virtual OperationReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>
             GuaranteeByPercentageOfTotal(
                 IEnumerable<Func<TListElement>> guaranteedValues,
                 ValueCountRequestOption valueCountRequestOption =
                     ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
             base.GuaranteeByPercentageOfTotal(guaranteedValues, valueCountRequestOption);
-            return this;
+            return this.CreateCopyWithThisParent();
         }
 
-        public new virtual ReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>
+        public new virtual OperationReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>
             GuaranteeByPercentageOfTotal(
                 IEnumerable<Func<TListElement>> guaranteedValues,
                 int frequencyPercentage,
@@ -288,20 +402,20 @@ namespace TestDataFramework.Populator.Concrete.OperableList
                     ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
             base.GuaranteeByPercentageOfTotal(guaranteedValues, frequencyPercentage, valueCountRequestOption);
-            return this;
+            return this.CreateCopyWithThisParent();
         }
 
-        public new virtual ReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>
+        public new virtual OperationReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>
             GuaranteeByPercentageOfTotal(
                 IEnumerable<TListElement> guaranteedValues,
                 ValueCountRequestOption valueCountRequestOption =
                     ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
             base.GuaranteeByPercentageOfTotal(guaranteedValues, valueCountRequestOption);
-            return this;
+            return this.CreateCopyWithThisParent();
         }
 
-        public new virtual ReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>
+        public new virtual OperationReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>
             GuaranteeByPercentageOfTotal(
                 IEnumerable<TListElement> guaranteedValues,
                 int frequencyPercentage,
@@ -309,20 +423,20 @@ namespace TestDataFramework.Populator.Concrete.OperableList
                     ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
             base.GuaranteeByPercentageOfTotal(guaranteedValues, frequencyPercentage, valueCountRequestOption);
-            return this;
+            return this.CreateCopyWithThisParent();
         }
 
-        public new virtual ReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>
+        public new virtual OperationReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>
             GuaranteeByFixedQuantity(
                 IEnumerable<object> guaranteedValues,
                 ValueCountRequestOption valueCountRequestOption =
                     ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
             base.GuaranteeByFixedQuantity(guaranteedValues, valueCountRequestOption);
-            return this;
+            return this.CreateCopyWithThisParent();
         }
 
-        public new virtual ReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>
+        public new virtual OperationReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>
             GuaranteeByFixedQuantity(
                 IEnumerable<object> guaranteedValues,
                 int fixedQuantity,
@@ -330,20 +444,20 @@ namespace TestDataFramework.Populator.Concrete.OperableList
                     ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
             base.GuaranteeByFixedQuantity(guaranteedValues, fixedQuantity, valueCountRequestOption);
-            return this;
+            return this.CreateCopyWithThisParent();
         }
 
-        public new virtual ReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>
+        public new virtual OperationReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>
             GuaranteeByFixedQuantity(
                 IEnumerable<Func<TListElement>> guaranteedValues,
                 ValueCountRequestOption valueCountRequestOption =
                     ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
             base.GuaranteeByFixedQuantity(guaranteedValues, valueCountRequestOption);
-            return this;
+            return this.CreateCopyWithThisParent();
         }
 
-        public new virtual ReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>
+        public new virtual OperationReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>
             GuaranteeByFixedQuantity(
                 IEnumerable<Func<TListElement>> guaranteedValues,
                 int fixedQuantity,
@@ -351,20 +465,20 @@ namespace TestDataFramework.Populator.Concrete.OperableList
                     ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
             base.GuaranteeByFixedQuantity(guaranteedValues, fixedQuantity, valueCountRequestOption);
-            return this;
+            return this.CreateCopyWithThisParent();
         }
 
-        public new virtual ReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>
+        public new virtual OperationReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>
             GuaranteeByFixedQuantity(
                 IEnumerable<TListElement> guaranteedValues,
                 ValueCountRequestOption valueCountRequestOption =
                     ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
             base.GuaranteeByFixedQuantity(guaranteedValues, valueCountRequestOption);
-            return this;
+            return this.CreateCopyWithThisParent();
         }
 
-        public new virtual ReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>
+        public new virtual OperationReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>
             GuaranteeByFixedQuantity(
                 IEnumerable<TListElement> guaranteedValues,
                 int fixedQuantity,
@@ -372,7 +486,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
                     ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
             base.GuaranteeByFixedQuantity(guaranteedValues, fixedQuantity, valueCountRequestOption);
-            return this;
+            return this.CreateCopyWithThisParent();
         }
 
         public new virtual ReferenceParentMakeableEnumerable<TResultElement, TListElement, TParentList, TRootListElement, TRootElement>
@@ -392,17 +506,17 @@ namespace TestDataFramework.Populator.Concrete.OperableList
 
             var result =
                 new ReferenceParentMakeableEnumerable<TResultElement, TListElement, TParentList, TRootListElement, TRootElement>(
-                    listCollection, this.Root, this);
+                    listCollection, this.Root, this, this.RootList);
 
             return result;
         }
 
-        public new virtual ReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>
+        public new virtual OperationReferenceParentOperableList<TListElement, TParentList, TRootListElement, TRootElement>
             Ignore<TPropertyType>(
                 Expression<Func<TListElement, TPropertyType>> fieldExpression)
         {
             base.Ignore(fieldExpression);
-            return this;
+            return this.CreateCopyWithThisParent();
         }
     }
 }

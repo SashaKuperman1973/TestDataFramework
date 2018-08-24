@@ -31,12 +31,37 @@ namespace TestDataFramework.DeepSetting.Concrete
         private readonly PropertySetFieldExpressionValidator fieldExpressionValidator =
             new PropertySetFieldExpressionValidator();
 
-        public List<PropertyInfo> GetObjectGraph<T, TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression)
+        public List<PropertyInfo> GetObjectGraph<T, TPropertyValue>(Expression<Func<T, TPropertyValue>> fieldExpression)
         {
             var propertyChain = new List<PropertyInfo>();
             this.GetMemberInfo(propertyChain, fieldExpression.Body);
 
             return propertyChain;
+        }
+
+        public bool DoesPropertyHaveSetter(List<PropertyInfo> objectGraphNodeList, IEnumerable<ExplicitPropertySetter> explicitPropertySetters)
+        {
+            foreach (ExplicitPropertySetter aSetter in explicitPropertySetters)
+            {
+                if (objectGraphNodeList.Count > aSetter.PropertyChain.Count)
+                    continue;
+
+                bool result = true;
+                for (int i = 0; i < objectGraphNodeList.Count; i++)
+                {
+                    if (objectGraphNodeList[i].PropertyType == aSetter.PropertyChain[i].PropertyType) continue;
+
+                    result = false;
+                    break;
+                }
+
+                if (result)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void GetMemberInfo(ICollection<PropertyInfo> list, Expression expression)

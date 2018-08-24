@@ -29,7 +29,7 @@ namespace TestDataFramework.ArrayRandomizer
 {
     public class StandardArrayRandomizer : IArrayRandomizer
     {
-        private const int MaxDimensionLength = 5;
+        private const int DimensionLength = 5;
         private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(StandardArrayRandomizer));
 
         private readonly Random random;
@@ -64,7 +64,7 @@ namespace TestDataFramework.ArrayRandomizer
                 for (int i = 0; i < dimensionSizes.Length; i++)
                 {
                     StandardArrayRandomizer.Logger.Debug($"dimensionSize {i}: {dimensionSizes[i]}");
-                    dimensionSizes[i] = this.random.Next(StandardArrayRandomizer.MaxDimensionLength) + 1;
+                    dimensionSizes[i] = StandardArrayRandomizer.DimensionLength;
                 }
 
                 EmptyArrayResult emptyArrayResult = StandardArrayRandomizer.GetEmptyArray(type, dimensionSizes);
@@ -83,11 +83,10 @@ namespace TestDataFramework.ArrayRandomizer
             {
                 StandardArrayRandomizer.Logger.Debug($"rank <= 1: {rank}");
 
-                int dimensionLength = this.random.Next(StandardArrayRandomizer.MaxDimensionLength) + 1;
                 ConstructorInfo constructor = type.GetConstructor(new[] {typeof(int)});
-                resultArray = (Array) constructor.Invoke(new object[] {dimensionLength});
+                resultArray = (Array) constructor.Invoke(new object[] {StandardArrayRandomizer.DimensionLength});
 
-                for (int i = 0; i < dimensionLength; i++)
+                for (int i = 0; i < StandardArrayRandomizer.DimensionLength; i++)
                 {
                     object value = this.valueGenerator.GetValue(propertyInfo, basicType);
                     StandardArrayRandomizer.Logger.Debug($"Element value: {value}");

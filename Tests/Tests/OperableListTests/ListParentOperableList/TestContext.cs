@@ -158,7 +158,7 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList
         )
         {
             Assert.IsNotNull(returnResult);
-            Assert.AreEqual(operableList, returnResult);
+            Helpers.AssertSetsAreEqual(operableList, returnResult);
 
             this.ValueGuaranteePopulatorMock.Verify(m => m.Bind(operableList,
                 It.Is<IEnumerable<GuaranteedValues>>(n => TestContext.Check(n, guaranteedValues, total, percentage, option)),

@@ -27,5 +27,8 @@ namespace TestDataFramework.DeepSetting.Interfaces
     public interface IObjectGraphService
     {
         List<PropertyInfo> GetObjectGraph<T, TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression);
+
+        bool DoesPropertyHaveSetter(List<PropertyInfo> objectGraphNodeList,
+            IEnumerable<ExplicitPropertySetter> explicitPropertySetters);
     }
 }

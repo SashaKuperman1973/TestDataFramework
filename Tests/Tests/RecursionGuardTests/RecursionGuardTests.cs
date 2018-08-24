@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using TestDataFramework.DeepSetting;
 using TestDataFramework.DeepSetting.Concrete;
+using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.TypeGenerator.Concrete;
 using Tests.TestModels;
 
@@ -14,11 +16,13 @@ namespace Tests.Tests.RecursionGuardTests
     public class RecursionGuardTests
     {
         private RecursionGuard recursionGuard;
-
+        private Mock<IObjectGraphService> objectGraphServiceMock;
+            
         [TestInitialize]
         public void Initialize()
         {
-            this.recursionGuard = new RecursionGuard();
+            this.objectGraphServiceMock = new Mock<IObjectGraphService>();
+            this.recursionGuard = new RecursionGuard(this.objectGraphServiceMock.Object);
         }
 
         [TestMethod]

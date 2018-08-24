@@ -43,9 +43,6 @@ namespace TestDataFramework.Populator.Concrete.OperableList
         private readonly ITypeGenerator typeGenerator;
         private readonly ValueGuaranteePopulator valueGuaranteePopulator;
 
-        private readonly IValueGauranteePopulatorContextService explicitPropertySetterContextService =
-            new ExplicitPropertySetterContextService();        
-
         protected readonly BasePopulator Populator;
 
         private readonly List<GuaranteedValues> guaranteedPropertySetters = new List<GuaranteedValues>();
@@ -94,10 +91,10 @@ namespace TestDataFramework.Populator.Concrete.OperableList
 
             if (this.guaranteedPropertySetters.Any())
                 this.valueGuaranteePopulator.Bind(this, this.guaranteedPropertySetters,
-                    this.explicitPropertySetterContextService);
+                    ExplicitPropertySetterContextService.Instance);
 
             if (this.privateGuaranteedValues.Any())
-                this.valueGuaranteePopulator.Bind(this, this.privateGuaranteedValues, new ValueSetContextService());
+                this.valueGuaranteePopulator.Bind(this, this.privateGuaranteedValues, ValueSetContextService.Instance);
 
             if (this.IsPopulated || this.IsShallowCopy)
                 return;
@@ -143,13 +140,13 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             }
         }
 
-        public virtual void AddRange<TPropertyValue>(Expression<Func<TListElement, TPropertyValue>> fieldExpression,
+        public virtual void SetRange<TPropertyValue>(Expression<Func<TListElement, TPropertyValue>> fieldExpression,
             IEnumerable<TPropertyValue> range)
         {
             this.InternalList.ForEach(l => l.SetRange(fieldExpression, range));
         }
 
-        public virtual void AddRange<TPropertyValue>(Expression<Func<TListElement, TPropertyValue>> fieldExpression,
+        public virtual void SetRange<TPropertyValue>(Expression<Func<TListElement, TPropertyValue>> fieldExpression,
             Func<IEnumerable<TPropertyValue>> rangeFactory)
         {
             this.InternalList.ForEach(l => l.SetRange(fieldExpression, rangeFactory));

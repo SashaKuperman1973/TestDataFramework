@@ -74,8 +74,7 @@ namespace PocoIntegrationTests.Tests
         {
             IList<RecordReference<ManualKeyPrimaryTableClass>> primaries = populator.Add<ManualKeyPrimaryTableClass>(2);
 
-            IList<RecordReference<ManualKeyForeignTable>> foreignSet1 = populator.Add<ManualKeyForeignTable>(2);
-            foreignSet1.ToList().ForEach(f => f.AddPrimaryRecordReference(primaries[0]));
+            IList<RecordReference<ManualKeyForeignTable>> foreignSet1 = populator.Add<ManualKeyForeignTable>(2, primaries[0]);
 
             IList<RecordReference<ManualKeyForeignTable>> foreignSet2 = populator.Add<ManualKeyForeignTable>(2);
             foreignSet2.ToList().ForEach(f => f.AddPrimaryRecordReference(primaries[1]));

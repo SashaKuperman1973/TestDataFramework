@@ -28,6 +28,16 @@ namespace TestDataFramework.ListOperations.Concrete
 {
     public class ExplicitPropertySetterContextService : IValueGauranteePopulatorContextService
     {
+        private static ExplicitPropertySetterContextService instance;
+
+        protected ExplicitPropertySetterContextService()
+        {            
+        }
+
+        public static ExplicitPropertySetterContextService Instance =>
+            ExplicitPropertySetterContextService.instance ?? 
+                (ExplicitPropertySetterContextService.instance = new ExplicitPropertySetterContextService());
+
         public void SetRecordReference<T>(RecordReference<T> reference, object value)
         {
             var setter = (ExplicitPropertySetter) value;
@@ -43,13 +53,21 @@ namespace TestDataFramework.ListOperations.Concrete
 
             IEnumerable<RecordReference<T>> result =
 
-                references.Where(reference => !reference.ExplicitPropertySetters.Any(
+                references.Where(reference =>
 
-                    referenceSetter => explicitPropertySetters.Any(
+                    !reference.IsPopulated
 
-                        valueSetter => ExplicitPropertySetterContextService.AreEqual(referenceSetter.PropertyChain,
+                    && !reference.ExplicitPropertySetters.Any(
 
-                            valueSetter.PropertyChain))));
+                        referenceSetter => explicitPropertySetters.Any(
+
+                            valueSetter => ExplicitPropertySetterContextService.AreEqual(
+
+                                referenceSetter.PropertyChain,
+
+                                valueSetter.PropertyChain
+
+                            ))));
 
             return result.ToList();
         }

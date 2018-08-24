@@ -19,6 +19,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using TestDataFramework.ListOperations.Interfaces;
 using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete;
@@ -27,6 +28,15 @@ namespace TestDataFramework.ListOperations.Concrete
 {
     public class ValueSetContextService : IValueGauranteePopulatorContextService
     {
+        private static ValueSetContextService instance;
+
+        protected ValueSetContextService()
+        {
+        }
+
+        public static ValueSetContextService Instance =>
+            ValueSetContextService.instance ?? (ValueSetContextService.instance = new ValueSetContextService());
+
         public void SetRecordReference<T>(RecordReference<T> reference, object value)
         {
             ((RecordReference)reference).RecordObjectBase = value;
@@ -36,8 +46,10 @@ namespace TestDataFramework.ListOperations.Concrete
         public List<RecordReference<T>> FilterInWorkingListOfReferfences<T>(IEnumerable<RecordReference<T>> references,
             IEnumerable<GuaranteedValues> values)
         {
-            List<RecordReference<T>> result = references.Where(reference => !reference.ExplicitPropertySetters.Any())
-                .ToList();
+            List<RecordReference<T>> result = references.Where(reference =>
+                !reference.ExplicitPropertySetters.Any() && !reference.IsPopulated
+            ).ToList();
+
             return result;
         }
     }

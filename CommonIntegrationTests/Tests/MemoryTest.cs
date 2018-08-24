@@ -107,7 +107,7 @@ namespace CommonIntegrationTests.Tests
         }
 
         [TestMethod]
-        public void Test()
+        public void Test_ForeignKeyRelationship()
         {
             IPopulator populator = this.factory.CreateMemoryPopulator();
 
@@ -627,8 +627,9 @@ namespace CommonIntegrationTests.Tests
                 .Set(r => r.Skip(2).Take(2).Set(s => s.DeepString, "I"))
                 .Set(r => r.Skip(4).Take(2).Set(s => s.DeepString, "II"))
                 .Set(r => r.Skip(6).SelectListSet(s => s.DeepDList, 3)
-                    .Set(dl => dl.Skip(2).Take(2).Set(d => d.Integer, 7))
-                );
+                    .Set(dl => dl.Skip(2).Set(d => d.Integer, 7))
+                ).RootList
+                .Skip(3).Set(m => m.DeepB.String, "Some Text");
 
             return result;
         }

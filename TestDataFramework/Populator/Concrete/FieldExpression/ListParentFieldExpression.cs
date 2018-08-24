@@ -48,20 +48,6 @@ namespace TestDataFramework.Populator.Concrete.FieldExpression
             return this.OperableList.BindAndMake();
         }
 
-        public new virtual ListParentFieldExpression<TListElement, TParentList, TRootListElement, TProperty> SetRange(
-            Func<IEnumerable<TProperty>> rangeFactory)
-        {
-            base.SetRange(rangeFactory);
-            return this;
-        }
-
-        public new virtual ListParentFieldExpression<TListElement, TParentList, TRootListElement, TProperty> SetRange(
-            IEnumerable<TProperty> range)
-        {
-            base.SetRange(range);
-            return this;
-        }
-
         public new virtual ListParentFieldExpression<TListElement, TParentList, TRootListElement, TProperty> GuaranteePropertiesByFixedQuantity(
             IEnumerable<Func<TProperty>> guaranteedValues,
             ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)

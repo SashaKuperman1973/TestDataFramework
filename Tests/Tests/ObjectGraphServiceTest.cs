@@ -20,6 +20,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestDataFramework.DeepSetting;
 using TestDataFramework.DeepSetting.Concrete;
 using Tests.TestModels;
 
@@ -44,6 +45,114 @@ namespace Tests.Tests
 
             Assert.AreEqual(nameof(SecondClass.SecondInteger), objectGraph[1].Name);
             Assert.AreEqual(typeof(int), objectGraph[1].PropertyType);
+        }
+
+        [TestMethod]
+        public void DoesPropertyHaveSetter_Test()
+        {
+            var objectGraphService = new ObjectGraphService();
+
+            List<PropertyInfo> objectGraph =
+                objectGraphService.GetObjectGraph<SubjectClass, int>(subjectClassParam => subjectClassParam.SecondObject
+                    .SecondInteger);
+
+            var setters = new List<ExplicitPropertySetter>
+            {
+                new ExplicitPropertySetter
+                {
+                    PropertyChain = objectGraph
+                }
+            };
+
+            // Act
+
+            bool result = objectGraphService.DoesPropertyHaveSetter(objectGraph, setters);
+
+            Assert.IsTrue(result);
+        }
+
+        [TestMethod]
+        public void DoesPropertyHaveSetter_ObjectGraph_IsOn_PropertyChain_Test()
+        {
+            var objectGraphService = new ObjectGraphService();
+
+            List<PropertyInfo> objectGraph =
+                objectGraphService.GetObjectGraph<SubjectClass, ThirdClass>(subjectClassParam => subjectClassParam.SecondObject
+                    .ThirdObject);
+
+            List<PropertyInfo> propertyChain =
+                objectGraphService.GetObjectGraph<SubjectClass, int>(subjectClassParam => subjectClassParam.SecondObject
+                    .ThirdObject.ThirdInteger);
+
+            var setters = new List<ExplicitPropertySetter>
+            {
+                new ExplicitPropertySetter
+                {
+                    PropertyChain = propertyChain
+                }
+            };
+
+            // Act
+
+            bool result = objectGraphService.DoesPropertyHaveSetter(objectGraph, setters);
+
+            Assert.IsTrue(result);
+        }
+
+        [TestMethod]
+        public void DoesPropertyHaveSetter_ObjectGraph_DivergesFrom_SetterPropertyChain_Test()
+        {
+            var objectGraphService = new ObjectGraphService();
+
+            List<PropertyInfo> objectGraph =
+                objectGraphService.GetObjectGraph<SubjectClass, int>(subjectClassParam => subjectClassParam.SecondObject
+                    .SecondInteger);
+
+            List<PropertyInfo> propertyChain =
+                objectGraphService.GetObjectGraph<SubjectClass, int>(subjectClassParam => subjectClassParam.SecondObject
+                    .ThirdObject.ThirdInteger);
+
+            var setters = new List<ExplicitPropertySetter>
+            {
+                new ExplicitPropertySetter
+                {
+                    PropertyChain = propertyChain
+                }
+            };
+
+            // Act
+
+            bool result = objectGraphService.DoesPropertyHaveSetter(objectGraph, setters);
+
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod]
+        public void DoesPropertyHaveSetter_ObjectGraph_IsPassed_SetterPropertyChain_Test()
+        {
+            var objectGraphService = new ObjectGraphService();
+
+            List<PropertyInfo> objectGraph =
+                objectGraphService.GetObjectGraph<SubjectClass, int>(subjectClassParam => subjectClassParam.SecondObject
+                    .ThirdObject.ThirdInteger);
+
+            List<PropertyInfo> propertyChain =
+                objectGraphService.GetObjectGraph<SubjectClass, ThirdClass>(subjectClassParam => subjectClassParam.SecondObject
+                    .ThirdObject);
+
+            var setters = new List<ExplicitPropertySetter>
+            {
+                new ExplicitPropertySetter
+                {
+                    PropertyChain = propertyChain
+                }
+            };
+
+            // Act
+
+            bool result = objectGraphService.DoesPropertyHaveSetter(objectGraph, setters);
+
+            Assert.IsFalse(result);
         }
     }
 }

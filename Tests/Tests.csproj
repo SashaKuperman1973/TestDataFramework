@@ -136,6 +136,8 @@
     <Compile Include="Tests\OperableListTests\ListParentOperableList\TestContext.cs" />
     <Compile Include="Tests\OperableListTests\OperableList\MainTests\Common.cs" />
     <Compile Include="Tests\OperableListTests\OperableList\MainTests\ListInterfaceImplementation.cs" />
+    <Compile Include="Tests\OperableListTests\OperationListParentOperableListTests.cs" />
+    <Compile Include="Tests\OperableListTests\OperationReferenceParentOperableListTests.cs" />
     <Compile Include="Tests\OperableListTests\ReferenceParentOperableList\Common.cs" />
     <Compile Include="Tests\OperableListTests\RootReferenceParentOperableList\Common.cs" />
     <Compile Include="Tests\OperableListTests\RootReferenceParentOperableList\GuaranteePropertiesByFixedQuantity\DoNotThrowCountRequestOption.cs" />

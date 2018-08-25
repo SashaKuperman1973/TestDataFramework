@@ -33,8 +33,8 @@ namespace Tests.Tests.OperableListTests.RootReferenceParentOperableList
 {
     public class TestContext
     {
-        public TestDataFramework.Populator.Concrete.OperableList.RootReferenceParentOperableList<ElementType, ElementParentType> CreateOperableList() =>
-            new TestDataFramework.Populator.Concrete.OperableList.RootReferenceParentOperableList<ElementType,ElementParentType>(
+        public RootReferenceParentOperableList<ElementType, ElementParentType> CreateOperableList() =>
+            new RootReferenceParentOperableList<ElementType,ElementParentType>(
                 this.RootMock.Object,
                 this.Inputs,
                 this.ValueGuaranteePopulatorMock.Object,

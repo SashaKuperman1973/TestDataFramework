@@ -150,6 +150,13 @@ namespace Tests.TestModels
     public class SecondClass
     {
         public int SecondInteger { get; set; }
+
+        public ThirdClass ThirdObject { get; set; }
+    }
+
+    public class ThirdClass
+    {
+        public int ThirdInteger { get; set; }
     }
 
     public class ClassWithValueAndRefernceTypeProperties

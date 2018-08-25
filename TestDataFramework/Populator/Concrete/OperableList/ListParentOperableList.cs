@@ -109,8 +109,6 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             bool isShallowCopy) : base(rootList, parentList, input, valueGuaranteePopulator, populator,
             objectGraphService, attributeDecorator, deepCollectionSettingConverter, typeGenerator, isShallowCopy)
         {
-            this.RootList = rootList;
-            this.ParentList = parentList;
             this.preOperationList = preOperationList;
 
             this.attributeDecorator = attributeDecorator;
@@ -251,9 +249,9 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             return result;
         }
 
-        public virtual OperableListEx<TRootListElement> RootList { get; protected set; }
+        public virtual OperableListEx<TRootListElement> RootList { get; }
 
-        public virtual TParentList ParentList { get; protected set; }
+        public virtual TParentList ParentList { get; }
 
         public new virtual IEnumerable<TRootListElement> Make()
         {

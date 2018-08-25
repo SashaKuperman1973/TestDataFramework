@@ -166,7 +166,8 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList
 
             // Assert
 
-            Assert.AreEqual(this.operableList, result);
+            Assert.IsTrue(result.Count > 0);
+            Helpers.AssertSetsAreEqual(this.operableList, result);
         }
 
         [TestMethod]

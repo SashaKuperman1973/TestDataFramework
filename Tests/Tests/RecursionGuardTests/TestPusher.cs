@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using TestDataFramework.DeepSetting;
 using TestDataFramework.TypeGenerator.Concrete;
 
 namespace Tests.Tests.RecursionGuardTests
 {
-    internal class Pusher
+    internal class TestPusher
     {
         private readonly List<ExplicitPropertySetter> explicitPropertySetters;
         private ObjectGraphNode objectGraphNode = null;
@@ -17,7 +14,7 @@ namespace Tests.Tests.RecursionGuardTests
         private readonly RecursionGuard recursionGuard;
         private int runningObjectGraphIndex = 0;
 
-        public Pusher(List<ExplicitPropertySetter> explicitPropertySetters,
+        public TestPusher(List<ExplicitPropertySetter> explicitPropertySetters,
             List<PropertyInfo> runningObjectGraph, RecursionGuard recursionGuard)
         {
             this.explicitPropertySetters = explicitPropertySetters;

@@ -27,7 +27,7 @@ namespace Tests.Tests.OperableListTests.ReferenceParentOperableList.GuaranteePro
             ReferenceParentOperableList<ElementSubType, RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> actual =
                 operableList.GuaranteeByPercentageOfTotal(guaranteedValues, ValueCountRequestOption.DoNotThrow);
 
-            actual.Populate();
+            operableList.Populate();
 
             // Assert
 
@@ -44,7 +44,7 @@ namespace Tests.Tests.OperableListTests.ReferenceParentOperableList.GuaranteePro
             ReferenceParentOperableList<ElementSubType, RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> actual =
                 operableList.GuaranteeByPercentageOfTotal(guaranteedValues, 5, ValueCountRequestOption.DoNotThrow);
 
-            actual.Populate();
+            operableList.Populate();
 
             // Assert
 
@@ -61,7 +61,7 @@ namespace Tests.Tests.OperableListTests.ReferenceParentOperableList.GuaranteePro
             ReferenceParentOperableList<ElementSubType, RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> actual =
                 operableList.GuaranteeByPercentageOfTotal(guaranteedValues, ValueCountRequestOption.DoNotThrow);
 
-            actual.Populate();
+            operableList.Populate();
 
             // Assert
 
@@ -78,7 +78,7 @@ namespace Tests.Tests.OperableListTests.ReferenceParentOperableList.GuaranteePro
             ReferenceParentOperableList<ElementSubType, RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> actual =
                 operableList.GuaranteeByPercentageOfTotal(guaranteedValues, 5, ValueCountRequestOption.DoNotThrow);
 
-            actual.Populate();
+            operableList.Populate();
 
             // Assert
 
@@ -95,7 +95,7 @@ namespace Tests.Tests.OperableListTests.ReferenceParentOperableList.GuaranteePro
             ReferenceParentOperableList<ElementSubType, RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> actual =
                 operableList.GuaranteeByPercentageOfTotal(guaranteedValues, ValueCountRequestOption.DoNotThrow);
 
-            actual.Populate();
+            operableList.Populate();
 
             // Assert
 
@@ -112,7 +112,7 @@ namespace Tests.Tests.OperableListTests.ReferenceParentOperableList.GuaranteePro
             ReferenceParentOperableList<ElementSubType, RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> actual =
                 operableList.GuaranteeByPercentageOfTotal(guaranteedValues, 5, ValueCountRequestOption.DoNotThrow);
 
-            actual.Populate();
+            operableList.Populate();
 
             // Assert
 

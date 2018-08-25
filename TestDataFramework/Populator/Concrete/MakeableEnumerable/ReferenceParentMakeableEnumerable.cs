@@ -25,43 +25,43 @@ using TestDataFramework.Populator.Interfaces;
 
 namespace TestDataFramework.Populator.Concrete.MakeableEnumerable
 {
-    public class ShortReferenceParentMakeableEnumerable<TListElement, TParentElement, TRootElement, TRootListElement> :
+    public class ShortReferenceParentMakeableEnumerable<TListElement, TParentElement, TRoot, TRootListElement> :
         ReferenceParentMakeableEnumerable<
-            ReferenceParentOperableList<TListElement, RootReferenceParentOperableList<TParentElement, TRootElement>,
-                TParentElement, TRootElement>,
-            TRootElement,
-            RootReferenceParentOperableList<TParentElement, TRootElement>,
+            ReferenceParentOperableList<TListElement, RootReferenceParentOperableList<TParentElement, TRoot>,
+                TParentElement, TRoot>,
+            TRoot,
+            RootReferenceParentOperableList<TParentElement, TRoot>,
             TRootListElement>
     {
         public ShortReferenceParentMakeableEnumerable(
             IEnumerable<ReferenceParentOperableList<TListElement,
-                    RootReferenceParentOperableList<TParentElement, TRootElement>, TParentElement, TRootElement>>
-                collection, RecordReference<TRootElement> root,
-            RootReferenceParentOperableList<TParentElement, TRootElement> parentList,
-            OperableListEx<TRootListElement> rootList) : base(collection, root,
+                    RootReferenceParentOperableList<TParentElement, TRoot>, TParentElement, TRoot>>
+                collection, RecordReference<TRoot> root,
+            RootReferenceParentOperableList<TParentElement, TRoot> parentList,
+            RootReferenceParentOperableList<TRootListElement, TRoot> rootList) : base(collection, root,
             parentList, rootList)
         {
         }
     }
 
     public class ReferenceParentMakeableEnumerable<TListElement, TParentListElement, TGrandParentList, 
-        TRootListElement, TRootElement> :
+        TRootListElement, TRoot> :
         ReferenceParentMakeableEnumerable<
             ReferenceParentOperableList<
                 TListElement,
-                ReferenceParentOperableList<TParentListElement, TGrandParentList, TRootListElement, TRootElement>,
+                ReferenceParentOperableList<TParentListElement, TGrandParentList, TRootListElement, TRoot>,
                 TRootListElement,
-                TRootElement>,
-            TRootElement,
-            ReferenceParentOperableList<TParentListElement, TGrandParentList, TRootListElement, TRootElement>,
+                TRoot>,
+            TRoot,
+            ReferenceParentOperableList<TParentListElement, TGrandParentList, TRootListElement, TRoot>,
             TRootListElement>
     {
         public ReferenceParentMakeableEnumerable(
             IEnumerable<ReferenceParentOperableList<TListElement,
-                ReferenceParentOperableList<TParentListElement, TGrandParentList, TRootListElement, TRootElement>,
-                TRootListElement, TRootElement>> collection, RecordReference<TRootElement> root,
-            ReferenceParentOperableList<TParentListElement, TGrandParentList, TRootListElement, TRootElement>
-                parentList, OperableListEx<TRootListElement> rootList) : base(collection, root, parentList, rootList)
+                ReferenceParentOperableList<TParentListElement, TGrandParentList, TRootListElement, TRoot>,
+                TRootListElement, TRoot>> collection, RecordReference<TRoot> root,
+            ReferenceParentOperableList<TParentListElement, TGrandParentList, TRootListElement, TRoot>
+                parentList, RootReferenceParentOperableList<TRootListElement, TRoot> rootList) : base(collection, root, parentList, rootList)
         {
         }
     }
@@ -69,7 +69,8 @@ namespace TestDataFramework.Populator.Concrete.MakeableEnumerable
     public class ReferenceParentMakeableEnumerable<TList, TRoot, TParentList, TRootListElement> : List<TList>, IMakeable<TRoot>
     {
         public ReferenceParentMakeableEnumerable(IEnumerable<TList> collection,
-            RecordReference<TRoot> root, TParentList parentList, OperableListEx<TRootListElement> rootList) : base(collection)
+            RecordReference<TRoot> root, TParentList parentList,
+            RootReferenceParentOperableList<TRootListElement, TRoot> rootList) : base(collection)
         {
             this.Root = root;
             this.ParentList = parentList;
@@ -80,7 +81,7 @@ namespace TestDataFramework.Populator.Concrete.MakeableEnumerable
 
         public virtual TParentList ParentList { get; }
 
-        public virtual OperableListEx<TRootListElement> RootList { get; }
+        public virtual RootReferenceParentOperableList<TRootListElement, TRoot> RootList { get; }
 
         public virtual TRoot Make()
         {

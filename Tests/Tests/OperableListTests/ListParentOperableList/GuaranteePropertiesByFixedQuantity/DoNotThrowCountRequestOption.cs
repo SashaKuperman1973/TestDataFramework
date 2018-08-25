@@ -47,7 +47,7 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList.GuaranteeProperti
             ListParentOperableList<ElementType, OperableListEx<ElementParentType>, ElementParentType> actual =
                 operableList.GuaranteeByFixedQuantity(guaranteedValues, ValueCountRequestOption.DoNotThrow);
 
-            actual.Populate();
+            operableList.Populate();
 
             // Assert
 
@@ -67,7 +67,7 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList.GuaranteeProperti
                 OperableListEx<ElementParentType>, ElementParentType> actual =
                 operableList.GuaranteeByFixedQuantity(guaranteedValues, 5, ValueCountRequestOption.DoNotThrow);
 
-            actual.Populate();
+            operableList.Populate();
 
             // Assert
 
@@ -86,7 +86,6 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList.GuaranteeProperti
             ListParentOperableList<ElementType, OperableListEx<ElementParentType>, ElementParentType> actual =
                 operableList.GuaranteeByFixedQuantity(guaranteedValues, ValueCountRequestOption.DoNotThrow);
 
-            // TODO 1
             operableList.Populate();
 
             // Assert
@@ -106,7 +105,7 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList.GuaranteeProperti
             ListParentOperableList<ElementType, OperableListEx<ElementParentType>, ElementParentType> actual =
                 operableList.GuaranteeByFixedQuantity(guaranteedValues, 5, ValueCountRequestOption.DoNotThrow);
 
-            actual.Populate();
+            operableList.Populate();
 
             // Assert
 
@@ -125,7 +124,7 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList.GuaranteeProperti
             ListParentOperableList<ElementType, OperableListEx<ElementParentType>, ElementParentType> actual =
                 operableList.GuaranteeByFixedQuantity(guaranteedValues, ValueCountRequestOption.DoNotThrow);
 
-            actual.Populate();
+            operableList.Populate();
 
             // Assert
 
@@ -143,7 +142,7 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList.GuaranteeProperti
             ListParentOperableList<ElementType, OperableListEx<ElementParentType>, ElementParentType> actual =
                 operableList.GuaranteeByFixedQuantity(guaranteedValues, 5, ValueCountRequestOption.DoNotThrow);
 
-            actual.Populate();
+            operableList.Populate();
 
             // Assert
 

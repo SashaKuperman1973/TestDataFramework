@@ -53,7 +53,7 @@ namespace Tests.Tests
             this.valueGeneratorMock = new Mock<IValueGenerator>();
             this.handledTypeGeneratorMock = new Mock<IHandledTypeGenerator>();
             this.typeGeneratorServiceMock = new Mock<ITypeGeneratorService>();
-            this.recursionGuardMock = new Mock<RecursionGuard>();
+            this.recursionGuardMock = Helpers.GetMock<RecursionGuard>();
 
             this.typeGenerator = new StandardTypeGenerator(this.valueGeneratorMock.Object,
                 this.handledTypeGeneratorMock.Object, this.typeGeneratorServiceMock.Object,

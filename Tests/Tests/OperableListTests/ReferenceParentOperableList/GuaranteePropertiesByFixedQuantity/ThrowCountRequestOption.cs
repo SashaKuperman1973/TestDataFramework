@@ -27,7 +27,7 @@ namespace Tests.Tests.OperableListTests.ReferenceParentOperableList.GuaranteePro
             ReferenceParentOperableList<ElementSubType, RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> actual =
                 operableList.GuaranteeByFixedQuantity(guaranteedValues);
 
-            actual.Populate();
+            operableList.Populate();
 
             // Assert
 
@@ -44,7 +44,7 @@ namespace Tests.Tests.OperableListTests.ReferenceParentOperableList.GuaranteePro
             ReferenceParentOperableList<ElementSubType, RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> actual =
                 operableList.GuaranteeByFixedQuantity(guaranteedValues, 5);
 
-            actual.Populate();
+            operableList.Populate();
 
             // Assert
 
@@ -61,7 +61,7 @@ namespace Tests.Tests.OperableListTests.ReferenceParentOperableList.GuaranteePro
             ReferenceParentOperableList<ElementSubType, RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> actual =
                 operableList.GuaranteeByFixedQuantity(guaranteedValues);
 
-            actual.Populate();
+            operableList.Populate();
 
             // Assert
 
@@ -78,7 +78,7 @@ namespace Tests.Tests.OperableListTests.ReferenceParentOperableList.GuaranteePro
             ReferenceParentOperableList<ElementSubType, RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> actual =
                 operableList.GuaranteeByFixedQuantity(guaranteedValues, 5);
 
-            actual.Populate();
+            operableList.Populate();
 
             // Assert
 
@@ -95,7 +95,7 @@ namespace Tests.Tests.OperableListTests.ReferenceParentOperableList.GuaranteePro
             ReferenceParentOperableList<ElementSubType, RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType> actual =
                 operableList.GuaranteeByFixedQuantity(guaranteedValues);
 
-            actual.Populate();
+            operableList.Populate();
 
             // Assert
 
@@ -113,7 +113,7 @@ namespace Tests.Tests.OperableListTests.ReferenceParentOperableList.GuaranteePro
                 ElementType, ElementParentType> actual =
                 operableList.GuaranteeByFixedQuantity(guaranteedValues, 5);
 
-            actual.Populate();
+            operableList.Populate();
 
             // Assert
 

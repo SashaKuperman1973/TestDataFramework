@@ -135,11 +135,14 @@ namespace Tests.Tests.OperableListTests.ReferenceParentOperableList
         {
             // Act
 
-            var result = this.operableList.Ignore(m => m.ASubTypeProperty);
+            OperationReferenceParentOperableList<ElementSubType,
+                    RootReferenceParentOperableList<ElementType, ElementParentType>, ElementType, ElementParentType>
+                result = this.operableList.Ignore(m => m.ASubTypeProperty);
 
             // Assert
 
-            Assert.AreEqual(this.operableList, result);
+            Assert.IsTrue(this.operableList.Count > 0);
+            Helpers.AssertSetsAreEqual(this.operableList, result);
         }
 
         [TestMethod]

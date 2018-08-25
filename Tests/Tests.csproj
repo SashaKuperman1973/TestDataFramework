@@ -161,7 +161,7 @@
     <Compile Include="Tests\OperableListTests\OperableList\MainTests\Populate.cs" />
     <Compile Include="Tests\OperableListTests\OperableList\TestContext.cs" />
     <Compile Include="Tests\PopulatableTest.cs" />
-    <Compile Include="Tests\RecursionGuardTests\Pusher.cs" />
+    <Compile Include="Tests\RecursionGuardTests\TestPusher.cs" />
     <Compile Include="Tests\RecursionGuardTests\RecursionGuardTests.cs" />
     <Compile Include="Tests\SqlClientValueGeneratorTests.cs" />
     <Compile Include="Tests\StandardHandledTypeGeneratorTests.cs" />

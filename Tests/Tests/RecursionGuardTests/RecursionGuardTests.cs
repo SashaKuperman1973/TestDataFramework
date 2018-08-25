@@ -28,6 +28,8 @@ namespace Tests.Tests.RecursionGuardTests
         [TestMethod]
         public void PushAndPop_ExplicitSetterforCircularReference_Success_Test()
         {
+            // Arrange
+
             var objectGraphService = new ObjectGraphService();
 
             List<PropertyInfo> objectGraph = objectGraphService.GetObjectGraph<RecursionRootClass, InfiniteRecursiveClass2>(
@@ -41,14 +43,22 @@ namespace Tests.Tests.RecursionGuardTests
                 }
             };
 
+            this.objectGraphServiceMock
+                .Setup(m => m.DoesPropertyHaveSetter(It.IsAny<List<PropertyInfo>>(), explicitPropertySetters))
+                .Returns(true).Verifiable();
+
+            // Act
+
             bool result = true;
-            var pusher = new Pusher(explicitPropertySetters, objectGraph, this.recursionGuard);
+            var pusher = new TestPusher(explicitPropertySetters, objectGraph, this.recursionGuard);
 
             result &= pusher.Push(typeof(RecursionRootClass));
             result &= pusher.Push(typeof(InfiniteRecursiveClass1));
             result &= pusher.Push(typeof(InfiniteRecursiveClass2));
             result &= pusher.Push(typeof(InfiniteRecursiveClass1));
             result &= pusher.Push(typeof(InfiniteRecursiveClass2));
+
+            // Assert
 
             Assert.IsTrue(result);
 
@@ -59,6 +69,8 @@ namespace Tests.Tests.RecursionGuardTests
             this.recursionGuard.Pop();
 
             Helpers.ExceptionTest(() => this.recursionGuard.Pop(), typeof(InvalidOperationException));
+
+            this.objectGraphServiceMock.Verify();
         }
 
         [TestMethod]
@@ -77,13 +89,22 @@ namespace Tests.Tests.RecursionGuardTests
                 }
             };
 
+            this.objectGraphServiceMock
+                .Setup(m => m.DoesPropertyHaveSetter(It.Is<List<PropertyInfo>>(piList => piList.Count < 5), explicitPropertySetters))
+                .Returns(true).Verifiable();
+
+            this.objectGraphServiceMock
+                .Setup(m => m.DoesPropertyHaveSetter(It.Is<List<PropertyInfo>>(piList => piList.Count == 5 ), explicitPropertySetters))
+                .Returns(false).Verifiable();
+
+
             List<PropertyInfo> runningObjectGraph =
                 objectGraphService.GetObjectGraph<RecursionRootClass, InfiniteRecursiveClass1>(
                     m => m.RecursionProperty1.InfinietRecursiveObjectA.InfiniteRecursiveObjectB.InfinietRecursiveObjectA
                         .InfiniteRecursiveObjectB);
 
             bool result = true;
-            var pusher = new Pusher(explicitPropertySetters, runningObjectGraph, this.recursionGuard);
+            var pusher = new TestPusher(explicitPropertySetters, runningObjectGraph, this.recursionGuard);
 
             result &= pusher.Push(typeof(RecursionRootClass));
             Assert.IsTrue(result);
@@ -102,6 +123,8 @@ namespace Tests.Tests.RecursionGuardTests
 
             result &= pusher.Push(typeof(InfiniteRecursiveClass1));
             Assert.IsFalse(result);
+
+            this.objectGraphServiceMock.Verify();
         }
 
         [TestMethod]
@@ -114,7 +137,7 @@ namespace Tests.Tests.RecursionGuardTests
                     m => m.RecursionProperty1.InfinietRecursiveObjectA.InfiniteRecursiveObjectB);
 
             bool result = true;
-            var pusher = new Pusher(Enumerable.Empty<ExplicitPropertySetter>().ToList(), runningObjectGraph, this.recursionGuard);
+            var pusher = new TestPusher(Enumerable.Empty<ExplicitPropertySetter>().ToList(), runningObjectGraph, this.recursionGuard);
 
             result &= pusher.Push(typeof(RecursionRootClass));
             Assert.IsTrue(result);

@@ -49,7 +49,7 @@ namespace Tests.Tests
             this.valueGeneratorMock = new Mock<IValueGenerator>();
             this.handledTypeGeneratorMock = new Mock<IHandledTypeGenerator>();
             this.typeGeneratorServiceMock = new Mock<ITypeGeneratorService>();
-            this.recursionGuardMock = new Mock<RecursionGuard>();
+            this.recursionGuardMock = Helpers.GetMock<RecursionGuard>();
 
             this.recursionGuardMock.Setup(m => m.Push(It.IsAny<Type>(), It.IsAny<IEnumerable<ExplicitPropertySetter>>(),
                 It.IsAny<ObjectGraphNode>())).Returns(true);

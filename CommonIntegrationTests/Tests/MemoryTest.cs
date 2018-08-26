@@ -752,12 +752,22 @@ namespace CommonIntegrationTests.Tests
         }
 
         [TestMethod]
-        public void Explicit_Property_Assignment_In_Recursive_Branch_Test()
+        public void Explicit_Property_Assignment_With_SetList_In_Recursive_Branch_Test()
         {
             IPopulator populator = this.factory.CreateMemoryPopulator();
 
             DeepA deepA = populator.Add<DeepA>().SetList(m => m.DeepB.DeepAList, 5).Set(m => m.DeepB.String, "Hello")
                 .Make();
+        }
+
+        [TestMethod]
+        public void Direct_Explicit_Property_Assignment_In_Recursive_Branch_Test()
+        {
+            IPopulator populator = this.factory.CreateMemoryPopulator();
+
+            DeepA deepA = populator.Add<DeepA>().Set(m => m.DeepB.DeepC.DeepA.Integer, 7).Make();
+
+            Assert.AreEqual(7, deepA.DeepB.DeepC.DeepA.Integer);
         }
     }
 }

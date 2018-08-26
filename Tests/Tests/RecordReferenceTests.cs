@@ -29,6 +29,7 @@ using TestDataFramework.AttributeDecorator.Concrete;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeepSetting;
+using TestDataFramework.DeepSetting.Concrete;
 using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
@@ -289,6 +290,43 @@ namespace Tests.Tests
             recordReference.ExplicitPropertySetters.Single().Action(@object);
 
             Assert.AreEqual(expected, @object.IntegerList);
+        }
+
+        [TestMethod]
+        public void Ignore_Test()
+        {
+            // Arrange
+
+            Expression<Func<SubjectClass, int>> expression = subject => subject.Integer;
+
+            var objectGraphService = new ObjectGraphService();
+
+            List<PropertyInfo> expectedPropertyChain = objectGraphService.GetObjectGraph(expression);
+
+            var objectGraphServiceMock = new Mock<IObjectGraphService>();
+            objectGraphServiceMock.Setup(m => m.GetObjectGraph(expression)).Returns(expectedPropertyChain);
+
+            var recordReference = new RecordReference<SubjectClass>(
+                null, null, null, objectGraphServiceMock.Object, null, null);
+
+            // Act
+
+            recordReference.Ignore(expression);
+
+            // Assert
+
+            ExplicitPropertySetter setter = recordReference.ExplicitPropertySetters.Single();
+
+            List<PropertyInfo> setterPropertyChain = setter.PropertyChain;
+
+            Assert.AreEqual(1, setterPropertyChain.Count);
+
+            Helpers.AssertSetsAreEqual(expectedPropertyChain, setterPropertyChain);
+
+            var @object = new SubjectClass();
+            setter.Action(@object);
+
+            Assert.AreEqual(0, @object.Integer);
         }
     }
 }

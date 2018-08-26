@@ -163,6 +163,7 @@
     <Compile Include="Tests\OperableListTests\OperableList\MainTests\Populate.cs" />
     <Compile Include="Tests\OperableListTests\OperableList\TestContext.cs" />
     <Compile Include="Tests\PopulatableTest.cs" />
+    <Compile Include="Tests\PopulatorFactoryTests\PopulatorFactoryTests.cs" />
     <Compile Include="Tests\RecursionGuardTests\TestPusher.cs" />
     <Compile Include="Tests\RecursionGuardTests\RecursionGuardTests.cs" />
     <Compile Include="Tests\SqlClientValueGeneratorTests.cs" />
@@ -189,7 +190,7 @@
     <Compile Include="Tests\StandardDeferredValueGeneratorTests.cs" />
     <Compile Include="Tests\SqlClientInitialCountGeneratorTests.cs" />
     <Compile Include="Tests\MemoryPersistenceTests.cs" />
-    <Compile Include="Tests\StaticPopulatorFactoryTests.cs" />
+    <Compile Include="Tests\PopulatorFactoryTests\StaticPopulatorFactoryTests.cs" />
     <Compile Include="Tests\TableTypeCacheServiceTests\EqualityHelperTests.cs" />
     <Compile Include="Tests\TableTypeCacheServiceTests\StandardTableTypeCacheServiceTests.cs" />
     <Compile Include="Tests\TableTypeCacheServiceTests\TableTypeLookupTests.cs" />

@@ -130,6 +130,28 @@ namespace CommonIntegrationTests.Tests
             Assert.IsNull(subjectClass.GetterOnly);
         }
 
+        [TestMethod]
+        public void IntrinsicValues_Ignore_Test()
+        {
+            IPopulator populator = this.factory.CreateMemoryPopulator();
+
+            RecordReference<DeepA> deepARecordReference = populator.Add<DeepA>().Ignore(m => m.Integer);
+            populator.Bind();
+
+            Assert.AreEqual(0, deepARecordReference.RecordObject.Integer);
+        }
+
+        [TestMethod]
+        public void NonIntrinsicValues_Ignore_Test()
+        {
+            IPopulator populator = this.factory.CreateMemoryPopulator();
+
+            RecordReference<DeepA> deepARecordReference = populator.Add<DeepA>().Ignore(m => m.DeepB);
+            populator.Bind();
+
+            Assert.IsNull(deepARecordReference.RecordObject.DeepB);
+        }
+
         // This is a test of value types in general.
         [TestMethod]
         public void Multiple_KeyValuePair_Test()

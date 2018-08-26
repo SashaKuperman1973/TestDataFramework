@@ -21,7 +21,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.Factories;
 using TestDataFramework.Populator.Interfaces;
 
-namespace Tests.Tests
+namespace Tests.Tests.PopulatorFactoryTests
 {
     [TestClass]
     public class StaticPopulatorFactoryTests

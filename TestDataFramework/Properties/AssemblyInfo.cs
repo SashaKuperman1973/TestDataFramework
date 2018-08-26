@@ -29,7 +29,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Alexander Kuperman")]
 [assembly: AssemblyProduct("Test Data Framework")]
-[assembly: AssemblyCopyright("Copyright © Alexander Kuperman 2016, 2017")]
+[assembly: AssemblyCopyright("Copyright © Alexander Kuperman 2016, 2017, 2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: InternalsVisibleTo("Tests, PublicKey=" +
@@ -63,5 +63,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.4")]
-[assembly: AssemblyFileVersion("2.4")]
+[assembly: AssemblyVersion("3.0")]
+[assembly: AssemblyFileVersion("3.0")]

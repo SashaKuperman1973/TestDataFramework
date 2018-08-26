@@ -92,7 +92,7 @@ namespace PocoIntegrationTests.Tests
             {
                 populator.Bind();
 
-                //transactionScope.Complete();
+                transactionScope.Complete();
             }
 
             Helpers.Dump(primaries);

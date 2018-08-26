@@ -93,7 +93,7 @@ namespace DeclarativeIntegrationTests.Tests
             {
                 populator.Bind();
 
-                //transactionScope.Complete();
+                transactionScope.Complete();
             }
 
             Helpers.Dump(primaries);
@@ -125,7 +125,7 @@ namespace DeclarativeIntegrationTests.Tests
                 new TransactionOptions {IsolationLevel = IsolationLevel.ReadCommitted}))
             {
                 populator.Bind();
-                //transaction.Complete();
+                transaction.Complete();
             }
         }
     }

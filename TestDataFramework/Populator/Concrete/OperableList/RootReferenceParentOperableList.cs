@@ -21,9 +21,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using log4net;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.ListOperations.Concrete;
+using TestDataFramework.Logger;
 using TestDataFramework.Populator.Concrete.FieldExpression;
 using TestDataFramework.Populator.Concrete.MakeableEnumerable;
 using TestDataFramework.Populator.Interfaces;
@@ -34,6 +36,9 @@ namespace TestDataFramework.Populator.Concrete.OperableList
     public class RootReferenceParentOperableList<TListElement, TRoot> : OperableListEx<TListElement>,
         IMakeable<TRoot>
     {
+        private static readonly ILog Logger =
+            StandardLogManager.GetLogger(typeof(RootReferenceParentOperableList<TListElement, TRoot>));
+
         public RootReferenceParentOperableList(
             RecordReference<TRoot> root,
             IEnumerable<RecordReference<TListElement>> input, ValueGuaranteePopulator valueGuaranteePopulator,
@@ -109,28 +114,34 @@ namespace TestDataFramework.Populator.Concrete.OperableList
 
         public new virtual TRoot Make()
         {
+            RootReferenceParentOperableList<TListElement, TRoot>.Logger.Calling(nameof(this.Make));
+
             this.Root.Populate();
             return this.Root.RecordObject;
         }
 
         public new virtual TRoot BindAndMake()
         {
+            RootReferenceParentOperableList<TListElement, TRoot>.Logger.Calling(nameof(this.BindAndMake));
+
             this.Populator.Bind();
             return this.Root.RecordObject;
         }
 
-        public new virtual ReferenceParentOperableList<TListElement, TRoot>
-            Take(int count)
+        public new virtual ReferenceParentOperableList<TListElement, TRoot> Take(int count)
         {
+            RootReferenceParentOperableList<TListElement, TRoot>.Logger.Calling(nameof(this.Take), $"Count: {count}");
+
             IEnumerable<RecordReference<TListElement>> input = this.InternalEnumerable.Take(count);
 
             ReferenceParentOperableList<TListElement, TRoot> result = this.CreateSubset(input);
             return result;
         }
 
-        public new virtual ReferenceParentOperableList<TListElement, TRoot>
-            Skip(int count)
+        public new virtual ReferenceParentOperableList<TListElement, TRoot> Skip(int count)
         {
+            RootReferenceParentOperableList<TListElement, TRoot>.Logger.Calling(nameof(this.Skip), $"Count: {count}");
+
             IEnumerable<RecordReference<TListElement>> input = this.InternalEnumerable.Skip(count);
 
             ReferenceParentOperableList<TListElement, TRoot> result = this.CreateSubset(input);
@@ -139,6 +150,8 @@ namespace TestDataFramework.Populator.Concrete.OperableList
 
         private ReferenceParentOperableList<TPropertyElement, TListElement, TRoot> SetList<TPropertyElement>(int size)
         {
+            RootReferenceParentOperableList<TListElement, TRoot>.Logger.Calling(nameof(this.SetList), $"Size: {size}");
+
             List<RecordReference<TPropertyElement>> list = this.CreateRecordReferences<TPropertyElement>(size);
 
             ReferenceParentOperableList<TPropertyElement, TListElement, TRoot> result = this.CreateChild(list);
@@ -162,6 +175,8 @@ namespace TestDataFramework.Populator.Concrete.OperableList
         public new virtual RootReferenceParentFieldExpression<TListElement, TProperty, TRoot> Set<TProperty>(
             Expression<Func<TListElement, TProperty>> expression)
         {
+            RootReferenceParentOperableList<TListElement, TRoot>.Logger.Calling(nameof(this.Set), $"Selector: {expression}");
+
             var fieldExpression =
                 new RootReferenceParentFieldExpression<TListElement, TProperty, TRoot>(expression, this,
                     this.objectGraphService);
@@ -276,6 +291,9 @@ namespace TestDataFramework.Populator.Concrete.OperableList
         public new virtual ShortReferenceParentMakeableEnumerable<TResultElement, TListElement, TRoot, TListElement>
             SelectListSet<TResultElement>(Expression<Func<TListElement, IEnumerable<TResultElement>>> selector, int listSize)
         {
+            RootReferenceParentOperableList<TListElement, TRoot>.Logger.Entering(nameof(this.SelectListSet),
+                $"Selector: {selector} - List size: {listSize}");
+
             var listCollection =
                 new ReferenceParentOperableList<TResultElement, TListElement, TRoot>[this.Count];
 
@@ -292,6 +310,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
                 new ShortReferenceParentMakeableEnumerable<TResultElement, TListElement, TRoot, TListElement>(listCollection,
                     this.Root, this, this);
 
+            RootReferenceParentOperableList<TListElement, TRoot>.Logger.Exiting(nameof(this.SelectListSet));
             return result;
         }
 

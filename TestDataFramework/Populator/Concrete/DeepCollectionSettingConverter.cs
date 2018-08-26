@@ -21,15 +21,21 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using log4net;
 using TestDataFramework.Exceptions;
+using TestDataFramework.Logger;
 
 namespace TestDataFramework.Populator.Concrete
 {
     public class DeepCollectionSettingConverter
     {
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(DeepCollectionSettingConverter));
+
         public virtual IEnumerable<TListElement> Convert<TListElement>(IEnumerable<TListElement> convertInput,
             PropertyInfo propertyInfo)
         {
+            DeepCollectionSettingConverter.Logger.Calling(nameof(this.Convert));
+
             var deepListConverterKvps = new List<Kvp<TListElement>>
             {
                 new Kvp<TListElement>(typeof(IEnumerable<TListElement>), input => input),

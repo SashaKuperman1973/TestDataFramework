@@ -20,14 +20,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using log4net;
 using TestDataFramework.DeepSetting;
+using TestDataFramework.DeepSetting.Concrete;
 using TestDataFramework.ListOperations.Interfaces;
+using TestDataFramework.Logger;
 using TestDataFramework.Populator.Concrete;
 
 namespace TestDataFramework.ListOperations.Concrete
 {
     public class ExplicitPropertySetterContextService : IValueGauranteePopulatorContextService
     {
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(ObjectGraphService));
+
         private static ExplicitPropertySetterContextService instance;
 
         protected ExplicitPropertySetterContextService()
@@ -40,18 +45,27 @@ namespace TestDataFramework.ListOperations.Concrete
 
         public void SetRecordReference<T>(RecordReference<T> reference, object value)
         {
+            ExplicitPropertySetterContextService.Logger.Entering(nameof(this.SetRecordReference), typeof(T));
+
             var setter = (ExplicitPropertySetter) value;
+            ExplicitPropertySetterContextService.Logger.Debug($"Setter graph chain: {setter.PropertyChain}");
+
             reference.ExplicitPropertySetters.Add(setter);
+
+            ExplicitPropertySetterContextService.Logger.Exiting(nameof(this.SetRecordReference));
         }
 
         public List<RecordReference<T>> FilterInWorkingListOfReferfences<T>(IEnumerable<RecordReference<T>> references,
             IEnumerable<GuaranteedValues> values)
         {
+            ExplicitPropertySetterContextService.Logger.Entering(nameof(this.FilterInWorkingListOfReferfences), typeof(T));
+
             references = references.ToList();
 
-            var explicitPropertySetters = values.SelectMany(v => v.Values).Cast<ExplicitPropertySetter>();
+            IEnumerable<ExplicitPropertySetter> explicitPropertySetters =
+                values.SelectMany(v => v.Values).Cast<ExplicitPropertySetter>();
 
-            IEnumerable<RecordReference<T>> result =
+            List<RecordReference<T>> result =
 
                 references.Where(reference =>
 
@@ -67,9 +81,10 @@ namespace TestDataFramework.ListOperations.Concrete
 
                                 valueSetter.PropertyChain
 
-                            ))));
+                            )))).ToList();
 
-            return result.ToList();
+            ExplicitPropertySetterContextService.Logger.Exiting(nameof(this.FilterInWorkingListOfReferfences), $"Result size: {result.Count}");
+            return result;
         }
 
         private static bool AreEqual(IReadOnlyList<PropertyInfo> left, IReadOnlyList<PropertyInfo> right)

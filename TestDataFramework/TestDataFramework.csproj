@@ -113,6 +113,7 @@
     <Compile Include="ListOperations\Concrete\ValueGuaranteePopulator.cs" />
     <Compile Include="ListOperations\Concrete\ValueSetContextService.cs" />
     <Compile Include="ListOperations\Interfaces\IValueGauranteePopulatorContextService.cs" />
+    <Compile Include="Logger\LoggerHelper.cs" />
     <Compile Include="Logger\NullLogger.cs" />
     <Compile Include="Logger\StandardLogManager.cs" />
     <Compile Include="Persistence\Interfaces\IPersistence.cs" />
@@ -142,6 +143,7 @@
     <Compile Include="Populator\Concrete\StandardPopulator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RepositoryOperations\Model\ExtendedColumnSymbol.cs" />
+    <Compile Include="TypeGenerator\Concrete\ObjectGraphNodeList.cs" />
     <Compile Include="TypeGenerator\Concrete\RecursionGuard.cs" />
     <Compile Include="TypeGenerator\Concrete\StandardTypeGeneratorService.cs" />
     <Compile Include="TypeGenerator\Concrete\UniqueValueTypeGenerator.cs" />

@@ -20,7 +20,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using log4net;
 using TestDataFramework.ListOperations.Interfaces;
+using TestDataFramework.Logger;
 using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete;
 
@@ -28,6 +30,8 @@ namespace TestDataFramework.ListOperations.Concrete
 {
     public class ValueSetContextService : IValueGauranteePopulatorContextService
     {
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(ValueSetContextService));
+
         private static ValueSetContextService instance;
 
         protected ValueSetContextService()
@@ -39,17 +43,24 @@ namespace TestDataFramework.ListOperations.Concrete
 
         public void SetRecordReference<T>(RecordReference<T> reference, object value)
         {
+            ValueSetContextService.Logger.Entering(nameof(this.SetRecordReference), typeof(T));
+
             ((RecordReference)reference).RecordObjectBase = value;
             reference.IsPopulated = true;
+
+            ValueSetContextService.Logger.Exiting(nameof(this.SetRecordReference));
         }
 
         public List<RecordReference<T>> FilterInWorkingListOfReferfences<T>(IEnumerable<RecordReference<T>> references,
             IEnumerable<GuaranteedValues> values)
         {
+            ValueSetContextService.Logger.Entering(nameof(this.SetRecordReference), typeof(T));
+
             List<RecordReference<T>> result = references.Where(reference =>
                 !reference.ExplicitPropertySetters.Any() && !reference.IsPopulated
             ).ToList();
 
+            ValueSetContextService.Logger.Exiting(nameof(this.SetRecordReference));
             return result;
         }
     }

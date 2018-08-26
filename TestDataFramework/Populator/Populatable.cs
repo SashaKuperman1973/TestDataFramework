@@ -18,19 +18,25 @@
 */
 
 using System.Collections.Generic;
+using log4net;
+using TestDataFramework.Logger;
 
 namespace TestDataFramework.Populator
 {
     public abstract class Populatable
     {
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(Populatable));
+
         internal virtual bool IsPopulated { get; set; }
 
         protected void PopulateChildren()
         {
+            Populatable.Logger.Entering(nameof(this.PopulateChildren), $"Count: {this.children.Count}");
             this.children.ForEach(c =>
             {
                 c.Populate();
             });
+            Populatable.Logger.Exiting(nameof(this.PopulateChildren), $"Count: {this.children.Count}");
         }
 
         internal abstract void Populate();
@@ -41,7 +47,9 @@ namespace TestDataFramework.Populator
 
         protected internal void AddChild(Populatable populatable)
         {
+            Populatable.Logger.Entering(nameof(this.AddChild));
             this.children.Add(populatable);
+            Populatable.Logger.Exiting(nameof(this.AddChild));
         }
     }
 }

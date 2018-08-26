@@ -17,6 +17,7 @@
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using log4net;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.Exceptions;
 using TestDataFramework.ListOperations.Concrete;
-using TestDataFramework.ListOperations.Interfaces;
+using TestDataFramework.Logger;
 using TestDataFramework.Populator.Interfaces;
 using TestDataFramework.TypeGenerator.Interfaces;
 
@@ -37,6 +38,8 @@ namespace TestDataFramework.Populator.Concrete.OperableList
         IList<RecordReference<TListElement>>, 
         IMakeableCollectionContainer<TListElement>
     {
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(OperableList<TListElement>));
+
         private readonly IAttributeDecorator attributeDecorator;
         private readonly DeepCollectionSettingConverter deepCollectionSettingConverter;
         private readonly IObjectGraphService objectGraphService;
@@ -87,6 +90,8 @@ namespace TestDataFramework.Populator.Concrete.OperableList
 
         internal override void Populate()
         {
+            OperableList<TListElement>.Logger.Entering(nameof(this.Populate));
+
             this.PopulateChildren();
 
             if (this.guaranteedPropertySetters.Any())
@@ -101,11 +106,15 @@ namespace TestDataFramework.Populator.Concrete.OperableList
 
             this.InternalList.ForEach(recordReference => recordReference.Populate());
             this.IsPopulated = true;
+
+            OperableList<TListElement>.Logger.Exiting(nameof(this.Populate));
         }
 
         internal override void AddToReferences(IList<RecordReference> collection)
         {
+            OperableList<TListElement>.Logger.Entering(nameof(this.AddToReferences));
             this.InternalList.ForEach(collection.Add);
+            OperableList<TListElement>.Logger.Exiting(nameof(this.AddToReferences));
         }
 
         private RecordReference<TCustomListElement> CreateRecordReference<TCustomListElement>()
@@ -119,7 +128,9 @@ namespace TestDataFramework.Populator.Concrete.OperableList
 
         protected internal virtual void AddGuaranteedPropertySetter(GuaranteedValues values)
         {
+            OperableList<TListElement>.Logger.Entering(nameof(this.AddGuaranteedPropertySetter));
             this.guaranteedPropertySetters.Add(values);
+            OperableList<TListElement>.Logger.Exiting(nameof(this.AddGuaranteedPropertySetter));
         }
 
         protected List<RecordReference<TCustomListElement>> CreateRecordReferences<TCustomListElement>(int count)
@@ -143,29 +154,39 @@ namespace TestDataFramework.Populator.Concrete.OperableList
         public virtual void SetRange<TPropertyValue>(Expression<Func<TListElement, TPropertyValue>> fieldExpression,
             IEnumerable<TPropertyValue> range)
         {
-            this.InternalList.ForEach(l => l.SetRange(fieldExpression, range));
+            OperableList<TListElement>.Logger.Entering(nameof(this.SetRange));
+
+            List<TPropertyValue> rangeList = range.ToList();
+            OperableList<TListElement>.Logger.Debug($"Value count: {rangeList.Count}. Selector: {fieldExpression}");
+
+            this.InternalList.ForEach(l => l.SetRange(fieldExpression, rangeList));
         }
 
         public virtual void SetRange<TPropertyValue>(Expression<Func<TListElement, TPropertyValue>> fieldExpression,
             Func<IEnumerable<TPropertyValue>> rangeFactory)
         {
+            OperableList<TListElement>.Logger.Entering(nameof(this.SetRange), "Taking a range factory.");
+
             this.InternalList.ForEach(l => l.SetRange(fieldExpression, rangeFactory));
         }
 
         public virtual OperableList<TListElement> Ignore<TPropertyType>(Expression<Func<TListElement, TPropertyType>> fieldExpression)
         {
+            OperableList<TListElement>.Logger.Entering(nameof(this.Ignore), this.GetType().FullName);
             this.InternalList.ForEach(reference => reference.Ignore(fieldExpression));
             return this;
         }
 
         public virtual IEnumerable<TListElement> Make()
         {
+            OperableList<TListElement>.Logger.Debug("Calling Make");
             this.Populate();
             return this.RecordObjects;
         }
 
         public virtual IEnumerable<TListElement> BindAndMake()
         {
+            OperableList<TListElement>.Logger.Debug("Calling BindAndMake");
             this.Populator.Bind();
             return this.RecordObjects;
         }
@@ -173,6 +194,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
         public virtual OperableList<TListElement> Set<TProperty>(
             Expression<Func<TListElement, TProperty>> fieldExpression, TProperty value)
         {
+            OperableList<TListElement>.Logger.Calling(nameof(this.Set), $"{this.GetType().FullName} - Selector: {fieldExpression} - Value: {value}");
             this.InternalList.ForEach(reference => reference.Set(fieldExpression, value));
             return this;
         }
@@ -180,6 +202,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
         public virtual OperableList<TListElement> Set<TProperty>(
             Expression<Func<TListElement, TProperty>> fieldExpression, Func<TProperty> valueFactory)
         {
+            OperableList<TListElement>.Logger.Calling(nameof(this.Set), $"{this.GetType().FullName} - Selector: {fieldExpression} - With value factory.");
             this.InternalList.ForEach(reference => reference.Set(fieldExpression, valueFactory));
             return this;
         }
@@ -189,6 +212,13 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             ValueCountRequestOption valueCountRequestOption =
                 ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
+            OperableList<TListElement>.Logger.Calling(nameof(this.GuaranteeByPercentageOfTotal), this.GetType().FullName);
+            
+            guaranteedValues = guaranteedValues.ToList();
+
+            OperableList<TListElement>.Logger.Debug(
+                $"Value count: {guaranteedValues.Count()} - Frequency percentage: {frequencyPercentage}");
+            
             this.privateGuaranteedValues.Add(new GuaranteedValues
             {
                 FrequencyPercentage = frequencyPercentage,
@@ -204,7 +234,12 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             ValueCountRequestOption valueCountRequestOption =
                 ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
+            OperableList<TListElement>.Logger.Calling(nameof(this.GuaranteeByFixedQuantity), this.GetType().FullName);
+
             guaranteedValues = guaranteedValues.ToList();
+
+            OperableList<TListElement>.Logger.Debug(
+                $"Value count: {guaranteedValues.Count()} - Fixed total quantity: {fixedQuantity}");
 
             if (fixedQuantity == 0)
                 fixedQuantity = guaranteedValues.Count();
@@ -310,6 +345,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
 
         protected internal void AddItem(RecordReference<TListElement> item)
         {
+            OperableList<TListElement>.Logger.Calling(nameof(this.AddItem), this.GetType().FullName);
             this.InternalList.Add(item);
         }
 

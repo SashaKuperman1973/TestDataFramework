@@ -57,7 +57,7 @@ namespace TestDataFramework.TypeGenerator.Concrete
             if (objectGraphNode == null)
                 return false;
 
-            var objectGraphNodeList = new List<PropertyInfo>();
+            var objectGraphNodeList = new ObjectGraphNodeList();
             while (objectGraphNode.PropertyInfo != null)
             {
                 objectGraphNodeList.Add(objectGraphNode.PropertyInfo);

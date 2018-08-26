@@ -20,6 +20,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using log4net;
+using TestDataFramework.Logger;
 using TestDataFramework.Populator.Concrete.OperableList;
 using TestDataFramework.Populator.Interfaces;
 
@@ -68,6 +70,10 @@ namespace TestDataFramework.Populator.Concrete.MakeableEnumerable
 
     public class ReferenceParentMakeableEnumerable<TList, TRoot, TParentList, TRootListElement> : List<TList>, IMakeable<TRoot>
     {
+        private static readonly ILog Logger =
+            StandardLogManager.GetLogger(
+                typeof(ReferenceParentMakeableEnumerable<TList, TRoot, TParentList, TRootListElement>));
+
         public ReferenceParentMakeableEnumerable(IEnumerable<TList> collection,
             RecordReference<TRoot> root, TParentList parentList,
             RootReferenceParentOperableList<TRootListElement, TRoot> rootList) : base(collection)
@@ -85,23 +91,27 @@ namespace TestDataFramework.Populator.Concrete.MakeableEnumerable
 
         public virtual TRoot Make()
         {
+            ReferenceParentMakeableEnumerable<TList, TRoot, TParentList, TRootListElement>.Logger.Debug("Calling Make");
             return this.Root.Make();
         }
 
         public virtual TRoot BindAndMake()
         {
+            ReferenceParentMakeableEnumerable<TList, TRoot, TParentList, TRootListElement>.Logger.Debug("Calling BindAndMake");
             return this.Root.BindAndMake();
         }
 
         public virtual ReferenceParentMakeableEnumerable<TList, TRoot, TParentList, TRootListElement> Set<TResultElement>(
             Func<TList, TResultElement> selector)
         {
+            ReferenceParentMakeableEnumerable<TList, TRoot, TParentList, TRootListElement>.Logger.Debug("Calling Set. Selector: " + selector);
             this.Select(selector).ToList();
             return this;
         }
 
         public virtual ReferenceParentMakeableEnumerable<TList, TRoot, TParentList, TRootListElement> Take(int count)
         {
+            ReferenceParentMakeableEnumerable<TList, TRoot, TParentList, TRootListElement>.Logger.Debug("Calling Take. Count: " + count);
             IEnumerable<TList> taken = Enumerable.Take(this, count);
 
             var result =
@@ -113,6 +123,7 @@ namespace TestDataFramework.Populator.Concrete.MakeableEnumerable
 
         public virtual ReferenceParentMakeableEnumerable<TList, TRoot, TParentList, TRootListElement> Skip(int count)
         {
+            ReferenceParentMakeableEnumerable<TList, TRoot, TParentList, TRootListElement>.Logger.Debug("Calling Skip. Count: " + count);
             IEnumerable<TList> afterSkip = Enumerable.Skip(this, count);
 
             var result =

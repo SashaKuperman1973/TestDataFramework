@@ -19,37 +19,65 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using log4net;
 using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.Helpers.FieldExpressionValidator.Concrete;
+using TestDataFramework.Logger;
+using TestDataFramework.TypeGenerator.Concrete;
 
 namespace TestDataFramework.DeepSetting.Concrete
 {
     public class ObjectGraphService : IObjectGraphService
     {
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(ObjectGraphService));
+
         private readonly PropertySetFieldExpressionValidator fieldExpressionValidator =
             new PropertySetFieldExpressionValidator();
 
         public List<PropertyInfo> GetObjectGraph<T, TPropertyValue>(Expression<Func<T, TPropertyValue>> fieldExpression)
         {
-            var propertyChain = new List<PropertyInfo>();
+            ObjectGraphService.Logger.Entering(nameof(this.GetObjectGraph), fieldExpression);
+
+            var propertyChain = new ObjectGraphNodeList();
             this.GetMemberInfo(propertyChain, fieldExpression.Body);
 
+            ObjectGraphService.Logger.Exiting(nameof(this.GetObjectGraph), propertyChain);
             return propertyChain;
         }
 
         public bool DoesPropertyHaveSetter(List<PropertyInfo> objectGraphNodeList, IEnumerable<ExplicitPropertySetter> explicitPropertySetters)
         {
+            ObjectGraphService.Logger.Entering(nameof(this.DoesPropertyHaveSetter), objectGraphNodeList);
+
             foreach (ExplicitPropertySetter aSetter in explicitPropertySetters)
             {
-                if (objectGraphNodeList.Count > aSetter.PropertyChain.Count)
-                    continue;
+                ObjectGraphService.Logger.Debug("Setter property chain: " + aSetter.PropertyChain);
 
+                if (objectGraphNodeList.Count > aSetter.PropertyChain.Count)
+                {
+                    ObjectGraphService.Logger.Debug("Property graph is beyond current setter property chain.");
+                    continue;
+                }
+
+                ObjectGraphService.Logger.Debug("Setter/Graph loop starts.");
                 bool result = true;
                 for (int i = 0; i < objectGraphNodeList.Count; i++)
                 {
-                    if (objectGraphNodeList[i].PropertyType == aSetter.PropertyChain[i].PropertyType) continue;
+                    Type graphPropertyType = objectGraphNodeList[i].PropertyType;
+                    Type setterChainPropertyType = aSetter.PropertyChain[i].PropertyType;
+
+                    ObjectGraphService.Logger.Debug(
+                        $"Graph PropertyType = {graphPropertyType} - Setter chain propertyType = {setterChainPropertyType}");
+
+                    if (graphPropertyType == setterChainPropertyType)
+                    {
+                        continue;                        
+                    }
+
+                    ObjectGraphService.Logger.Debug("Setter/Graph property mismatch. Continuing setter loop.");
 
                     result = false;
                     break;
@@ -57,10 +85,12 @@ namespace TestDataFramework.DeepSetting.Concrete
 
                 if (result)
                 {
+                    ObjectGraphService.Logger.Exiting(nameof(this.DoesPropertyHaveSetter), true);
                     return true;
                 }
             }
 
+            ObjectGraphService.Logger.Exiting(nameof(this.DoesPropertyHaveSetter), false);
             return false;
         }
 

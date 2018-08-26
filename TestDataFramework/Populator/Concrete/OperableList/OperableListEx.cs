@@ -1,10 +1,31 @@
-﻿using System;
+﻿/*
+    Copyright 2016, 2017, 2018 Alexander Kuperman
+
+    This file is part of TestDataFramework.
+
+    TestDataFramework is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    TestDataFramework is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using log4net;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.ListOperations.Concrete;
+using TestDataFramework.Logger;
 using TestDataFramework.Populator.Concrete.FieldExpression;
 using TestDataFramework.Populator.Concrete.MakeableEnumerable;
 using TestDataFramework.TypeGenerator.Interfaces;
@@ -13,6 +34,8 @@ namespace TestDataFramework.Populator.Concrete.OperableList
 {
     public class OperableListEx<TListElement> : OperableList<TListElement>
     {
+        private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(OperableListEx<TListElement>));
+
         public OperableListEx(IEnumerable<RecordReference<TListElement>> input,
             ValueGuaranteePopulator valueGuaranteePopulator, BasePopulator populator,
             IObjectGraphService objectGraphService, IAttributeDecorator attributeDecorator,
@@ -84,6 +107,8 @@ namespace TestDataFramework.Populator.Concrete.OperableList
 
         public virtual ListParentOperableList<TListElement> Take(int count)
         {
+            OperableListEx<TListElement>.Logger.Calling(nameof(this.Take), $"Count: {count}");
+
             IEnumerable<RecordReference<TListElement>> input = this.InternalEnumerable.Take(count);
 
             ListParentOperableList<TListElement> result = this.CreateSubset(input);
@@ -92,6 +117,8 @@ namespace TestDataFramework.Populator.Concrete.OperableList
 
         public virtual ListParentOperableList<TListElement> Skip(int count)
         {
+            OperableListEx<TListElement>.Logger.Calling(nameof(this.Skip), $"Count: {count}");
+
             IEnumerable<RecordReference<TListElement>> input = this.InternalEnumerable.Skip(count);
 
             ListParentOperableList<TListElement> result = this.CreateSubset(input);
@@ -100,6 +127,8 @@ namespace TestDataFramework.Populator.Concrete.OperableList
 
         private ListParentOperableList<TPropertyElement, TListElement> SetList<TPropertyElement>(int size)
         {
+            OperableListEx<TListElement>.Logger.Calling(nameof(this.SetList), $"Size: {size}");
+
             List<RecordReference<TPropertyElement>> input = this.CreateRecordReferences<TPropertyElement>(size);
 
             ListParentOperableList<TPropertyElement, TListElement> result = this.CreateChild(input);
@@ -110,6 +139,8 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             SelectListSet<TResultElement>(Expression<Func<TListElement, IEnumerable<TResultElement>>> selector,
                 int listSize)
         {
+            OperableListEx<TListElement>.Logger.Entering(nameof(this.SelectListSet), $"Selector: {selector} - List size: {listSize}");
+
             var listCollection =
                 new ListParentOperableList<TResultElement, TListElement>
                     [this.Count];
@@ -126,6 +157,7 @@ namespace TestDataFramework.Populator.Concrete.OperableList
                 new ListParentMakeableEnumerable<ListParentOperableList<TResultElement, TListElement>, TListElement>(
                     listCollection, this, this);
 
+            OperableListEx<TListElement>.Logger.Exiting(nameof(this.SelectListSet));
             return result;
         }
 
@@ -146,6 +178,8 @@ namespace TestDataFramework.Populator.Concrete.OperableList
         public virtual FieldExpression<TListElement, TProperty> Set<TProperty>(
             Expression<Func<TListElement, TProperty>> expression)
         {
+            OperableListEx<TListElement>.Logger.Calling(nameof(this.Set), $"Returning a FieldExpression - Selector: {expression}");
+
             var fieldExpression =
                 new FieldExpression<TListElement, TProperty>(expression, this,
                     this.objectGraphService);

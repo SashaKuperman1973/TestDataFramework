@@ -104,6 +104,8 @@ namespace TestDataFramework.Populator.Concrete
             Expression<Func<T, IEnumerable<TResultElement>>> listFieldExpression,
             OperableList<TResultElement> list)
         {
+            RecordReference<T>.Logger.Calling(nameof(this.AddToExplicitPropertySetters));
+
             List<PropertyInfo> objectPropertyGraph = this.objectGraphService.GetObjectGraph(listFieldExpression);
 
             this.AddToExplicitPropertySetters(listFieldExpression,

@@ -68,4 +68,21 @@ namespace DocumentationExamples
 
         public string AnotherString { get; set; }
     }
+
+    public interface IService
+    {
+        
+    }
+
+    public class Service : IService
+    {
+        public Service(IService service)
+        {
+            this.ServiceField = service;
+        }
+
+        public IService InnerService { get; set; }
+
+        public IService ServiceField;
+    }
 }

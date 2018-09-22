@@ -96,7 +96,7 @@ namespace TestDataFramework.Populator.Concrete
             this.PopulateChildren();
 
             base.RecordObjectBase =
-                this.TypeGenerator.GetObject<T>(new TypeGeneratorContext(this.objectGraphService, this.ExplicitPropertySetters));
+                this.TypeGenerator.GetObject<T>(new TypeGeneratorContext(this.ExplicitPropertySetters));
 
             this.IsPopulated = true;
 

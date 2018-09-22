@@ -37,13 +37,14 @@ namespace TestDataFramework.TypeGenerator.Concrete
         private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(StandardTypeGenerator));
 
         public StandardTypeGenerator(IValueGenerator valueGenerator, IHandledTypeGenerator handledTypeGenerator,
-            ITypeGeneratorService typeGeneratorService)
+            ITypeGeneratorService typeGeneratorService, RecursionGuard recursionGuard)
         {
             StandardTypeGenerator.Logger.Debug("Entering constructor");
 
             this.valueGenerator = valueGenerator;
             this.handledTypeGenerator = handledTypeGenerator;
             this.typeGeneratorService = typeGeneratorService;
+            this.complexTypeRecursionGuard = recursionGuard;
 
             StandardTypeGenerator.Logger.Debug("Exiting constructor");
         }
@@ -70,6 +71,7 @@ namespace TestDataFramework.TypeGenerator.Concrete
         private readonly IValueGenerator valueGenerator;
         private readonly IHandledTypeGenerator handledTypeGenerator;
         private readonly ITypeGeneratorService typeGeneratorService;
+        private readonly RecursionGuard complexTypeRecursionGuard;
 
         #endregion Fields
 
@@ -79,28 +81,31 @@ namespace TestDataFramework.TypeGenerator.Concrete
         {
             StandardTypeGenerator.Logger.Debug("Entering ConstructObject");
 
+            if (!this.complexTypeRecursionGuard.Push(forType, context.ExplicitPropertySetters,
+                objectGraphNode))
+            {
+                return Helper.GetDefaultValue(forType);
+            }
+
             object handledTypeObject = this.handledTypeGenerator.GetObject(forType, context);
 
             if (handledTypeObject != null)
-                return handledTypeObject;
-
-            if (!context.ComplexTypeRecursionGuard.Push(forType, context.ExplicitPropertySetters,
-                objectGraphNode))
             {
-                    return Helper.GetDefaultValue(forType);
+                this.complexTypeRecursionGuard.Pop();
+                return handledTypeObject;
             }
 
             bool canBeConstructed = this.InvokeConstructor(forType, out object objectToFillResult, context);
 
             if (!canBeConstructed)
             {
-                context.ComplexTypeRecursionGuard.Pop();
+                this.complexTypeRecursionGuard.Pop();
                 return objectToFillResult;
             }
 
             this.FillObject(objectToFillResult, objectGraphNode, context);
 
-            context.ComplexTypeRecursionGuard.Pop();
+            this.complexTypeRecursionGuard.Pop();
 
             StandardTypeGenerator.Logger.Debug("Exiting ConstructObject");
             return objectToFillResult;

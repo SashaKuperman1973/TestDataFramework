@@ -10,15 +10,8 @@ namespace TestDataFramework.TypeGenerator.Concrete
         private static readonly List<ExplicitPropertySetter> BlankList = Enumerable.Empty<ExplicitPropertySetter>().ToList();
         private List<ExplicitPropertySetter> explicitPropertySetters;
 
-        public TypeGeneratorContext(IObjectGraphService objectGraphService, List<ExplicitPropertySetter> explicitPropertySetters)
+        public TypeGeneratorContext(List<ExplicitPropertySetter> explicitPropertySetters)
         {
-            this.ComplexTypeRecursionGuard = new RecursionGuard(objectGraphService);
-            this.explicitPropertySetters = explicitPropertySetters;
-        }
-
-        public TypeGeneratorContext(RecursionGuard recursionGuard, List<ExplicitPropertySetter> explicitPropertySetters)
-        {
-            this.ComplexTypeRecursionGuard = recursionGuard;
             this.explicitPropertySetters = explicitPropertySetters;
         }
 
@@ -31,7 +24,5 @@ namespace TestDataFramework.TypeGenerator.Concrete
             get => this.BlankSetters ? TypeGeneratorContext.BlankList : this.explicitPropertySetters;
             set => this.explicitPropertySetters = value;
         }
-
-        public RecursionGuard ComplexTypeRecursionGuard { get; set; }
     }
 }

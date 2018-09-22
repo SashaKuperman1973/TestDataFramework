@@ -226,7 +226,7 @@ namespace DocumentationExamples
         }
 
         [TestMethod]
-        public void Test()
+        public void SelectListSet_Test()
         {
             IEnumerable<DeepA> result = StaticPopulatorFactory.CreateMemoryPopulator().Add<DeepA>(3)
                 .SelectListSet(deepA => deepA.DeepB.DeepCCollection, 7)
@@ -261,6 +261,18 @@ namespace DocumentationExamples
 
             Assert.AreEqual("Foo", result.DeepA.TextA);
             Assert.AreEqual("Bar", result.DeepA.DeepB.TextC);
+        }
+
+        [TestMethod]
+        public void RecursionGuard_With_Recursive_Extend_Method_Test()
+        {
+            IPopulator populator = StaticPopulatorFactory.CreateMemoryPopulator();
+
+            populator.Extend(typeof(IService), type => new Service(populator.Make<Service>()));
+
+            var result = populator.Make<Service>();
+
+            Assert.IsNotNull(result);
         }
     }
 }

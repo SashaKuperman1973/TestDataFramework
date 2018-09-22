@@ -58,7 +58,8 @@ namespace Tests.Tests
                 typeGenerator => this.accumulatorValueGeneratorMock.Object,
                 this.valueGeneratorMock.Object,
                 this.handledTypeGeneratorMock.Object,
-                this.typeGeneratorServiceMock.Object);
+                this.typeGeneratorServiceMock.Object,
+                this.recursionGuardMock.Object);
         }
 
         [TestMethod]
@@ -83,7 +84,7 @@ namespace Tests.Tests
 
             object result =
                 this.uniqueValueTypeGenerator.GetObject<ClassWithValueAndRefernceTypeProperties>(
-                    new TypeGeneratorContext(this.recursionGuardMock.Object, null));
+                    new TypeGeneratorContext(null));
 
             // Assert
 
@@ -114,7 +115,7 @@ namespace Tests.Tests
 
             object result =
                 this.uniqueValueTypeGenerator.GetObject<ClassWithValueAndRefernceTypeProperties>(
-                    new TypeGeneratorContext(this.recursionGuardMock.Object, null));
+                    new TypeGeneratorContext(null));
 
             // Assert
 

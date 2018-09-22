@@ -274,5 +274,31 @@ namespace DocumentationExamples
 
             Assert.IsNotNull(result);
         }
+
+        [TestMethod]
+        public void Recursion_Guard_With_Injection_Test()
+        {
+            IPopulator populator = StaticPopulatorFactory.CreateMemoryPopulator();
+
+            populator.Extend(typeof(IService), type => new Service(populator.Make<Service>()));
+
+            Service result = populator.Add<Service>().Set(s => s.InnerService, () => populator.Make<ServiceB>()).Make();
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(typeof(ServiceB), result.InnerService.GetType());
+        }
+
+        [TestMethod]
+        public void Recursion_Guard_Test_Across_Populator_In_Setter_Test()
+        {
+            IPopulator populator = StaticPopulatorFactory.CreateMemoryPopulator();
+
+            populator.Extend(typeof(IService), type => populator.Make<GuardServiceA>());
+
+            GuardClassA guardA = populator.Add<GuardClassA>().Set(g => g.Service, () => populator.Make<GuardClassB>())
+                .Make();
+
+            Assert.IsNull(((guardA.Service as GuardClassB).GuardC.GuardD as GuardServiceA).Service.Service);
+        }
     }
 }

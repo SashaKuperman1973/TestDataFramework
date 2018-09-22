@@ -70,8 +70,7 @@ namespace DocumentationExamples
     }
 
     public interface IService
-    {
-        
+    {        
     }
 
     public class Service : IService
@@ -81,8 +80,37 @@ namespace DocumentationExamples
             this.ServiceField = service;
         }
 
-        public IService InnerService { get; set; }
-
         public IService ServiceField;
+
+        public IService InnerService { get; set; }
+    }
+
+    public class ServiceB : IService
+    {
+    }
+
+    public class GuardClassA
+    {
+        public IService Service { get; set; }
+    }
+
+    public class GuardClassB : IService
+    {
+        public GuardClassC GuardC { get; set; }
+    }
+
+    public class GuardClassC
+    {
+        public IService GuardD { get; set; }
+    }
+
+    public class GuardServiceA : IService
+    {
+        public GuardClassD Service { get; set; }
+    }
+
+    public class GuardClassD
+    {
+        public IService Service { get; set; }
     }
 }

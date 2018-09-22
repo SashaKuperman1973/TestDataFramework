@@ -73,6 +73,11 @@ namespace TestDataFramework.Populator.Concrete
 
         public override void Extend(Type type, HandledTypeValueGetter valueGetter)
         {
+            if (this.handledTypeGenerator.HandledTypeValueGetterDictionary.ContainsKey(type))
+            {
+                this.handledTypeGenerator.HandledTypeValueGetterDictionary.Remove(type);
+            }
+
             this.handledTypeGenerator.HandledTypeValueGetterDictionary.Add(type, (forType, dummyContextParameter) => valueGetter(forType));
         }
 

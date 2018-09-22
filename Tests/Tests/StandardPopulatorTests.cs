@@ -226,6 +226,33 @@ namespace Tests.Tests
         }
 
         [TestMethod]
+        public void Extend_ExistingType_Test()
+        {
+            // Arrange
+
+            var valueGetterDictionary =
+                new Dictionary<Type, HandledTypeValueGetterWithContext>
+                {
+                    {typeof(SubjectClass), (type, context) => null}
+                };
+
+            this.handledTypeGeneratorMock.SetupGet(m => m.HandledTypeValueGetterDictionary)
+                .Returns(valueGetterDictionary);
+
+            var subject = new SubjectClass();
+
+            // Act
+
+            this.populator.Extend(typeof(SubjectClass), type => subject);
+
+            // Assert
+
+            Assert.AreEqual(1, valueGetterDictionary.Count);
+            Assert.AreEqual(subject, valueGetterDictionary[typeof(SubjectClass)](typeof(SubjectClass), null));
+
+        }
+
+        [TestMethod]
         public void Bind_RecordReference_Is_Populated_Test()
         {
             // Arrange

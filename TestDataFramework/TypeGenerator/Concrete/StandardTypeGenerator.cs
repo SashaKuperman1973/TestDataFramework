@@ -87,11 +87,22 @@ namespace TestDataFramework.TypeGenerator.Concrete
                 return Helper.GetDefaultValue(forType);
             }
 
+            object result = this.ConstructGuardedObject(forType, objectGraphNode, context);
+
+            this.complexTypeRecursionGuard.Pop();
+
+            StandardTypeGenerator.Logger.Debug("Exiting ConstructObject");
+            return result;
+        }
+
+        private object ConstructGuardedObject(Type forType, ObjectGraphNode objectGraphNode, TypeGeneratorContext context)
+        {
+            StandardTypeGenerator.Logger.Debug("Entering ConstructGuardedObject");
+
             object handledTypeObject = this.handledTypeGenerator.GetObject(forType, context);
 
             if (handledTypeObject != null)
             {
-                this.complexTypeRecursionGuard.Pop();
                 return handledTypeObject;
             }
 
@@ -99,15 +110,12 @@ namespace TestDataFramework.TypeGenerator.Concrete
 
             if (!canBeConstructed)
             {
-                this.complexTypeRecursionGuard.Pop();
                 return objectToFillResult;
             }
 
             this.FillObject(objectToFillResult, objectGraphNode, context);
 
-            this.complexTypeRecursionGuard.Pop();
-
-            StandardTypeGenerator.Logger.Debug("Exiting ConstructObject");
+            StandardTypeGenerator.Logger.Debug("Exiting ConstructGuardedObject");
             return objectToFillResult;
         }
 

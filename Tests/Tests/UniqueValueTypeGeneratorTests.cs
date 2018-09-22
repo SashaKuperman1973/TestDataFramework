@@ -58,8 +58,7 @@ namespace Tests.Tests
                 typeGenerator => this.accumulatorValueGeneratorMock.Object,
                 this.valueGeneratorMock.Object,
                 this.handledTypeGeneratorMock.Object,
-                this.typeGeneratorServiceMock.Object,
-                this.recursionGuardMock.Object);
+                this.typeGeneratorServiceMock.Object);
         }
 
         [TestMethod]
@@ -78,13 +77,13 @@ namespace Tests.Tests
                 m => m.GetValue(
                     It.Is<PropertyInfo>(propertyInfo => propertyInfo.Name ==
                                                         nameof(ClassWithValueAndRefernceTypeProperties.AnInteger)),
-                    It.IsAny<ObjectGraphNode>())).Returns(uniqueReturnValue);
+                    It.IsAny<ObjectGraphNode>(), It.IsAny<TypeGeneratorContext>())).Returns(uniqueReturnValue);
 
             // Act
 
             object result =
                 this.uniqueValueTypeGenerator.GetObject<ClassWithValueAndRefernceTypeProperties>(
-                    new List<ExplicitPropertySetter>());
+                    new TypeGeneratorContext(this.recursionGuardMock.Object, null));
 
             // Assert
 
@@ -109,13 +108,13 @@ namespace Tests.Tests
                 m => m.GetValue(
                     It.Is<PropertyInfo>(propertyInfo => propertyInfo.Name ==
                                                         nameof(ClassWithValueAndRefernceTypeProperties.ARefernce)),
-                    It.IsAny<ObjectGraphNode>())).Returns(referenceReturnValue);
+                    It.IsAny<ObjectGraphNode>(), It.IsAny<TypeGeneratorContext>())).Returns(referenceReturnValue);
 
             // Act
 
             object result =
                 this.uniqueValueTypeGenerator.GetObject<ClassWithValueAndRefernceTypeProperties>(
-                    new List<ExplicitPropertySetter>());
+                    new TypeGeneratorContext(this.recursionGuardMock.Object, null));
 
             // Assert
 

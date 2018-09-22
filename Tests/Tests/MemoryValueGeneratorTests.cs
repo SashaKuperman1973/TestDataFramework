@@ -31,12 +31,12 @@ namespace Tests.Tests
         {
             var memoryValueGenerator = new MemoryValueGenerator(null, null, null, null, null);
 
-            object result = memoryValueGenerator.GetValue(null, typeof(Guid));
+            object result = memoryValueGenerator.GetValue(null, typeof(Guid), null);
             Assert.IsTrue(result is Guid);
             var guid1 = (Guid) result;
             Assert.AreNotEqual(Guid.Empty, guid1);
 
-            result = memoryValueGenerator.GetValue(null, typeof(Guid));
+            result = memoryValueGenerator.GetValue(null, typeof(Guid), null);
             Assert.IsTrue(result is Guid);
             var guid2 = (Guid) result;
             Assert.AreNotEqual(Guid.Empty, guid2);

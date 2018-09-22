@@ -56,8 +56,7 @@ namespace Tests.Tests
             this.recursionGuardMock = Helpers.GetMock<RecursionGuard>();
 
             this.typeGenerator = new StandardTypeGenerator(this.valueGeneratorMock.Object,
-                this.handledTypeGeneratorMock.Object, this.typeGeneratorServiceMock.Object,
-                this.recursionGuardMock.Object);
+                this.handledTypeGeneratorMock.Object, this.typeGeneratorServiceMock.Object);
 
             this.recursionGuardMock.Setup(m => m.Push(It.IsAny<Type>(),
                     It.IsAny<IEnumerable<ExplicitPropertySetter>>(), It.IsAny<ObjectGraphNode>()))
@@ -73,12 +72,13 @@ namespace Tests.Tests
 
             this.valueGeneratorMock.Setup(m => m.GetValue(
                     It.Is<PropertyInfo>(p => p.PropertyType == typeof(int)),
-                    It.IsAny<ObjectGraphNode>()))
+                    It.IsAny<ObjectGraphNode>(),
+                    It.IsAny<TypeGeneratorContext>()))
                 .Returns(expected);
 
             // Act
-
-            object result = this.typeGenerator.GetObject<SecondClass>(new List<ExplicitPropertySetter>());
+            //new TypeGeneratorContext(this.recursionGuardMock.Object)
+            object result = this.typeGenerator.GetObject<SecondClass>(new TypeGeneratorContext(this.recursionGuardMock.Object, null));
 
             // Assert
 
@@ -88,7 +88,9 @@ namespace Tests.Tests
             Assert.AreEqual(expected, secondClassObject.SecondInteger);
 
             this.valueGeneratorMock.Verify(
-                m => m.GetValue(It.Is<PropertyInfo>(p => p.PropertyType == typeof(int)), It.IsAny<ObjectGraphNode>()),
+                m => m.GetValue(It.Is<PropertyInfo>(p => p.PropertyType == typeof(int)),
+                    It.IsAny<ObjectGraphNode>(),
+                    It.IsAny<TypeGeneratorContext>()),
                 Times.Once);
 
             this.recursionGuardMock.Verify(m => m.Pop(), Times.Once);
@@ -102,15 +104,12 @@ namespace Tests.Tests
 
             this.recursionGuardMock.Setup(m => m.Push(typeof(InfiniteRecursiveClass1),
                     It.IsAny<IEnumerable<ExplicitPropertySetter>>(), It.IsAny<ObjectGraphNode>()))
-                .Returns(false).Verifiable();
-
-            var explicitPropertySetters = new ExplicitPropertySetter[0];
+                .Returns(false).Verifiable();            
 
             // Act
 
             var result =
-                this.typeGenerator.GetObject<InfiniteRecursiveClass1>(explicitPropertySetters) as
-                    RecursionRootClass;
+                this.typeGenerator.GetObject<InfiniteRecursiveClass1>(new TypeGeneratorContext(this.recursionGuardMock.Object, null)) as RecursionRootClass;
 
             // Assert
 
@@ -127,7 +126,8 @@ namespace Tests.Tests
 
             const int expected = 7;
 
-            var explicitProperySetters = new List<ExplicitPropertySetter>();
+            var typeGeneratorContext = new TypeGeneratorContext(this.recursionGuardMock.Object, new List<ExplicitPropertySetter>());
+            List<ExplicitPropertySetter> explicitProperySetters = typeGeneratorContext.ExplicitPropertySetters;
 
             PropertyInfo propertyInfo = typeof(SecondClass).GetProperty(nameof(SecondClass.SecondInteger));
 
@@ -149,7 +149,8 @@ namespace Tests.Tests
 
             // Act
 
-            var result = this.typeGenerator.GetObject<SecondClass>(explicitProperySetters) as SecondClass;
+            var result =
+                this.typeGenerator.GetObject<SecondClass>(typeGeneratorContext) as SecondClass;
 
             // Assert
 
@@ -164,7 +165,8 @@ namespace Tests.Tests
         {
             // Act
 
-            object result = this.typeGenerator.GetObject<AStruct>(new List<ExplicitPropertySetter>());
+            object result =
+                this.typeGenerator.GetObject<AStruct>(new TypeGeneratorContext(this.recursionGuardMock.Object, null));
 
             // Assert
 
@@ -177,7 +179,8 @@ namespace Tests.Tests
         [TestMethod]
         public void GetObject_NoDefaultConstructor_ReturnsNull_Test()
         {
-            object result = this.typeGenerator.GetObject(typeof(ClassWithoutADefaultConstructor), null);
+            object result = this.typeGenerator.GetObject(typeof(ClassWithoutADefaultConstructor), null,
+                new TypeGeneratorContext(this.recursionGuardMock.Object, null));
 
             Assert.IsNull(result);
 
@@ -190,13 +193,15 @@ namespace Tests.Tests
         {
             // Arrange
 
-            this.handledTypeGeneratorMock.Setup(m => m.GetObject(typeof(KeyValuePair<int, string>)))
+            this.handledTypeGeneratorMock
+                .Setup(m => m.GetObject(typeof(KeyValuePair<int, string>), It.IsAny<TypeGeneratorContext>()))
                 .Returns(new KeyValuePair<int, string>(3, "ABCD"));
 
             // Act
 
             var result =
-                (KeyValuePair<int, string>) this.typeGenerator.GetObject(typeof(KeyValuePair<int, string>), null);
+                (KeyValuePair<int, string>) this.typeGenerator.GetObject(typeof(KeyValuePair<int, string>), null,
+                    new TypeGeneratorContext(this.recursionGuardMock.Object, null));
 
             // Assert
 
@@ -215,7 +220,7 @@ namespace Tests.Tests
             // Act
 
             object resultObject =
-                this.typeGenerator.GetObject<WithUninstantiatableDependency>(new List<ExplicitPropertySetter>());
+                this.typeGenerator.GetObject<WithUninstantiatableDependency>(new TypeGeneratorContext(this.recursionGuardMock.Object, null));
 
             // Assert
 
@@ -232,14 +237,16 @@ namespace Tests.Tests
 
             var expected = new SecondClass();
 
+            var context = new TypeGeneratorContext(this.recursionGuardMock.Object, null);
+
             this.valueGeneratorMock.Setup(m => m.GetValue(
                     null,
-                    It.Is<Type>(p => p == typeof(SecondClass))))
+                    It.Is<Type>(p => p == typeof(SecondClass)), It.IsAny<TypeGeneratorContext>()))
                 .Returns(expected);
 
             // Act
 
-            object result = this.typeGenerator.GetObject<ClassWithConstructor>(new List<ExplicitPropertySetter>());
+            object result = this.typeGenerator.GetObject<ClassWithConstructor>(context);
 
             // Assert
 
@@ -250,7 +257,7 @@ namespace Tests.Tests
 
             this.valueGeneratorMock.Verify(
                 m => m.GetValue(null,
-                    It.Is<Type>(p => p == typeof(SecondClass)))
+                    It.Is<Type>(p => p == typeof(SecondClass)), context)
                 , Times.Once);
 
             this.recursionGuardMock.Verify(m => m.Pop(), Times.Once);
@@ -264,7 +271,9 @@ namespace Tests.Tests
 
             var expected = new object();
 
-            this.valueGeneratorMock.Setup(m => m.GetIntrinsicValue(null, typeof(SubjectClass))).Returns(expected);
+            this.valueGeneratorMock
+                .Setup(m => m.GetIntrinsicValue(null, typeof(SubjectClass), It.IsAny<TypeGeneratorContext>()))
+                .Returns(expected);
 
             // Act
 

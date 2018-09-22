@@ -73,7 +73,7 @@ namespace TestDataFramework.Populator.Concrete
 
         public override void Extend(Type type, HandledTypeValueGetter valueGetter)
         {
-            this.handledTypeGenerator.HandledTypeValueGetterDictionary.Add(type, valueGetter);
+            this.handledTypeGenerator.HandledTypeValueGetterDictionary.Add(type, (forType, dummyContextParameter) => valueGetter(forType));
         }
 
         public override OperableListEx<T> Add<T>(int copies, params RecordReference[] primaryRecordReferences)

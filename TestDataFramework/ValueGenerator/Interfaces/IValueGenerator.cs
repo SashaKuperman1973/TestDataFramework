@@ -20,15 +20,16 @@
 using System;
 using System.Reflection;
 using TestDataFramework.DeepSetting;
+using TestDataFramework.TypeGenerator.Concrete;
 
 namespace TestDataFramework.ValueGenerator.Interfaces
 {
     public interface IValueGenerator
     {
-        object GetValue(PropertyInfo propertyInfo, ObjectGraphNode objectGraphNode);
+        object GetValue(PropertyInfo propertyInfo, ObjectGraphNode objectGraphNode, TypeGeneratorContext context);
 
-        object GetValue(PropertyInfo propertyInfo, Type type);
+        object GetValue(PropertyInfo propertyInfo, Type type, TypeGeneratorContext context);
 
-        object GetIntrinsicValue(PropertyInfo propertyInfo, Type type);
+        object GetIntrinsicValue(PropertyInfo propertyInfo, Type type, TypeGeneratorContext typeGeneratorContext);
     }
 }

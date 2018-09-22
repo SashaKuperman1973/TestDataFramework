@@ -30,6 +30,7 @@ using TestDataFramework.DeepSetting;
 using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.Helpers;
 using TestDataFramework.RepositoryOperations.Model;
+using TestDataFramework.TypeGenerator.Concrete;
 using TestDataFramework.TypeGenerator.Interfaces;
 
 namespace Tests
@@ -91,7 +92,7 @@ namespace Tests
         public static void SetupTypeGeneratorMock<T>(Mock<ITypeGenerator> typeGeneratorMock, T returnObject)
         {
             typeGeneratorMock.Setup(
-                    m => m.GetObject<T>(It.IsAny<IEnumerable<ExplicitPropertySetter>>()))
+                    m => m.GetObject<T>(It.IsAny<TypeGeneratorContext>()))
                 .Returns(returnObject);
         }
 
@@ -118,7 +119,7 @@ namespace Tests
             params string[] propertyNamesToSet)
         {
             typeGeneratorMock.Setup(
-                    m => m.GetObject<T>(It.IsAny<IEnumerable<ExplicitPropertySetter>>()))
+                    m => m.GetObject<T>(It.IsAny<TypeGeneratorContext>()))
                 .Callback<IEnumerable<ExplicitPropertySetter>>(
                     setters =>
                     {

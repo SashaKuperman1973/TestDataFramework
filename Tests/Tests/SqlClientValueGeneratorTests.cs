@@ -64,7 +64,7 @@ namespace Tests.Tests
 
             // Act
 
-            object result = this.sqlClientValueGenerator.GetValue(propertyInfo, typeof(DateTime));
+            object result = this.sqlClientValueGenerator.GetValue(propertyInfo, typeof(DateTime), null);
 
             // Assert
 
@@ -85,7 +85,7 @@ namespace Tests.Tests
 
             // Act
 
-            object result = this.sqlClientValueGenerator.GetValue(propertyInfo, typeof(Guid));
+            object result = this.sqlClientValueGenerator.GetValue(propertyInfo, typeof(Guid), null);
 
             // Assert
 

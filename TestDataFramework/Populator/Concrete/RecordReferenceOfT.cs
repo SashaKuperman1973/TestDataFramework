@@ -31,6 +31,7 @@ using TestDataFramework.ListOperations.Concrete;
 using TestDataFramework.Logger;
 using TestDataFramework.Populator.Concrete.OperableList;
 using TestDataFramework.Populator.Interfaces;
+using TestDataFramework.TypeGenerator.Concrete;
 using TestDataFramework.TypeGenerator.Interfaces;
 
 namespace TestDataFramework.Populator.Concrete
@@ -94,7 +95,9 @@ namespace TestDataFramework.Populator.Concrete
 
             this.PopulateChildren();
 
-            base.RecordObjectBase = this.TypeGenerator.GetObject<T>(this.ExplicitPropertySetters);
+            base.RecordObjectBase =
+                this.TypeGenerator.GetObject<T>(new TypeGeneratorContext(this.objectGraphService, this.ExplicitPropertySetters));
+
             this.IsPopulated = true;
 
             RecordReference<T>.Logger.Debug("Exiting Populate");

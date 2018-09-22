@@ -32,6 +32,7 @@ using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Helpers;
 using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete;
+using TestDataFramework.TypeGenerator.Concrete;
 using TestDataFramework.TypeGenerator.Interfaces;
 using Tests.TestModels;
 
@@ -58,11 +59,11 @@ namespace Tests.Tests
             var typeGeneratorMock = new Mock<ITypeGenerator>();
 
             typeGeneratorMock.Setup(
-                    m => m.GetObject<PrimaryTable>(It.IsAny<IEnumerable<ExplicitPropertySetter>>()))
+                    m => m.GetObject<PrimaryTable>(It.IsAny<TypeGeneratorContext>()))
                 .Returns(new PrimaryTable());
 
             typeGeneratorMock.Setup(
-                    m => m.GetObject<ForeignTable>(It.IsAny<IEnumerable<ExplicitPropertySetter>>()))
+                    m => m.GetObject<ForeignTable>(It.IsAny<TypeGeneratorContext>()))
                 .Returns(new ForeignTable());
 
             var recordObject1 = new RecordReference<PrimaryTable>(typeGeneratorMock.Object, this.attributeDecorator,

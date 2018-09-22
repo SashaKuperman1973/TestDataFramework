@@ -19,12 +19,13 @@
 
 using System;
 using System.Collections.Generic;
+using TestDataFramework.TypeGenerator.Concrete;
 
 namespace TestDataFramework.HandledTypeGenerator
 {
     public interface IHandledTypeGenerator
     {
-        IDictionary<Type, HandledTypeValueGetter> HandledTypeValueGetterDictionary { get; }
-        object GetObject(Type forType);
+        IDictionary<Type, HandledTypeValueGetterWithContext> HandledTypeValueGetterDictionary { get; }
+        object GetObject(Type forType, TypeGeneratorContext typeGeneratorContext);
     }
 }

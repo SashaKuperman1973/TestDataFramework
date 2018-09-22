@@ -358,8 +358,7 @@ namespace TestDataFramework.Factories
                 Component.For<IAttributeDecorator>().ImplementedBy<StandardAttributeDecorator>(),
                 Component.For<IAttributeDecoratorBase>().ImplementedBy<StandardAttributeDecoratorBase>(),
                 Component.For<AssemblyWrapper>().Instance(callingAssembly),
-                Component.For<Schema>().Instance(defaultSchema),
-                Component.For<RecursionGuard>().ImplementedBy<RecursionGuard>()
+                Component.For<Schema>().Instance(defaultSchema)
 
                 #endregion Handled Type Generator
 

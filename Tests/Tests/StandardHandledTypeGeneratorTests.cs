@@ -24,6 +24,7 @@ using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.HandledTypeGenerator;
+using TestDataFramework.TypeGenerator.Concrete;
 using TestDataFramework.ValueGenerator.Interfaces;
 using Tests.TestModels;
 
@@ -54,12 +55,12 @@ namespace Tests.Tests
         {
             // Arrange
 
-            this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(int))).Returns(5);
-            this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(string))).Returns("ABCD");
+            this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(int), It.IsAny<TypeGeneratorContext>())).Returns(5);
+            this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(string), It.IsAny<TypeGeneratorContext>())).Returns("ABCD");
 
             // Act
 
-            object result = this.handledTypeGenerator.GetObject(typeof(KeyValuePair<int, string>));
+            object result = this.handledTypeGenerator.GetObject(typeof(KeyValuePair<int, string>), null);
 
             // Assert
 
@@ -85,19 +86,19 @@ namespace Tests.Tests
             int i = 0;
             string[] s = {"AA", "BB", "CC", "DD"};
 
-            this.accumulatorValueGeneratorMock.Setup(m => m.GetValue(null, typeof(int))).Returns(() => ++i);
-            this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(string))).Returns(() => s[i - 1]);
+            this.accumulatorValueGeneratorMock.Setup(m => m.GetValue(null, typeof(int), It.IsAny<TypeGeneratorContext>())).Returns(() => ++i);
+            this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(string), It.IsAny<TypeGeneratorContext>())).Returns(() => s[i - 1]);
 
             // Act
 
-            object result = this.handledTypeGenerator.GetObject(dictionaryType);
+            object result = this.handledTypeGenerator.GetObject(dictionaryType, null);
 
             // Assert
 
             var dictionary = result as Dictionary<int, string>;
 
-            this.accumulatorValueGeneratorMock.Verify(m => m.GetValue(null, typeof(int)), Times.Exactly(4));
-            this.valueGeneratorMock.Verify(m => m.GetValue(null, typeof(string)), Times.Exactly(4));
+            this.accumulatorValueGeneratorMock.Verify(m => m.GetValue(null, typeof(int), It.IsAny<TypeGeneratorContext>()), Times.Exactly(4));
+            this.valueGeneratorMock.Verify(m => m.GetValue(null, typeof(string), It.IsAny<TypeGeneratorContext>()), Times.Exactly(4));
 
             Assert.IsNotNull(dictionary);
             Assert.AreEqual("AA", dictionary[1]);
@@ -114,20 +115,20 @@ namespace Tests.Tests
             int i = 0;
             string[] s = {"AA", "BB"};
 
-            this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(string))).Returns(() => s[i++]);
+            this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(string), It.IsAny<TypeGeneratorContext>())).Returns(() => s[i++]);
 
             // Act
 
-            object result = this.handledTypeGenerator.GetObject(typeof(Dictionary<AnEnum, string>));
+            object result = this.handledTypeGenerator.GetObject(typeof(Dictionary<AnEnum, string>), null);
 
             // Assert
 
             var dictionary = result as Dictionary<AnEnum, string>;
 
             Assert.IsNotNull(dictionary);
-            this.accumulatorValueGeneratorMock.Verify(m => m.GetValue(It.IsAny<PropertyInfo>(), It.IsAny<Type>()),
+            this.accumulatorValueGeneratorMock.Verify(m => m.GetValue(It.IsAny<PropertyInfo>(), It.IsAny<Type>(), null),
                 Times.Never);
-            this.valueGeneratorMock.Verify(m => m.GetValue(null, typeof(string)), Times.Exactly(2));
+            this.valueGeneratorMock.Verify(m => m.GetValue(null, typeof(string), It.IsAny<TypeGeneratorContext>()), Times.Exactly(2));
 
             Assert.AreEqual(Enum.GetNames(typeof(AnEnum)).Length, dictionary.Count);
             Assert.AreEqual("AA", dictionary[AnEnum.SymbolA]);
@@ -154,23 +155,23 @@ namespace Tests.Tests
             object[] o = {new object(), new object(), new object(), new object()};
             string[] s = {"AA", "BB", "CC", "DD"};
 
-            this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(object))).Returns(
+            this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(object), null)).Returns(
                 () =>
                     o[i++]);
-            this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(string))).Returns(
+            this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(string), null)).Returns(
                 () =>
                     s[i - 1]);
 
             // Act
 
-            object result = this.handledTypeGenerator.GetObject(dictionaryType);
+            object result = this.handledTypeGenerator.GetObject(dictionaryType, null);
 
             // Assert
 
             var dictionary = result as Dictionary<object, string>;
 
-            this.valueGeneratorMock.Verify(m => m.GetValue(null, typeof(object)), Times.Exactly(4));
-            this.valueGeneratorMock.Verify(m => m.GetValue(null, typeof(string)), Times.Exactly(4));
+            this.valueGeneratorMock.Verify(m => m.GetValue(null, typeof(object), It.IsAny<TypeGeneratorContext>()), Times.Exactly(4));
+            this.valueGeneratorMock.Verify(m => m.GetValue(null, typeof(string), It.IsAny<TypeGeneratorContext>()), Times.Exactly(4));
 
             Assert.IsNotNull(dictionary);
             Assert.AreEqual("AA", dictionary[o[0]]);
@@ -201,11 +202,11 @@ namespace Tests.Tests
             SubjectClass[] sc = {new SubjectClass(), new SubjectClass(), new SubjectClass(), new SubjectClass()};
             int i = 0;
 
-            this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(SubjectClass))).Returns(() => sc[i++]);
+            this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(SubjectClass), It.IsAny<TypeGeneratorContext>())).Returns(() => sc[i++]);
 
             // Act
 
-            var list = this.handledTypeGenerator.GetObject(listType) as List<SubjectClass>;
+            var list = this.handledTypeGenerator.GetObject(listType, null) as List<SubjectClass>;
 
             // Assert
 
@@ -221,7 +222,7 @@ namespace Tests.Tests
         {
             // Act
 
-            object result = this.handledTypeGenerator.GetObject(typeof(string));
+            object result = this.handledTypeGenerator.GetObject(typeof(string), null);
 
             // Assert
 
@@ -233,11 +234,11 @@ namespace Tests.Tests
         {
             // Arrange
 
-            this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(string))).Returns("A");
+            this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(string), It.IsAny<TypeGeneratorContext>())).Returns("A");
 
             // Act
 
-            object result = this.handledTypeGenerator.GetObject(typeof(Tuple<string>));
+            object result = this.handledTypeGenerator.GetObject(typeof(Tuple<string>), null);
 
             // Assert
 
@@ -251,12 +252,12 @@ namespace Tests.Tests
         {
             // Arrange
 
-            this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(string))).Returns("A");
-            this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(int))).Returns(5);
+            this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(string), It.IsAny<TypeGeneratorContext>())).Returns("A");
+            this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(int), It.IsAny<TypeGeneratorContext>())).Returns(5);
 
             // Act
 
-            object result = this.handledTypeGenerator.GetObject(typeof(Tuple<string, int>));
+            object result = this.handledTypeGenerator.GetObject(typeof(Tuple<string, int>), null);
 
             // Assert
 
@@ -271,13 +272,13 @@ namespace Tests.Tests
         {
             // Arrange
 
-            this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(string))).Returns("A");
-            this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(int))).Returns(5);
-            this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(AnEnum))).Returns(AnEnum.SymbolB);
+            this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(string), It.IsAny<TypeGeneratorContext>())).Returns("A");
+            this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(int), It.IsAny<TypeGeneratorContext>())).Returns(5);
+            this.valueGeneratorMock.Setup(m => m.GetValue(null, typeof(AnEnum), It.IsAny<TypeGeneratorContext>())).Returns(AnEnum.SymbolB);
 
             // Act
 
-            object result = this.handledTypeGenerator.GetObject(typeof(Tuple<string, int, AnEnum>));
+            object result = this.handledTypeGenerator.GetObject(typeof(Tuple<string, int, AnEnum>), null);
 
             // Assert
 

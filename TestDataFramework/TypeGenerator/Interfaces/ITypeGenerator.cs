@@ -20,13 +20,14 @@
 using System;
 using System.Collections.Generic;
 using TestDataFramework.DeepSetting;
+using TestDataFramework.TypeGenerator.Concrete;
 
 namespace TestDataFramework.TypeGenerator.Interfaces
 {
     public interface ITypeGenerator
     {
-        object GetObject<T>(IEnumerable<ExplicitPropertySetter> explicitProperySetters);
+        object GetObject<T>(TypeGeneratorContext context);
 
-        object GetObject(Type forType, ObjectGraphNode objectGraphNode);
+        object GetObject(Type forType, ObjectGraphNode objectGraphNode, TypeGeneratorContext context);
     }
 }

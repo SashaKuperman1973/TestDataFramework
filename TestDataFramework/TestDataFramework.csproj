@@ -146,6 +146,7 @@
     <Compile Include="TypeGenerator\Concrete\ObjectGraphNodeList.cs" />
     <Compile Include="TypeGenerator\Concrete\RecursionGuard.cs" />
     <Compile Include="TypeGenerator\Concrete\StandardTypeGeneratorService.cs" />
+    <Compile Include="TypeGenerator\Concrete\TypeGeneratorContext.cs" />
     <Compile Include="TypeGenerator\Concrete\UniqueValueTypeGenerator.cs" />
     <Compile Include="TypeGenerator\Interfaces\ITypeGeneratorService.cs" />
     <Compile Include="ValueGenerator\Concrete\MemoryValueGenerator.cs" />

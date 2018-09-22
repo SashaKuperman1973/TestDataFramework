@@ -23,6 +23,7 @@ using System.Reflection;
 using log4net;
 using TestDataFramework.Helpers;
 using TestDataFramework.Logger;
+using TestDataFramework.TypeGenerator.Concrete;
 using TestDataFramework.ValueGenerator.Interfaces;
 
 namespace TestDataFramework.ArrayRandomizer
@@ -45,7 +46,7 @@ namespace TestDataFramework.ArrayRandomizer
             StandardArrayRandomizer.Logger.Debug("Exiting constructor");
         }
 
-        public object GetArray(PropertyInfo propertyInfo, Type type)
+        public object GetArray(PropertyInfo propertyInfo, Type type, TypeGeneratorContext typeGeneratorContext)
         {
             StandardArrayRandomizer.Logger.Debug(
                 $"Entering GetArray. propertyInfo: {propertyInfo.GetExtendedMemberInfoString()}, type: {type}");
@@ -71,7 +72,7 @@ namespace TestDataFramework.ArrayRandomizer
 
                 do
                 {
-                    object resultElement = this.valueGenerator.GetValue(propertyInfo, basicType);
+                    object resultElement = this.valueGenerator.GetValue(propertyInfo, basicType, typeGeneratorContext);
                     StandardArrayRandomizer.Logger.Debug($"Result element: {resultElement}");
                     emptyArrayResult.Array.SetValue(resultElement, emptyArrayResult.Indices.Value);
                     emptyArrayResult.Indices++;
@@ -88,7 +89,7 @@ namespace TestDataFramework.ArrayRandomizer
 
                 for (int i = 0; i < StandardArrayRandomizer.DimensionLength; i++)
                 {
-                    object value = this.valueGenerator.GetValue(propertyInfo, basicType);
+                    object value = this.valueGenerator.GetValue(propertyInfo, basicType, typeGeneratorContext);
                     StandardArrayRandomizer.Logger.Debug($"Element value: {value}");
                     resultArray.SetValue(value, i);
                 }

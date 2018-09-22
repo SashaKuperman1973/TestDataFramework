@@ -39,15 +39,15 @@ namespace TestDataFramework.TypeGenerator.Concrete
         public UniqueValueTypeGenerator(GetAccumulatorValueGenerator getAccumulatorValueGenerator,
             IValueGenerator valueGenerator,
             IHandledTypeGenerator handledTypeGenerator,
-            ITypeGeneratorService typeGeneratorService,
-            RecursionGuard recursionGuard)
-            : base(valueGenerator, handledTypeGenerator, typeGeneratorService, recursionGuard)
+            ITypeGeneratorService typeGeneratorService
+            )
+            : base(valueGenerator, handledTypeGenerator, typeGeneratorService)
         {
             this.accumulatorValueGenerator = getAccumulatorValueGenerator(this);
         }
 
         protected override void SetProperty(object objectToFill, PropertyInfo targetPropertyInfo,
-            ObjectGraphNode objectGraphNode)
+            ObjectGraphNode objectGraphNode, TypeGeneratorContext typeGeneratorContext)
         {
             UniqueValueTypeGenerator.Logger.Debug("Entering SetProperty. targetPropertyInfo: " +
                                                   targetPropertyInfo.GetExtendedMemberInfoString());
@@ -56,13 +56,13 @@ namespace TestDataFramework.TypeGenerator.Concrete
             {
                 UniqueValueTypeGenerator.Logger.Debug("Property type is not value like. Calling base.");
 
-                base.SetProperty(objectToFill, targetPropertyInfo, objectGraphNode);
+                base.SetProperty(objectToFill, targetPropertyInfo, objectGraphNode, typeGeneratorContext);
                 return;
             }
 
             UniqueValueTypeGenerator.Logger.Debug("Property type is value like. Calling accumulator value generator.");
 
-            object targetPropertyValue = this.accumulatorValueGenerator.GetValue(targetPropertyInfo, objectGraphNode);
+            object targetPropertyValue = this.accumulatorValueGenerator.GetValue(targetPropertyInfo, objectGraphNode, typeGeneratorContext);
             UniqueValueTypeGenerator.Logger.Debug($"targetPropertyValue: {targetPropertyValue}");
             targetPropertyInfo.SetValue(objectToFill, targetPropertyValue);
 

@@ -18,6 +18,7 @@
 */
 
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -36,14 +37,13 @@ namespace TestDataFramework.TypeGenerator.Concrete
         private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(StandardTypeGenerator));
 
         public StandardTypeGenerator(IValueGenerator valueGenerator, IHandledTypeGenerator handledTypeGenerator,
-            ITypeGeneratorService typeGeneratorService, RecursionGuard complexTypeRecursionGuard)
+            ITypeGeneratorService typeGeneratorService)
         {
             StandardTypeGenerator.Logger.Debug("Entering constructor");
 
             this.valueGenerator = valueGenerator;
             this.handledTypeGenerator = handledTypeGenerator;
             this.typeGeneratorService = typeGeneratorService;
-            this.complexTypeRecursionGuard = complexTypeRecursionGuard;
 
             StandardTypeGenerator.Logger.Debug("Exiting constructor");
         }
@@ -51,12 +51,12 @@ namespace TestDataFramework.TypeGenerator.Concrete
         #region Protected Methods
 
         protected virtual void SetProperty(object objectToFill, PropertyInfo targetPropertyInfo,
-            ObjectGraphNode objectGraphNode)
+            ObjectGraphNode objectGraphNode, TypeGeneratorContext context)
         {
             StandardTypeGenerator.Logger.Debug("Entering SetProperty. PropertyInfo: " +
                                                targetPropertyInfo.GetExtendedMemberInfoString());
 
-            object targetPropertyValue = this.valueGenerator.GetValue(targetPropertyInfo, objectGraphNode);
+            object targetPropertyValue = this.valueGenerator.GetValue(targetPropertyInfo, objectGraphNode, context);
             StandardTypeGenerator.Logger.Debug($"targetPropertyValue: {targetPropertyValue}");
             targetPropertyInfo.SetValue(objectToFill, targetPropertyValue);
 
@@ -70,53 +70,43 @@ namespace TestDataFramework.TypeGenerator.Concrete
         private readonly IValueGenerator valueGenerator;
         private readonly IHandledTypeGenerator handledTypeGenerator;
         private readonly ITypeGeneratorService typeGeneratorService;
-        private readonly RecursionGuard complexTypeRecursionGuard;
-
-        private List<ExplicitPropertySetter> explicitPropertySetters;
-        private static readonly List<ExplicitPropertySetter> BlankList = Enumerable.Empty<ExplicitPropertySetter>().ToList();
-        private bool blankSetters = false;
-        private List<ExplicitPropertySetter> ExplicitPropertySetters
-        {
-            get => this.blankSetters ? StandardTypeGenerator.BlankList : this.explicitPropertySetters;
-            set => this.explicitPropertySetters = value;
-        }
 
         #endregion Fields
 
         #region Private methods
 
-        private object ConstructObject(Type forType, ObjectGraphNode objectGraphNode)
+        private object ConstructObject(Type forType, ObjectGraphNode objectGraphNode, TypeGeneratorContext context)
         {
             StandardTypeGenerator.Logger.Debug("Entering ConstructObject");
 
-            object handledTypeObject = this.handledTypeGenerator.GetObject(forType);
+            object handledTypeObject = this.handledTypeGenerator.GetObject(forType, context);
 
             if (handledTypeObject != null)
                 return handledTypeObject;
 
-            if (!this.complexTypeRecursionGuard.Push(forType, this.explicitPropertySetters,
+            if (!context.ComplexTypeRecursionGuard.Push(forType, context.ExplicitPropertySetters,
                 objectGraphNode))
             {
                     return Helper.GetDefaultValue(forType);
             }
 
-            bool canBeConstructed = this.InvokeConstructor(forType, out object objectToFillResult);
+            bool canBeConstructed = this.InvokeConstructor(forType, out object objectToFillResult, context);
 
             if (!canBeConstructed)
             {
-                this.complexTypeRecursionGuard.Pop();
+                context.ComplexTypeRecursionGuard.Pop();
                 return objectToFillResult;
             }
 
-            this.FillObject(objectToFillResult, objectGraphNode);
+            this.FillObject(objectToFillResult, objectGraphNode, context);
 
-            this.complexTypeRecursionGuard.Pop();
+            context.ComplexTypeRecursionGuard.Pop();
 
             StandardTypeGenerator.Logger.Debug("Exiting ConstructObject");
             return objectToFillResult;
         }
 
-        private bool InvokeConstructor(Type forType, out object result)
+        private bool InvokeConstructor(Type forType, out object result, TypeGeneratorContext typeGeneratorContext)
         {
             StandardTypeGenerator.Logger.Debug("Entering StandardTypeGenerator.GetObjectToFill()");
 
@@ -134,7 +124,7 @@ namespace TestDataFramework.TypeGenerator.Concrete
                 bool parametersFound = true;
                 foreach (ParameterInfo parameterInfo in parameterInfos)
                 {
-                    object argument = this.valueGenerator.GetValue(null, parameterInfo.ParameterType);
+                    object argument = this.valueGenerator.GetValue(null, parameterInfo.ParameterType, typeGeneratorContext);
 
                     if (argument == null)
                     {
@@ -169,7 +159,7 @@ namespace TestDataFramework.TypeGenerator.Concrete
             return false;
         }
 
-        private void FillObject(object objectToFill, ObjectGraphNode objectGraphNode)
+        private void FillObject(object objectToFill, ObjectGraphNode objectGraphNode, TypeGeneratorContext context)
         {
             StandardTypeGenerator.Logger.Debug("Entering FillObject<T>");
 
@@ -183,7 +173,7 @@ namespace TestDataFramework.TypeGenerator.Concrete
 
                 IEnumerable<ExplicitPropertySetter> setters =
                     this.typeGeneratorService
-                        .GetExplicitlySetPropertySetters(this.ExplicitPropertySetters, propertyObjectGraphNode)
+                        .GetExplicitlySetPropertySetters(context.ExplicitPropertySetters, propertyObjectGraphNode)
                         .ToList();
 
                 if (setters.Any())
@@ -194,7 +184,7 @@ namespace TestDataFramework.TypeGenerator.Concrete
                 else
                 {
                     StandardTypeGenerator.Logger.Debug("no explicit property setter found");
-                    this.SetProperty(objectToFill, targetPropertyInfo, propertyObjectGraphNode);
+                    this.SetProperty(objectToFill, targetPropertyInfo, propertyObjectGraphNode, context);
                 }
             }
 
@@ -212,47 +202,43 @@ namespace TestDataFramework.TypeGenerator.Concrete
         #region Public methods
 
         // Main entry point.
-        public virtual object GetObject<T>(IEnumerable<ExplicitPropertySetter> explicitProperySetters)
+        public virtual object GetObject<T>(TypeGeneratorContext context)
         {
             StandardTypeGenerator.Logger.Debug($"Entering GetObject. T: {typeof(T)}");
 
-            object intrinsicValue = this.valueGenerator.GetIntrinsicValue(null, typeof(T));
+            object intrinsicValue = this.valueGenerator.GetIntrinsicValue(null, typeof(T), context);
 
             if (intrinsicValue != null)
                 return intrinsicValue;
 
-            this.ExplicitPropertySetters = explicitProperySetters.ToList();
-
             var parentObjectGraphNode = new ObjectGraphNode(null, null);
 
-            object result = this.ConstructObject(typeof(T), parentObjectGraphNode);
+            object result = this.ConstructObject(typeof(T), parentObjectGraphNode, context);
 
             StandardTypeGenerator.Logger.Debug($"Exiting GetObject. result: {result}");
             return result;
         }
 
-        private int blankSetterCount = 0;
-
         // A secondary entry point.
-        public virtual object GetObject(Type forType, ObjectGraphNode objectGraphNode)
+        public virtual object GetObject(Type forType, ObjectGraphNode objectGraphNode, TypeGeneratorContext context)
         {
             StandardTypeGenerator.Logger.Debug($"Entering GetObject. forType: {forType}");
 
             if (objectGraphNode == null)
             {
-                this.blankSetters = true;
-                this.blankSetterCount++;
+                context.BlankSetters = true;
+                context.BlankSetterCount++;
             }
 
-            object result = this.ConstructObject(forType, objectGraphNode);
+            object result = this.ConstructObject(forType, objectGraphNode, context);
 
             if (objectGraphNode == null)
             {
-                this.blankSetterCount--;
+                context.BlankSetterCount--;
 
-                if (this.blankSetterCount == 0)
+                if (context.BlankSetterCount == 0)
                 {
-                    this.blankSetters = false;
+                    context.BlankSetters = false;
                 }
             }
 

@@ -28,6 +28,7 @@ using TestDataFramework.DeepSetting;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
 using TestDataFramework.Logger;
+using TestDataFramework.TypeGenerator.Concrete;
 using TestDataFramework.TypeGenerator.Interfaces;
 using TestDataFramework.UniqueValueGenerator.Interfaces;
 using TestDataFramework.ValueGenerator.Interfaces;
@@ -84,7 +85,7 @@ namespace TestDataFramework.ValueGenerator
         }
 
         // This is the general entry point.
-        public virtual object GetValue(PropertyInfo propertyInfo, ObjectGraphNode objectGraphNode)
+        public virtual object GetValue(PropertyInfo propertyInfo, ObjectGraphNode objectGraphNode, TypeGeneratorContext context)
         {
             BaseValueGenerator.Logger.Debug(
                 $"Entering GetValue(PropertyInfo, ObjectGraphNode). propertyInfo: {propertyInfo}");
@@ -103,7 +104,7 @@ namespace TestDataFramework.ValueGenerator
                 : this.GetValue(
                     propertyInfo,
                     propertyInfo.PropertyType,
-                    forType => this.getTypeGenerator().GetObject(forType, objectGraphNode));
+                    forType => this.getTypeGenerator().GetObject(forType, objectGraphNode, context), context);
 
             BaseValueGenerator.Logger.Debug($"Exiting GetValue(PropertyInfo, ObjectGraphNode). result: {result}");
             return result;
@@ -111,21 +112,22 @@ namespace TestDataFramework.ValueGenerator
 
         // This entry point is used when a different type is requested for a particular 
         // PropertyInfo or property info doesn't exist in the calling context.
-        public virtual object GetValue(PropertyInfo propertyInfo, Type type)
+        public virtual object GetValue(PropertyInfo propertyInfo, Type type, TypeGeneratorContext context)
         {
-            return this.GetValue(propertyInfo, type, forType => this.getTypeGenerator().GetObject(forType, null));
+            return this.GetValue(propertyInfo, type, forType => this.getTypeGenerator().GetObject(forType, null, context), context);
         }
 
-        public virtual object GetIntrinsicValue(PropertyInfo propertyInfo, Type type)
+        public virtual object GetIntrinsicValue(PropertyInfo propertyInfo, Type type, TypeGeneratorContext typeGeneratorContext)
         {
-            return this.GetValue(propertyInfo, type, forType => null);
+            return this.GetValue(propertyInfo, type, forType => null, typeGeneratorContext);
         }
 
         private delegate object GetValueForTypeDelegate(PropertyInfo propertyInfo);
 
         #region Private Methods
 
-        private object GetValue(PropertyInfo propertyInfo, Type type, Func<Type, object> nonIntrinsicTypeGenerator)
+        private object GetValue(PropertyInfo propertyInfo, Type type, Func<Type, object> nonIntrinsicTypeGenerator,
+            TypeGeneratorContext typeGeneratorContext)
         {
             BaseValueGenerator.Logger.Debug(
                 $"Entering GetValue(PropertyInfo, Type, ObjectGraphNode). propertyInfo: {propertyInfo}, type: {type}");
@@ -133,7 +135,7 @@ namespace TestDataFramework.ValueGenerator
             type.IsNotNull(nameof(type));
 
             if (type.IsArray)
-                return this.getArrayRandomizer().GetArray(propertyInfo, type);
+                return this.getArrayRandomizer().GetArray(propertyInfo, type, typeGeneratorContext);
 
             Type forType = Nullable.GetUnderlyingType(type) ?? type;
 

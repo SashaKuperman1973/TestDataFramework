@@ -147,7 +147,7 @@ namespace Tests.Tests
 
             // Act
 
-            object result = this.valueGenerator.GetValue(propertyInfo, (ObjectGraphNode) null);
+            object result = this.valueGenerator.GetValue(propertyInfo, (ObjectGraphNode) null, null);
 
             // Assert
 
@@ -166,7 +166,7 @@ namespace Tests.Tests
 
             // Act
 
-            this.valueGenerator.GetValue(propertyInfo, (ObjectGraphNode) null);
+            this.valueGenerator.GetValue(propertyInfo, (ObjectGraphNode) null, null);
 
             // Assert
 
@@ -230,7 +230,7 @@ namespace Tests.Tests
             propertyNameAnVerifierList.ForEach(propertyNameVerifier =>
             {
                 PropertyInfo propertyInfo = typeof(SubjectClass).GetProperty(propertyNameVerifier.Item1);
-                this.valueGenerator.GetValue(propertyInfo, (ObjectGraphNode) null);
+                this.valueGenerator.GetValue(propertyInfo, (ObjectGraphNode) null, null);
                 propertyNameVerifier.Item2();
             });
         }
@@ -242,13 +242,13 @@ namespace Tests.Tests
 
             var secondClass = new SecondClass();
 
-            this.typeGeneratorMock.Setup(m => m.GetObject(It.Is<Type>(t => t == typeof(SecondClass)), null))
+            this.typeGeneratorMock.Setup(m => m.GetObject(It.Is<Type>(t => t == typeof(SecondClass)), null, null))
                 .Returns(secondClass);
             PropertyInfo propertyInfo = typeof(SubjectClass).GetProperty("SecondObject");
 
             // Act
 
-            object result = this.valueGenerator.GetValue(propertyInfo, (ObjectGraphNode) null);
+            object result = this.valueGenerator.GetValue(propertyInfo, (ObjectGraphNode) null, null);
             this.typeGeneratorMock.Verify();
 
             // Assert
@@ -300,7 +300,7 @@ namespace Tests.Tests
             {
                 Action action =
                     () => this.valueGenerator.GetValue(typeof(ClassWithMaxInvalidMaxRanges).GetProperty(input.Property),
-                        (ObjectGraphNode) null);
+                        (ObjectGraphNode) null, null);
 
                 Helpers.ExceptionTest(action, input.ExceptionType, input.Message);
             }
@@ -318,12 +318,12 @@ namespace Tests.Tests
             this.arrayRandomizerMock.Setup(
                     m =>
                         m.GetArray(It.Is<PropertyInfo>(p => p == simpleArrayPropertyInfo),
-                            It.Is<Type>(t => t == simpleArrayPropertyInfo.PropertyType)))
+                            It.Is<Type>(t => t == simpleArrayPropertyInfo.PropertyType), null))
                 .Returns(expected);
 
             // Act
 
-            object result = this.valueGenerator.GetValue(simpleArrayPropertyInfo, (ObjectGraphNode) null);
+            object result = this.valueGenerator.GetValue(simpleArrayPropertyInfo, (ObjectGraphNode) null, null);
 
             // Assert
 
@@ -338,8 +338,8 @@ namespace Tests.Tests
 
             this.uniqueValueGeneratorMock.Setup(m => m.GetValue(primaryKeyPropertyInfo)).Returns(default(int));
 
-            object result1 = this.valueGenerator.GetValue(primaryKeyPropertyInfo, (ObjectGraphNode) null);
-            object result2 = this.valueGenerator.GetValue(primaryKeyPropertyInfo, (ObjectGraphNode) null);
+            object result1 = this.valueGenerator.GetValue(primaryKeyPropertyInfo, (ObjectGraphNode) null, null);
+            object result2 = this.valueGenerator.GetValue(primaryKeyPropertyInfo, (ObjectGraphNode) null, null);
 
             this.uniqueValueGeneratorMock.Verify();
             Assert.AreEqual(expected, result1);
@@ -353,7 +353,7 @@ namespace Tests.Tests
 
             this.uniqueValueGeneratorMock.Setup(m => m.GetValue(primaryKeyPropertyInfo)).Returns(1).Verifiable();
 
-            object result = this.valueGenerator.GetValue(primaryKeyPropertyInfo, (ObjectGraphNode) null);
+            object result = this.valueGenerator.GetValue(primaryKeyPropertyInfo, (ObjectGraphNode) null, null);
 
             this.uniqueValueGeneratorMock.Verify();
             Assert.AreEqual(1, result);
@@ -364,9 +364,9 @@ namespace Tests.Tests
         {
             var expected = new SubjectClass();
 
-            this.typeGeneratorMock.Setup(m => m.GetObject(typeof(SubjectClass), null)).Returns(expected);
+            this.typeGeneratorMock.Setup(m => m.GetObject(typeof(SubjectClass), null, null)).Returns(expected);
 
-            object result = this.valueGenerator.GetValue(null, typeof(SubjectClass));
+            object result = this.valueGenerator.GetValue(null, typeof(SubjectClass), null);
             Assert.IsNotNull(result);
             Assert.AreEqual(expected, result);
         }
@@ -374,18 +374,18 @@ namespace Tests.Tests
         [TestMethod]
         public void GetIntrinsicValue_Success_Test()
         {
-            this.valueGenerator.GetIntrinsicValue(null, typeof(int));
+            this.valueGenerator.GetIntrinsicValue(null, typeof(int), null);
 
             this.randomizerMock.Setup(m => m.GetInteger(It.IsAny<int?>())).Returns(5);
 
-            object result = this.valueGenerator.GetIntrinsicValue(null, typeof(int));
+            object result = this.valueGenerator.GetIntrinsicValue(null, typeof(int), null);
             Assert.AreEqual(5, result);
         }
 
         [TestMethod]
         public void GetIntrinsicValue_NullResponse_Test()
         {
-            object result = this.valueGenerator.GetIntrinsicValue(null, typeof(SubjectClass));
+            object result = this.valueGenerator.GetIntrinsicValue(null, typeof(SubjectClass), null);
 
             Assert.IsNull(result);
             this.randomizerMock.VerifyNoOtherCalls();

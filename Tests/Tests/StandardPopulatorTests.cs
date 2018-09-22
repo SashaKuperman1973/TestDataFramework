@@ -34,6 +34,7 @@ using TestDataFramework.Persistence.Interfaces;
 using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete;
 using TestDataFramework.Populator.Concrete.OperableList;
+using TestDataFramework.TypeGenerator.Concrete;
 using TestDataFramework.TypeGenerator.Interfaces;
 using TestDataFramework.ValueGenerator.Interfaces;
 using Tests.Mocks;
@@ -208,7 +209,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var valueGetterDictionary = new Dictionary<Type, HandledTypeValueGetter>();
+            var valueGetterDictionary = new Dictionary<Type, HandledTypeValueGetterWithContext>();
             this.handledTypeGeneratorMock.SetupGet(m => m.HandledTypeValueGetterDictionary)
                 .Returns(valueGetterDictionary);
 
@@ -221,7 +222,7 @@ namespace Tests.Tests
             // Assert
 
             Assert.AreEqual(1, valueGetterDictionary.Count);
-            Assert.AreEqual(subject, valueGetterDictionary[typeof(SubjectClass)](typeof(SubjectClass)));
+            Assert.AreEqual(subject, valueGetterDictionary[typeof(SubjectClass)](typeof(SubjectClass), null));
         }
 
         [TestMethod]
@@ -239,7 +240,7 @@ namespace Tests.Tests
             // Assert
 
             this.persistenceMock.Verify(m => m.Persist(It.IsAny<RecordReference[]>()), Times.Never);
-            this.typeGeneratorMock.Verify(m => m.GetObject<SubjectClass>(It.IsAny<List<ExplicitPropertySetter>>()),
+            this.typeGeneratorMock.Verify(m => m.GetObject<SubjectClass>(It.IsAny<TypeGeneratorContext>()),
                 Times.Never);
         }
 
@@ -292,7 +293,7 @@ namespace Tests.Tests
         {
             var subject = new SubjectClass();
 
-            this.typeGeneratorMock.Setup(m => m.GetObject<SubjectClass>(It.IsAny<List<ExplicitPropertySetter>>()))
+            this.typeGeneratorMock.Setup(m => m.GetObject<SubjectClass>(It.IsAny<TypeGeneratorContext>()))
                 .Returns(subject);
 
             var result = this.populator.Make<SubjectClass>();
@@ -305,7 +306,7 @@ namespace Tests.Tests
         {
             var subject = new SubjectClass();
 
-            this.typeGeneratorMock.Setup(m => m.GetObject<SubjectClass>(It.IsAny<List<ExplicitPropertySetter>>()))
+            this.typeGeneratorMock.Setup(m => m.GetObject<SubjectClass>(It.IsAny<TypeGeneratorContext>()))
                 .Returns(subject);
 
             List<SubjectClass> result = this.populator.Make<SubjectClass>(5).ToList();

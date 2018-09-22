@@ -23,10 +23,12 @@ using System.Reflection;
 using log4net;
 using TestDataFramework.Helpers;
 using TestDataFramework.Logger;
+using TestDataFramework.TypeGenerator.Concrete;
 using TestDataFramework.ValueGenerator.Interfaces;
 
 namespace TestDataFramework.HandledTypeGenerator
 {
+    public delegate object HandledTypeValueGetterWithContext(Type forType, TypeGeneratorContext typeGeneratorContext);
     public delegate object HandledTypeValueGetter(Type forType);
 
     public class StandardHandledTypeGenerator : IHandledTypeGenerator
@@ -41,7 +43,7 @@ namespace TestDataFramework.HandledTypeGenerator
             this.getAccumulatorValueGenerator = getAccumulatorValueGenerator;
             this.collectionElementCount = collectionElementCount;
 
-            this.HandledTypeValueGetterDictionary = new Dictionary<Type, HandledTypeValueGetter>
+            this.HandledTypeValueGetterDictionary = new Dictionary<Type, HandledTypeValueGetterWithContext>
             {
                 {typeof(KeyValuePair<,>), this.GetKeyValuePair},
                 {typeof(IDictionary<,>), this.GetDictionary},
@@ -58,19 +60,22 @@ namespace TestDataFramework.HandledTypeGenerator
             StandardHandledTypeGenerator.Logger.Debug("Exiting constructor");
         }
 
-        public virtual object GetObject(Type forType)
+        public virtual object GetObject(Type forType, TypeGeneratorContext typeGeneratorContext)
         {
             StandardHandledTypeGenerator.Logger.Debug("Entering GetObject. forType: " + forType);
 
-            Type typeToCheck = forType.IsGenericType ? forType.GetGenericTypeDefinition() : forType;
+            HandledTypeValueGetterWithContext getter;
 
-            if (!this.HandledTypeValueGetterDictionary.TryGetValue(typeToCheck, out HandledTypeValueGetter getter))
+            if (!this.HandledTypeValueGetterDictionary.TryGetValue(forType, out getter)
+                && !(forType.IsGenericType &&
+                     this.HandledTypeValueGetterDictionary.TryGetValue(forType.GetGenericTypeDefinition(), out getter))
+            )
             {
                 StandardHandledTypeGenerator.Logger.Debug($"No handler found for type {forType}. Returning null.");
                 return null;
             }
 
-            object result = getter(forType);
+            object result = getter(forType, typeGeneratorContext);
 
             StandardHandledTypeGenerator.Logger.Debug($"Exiting GetObject. result: {result}");
             return result;
@@ -109,7 +114,7 @@ namespace TestDataFramework.HandledTypeGenerator
 
         public delegate IValueGenerator CreateAccumulatorValueGeneratorDelegate();
 
-        public IDictionary<Type, HandledTypeValueGetter> HandledTypeValueGetterDictionary { get; }
+        public IDictionary<Type, HandledTypeValueGetterWithContext> HandledTypeValueGetterDictionary { get; }
 
         private readonly IValueGenerator valueGenerator;
         private readonly CreateAccumulatorValueGeneratorDelegate getAccumulatorValueGenerator;
@@ -119,15 +124,15 @@ namespace TestDataFramework.HandledTypeGenerator
 
         #region Type getters
 
-        private object GetKeyValuePair(Type forType)
+        private object GetKeyValuePair(Type forType, TypeGeneratorContext typeGeneratorContext)
         {
             StandardHandledTypeGenerator.Logger.Debug($"Entering GetKeyValuePair. forType: {forType}");
 
             Type[] genericArgumentTypes = forType.GetGenericArguments();
             ConstructorInfo constructor = forType.GetConstructor(genericArgumentTypes);
 
-            object key = this.valueGenerator.GetValue(null, genericArgumentTypes[0]);
-            object value = this.valueGenerator.GetValue(null, genericArgumentTypes[1]);
+            object key = this.valueGenerator.GetValue(null, genericArgumentTypes[0], typeGeneratorContext);
+            object value = this.valueGenerator.GetValue(null, genericArgumentTypes[1], typeGeneratorContext);
 
             object result = constructor.Invoke(new[] {key, value});
 
@@ -135,7 +140,7 @@ namespace TestDataFramework.HandledTypeGenerator
             return result;
         }
 
-        private object GetDictionary(Type forType)
+        private object GetDictionary(Type forType, TypeGeneratorContext typeGeneratorContext)
         {
             StandardHandledTypeGenerator.Logger.Debug($"Entering GetDictionary. forType: {forType}");
 
@@ -161,9 +166,9 @@ namespace TestDataFramework.HandledTypeGenerator
                     else
                         return null;
                 else
-                    key = this.GenerateCollectionKey(typeArray);
+                    key = this.GenerateCollectionKey(typeArray, typeGeneratorContext);
 
-                object value = this.valueGenerator.GetValue(null, typeArray[1]);
+                object value = this.valueGenerator.GetValue(null, typeArray[1], typeGeneratorContext);
 
                 StandardHandledTypeGenerator.Logger.Debug($"genericCollectionValueGenerator result: {key}, {value}");
                 return new[] {key, value};
@@ -176,30 +181,30 @@ namespace TestDataFramework.HandledTypeGenerator
             return result;
         }
 
-        private object GenerateCollectionKey(Type[] typeArray)
+        private object GenerateCollectionKey(Type[] typeArray, TypeGeneratorContext typeGeneratorContext)
         {
             object key;
 
             if (typeArray[0].IsValueLikeType() && !typeof(Enum).IsAssignableFrom(typeArray[0]))
             {
                 IValueGenerator accumulatorValueGenerator = this.getAccumulatorValueGenerator();
-                key = accumulatorValueGenerator.GetValue(null, typeArray[0]);
+                key = accumulatorValueGenerator.GetValue(null, typeArray[0], typeGeneratorContext);
             }
             else
             {
-                key = this.valueGenerator.GetValue(null, typeArray[0]);
+                key = this.valueGenerator.GetValue(null, typeArray[0], typeGeneratorContext);
             }
 
             return key;
         }
 
-        private object GetList(Type forType)
+        private object GetList(Type forType, TypeGeneratorContext typeGeneratorContext)
         {
             StandardHandledTypeGenerator.Logger.Debug($"Entering GetList. forType: {forType}");
 
             Func<Type[], object[]> genericCollectionValueGenerator = typeArray =>
             {
-                object valueGeneratorResult = this.valueGenerator.GetValue(null, typeArray[0]);
+                object valueGeneratorResult = this.valueGenerator.GetValue(null, typeArray[0], typeGeneratorContext);
 
                 StandardHandledTypeGenerator.Logger.Debug(
                     $"genericCollectionValueGenerator valueGeneratorResult: {valueGeneratorResult}");
@@ -213,7 +218,7 @@ namespace TestDataFramework.HandledTypeGenerator
             return result;
         }
 
-        private object GetTuple(Type forType)
+        private object GetTuple(Type forType, TypeGeneratorContext typeGeneratorContext)
         {
             StandardHandledTypeGenerator.Logger.Debug($"Entering GetTuple. forType: {forType}");
 
@@ -223,7 +228,7 @@ namespace TestDataFramework.HandledTypeGenerator
             var argumentValues = new object[genericArgumentTypes.Length];
 
             for (int i = 0; i < argumentValues.Length; i++)
-                argumentValues[i] = this.valueGenerator.GetValue(null, genericArgumentTypes[i]);
+                argumentValues[i] = this.valueGenerator.GetValue(null, genericArgumentTypes[i], typeGeneratorContext);
 
             object result = constructor.Invoke(argumentValues);
 

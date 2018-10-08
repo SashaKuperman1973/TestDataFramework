@@ -288,6 +288,16 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             return this;
         }
 
+        public new virtual RootReferenceParentOperableList<TListElement, TRoot> GuaranteeByFixedQuantity(
+            IEnumerable<TListElement> guaranteedValues,
+            int fixedQuantity,
+            ValueCountRequestOption valueCountRequestOption =
+                ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
+        {
+            base.GuaranteeByFixedQuantity(guaranteedValues, fixedQuantity, valueCountRequestOption);
+            return this;
+        }
+
         public new virtual ShortReferenceParentMakeableEnumerable<TResultElement, TListElement, TRoot, TListElement>
             SelectListSet<TResultElement>(Expression<Func<TListElement, IEnumerable<TResultElement>>> selector, int listSize)
         {

@@ -438,6 +438,16 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             return this.CreateCopyWithThisParent();
         }
 
+        public new virtual OperationListParentOperableList<TListElement, TParentList, TRootListElement> GuaranteeByFixedQuantity(
+            IEnumerable<TListElement> guaranteedValues,
+            int fixedQuantity,
+            ValueCountRequestOption valueCountRequestOption =
+                ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
+        {
+            base.GuaranteeByFixedQuantity(guaranteedValues, fixedQuantity, valueCountRequestOption);
+            return this.CreateCopyWithThisParent();
+        }
+
         public new virtual ListParentMakeableEnumerable<TResultElement, TListElement, TParentList, TRootListElement>
             SelectListSet<TResultElement>(Expression<Func<TListElement, IEnumerable<TResultElement>>> selector, int listSize)
         {

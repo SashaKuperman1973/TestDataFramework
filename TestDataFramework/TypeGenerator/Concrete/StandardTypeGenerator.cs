@@ -61,7 +61,29 @@ namespace TestDataFramework.TypeGenerator.Concrete
 
             object targetPropertyValue = this.valueGenerator.GetValue(targetPropertyInfo, objectGraphNode, context);
             StandardTypeGenerator.Logger.Debug($"targetPropertyValue: {targetPropertyValue?.GetType()}");
-            targetPropertyInfo.SetValue(objectToFill, targetPropertyValue);
+
+            try
+            {
+                targetPropertyInfo.SetValue(objectToFill, targetPropertyValue);
+            }
+            catch (Exception e)
+            {
+                var message = new StringBuilder("PropertyInfo.SetValue threw.");
+
+                do
+                {
+                    message.AppendLine(e.ToString());
+                    message.AppendLine(e.StackTrace);
+                    e = e.InnerException;
+                    if (e != null)
+                    {
+                        message.AppendLine("Inner Exception:");
+                    }
+                } while (e != null);
+
+                StandardTypeGenerator.Logger.Warn(message);
+                Console.WriteLine(message);
+            }
 
             StandardTypeGenerator.Logger.Debug("Exiting SetProperty");
         }

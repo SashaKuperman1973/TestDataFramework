@@ -768,5 +768,26 @@ namespace CommonIntegrationTests.Tests
 
             Assert.AreEqual(7, deepA.DeepB.DeepC.DeepA.Integer);
         }
+
+        [TestMethod]
+        public void Exception_In_Constructor_Is_Swallowed_Test()
+        {
+            IPopulator populator = this.factory.CreateMemoryPopulator();
+
+            var result = populator.Make<ContainerOfBadConstructorClass>();
+
+            Assert.IsNotNull(result.Instance.S1);
+            Assert.IsNotNull(result.Instance.S2);
+        }
+
+        [TestMethod]
+        public void Exception_In_StructConstructor_Is_Swallowed_Test()
+        {
+            IPopulator populator = this.factory.CreateMemoryPopulator();
+
+            var result = populator.Make<ContainerOfBadConstructorStruct>();
+
+            Assert.IsNotNull(result.Instance);
+        }
     }
 }

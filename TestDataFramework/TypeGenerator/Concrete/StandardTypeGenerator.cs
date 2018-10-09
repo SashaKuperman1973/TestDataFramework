@@ -22,6 +22,8 @@ using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
+using System.Web;
 using log4net;
 using TestDataFramework.DeepSetting;
 using TestDataFramework.HandledTypeGenerator;
@@ -127,7 +129,6 @@ namespace TestDataFramework.TypeGenerator.Concrete
                 .OrderBy(constructorInfo => constructorInfo.GetParameters().Length);
 
             List<object> constructorArguments = null;
-            ConstructorInfo resultConstructorInfo = null;
             foreach (ConstructorInfo constructorInfo in constructors)
             {
                 ParameterInfo[] parameterInfos = constructorInfo.GetParameters();
@@ -137,7 +138,8 @@ namespace TestDataFramework.TypeGenerator.Concrete
                 bool parametersFound = true;
                 foreach (ParameterInfo parameterInfo in parameterInfos)
                 {
-                    object argument = this.valueGenerator.GetValue(null, parameterInfo.ParameterType, typeGeneratorContext);
+                    object argument =
+                        this.valueGenerator.GetValue(null, parameterInfo.ParameterType, typeGeneratorContext);
 
                     if (argument == null)
                     {
@@ -150,26 +152,59 @@ namespace TestDataFramework.TypeGenerator.Concrete
 
                 if (!parametersFound) continue;
 
-                resultConstructorInfo = constructorInfo;
-                break;
+                result = StandardTypeGenerator.ConstructObject(() => constructorInfo.Invoke(constructorArguments.ToArray()));
+
+                if (result != null)
+                    return true;
             }
 
-            if (resultConstructorInfo != null)
-            {
-                result = resultConstructorInfo.Invoke(constructorArguments.ToArray());
-                return true;
-            }
-
-            StandardTypeGenerator.Logger.Debug("Type has no public constructor. Type: " + forType);
 
             if (forType.IsValueType)
             {
-                result = Activator.CreateInstance(forType);
-                return true;
+                result = StandardTypeGenerator.ConstructObject(() => Activator.CreateInstance(forType));
+                if (result != null)
+                    return true;
+            }
+            else
+            {
+                StandardTypeGenerator.Logger.Debug("Type has no public constructor. Type: " + forType);
             }
 
             result = null;
             return false;
+        }
+
+        private static object ConstructObject(Func<object> construct)
+        {
+            object result;
+
+            try
+            {
+                result = construct();
+            }
+            catch (Exception e)
+            {
+                var message =
+                    new StringBuilder("Constructor invocation threw.\r\n");
+
+                do
+                {
+                    message.AppendLine(e.ToString());
+                    message.AppendLine(e.StackTrace);
+                    e = e.InnerException;
+                    if (e != null)
+                    {
+                        message.AppendLine("Inner Exception:");
+                    }
+                } while (e != null);
+
+                StandardTypeGenerator.Logger.Warn(message);
+                Console.WriteLine(message);
+
+                return null;
+            }
+
+            return result;
         }
 
         private void FillObject(object objectToFill, ObjectGraphNode objectGraphNode, TypeGeneratorContext context)

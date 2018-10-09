@@ -214,4 +214,49 @@ namespace CommonIntegrationTests.TestModels
 
         public AnEnum AnEnum { get; }
     }
+
+    public class ContainerOfBadConstructorClass
+    {
+        public BadConstructorClass Instance { get; set; }
+    }
+
+    public class BadConstructorClass
+    {
+        public SubjectClass S1;
+        public SubjectClass S2;
+
+        public BadConstructorClass(SubjectClass s)
+        {
+            throw new Exception("Message C");
+        }
+
+        public BadConstructorClass(SubjectClass s1, SubjectClass s2)
+        {
+            this.S1 = s1;
+            this.S2 = s2;
+        }
+
+        public BadConstructorClass(int i)
+        {
+            throw new Exception("Message B");
+        }
+
+        public BadConstructorClass()
+        {
+            throw new Exception("Message 1", new Exception("Message 2", new Exception("Message 3")));
+        }
+    }
+
+    public class ContainerOfBadConstructorStruct
+    {
+        public BadConstructorStruct Instance { get; set; }
+    }
+
+    public struct BadConstructorStruct
+    {
+        public BadConstructorStruct(object o)
+        {
+            throw new Exception("Messsage 1");
+        }
+    }
 }

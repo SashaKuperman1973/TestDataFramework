@@ -55,7 +55,7 @@ namespace TestDataFramework.UniqueValueGenerator.Concrete
 
                 object result = base.GetValue(propertyInfo);
 
-                KeyTypeUniqueValueGenerator.Logger.Debug($"result fom base: {result}");
+                KeyTypeUniqueValueGenerator.Logger.Debug($"result fom base: {result?.GetType()}");
 
                 return result ?? Helper.GetDefaultValue(propertyInfo.PropertyType);
             }

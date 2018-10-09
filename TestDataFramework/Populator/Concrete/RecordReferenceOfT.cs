@@ -120,7 +120,7 @@ namespace TestDataFramework.Populator.Concrete
             where TPropertyValue : TBasePropertyValue
         {
             RecordReference<T>.Logger.Debug(
-                $"Entering Set(fieldExpression, value). TPropertyValue: {typeof(TPropertyValue)}, fieldExpression: {fieldExpression}, value: {value}");
+                $"Entering Set(fieldExpression, value). TPropertyValue: {typeof(TPropertyValue)}, fieldExpression: {fieldExpression}, value: {value?.GetType()}");
 
             RecordReference<T> result = this.Set(fieldExpression, () => value);
 
@@ -166,7 +166,7 @@ namespace TestDataFramework.Populator.Concrete
             IEnumerable<TPropertyValue> range)
         {
             RecordReference<T>.Logger.Debug(
-                $"Entering SetRange(fieldExpression, range). TPropertyValue: {typeof(TPropertyValue)}, fieldExpression: {fieldExpression}, valueFactory: {range}");
+                $"Entering SetRange(fieldExpression, range). TPropertyValue: {typeof(TPropertyValue)}, fieldExpression: {fieldExpression}, valueFactory: {range?.GetType()}");
 
             RecordReference<T> result = this.SetRange(fieldExpression, () => range);
 

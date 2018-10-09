@@ -62,7 +62,7 @@ namespace TestDataFramework.UniqueValueGenerator.Concrete
                 MemoryUniqueValueGenerator.Logger.Debug("primaryKeyAttribute == null");
                 object result = base.GetValue(propertyInfo);
 
-                MemoryUniqueValueGenerator.Logger.Debug($"result fom base: {result}");
+                MemoryUniqueValueGenerator.Logger.Debug($"result fom base: {result?.GetType()}");
                 return result ?? Helper.GetDefaultValue(propertyInfo.PropertyType);
             }
 

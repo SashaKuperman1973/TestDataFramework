@@ -63,7 +63,7 @@ namespace TestDataFramework.Populator
         public virtual void AddPrimaryRecordReference(RecordReference primaryRecordReference)
         {
             RecordReference.Logger.Debug(
-                $"Entering AddPrimaryRecordReference(RecordReference). record object: {primaryRecordReference.RecordObjectBase}");
+                $"Entering AddPrimaryRecordReference(RecordReference). record object: {primaryRecordReference.RecordObjectBase?.GetType()}");
 
             if (!this.ValidateRelationship(primaryRecordReference))
                 throw new NoReferentialIntegrityException(primaryRecordReference.RecordType, this.RecordType);

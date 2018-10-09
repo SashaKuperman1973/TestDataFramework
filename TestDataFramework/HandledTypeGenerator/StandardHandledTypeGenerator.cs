@@ -77,7 +77,7 @@ namespace TestDataFramework.HandledTypeGenerator
 
             object result = getter(forType, typeGeneratorContext);
 
-            StandardHandledTypeGenerator.Logger.Debug($"Exiting GetObject. result: {result}");
+            StandardHandledTypeGenerator.Logger.Debug($"Exiting GetObject. result: {result?.GetType()}");
             return result;
         }
 
@@ -104,7 +104,7 @@ namespace TestDataFramework.HandledTypeGenerator
                 add.Invoke(collection, parameters);
             }
 
-            StandardHandledTypeGenerator.Logger.Debug($"Exiting GetGenericCollection. Result collection: {collection}");
+            StandardHandledTypeGenerator.Logger.Debug($"Exiting GetGenericCollection. Result collection: {collection?.GetType()}");
             return collection;
         }
 
@@ -136,7 +136,7 @@ namespace TestDataFramework.HandledTypeGenerator
 
             object result = constructor.Invoke(new[] {key, value});
 
-            StandardHandledTypeGenerator.Logger.Debug($"Exiting GetKeyValuePair. result: {result}");
+            StandardHandledTypeGenerator.Logger.Debug($"Exiting GetKeyValuePair. result: {result?.GetType()}");
             return result;
         }
 
@@ -170,14 +170,14 @@ namespace TestDataFramework.HandledTypeGenerator
 
                 object value = this.valueGenerator.GetValue(null, typeArray[1], typeGeneratorContext);
 
-                StandardHandledTypeGenerator.Logger.Debug($"genericCollectionValueGenerator result: {key}, {value}");
+                StandardHandledTypeGenerator.Logger.Debug($"genericCollectionValueGenerator result: {key?.GetType()}, {value?.GetType()}");
                 return new[] {key, value};
             };
 
             object result = this.GetGenericCollection(genericArgumentTypes, typeof(Dictionary<,>),
                 genericCollectionValueGenerator);
 
-            StandardHandledTypeGenerator.Logger.Debug($"Exiting GetDictionary. result: {result}");
+            StandardHandledTypeGenerator.Logger.Debug($"Exiting GetDictionary. result: {result?.GetType()}");
             return result;
         }
 
@@ -214,7 +214,7 @@ namespace TestDataFramework.HandledTypeGenerator
             object result = this.GetGenericCollection(forType.GetGenericArguments(), typeof(List<>),
                 genericCollectionValueGenerator);
 
-            StandardHandledTypeGenerator.Logger.Debug($"Exiting GetList. result: {result}");
+            StandardHandledTypeGenerator.Logger.Debug($"Exiting GetList. result: {result?.GetType()}");
             return result;
         }
 
@@ -232,7 +232,7 @@ namespace TestDataFramework.HandledTypeGenerator
 
             object result = constructor.Invoke(argumentValues);
 
-            StandardHandledTypeGenerator.Logger.Debug($"Exiting GetTuple. result: {result}");
+            StandardHandledTypeGenerator.Logger.Debug($"Exiting GetTuple. result: {result?.GetType()}");
             return result;
         }
 

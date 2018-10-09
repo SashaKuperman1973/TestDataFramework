@@ -33,7 +33,7 @@ namespace TestDataFramework.ValueFormatter
 
         public virtual string Format(object value)
         {
-            DbValueFormatter.Logger.Debug($"Entering Format. value: {value}");
+            DbValueFormatter.Logger.Debug($"Entering Format. value: {value?.GetType()}");
 
             if (value == null)
                 return null;

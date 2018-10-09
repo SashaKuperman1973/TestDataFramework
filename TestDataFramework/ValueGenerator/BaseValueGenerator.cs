@@ -106,7 +106,7 @@ namespace TestDataFramework.ValueGenerator
                     propertyInfo.PropertyType,
                     forType => this.getTypeGenerator().GetObject(forType, objectGraphNode, context), context);
 
-            BaseValueGenerator.Logger.Debug($"Exiting GetValue(PropertyInfo, ObjectGraphNode). result: {result}");
+            BaseValueGenerator.Logger.Debug($"Exiting GetValue(PropertyInfo, ObjectGraphNode). result: {result?.GetType()}");
             return result;
         }
 
@@ -152,7 +152,7 @@ namespace TestDataFramework.ValueGenerator
                     ? getter(propertyInfo)
                     : nonIntrinsicTypeGenerator(forType);
 
-            BaseValueGenerator.Logger.Debug($"Exiting GetValue(PropertyInfo, Type). result: {result}");
+            BaseValueGenerator.Logger.Debug($"Exiting GetValue(PropertyInfo, Type). result: {result?.GetType()}");
             return result;
         }
 

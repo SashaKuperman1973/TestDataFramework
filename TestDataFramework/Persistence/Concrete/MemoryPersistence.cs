@@ -57,7 +57,7 @@ namespace TestDataFramework.Persistence.Concrete
             recordReferences = recordReferences.ToList();
 
             MemoryPersistence.Logger.Debug(
-                $"Records: {string.Join(", ", recordReferences.Select(r => r?.RecordObjectBase))}");
+                $"Records: {string.Join(", ", recordReferences.Select(r => r?.RecordObjectBase?.GetType()))}");
 
             this.deferredValueGenerator.Execute(recordReferences);
 

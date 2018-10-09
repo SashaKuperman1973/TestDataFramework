@@ -73,7 +73,7 @@ namespace TestDataFramework.ArrayRandomizer
                 do
                 {
                     object resultElement = this.valueGenerator.GetValue(propertyInfo, basicType, typeGeneratorContext);
-                    StandardArrayRandomizer.Logger.Debug($"Result element: {resultElement}");
+                    StandardArrayRandomizer.Logger.Debug($"Result element: {resultElement?.GetType()}");
                     emptyArrayResult.Array.SetValue(resultElement, emptyArrayResult.Indices.Value);
                     emptyArrayResult.Indices++;
                 } while (!emptyArrayResult.Indices.Overflow);

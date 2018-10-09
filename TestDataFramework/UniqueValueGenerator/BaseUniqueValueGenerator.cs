@@ -54,7 +54,7 @@ namespace TestDataFramework.UniqueValueGenerator
 
             object result = this.accumulator.GetValue(propertyInfo, Helper.DefaultInitalCount);
 
-            BaseUniqueValueGenerator.Logger.Debug($"Exiting GetValue. result: {result}");
+            BaseUniqueValueGenerator.Logger.Debug($"Exiting GetValue. result: {result?.GetType()}");
             return result;
         }
 

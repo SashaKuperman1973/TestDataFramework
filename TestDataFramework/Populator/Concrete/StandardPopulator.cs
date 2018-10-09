@@ -84,7 +84,7 @@ namespace TestDataFramework.Populator.Concrete
         public override OperableListEx<T> Add<T>(int copies, params RecordReference[] primaryRecordReferences)
         {
             StandardPopulator.Logger.Debug(
-                $"Entering Add. T: {typeof(T)}, copies: {copies}, primaryRecordReference: {primaryRecordReferences}");
+                $"Entering Add. T: {typeof(T)}, copies: {copies}, primaryRecordReference: {primaryRecordReferences?.GetType()}");
 
             var result = new OperableListEx<T>(
                 Enumerable.Empty<RecordReference<T>>(),
@@ -109,21 +109,21 @@ namespace TestDataFramework.Populator.Concrete
         public override RecordReference<T> Add<T>(params RecordReference[] primaryRecordReferences)
         {
             StandardPopulator.Logger.Debug(
-                $"Entering Add. T: {typeof(T)}, primaryRecordReference: {primaryRecordReferences}");
+                $"Entering Add. T: {typeof(T)}, primaryRecordReference: {primaryRecordReferences?.GetType()}");
 
             RecordReference<T> recordReference = this.Get<T>(primaryRecordReferences);
             this.populatables.Add(recordReference);
 
             StandardPopulator.Logger.Debug("Exiting Add<T>(primaryRecordReference, propertyExpressionDictionary)");
 
-            StandardPopulator.Logger.Debug($"Exiting Add. record object: {recordReference.RecordObject}");
+            StandardPopulator.Logger.Debug($"Exiting Add. record object: {recordReference.RecordObject?.GetType()}");
             return recordReference;
         }
 
         private RecordReference<T> Get<T>(params RecordReference[] primaryRecordReferences)
         {
             StandardPopulator.Logger.Debug(
-                $"Entering Get. T: {typeof(T)}, primaryRecordReference: {primaryRecordReferences}");
+                $"Entering Get. T: {typeof(T)}, primaryRecordReference: {primaryRecordReferences?.GetType()}");
 
             var recordReference = new RecordReference<T>(this.typeGenerator, this.AttributeDecorator, this,
                 this.objectGraphService, this.valueGuaranteePopulator, this.deepCollectionSettingConverter);
@@ -132,7 +132,7 @@ namespace TestDataFramework.Populator.Concrete
 
             StandardPopulator.Logger.Debug("Exiting Get<T>(primaryRecordReference, propertyExpressionDictionary)");
 
-            StandardPopulator.Logger.Debug($"Exiting Get. record object: {recordReference.RecordObject}");
+            StandardPopulator.Logger.Debug($"Exiting Get. record object: {recordReference.RecordObject?.GetType()}");
             return recordReference;
         }
 

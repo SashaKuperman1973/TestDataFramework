@@ -83,7 +83,7 @@ namespace TestDataFramework.WritePrimitives.Concrete
 
             var result = new Variable(symbol);
 
-            SqlClientWritePrimitives.Logger.Debug($"Exiting WriteGuid");
+            SqlClientWritePrimitives.Logger.Debug("Exiting WriteGuid");
             return result;
         }
 

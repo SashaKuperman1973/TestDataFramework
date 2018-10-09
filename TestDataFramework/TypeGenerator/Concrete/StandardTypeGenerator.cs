@@ -60,7 +60,7 @@ namespace TestDataFramework.TypeGenerator.Concrete
                                                targetPropertyInfo.GetExtendedMemberInfoString());
 
             object targetPropertyValue = this.valueGenerator.GetValue(targetPropertyInfo, objectGraphNode, context);
-            StandardTypeGenerator.Logger.Debug($"targetPropertyValue: {targetPropertyValue}");
+            StandardTypeGenerator.Logger.Debug($"targetPropertyValue: {targetPropertyValue?.GetType()}");
             targetPropertyInfo.SetValue(objectToFill, targetPropertyValue);
 
             StandardTypeGenerator.Logger.Debug("Exiting SetProperty");
@@ -263,7 +263,7 @@ namespace TestDataFramework.TypeGenerator.Concrete
 
             object result = this.ConstructObject(typeof(T), parentObjectGraphNode, context);
 
-            StandardTypeGenerator.Logger.Debug($"Exiting GetObject. result: {result}");
+            StandardTypeGenerator.Logger.Debug($"Exiting GetObject. result: {result?.GetType()}");
             return result;
         }
 
@@ -290,7 +290,7 @@ namespace TestDataFramework.TypeGenerator.Concrete
                 }
             }
 
-            StandardTypeGenerator.Logger.Debug($"Exiting GetObject. result: {result}");
+            StandardTypeGenerator.Logger.Debug($"Exiting GetObject. result: {result?.GetType()}");
             return result;
         }
 

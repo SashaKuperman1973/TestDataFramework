@@ -112,7 +112,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
         public override void Read(Counter readStreamPointer, object[] data)
         {
             InsertRecord.Logger.Debug(
-                $"Entering Read. readStreamPointer.Value: {readStreamPointer.Value}, data: {string.Join(",", data)}");
+                $"Entering Read. readStreamPointer.Value: {readStreamPointer.Value}, data: {string.Join(",", data.Select(d => d?.GetType()))}");
 
             IEnumerable<PropertyAttributes> propertyAttributes =
                 this.attributeDecorator.GetPropertyAttributes(this.RecordReference.RecordType).ToList();

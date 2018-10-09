@@ -64,7 +64,7 @@ namespace TestDataFramework.TypeGenerator.Concrete
             UniqueValueTypeGenerator.Logger.Debug("Property type is value like. Calling accumulator value generator.");
 
             object targetPropertyValue = this.accumulatorValueGenerator.GetValue(targetPropertyInfo, objectGraphNode, typeGeneratorContext);
-            UniqueValueTypeGenerator.Logger.Debug($"targetPropertyValue: {targetPropertyValue}");
+            UniqueValueTypeGenerator.Logger.Debug($"targetPropertyValue: {targetPropertyValue?.GetType()}");
             targetPropertyInfo.SetValue(objectToFill, targetPropertyValue);
 
             UniqueValueTypeGenerator.Logger.Debug("Exiting SetProperty");

@@ -52,25 +52,26 @@ namespace TestDataFramework.ValueProvider.Concrete
             StandardRandomizer.Logger.Debug("Exiting constructor");
         }
 
-        public virtual int GetInteger(int? max)
+        public virtual int GetInteger(int? min, int? max)
         {
             StandardRandomizer.Logger.Debug("Entering GetInteger");
 
             max = max ?? int.MaxValue;
+            min = min ?? 0;
 
             StandardRandomizer.Logger.Debug("max = " + max);
 
-            int result = this.random.Next(max.Value);
+            int result = this.random.Next(max.Value - min.Value) + min.Value;
 
             StandardRandomizer.Logger.Debug($"Exiting GetInteger. result: {result}");
             return result;
         }
 
-        public virtual long GetLongInteger(long? max)
+        public virtual long GetLongInteger(long? min, long? max)
         {
             StandardRandomizer.Logger.Debug("Entering GetLongInteger");
 
-            long workingMax = max ?? long.MaxValue;
+            long workingMax = (max ?? long.MaxValue) - (min ?? 0);
 
             StandardRandomizer.Logger.Debug("workingMax = " + workingMax);
 
@@ -91,19 +92,21 @@ namespace TestDataFramework.ValueProvider.Concrete
                 result |= randomValue;
             }
 
+            result += min ?? 0;
             StandardRandomizer.Logger.Debug($"Exiting GetLongInteger. result: {result}");
             return result;
         }
 
-        public virtual short GetShortInteger(short? max)
+        public virtual short GetShortInteger(short? min, short? max)
         {
             StandardRandomizer.Logger.Debug("Entering GetShortInteger");
 
-            max = max ?? short.MaxValue;
+            max = (short)((max ?? short.MaxValue) - (min ?? 0));
 
             StandardRandomizer.Logger.Debug("max = " + max);
 
             int result = this.random.Next(max.Value);
+            result += min ?? 0;
 
             StandardRandomizer.Logger.Debug($"Exiting GetShortInteger. result: {result}");
             return (short) result;
@@ -131,14 +134,14 @@ namespace TestDataFramework.ValueProvider.Concrete
             return result;
         }
 
-        public virtual decimal GetDecimal(int? precision)
+        public virtual decimal GetDecimal(int? precision, decimal? min, decimal? max)
         {
             StandardRandomizer.Logger.Debug("Entering GetDecimal");
             StandardRandomizer.Logger.Debug("precision = " + precision);
 
             precision = precision ?? 2;
 
-            decimal result = (decimal) this.GetReal(precision.Value);
+            decimal result = (decimal) this.GetReal(precision.Value, min, max);
 
             StandardRandomizer.Logger.Debug($"Exiting GetDecimal. result: {result}");
             return result;
@@ -156,8 +159,7 @@ namespace TestDataFramework.ValueProvider.Concrete
             return result;
         }
 
-        public virtual DateTime GetDateTime(PastOrFuture? pastOrFuture, Func<long?, long> longIntegerGetter, long? min,
-            long? max)
+        public virtual DateTime GetDateTime(PastOrFuture? pastOrFuture, Func<long?, long?, long> longIntegerGetter, long? min, long? max)
         {
             StandardRandomizer.Logger.Debug($"Entering GetDateTime. pastOrFuture: {pastOrFuture}");
 
@@ -171,13 +173,13 @@ namespace TestDataFramework.ValueProvider.Concrete
             {
                 case PastOrFuture.Future:
                     maxLong = (max ?? this.dateTimeMaxValue) - dateTime.Ticks;
-                    randomLong = longIntegerGetter(maxLong);
+                    randomLong = longIntegerGetter(0, maxLong);
                     result = dateTime.AddTicks(randomLong);
                     break;
 
                 case PastOrFuture.Past:
                     maxLong = dateTime.Ticks - (min ?? this.dateTimeMinValue);
-                    randomLong = longIntegerGetter(maxLong);
+                    randomLong = longIntegerGetter(0, maxLong);
                     result = dateTime.AddTicks(-randomLong);
                     break;
 
@@ -203,20 +205,20 @@ namespace TestDataFramework.ValueProvider.Concrete
             return result;
         }
 
-        public virtual double GetDouble(int? precision)
+        public virtual double GetDouble(int? precision, decimal? min, decimal? max)
         {
             StandardRandomizer.Logger.Debug("Entering GetDouble");
             StandardRandomizer.Logger.Debug("precision = " + precision);
 
             precision = precision ?? 2;
 
-            double result = this.GetReal(precision.Value);
+            double result = this.GetReal(precision.Value, min, max);
 
             StandardRandomizer.Logger.Debug($"Exiting GetDouble. result: {result}");
             return result;
         }
 
-        public virtual float GetFloat(int? precision)
+        public virtual float GetFloat(int? precision, decimal? min, decimal? max)
         {
             StandardRandomizer.Logger.Debug("Entering GetFloat");
             StandardRandomizer.Logger.Debug("precision = " + precision);
@@ -227,7 +229,7 @@ namespace TestDataFramework.ValueProvider.Concrete
                 throw new ArgumentOutOfRangeException(nameof(precision), precision.Value,
                     Messages.FloatPrecisionOutOfRange);
 
-            float result = (float) this.GetReal(precision.Value, (int) Math.Pow(10, 7 - precision.Value));
+            float result = (float) this.GetReal(precision.Value, min, (int) Math.Pow(10, 7 - precision.Value));
 
             StandardRandomizer.Logger.Debug($"Exiting GetFloat. result: {result}");
             return result;
@@ -252,16 +254,42 @@ namespace TestDataFramework.ValueProvider.Concrete
             return result;
         }
 
-        private double GetReal(int precision, int maxValue = int.MaxValue)
+        private double GetReal(int precision, decimal? min, decimal? max)
         {
             if (precision < 0)
                 throw new ArgumentOutOfRangeException(nameof(precision), precision,
                     Messages.PrecisionMustBeNonNegative);
 
-            int wholePart = this.random.Next(maxValue);
-            double decimalPart = this.random.NextDouble();
-            double result = wholePart + decimalPart;
-            result = Math.Round(result, precision);
+            if (max.HasValue)
+            {
+                max -= min ?? 0;
+            }
+
+            decimal workingMax = max ?? int.MaxValue;
+
+            int maxWhole = (int)workingMax;
+            if (workingMax != maxWhole)
+            {
+                maxWhole++;
+            }
+
+            decimal maxFraction = workingMax - maxWhole;
+
+            int wholePart = this.random.Next(maxWhole);
+
+            decimal decimalPart;
+            if (wholePart == maxWhole - 1 && maxFraction > 0)
+            {
+                decimalPart = (decimal)this.random.NextDouble() % maxFraction;
+            }
+            else
+            {
+                decimalPart = (decimal)this.random.NextDouble();
+            }
+
+            decimal decimalResult = wholePart + decimalPart;
+            decimalResult += min ?? 0;
+            double result = Math.Round((double)decimalResult, precision);
 
             return result;
         }

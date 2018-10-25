@@ -206,13 +206,9 @@ namespace TestDataFramework.ValueGenerator
         {
             BaseValueGenerator.Logger.Debug("Entering GetDecimal");
 
-            PrecisionAttribute precisionAttribute = propertyInfo != null
-                ? this.attributeDecorator.GetCustomAttribute<PrecisionAttribute>(propertyInfo)
-                : null;
+            this.GetRealPropertyValues(propertyInfo, out int? precision, out decimal? min, out decimal? max);
 
-            int? precision = precisionAttribute?.Precision;
-
-            decimal result = this.ValueProvider.GetDecimal(precision);
+            decimal result = this.ValueProvider.GetDecimal(precision, min, max);
 
             BaseValueGenerator.Logger.Debug("Exiting GetDecimal");
             return result;
@@ -222,13 +218,9 @@ namespace TestDataFramework.ValueGenerator
         {
             BaseValueGenerator.Logger.Debug("Entering GetDouble");
 
-            PrecisionAttribute precisionAttribute = propertyInfo != null
-                ? this.attributeDecorator.GetCustomAttribute<PrecisionAttribute>(propertyInfo)
-                : null;
+            this.GetRealPropertyValues(propertyInfo, out int? precision, out decimal? min, out decimal? max);
 
-            int? precision = precisionAttribute?.Precision;
-
-            double result = this.ValueProvider.GetDouble(precision);
+            double result = this.ValueProvider.GetDouble(precision, min, max);
 
             BaseValueGenerator.Logger.Debug("Exiting GetDouble");
             return result;
@@ -238,36 +230,45 @@ namespace TestDataFramework.ValueGenerator
         {
             BaseValueGenerator.Logger.Debug("Entering GetFloat");
 
-            PrecisionAttribute precisionAttribute = propertyInfo != null
-                ? this.attributeDecorator.GetCustomAttribute<PrecisionAttribute>(propertyInfo)
-                : null;
+            this.GetRealPropertyValues(propertyInfo, out int? precision, out decimal? min, out decimal? max);
 
-            int? precision = precisionAttribute?.Precision;
-
-            float result = this.ValueProvider.GetFloat(precision);
+            float result = this.ValueProvider.GetFloat(precision, min, max);
 
             BaseValueGenerator.Logger.Debug("Exiting GetFloat");
             return result;
+        }
+
+        private void GetRealPropertyValues(PropertyInfo propertyInfo, out int? precision, out decimal? min, out decimal? max)
+        {
+            precision = null;
+            min = null;
+            max = null;
+
+            if (propertyInfo == null) return;
+
+            var precisionAttribute =
+                this.attributeDecorator.GetCustomAttribute<PrecisionAttribute>(propertyInfo);
+
+            precision = precisionAttribute?.Precision;
+
+            var maxAttribute =
+                this.attributeDecorator.GetCustomAttribute<MaxAttribute>(propertyInfo);
+
+            max = maxAttribute?.MaxReal;
+
+            var minAttribute =
+                this.attributeDecorator.GetCustomAttribute<MinAttribute>(propertyInfo);
+
+            min = minAttribute?.RealMin;
         }
 
         private object GetInteger(PropertyInfo propertyInfo)
         {
             BaseValueGenerator.Logger.Debug("Entering GetInteger");
 
-            MaxAttribute maxAttribute = propertyInfo != null
-                ? this.attributeDecorator.GetCustomAttribute<MaxAttribute>(propertyInfo)
-                : null;
+            this.GetIntegerPropertyValues(propertyInfo, out long? min, out long? max);
 
-            long? max = maxAttribute?.Max;
-
-            if (max < 0)
-                throw new ArgumentOutOfRangeException(Messages.MaxAttributeLessThanZero, (Exception) null);
-
-            if (max > int.MaxValue)
-                throw new ArgumentOutOfRangeException(string.Format(Messages.MaxAttributeOutOfRange, "int"),
-                    (Exception) null);
-
-            int result = this.ValueProvider.GetInteger((int?) max);
+            int result = this.ValueProvider.GetInteger((int?) min, (int?)max);
 
             BaseValueGenerator.Logger.Debug("Exiting GetInteger");
             return result;
@@ -284,16 +285,9 @@ namespace TestDataFramework.ValueGenerator
         {
             BaseValueGenerator.Logger.Debug("Entering GetLong");
 
-            MaxAttribute maxAttribute = propertyInfo != null
-                ? this.attributeDecorator.GetCustomAttribute<MaxAttribute>(propertyInfo)
-                : null;
+            this.GetIntegerPropertyValues(propertyInfo, out long? min, out long? max);
 
-            long? max = maxAttribute?.Max;
-
-            if (max < 0)
-                throw new ArgumentOutOfRangeException(Messages.MaxAttributeLessThanZero, (Exception) null);
-
-            long result = this.ValueProvider.GetLongInteger(max);
+            long result = this.ValueProvider.GetLongInteger(min, max);
 
             BaseValueGenerator.Logger.Debug("Exiting GetLong");
             return result;
@@ -310,20 +304,9 @@ namespace TestDataFramework.ValueGenerator
         {
             BaseValueGenerator.Logger.Debug("Entering GetShort");
 
-            MaxAttribute maxAttribute = propertyInfo != null
-                ? this.attributeDecorator.GetCustomAttribute<MaxAttribute>(propertyInfo)
-                : null;
+            this.GetIntegerPropertyValues(propertyInfo, out long? min, out long? max);
 
-            long? max = maxAttribute?.Max;
-
-            if (max < 0)
-                throw new ArgumentOutOfRangeException(Messages.MaxAttributeLessThanZero, (Exception) null);
-
-            if (max > short.MaxValue)
-                throw new ArgumentOutOfRangeException(string.Format(Messages.MaxAttributeOutOfRange, "short"),
-                    (Exception) null);
-
-            short result = this.ValueProvider.GetShortInteger((short?) max);
+            short result = this.ValueProvider.GetShortInteger((short?) min, (short?)max);
 
             BaseValueGenerator.Logger.Debug("Exiting GetShort");
             return result;
@@ -334,6 +317,38 @@ namespace TestDataFramework.ValueGenerator
             object integer = this.GetShort(propertyInfo);
             ushort result = Convert.ToUInt16(integer);
             return result;
+        }
+
+        private void GetIntegerPropertyValues(PropertyInfo propertyInfo, out long? min, out long? max)
+        {
+            min = null;
+            max = null;
+
+            if (propertyInfo == null) return;
+
+            var maxAttribute =
+                this.attributeDecorator.GetCustomAttribute<MaxAttribute>(propertyInfo);
+
+            max = maxAttribute?.Max;
+
+            var minAttribute =
+                this.attributeDecorator.GetCustomAttribute<MinAttribute>(propertyInfo);
+
+            min = minAttribute?.Min;
+
+            if (max < 0)
+                throw new ArgumentOutOfRangeException(Messages.MaxAttributeLessThanZero, (Exception)null);
+
+            if (max > int.MaxValue)
+                throw new ArgumentOutOfRangeException(string.Format(Messages.MaxAttributeOutOfRange, "int"),
+                    (Exception)null);
+
+            if (min < 0)
+                throw new ArgumentOutOfRangeException(Messages.MinAttributeLessThanZero, (Exception)null);
+
+            if (min > int.MaxValue)
+                throw new ArgumentOutOfRangeException(string.Format(Messages.MinAttributeOutOfRange, "int"),
+                    (Exception)null);
         }
 
         private object GetPrimaryKey(PropertyInfo propertyInfo)

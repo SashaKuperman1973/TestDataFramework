@@ -41,8 +41,8 @@ namespace Tests.Tests
         {
             // Act
 
-            int result1 = this.valueProvider.GetInteger(null);
-            int result2 = this.valueProvider.GetInteger(null);
+            int result1 = this.valueProvider.GetInteger(null, null);
+            int result2 = this.valueProvider.GetInteger(null, null);
 
             // Assert
 
@@ -55,8 +55,8 @@ namespace Tests.Tests
         {
             // Act
 
-            long result1 = this.valueProvider.GetLongInteger(null);
-            long result2 = this.valueProvider.GetLongInteger(null);
+            long result1 = this.valueProvider.GetLongInteger(null, null);
+            long result2 = this.valueProvider.GetLongInteger(null, null);
 
             // Assert
 
@@ -69,8 +69,8 @@ namespace Tests.Tests
         {
             // Act
 
-            short result1 = this.valueProvider.GetShortInteger(null);
-            short result2 = this.valueProvider.GetShortInteger(null);
+            short result1 = this.valueProvider.GetShortInteger(null, null);
+            short result2 = this.valueProvider.GetShortInteger(null, null);
 
             // Assert
 
@@ -119,8 +119,8 @@ namespace Tests.Tests
         {
             // Act
 
-            decimal result1 = this.valueProvider.GetDecimal(null);
-            decimal result2 = this.valueProvider.GetDecimal(null);
+            decimal result1 = this.valueProvider.GetDecimal(null, null, null);
+            decimal result2 = this.valueProvider.GetDecimal(null, null, null);
 
             // Assert
 
@@ -149,8 +149,8 @@ namespace Tests.Tests
         {
             // Act
 
-            DateTime result1 = this.valueProvider.GetDateTime(null, null);
-            DateTime result2 = this.valueProvider.GetDateTime(null, null);
+            DateTime result1 = this.valueProvider.GetDateTime(null, null, null, null);
+            DateTime result2 = this.valueProvider.GetDateTime(null, null, null, null);
 
             // Assert
 
@@ -177,8 +177,8 @@ namespace Tests.Tests
         {
             // Act
 
-            double result1 = this.valueProvider.GetDouble(null);
-            double result2 = this.valueProvider.GetDouble(null);
+            double result1 = this.valueProvider.GetDouble(null, null, null);
+            double result2 = this.valueProvider.GetDouble(null, null, null);
 
             // Assert
 
@@ -191,8 +191,8 @@ namespace Tests.Tests
         {
             // Act
 
-            float result1 = this.valueProvider.GetFloat(null);
-            float result2 = this.valueProvider.GetFloat(null);
+            float result1 = this.valueProvider.GetFloat(null, null, null);
+            float result2 = this.valueProvider.GetFloat(null, null, null);
 
             // Assert
 
@@ -207,11 +207,11 @@ namespace Tests.Tests
 
             for (int i = int.MaxValue - 10; i <= int.MaxValue - 1; i++)
             {
-                int result = this.valueProvider.GetInteger(null);
+                int result = this.valueProvider.GetInteger(null, null);
                 Assert.AreEqual(i, result);
             }
 
-            Assert.AreEqual(1, this.valueProvider.GetInteger(null));
+            Assert.AreEqual(1, this.valueProvider.GetInteger(null, null));
         }
 
         [TestMethod]

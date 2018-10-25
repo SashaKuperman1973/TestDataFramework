@@ -29,27 +29,27 @@ namespace TestDataFramework.ValueProvider.Interfaces
 
     public interface IValueProvider
     {
-        int GetInteger(int? max);
+        int GetInteger(int? min, int? max);
 
-        long GetLongInteger(long? max);
+        long GetLongInteger(long? min, long? max);
 
-        short GetShortInteger(short? max);
+        short GetShortInteger(short? min, short? max);
 
         string GetString(int? length);
 
         char GetCharacter();
 
-        decimal GetDecimal(int? precision);
+        decimal GetDecimal(int? precision, decimal? min, decimal? max);
 
         bool GetBoolean();
 
-        DateTime GetDateTime(PastOrFuture? pastOrFuture, Func<long?, long> longIntegerGetter, long? min, long? max);
+        DateTime GetDateTime(PastOrFuture? pastOrFuture, Func<long?, long?, long> longIntegerGetter, long? min, long? max);
 
         byte GetByte();
 
-        double GetDouble(int? precision);
+        double GetDouble(int? precision, decimal? min, decimal? max);
 
-        float GetFloat(int? precision);
+        float GetFloat(int? precision, decimal? min, decimal? max);
 
         string GetEmailAddress();
 

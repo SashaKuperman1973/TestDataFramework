@@ -56,7 +56,7 @@ namespace Tests.Tests
 
             PropertyInfo propertyInfo = typeof(SubjectClass).GetProperty(nameof(SubjectClass.DateTime));
 
-            this.valueProviderMock.Setup(m => m.GetDateTime(It.IsAny<PastOrFuture?>(), It.IsAny<Func<long?, long>>(),
+            this.valueProviderMock.Setup(m => m.GetDateTime(It.IsAny<PastOrFuture?>(), It.IsAny<Func<long?, long?, long>>(),
                 It.IsAny<long?>(), It.IsAny<long?>())).Returns(now);
 
             this.attributeDecoratorMock.Setup(m => m.GetCustomAttribute<PastOrFutureAttribute>(propertyInfo))

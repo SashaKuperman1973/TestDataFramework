@@ -210,9 +210,6 @@ namespace Tests.TestModels
 
         [Max(-1)]
         public short ShortMaxLessThanZero { get; set; }
-
-        [Max(int.MaxValue)]
-        public short ShortMaxOutOfRange { get; set; }
     }
 
     public class ClassWithStringAutoPrimaryKey

@@ -48,7 +48,13 @@ namespace Tests
             return columnsSymbol.Select(fkc => new Column {Name = fkc.ColumnName, Value = fkc.Value});
         }
 
-        public static void ExceptionTest(Action action, Type exceptionType, string message = null, MessageOption messageOption = MessageOption.FullMessage)
+        public static void ExceptionTest(
+            Action action, 
+            Type exceptionType, 
+            string message = null, 
+            MessageOption messageOption = MessageOption.FullMessage,
+            string failureMessage = null
+            )
         {
             // Act
 
@@ -65,18 +71,18 @@ namespace Tests
 
             // Assert
 
-            Assert.IsNotNull(exception);
-            Assert.AreEqual(exceptionType, exception.GetType());
+            Assert.IsNotNull(exception, failureMessage);
+            Assert.AreEqual(exceptionType, exception.GetType(), failureMessage);
 
             if (message != null && messageOption == MessageOption.FullMessage)
             {
-                Assert.AreEqual(message, exception.Message);
+                Assert.AreEqual(message, exception.Message, failureMessage);
                 return;
             }
 
             if (message != null && messageOption == MessageOption.MessageStartsWith)
             {
-                Assert.IsTrue(exception.Message.StartsWith(message));
+                Assert.IsTrue(exception.Message.StartsWith(message), failureMessage);
             }
         }
 

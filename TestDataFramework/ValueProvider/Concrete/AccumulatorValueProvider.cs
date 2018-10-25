@@ -53,7 +53,7 @@ namespace TestDataFramework.ValueProvider.Concrete
             set => this.countField = value;
         }
 
-        public int GetInteger(int? max)
+        public int GetInteger(int? min, int? max)
         {
             AccumulatorValueProvider.Logger.Debug("Entering GetInteger");
             int result = this.Count++;
@@ -62,7 +62,7 @@ namespace TestDataFramework.ValueProvider.Concrete
             return result;
         }
 
-        public long GetLongInteger(long? max)
+        public long GetLongInteger(long? min, long? max)
         {
             AccumulatorValueProvider.Logger.Debug("Entering GetLongInteger");
             long result = this.Count++;
@@ -71,7 +71,7 @@ namespace TestDataFramework.ValueProvider.Concrete
             return result;
         }
 
-        public short GetShortInteger(short? max)
+        public short GetShortInteger(short? min, short? max)
         {
             AccumulatorValueProvider.Logger.Debug("Entering GetShortInteger");
             short result = (short) (this.Count++ % short.MaxValue);
@@ -105,7 +105,7 @@ namespace TestDataFramework.ValueProvider.Concrete
             return result;
         }
 
-        public decimal GetDecimal(int? precision)
+        public decimal GetDecimal(int? precision, decimal? min, decimal? max)
         {
             AccumulatorValueProvider.Logger.Debug("Entering GetDecimal");
             decimal result = this.Count++;
@@ -124,8 +124,7 @@ namespace TestDataFramework.ValueProvider.Concrete
             return result;
         }
 
-        public DateTime GetDateTime(PastOrFuture? pastOrFuture, Func<long?, long> longIntegerGetter, long? min = null,
-            long? max = null)
+        public DateTime GetDateTime(PastOrFuture? pastOrFuture, Func<long?, long?, long> longIntegerGetter, long? min, long? max)
         {
             AccumulatorValueProvider.Logger.Debug("Entering GetDateTime");
             DateTime result = DateTime.Now.AddDays(this.Count++);
@@ -150,7 +149,7 @@ namespace TestDataFramework.ValueProvider.Concrete
             return result;
         }
 
-        public double GetDouble(int? precision)
+        public double GetDouble(int? precision, decimal? min, decimal? max)
         {
             AccumulatorValueProvider.Logger.Debug("Entering GetDouble");
             double result = this.Count++;
@@ -159,7 +158,7 @@ namespace TestDataFramework.ValueProvider.Concrete
             return result;
         }
 
-        public float GetFloat(int? precision)
+        public float GetFloat(int? precision, decimal? min, decimal? max)
         {
             AccumulatorValueProvider.Logger.Debug("Entering GetFloat");
             float result = this.Count++;

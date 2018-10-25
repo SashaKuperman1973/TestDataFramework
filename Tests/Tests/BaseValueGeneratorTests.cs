@@ -73,29 +73,38 @@ namespace Tests.Tests
             this.arrayRandomizerMock = new Mock<IArrayRandomizer>();
             this.uniqueValueGeneratorMock = new Mock<IUniqueValueGenerator>();
 
-            this.randomizerMock.Setup(m => m.GetInteger(It.Is<int?>(max => max == null)))
+            this.randomizerMock.Setup(m => m.GetInteger(It.Is<int?>(min=> min == null), It.Is<int?>(max => max == null)))
                 .Returns(BaseValueGeneratorTests.IntegerResult);
-            this.randomizerMock.Setup(m => m.GetLongInteger(It.Is<long?>(max => max == null)))
+            this.randomizerMock.Setup(m => m.GetLongInteger(It.Is<long?>(min => min == null), It.Is<long?>(max => max == null)))
                 .Returns(BaseValueGeneratorTests.LongResult);
-            this.randomizerMock.Setup(m => m.GetShortInteger(It.Is<short?>(max => max == null)))
+            this.randomizerMock.Setup(m => m.GetShortInteger(It.Is<short?>(min => min == null), It.Is<short?>(max => max == null)))
                 .Returns(BaseValueGeneratorTests.ShortResult);
             this.randomizerMock.Setup(m => m.GetString(It.Is<int?>(length => length == null)))
                 .Returns(BaseValueGeneratorTests.StringResult);
             this.randomizerMock.Setup(m => m.GetCharacter()).Returns(BaseValueGeneratorTests.CharacterResult);
-            this.randomizerMock.Setup(m => m.GetDecimal(It.Is<int?>(precision => precision == null)))
+            this.randomizerMock.Setup(m => m.GetDecimal(
+                It.Is<int?>(precision => precision == null), 
+                It.Is<decimal?>(min => min == null), 
+                It.Is<decimal?>(max => max == null)))
                 .Returns(BaseValueGeneratorTests.DecimalResult);
             this.randomizerMock.Setup(m => m.GetBoolean()).Returns(BaseValueGeneratorTests.BooleanResult);
             this.randomizerMock.Setup(
                     m =>
                         m.GetDateTime(It.Is<PastOrFuture?>(pastOrFuture => pastOrFuture == null),
-                            It.Is<Func<long?, long>>(lir => lir == this.randomizerMock.Object.GetLongInteger), null,
+                            It.Is<Func<long?, long?, long>>(lir => lir == this.randomizerMock.Object.GetLongInteger), null,
                             null))
                 .Returns(BaseValueGeneratorTests.DateTimeResult);
 
             this.randomizerMock.Setup(m => m.GetByte()).Returns(BaseValueGeneratorTests.ByteResult);
-            this.randomizerMock.Setup(m => m.GetDouble(It.Is<int?>(precision => precision == null)))
+            this.randomizerMock.Setup(m => m.GetDouble(
+                It.Is<int?>(precision => precision == null), 
+                It.Is<decimal?>(min => min == null), 
+                It.Is<decimal?>(max => max == null)))
                 .Returns(BaseValueGeneratorTests.DoubleResult);
-            this.randomizerMock.Setup(m => m.GetFloat(It.Is<int?>(precision => precision == null)))
+            this.randomizerMock.Setup(m => m.GetFloat(
+                    It.Is<int?>(precision => precision == null),
+                    It.Is<decimal?>(min => min == null),
+                    It.Is<decimal?>(max => max == null)))
                 .Returns(BaseValueGeneratorTests.FloatResult);
             this.randomizerMock.Setup(m => m.GetEmailAddress()).Returns(BaseValueGeneratorTests.EmailAddress);
             this.randomizerMock.Setup(m => m.GetEnum(It.IsAny<Type>())).Returns(AnEnum.SymbolA);
@@ -184,34 +193,34 @@ namespace Tests.Tests
                     "DecimalWithPrecision",
                     () =>
                         this.randomizerMock.Verify(
-                            m => m.GetDecimal(It.Is<int?>(precision => precision == SubjectClass.Precision)),
+                            m => m.GetDecimal(It.Is<int?>(precision => precision == SubjectClass.Precision), null, null),
                             Times.Once())
                 ),
                 new Tuple<string, Action>(
                     "DoubleWithPrecision",
                     () =>
                         this.randomizerMock.Verify(
-                            m => m.GetDouble(It.Is<int?>(precision => precision == SubjectClass.Precision)),
+                            m => m.GetDouble(It.Is<int?>(precision => precision == SubjectClass.Precision), null, null),
                             Times.Once())
                 ),
                 new Tuple<string, Action>(
                     "IntegerWithMax",
                     () =>
-                        this.randomizerMock.Verify(m => m.GetInteger(It.Is<int?>(max => max == SubjectClass.Max)),
+                        this.randomizerMock.Verify(m => m.GetInteger(null, It.Is<int?>(max => max == SubjectClass.Max)),
                             Times.Once())
                 ),
                 new Tuple<string, Action>(
                     "LongIntegerWithMax",
                     () =>
                         this.randomizerMock.Verify(
-                            m => m.GetLongInteger(It.Is<long?>(max => max == SubjectClass.Max)),
+                            m => m.GetLongInteger(null, It.Is<long?>(max => max == SubjectClass.Max)),
                             Times.Once())
                 ),
                 new Tuple<string, Action>(
                     "ShortIntegerWithMax",
                     () =>
                         this.randomizerMock.Verify(
-                            m => m.GetShortInteger(It.Is<short?>(max => max == SubjectClass.Max)),
+                            m => m.GetShortInteger(null, It.Is<short?>(max => max == SubjectClass.Max)),
                             Times.Once())
                 ),
                 new Tuple<string, Action>(
@@ -220,7 +229,7 @@ namespace Tests.Tests
                         this.randomizerMock.Verify(
                             m => m.GetDateTime(
                                 It.Is<PastOrFuture?>(pastOrFuture => pastOrFuture == PastOrFuture.Future),
-                                It.IsAny<Func<long?, long>>(), null, null),
+                                It.IsAny<Func<long?, long?, long>>(), null, null),
                             Times.Once())
                 )
             };
@@ -288,12 +297,6 @@ namespace Tests.Tests
                     ExceptionType = typeof(ArgumentOutOfRangeException),
                     Message = Messages.MaxAttributeLessThanZero
                 },
-                new
-                {
-                    Property = "ShortMaxOutOfRange",
-                    ExceptionType = typeof(ArgumentOutOfRangeException),
-                    Message = string.Format(Messages.MaxAttributeOutOfRange, "short")
-                }
             };
 
             foreach (var input in inputs)
@@ -302,7 +305,7 @@ namespace Tests.Tests
                     () => this.valueGenerator.GetValue(typeof(ClassWithMaxInvalidMaxRanges).GetProperty(input.Property),
                         (ObjectGraphNode) null, null);
 
-                Helpers.ExceptionTest(action, input.ExceptionType, input.Message);
+                Helpers.ExceptionTest(action, input.ExceptionType, input.Message, failureMessage: input.Property);
             }
         }
 
@@ -376,7 +379,7 @@ namespace Tests.Tests
         {
             this.valueGenerator.GetIntrinsicValue(null, typeof(int), null);
 
-            this.randomizerMock.Setup(m => m.GetInteger(It.IsAny<int?>())).Returns(5);
+            this.randomizerMock.Setup(m => m.GetInteger(null, It.IsAny<int?>())).Returns(5);
 
             object result = this.valueGenerator.GetIntrinsicValue(null, typeof(int), null);
             Assert.AreEqual(5, result);

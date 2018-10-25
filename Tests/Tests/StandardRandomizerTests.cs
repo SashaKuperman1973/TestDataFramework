@@ -51,7 +51,7 @@ namespace Tests.Tests
                 () => this.now, SqlDateTime.MinValue.Value.Ticks, SqlDateTime.MaxValue.Value.Ticks);
 
             this.randomizeLongInteger =
-                () => this.randomizer.GetLongInteger(SqlDateTime.MaxValue.Value.Ticks - this.now.Ticks);
+                () => this.randomizer.GetLongInteger(null, SqlDateTime.MaxValue.Value.Ticks - this.now.Ticks);
         }
 
         [TestMethod]
@@ -64,7 +64,7 @@ namespace Tests.Tests
 
             // Act
 
-            int result = this.randomizer.GetInteger(null);
+            int result = this.randomizer.GetInteger(null, null);
 
             // Assert
 
@@ -82,7 +82,7 @@ namespace Tests.Tests
 
             // Act
 
-            int result = this.randomizer.GetInteger(maximum);
+            int result = this.randomizer.GetInteger(null, maximum);
 
             // Assert
 
@@ -100,7 +100,7 @@ namespace Tests.Tests
 
             // Act
 
-            long result = this.randomizer.GetLongInteger(0x10000);
+            long result = this.randomizer.GetLongInteger(null, 0x10000);
 
             // Assert
 
@@ -134,7 +134,7 @@ namespace Tests.Tests
 
             // Act
 
-            long result = this.randomizer.GetLongInteger(maxValue);
+            long result = this.randomizer.GetLongInteger(null, maxValue);
 
             // Assert
 
@@ -151,7 +151,7 @@ namespace Tests.Tests
 
             // Act
 
-            long result = this.randomizer.GetLongInteger(null);
+            long result = this.randomizer.GetLongInteger(null, null);
 
             // Assert
 
@@ -174,7 +174,7 @@ namespace Tests.Tests
 
             // Act
 
-            long result = this.randomizer.GetLongInteger(null);
+            long result = this.randomizer.GetLongInteger(null, null);
 
             // Assert
 
@@ -192,7 +192,7 @@ namespace Tests.Tests
 
             // Act
 
-            short result = this.randomizer.GetShortInteger(max);
+            short result = this.randomizer.GetShortInteger(null, max);
 
             // Assert
 
@@ -210,7 +210,7 @@ namespace Tests.Tests
 
             // Act
 
-            short result = this.randomizer.GetShortInteger(null);
+            short result = this.randomizer.GetShortInteger(null, null);
 
             // Assert
 
@@ -262,7 +262,7 @@ namespace Tests.Tests
 
             // Act
 
-            decimal result = this.randomizer.GetDecimal(null);
+            decimal result = this.randomizer.GetDecimal(null, null, null);
 
             // Assert
 
@@ -272,7 +272,7 @@ namespace Tests.Tests
         [TestMethod]
         public void NegativePrecisionThrows_Test()
         {
-            Helpers.ExceptionTest(() => this.randomizer.GetDecimal(-1), typeof(ArgumentOutOfRangeException),
+            Helpers.ExceptionTest(() => this.randomizer.GetDecimal(-1, null, null), typeof(ArgumentOutOfRangeException),
                 Messages.PrecisionMustBeNonNegative + "\r\nParameter name: precision\r\nActual value was -1.");
         }
 
@@ -288,7 +288,7 @@ namespace Tests.Tests
 
             // Act
 
-            decimal result = this.randomizer.GetDecimal(4);
+            decimal result = this.randomizer.GetDecimal(4, null, null);
 
             // Assert
 
@@ -307,7 +307,7 @@ namespace Tests.Tests
 
             // Act
 
-            double result = this.randomizer.GetDouble(null);
+            double result = this.randomizer.GetDouble(null, null, null);
 
             // Assert
 
@@ -326,7 +326,7 @@ namespace Tests.Tests
 
             // Act
 
-            double result = this.randomizer.GetDouble(4);
+            double result = this.randomizer.GetDouble(4, null, null);
 
             // Assert
 
@@ -378,8 +378,8 @@ namespace Tests.Tests
 
             // Act
 
-            DateTime explicitPastResult = this.randomizer.GetDateTime(PastOrFuture.Past, x => ticks, null, null);
-            DateTime implicitPastResult = this.randomizer.GetDateTime(null, x => ticks, null, null);
+            DateTime explicitPastResult = this.randomizer.GetDateTime(PastOrFuture.Past, (x, y) => ticks, null, null);
+            DateTime implicitPastResult = this.randomizer.GetDateTime(null, (x, y) => ticks, null, null);
 
             // Assert
 
@@ -398,7 +398,7 @@ namespace Tests.Tests
 
             // Act
 
-            DateTime result = this.randomizer.GetDateTime(PastOrFuture.Future, x => ticks, null, null);
+            DateTime result = this.randomizer.GetDateTime(PastOrFuture.Future, (x, y) => ticks, null, null);
 
             // Assert
 
@@ -450,7 +450,7 @@ namespace Tests.Tests
 
             // Act
 
-            float result = this.randomizer.GetFloat(null);
+            float result = this.randomizer.GetFloat(null, null, null);
 
             // Assert
 
@@ -470,7 +470,7 @@ namespace Tests.Tests
 
             // Act
 
-            float result = this.randomizer.GetFloat(4);
+            float result = this.randomizer.GetFloat(4, null, null);
 
             // Assert
 
@@ -490,7 +490,7 @@ namespace Tests.Tests
 
             // Act
 
-            float result = this.randomizer.GetFloat(7);
+            float result = this.randomizer.GetFloat(7, null, null);
 
             // Assert
 
@@ -510,7 +510,7 @@ namespace Tests.Tests
 
             // Act
 
-            float result = this.randomizer.GetFloat(0);
+            float result = this.randomizer.GetFloat(0, null, null);
 
             // Assert
 
@@ -523,7 +523,7 @@ namespace Tests.Tests
         {
             // Act. Assert.
 
-            Helpers.ExceptionTest(() => this.randomizer.GetFloat(8), typeof(ArgumentOutOfRangeException),
+            Helpers.ExceptionTest(() => this.randomizer.GetFloat(8, null, null), typeof(ArgumentOutOfRangeException),
                 new ArgumentOutOfRangeException("precision", 8, Messages.FloatPrecisionOutOfRange).Message);
         }
 

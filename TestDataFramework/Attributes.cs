@@ -76,7 +76,14 @@ namespace TestDataFramework
             this.Max = max.Ticks;
         }
 
+        public MaxAttribute(decimal max)
+        {
+            this.MaxReal = max;
+        }
+
         public long Max { get; }
+
+        public decimal MaxReal { get; }
     }
 
     public class MinAttribute : Attribute
@@ -91,7 +98,14 @@ namespace TestDataFramework
             this.Min = min.Ticks;
         }
 
+        public MinAttribute(decimal min)
+        {
+            this.RealMin = min;
+        }
+
         public long Min { get; }
+
+        public decimal RealMin { get; }
     }
 
     public class PastOrFutureAttribute : Attribute

@@ -128,6 +128,9 @@
     <Compile Include="Populator\Concrete\OperableList\RootReferenceParentOperableList.cs" />
     <Compile Include="Populator\Concrete\OperableList\ReferenceParentOperableList.cs" />
     <Compile Include="Populator\Concrete\OperableList\ListParentOperableList.cs" />
+    <Compile Include="Populator\Concrete\SqlClientPopulator\SqlClientTransaction.cs" />
+    <Compile Include="Populator\Concrete\SqlClientPopulator\SqlClientTransactionOptions.cs" />
+    <Compile Include="Populator\Concrete\SqlClientPopulator\StandardSqlClientPopulator.cs" />
     <Compile Include="Populator\Interfaces\IMakeable.cs" />
     <Compile Include="Populator\Concrete\MakeableEnumerable\ListParentMakeableEnumerable.cs" />
     <Compile Include="Populator\Concrete\DeepCollectionSettingConverter.cs" />

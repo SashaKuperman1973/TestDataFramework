@@ -93,7 +93,7 @@ namespace Tests.Tests
                 throw new NotImplementedException();
             }
 
-            public override void Bind(RecordReference recordReference)
+            internal override void Bind(RecordReference recordReference)
             {
                 throw new NotImplementedException();
             }

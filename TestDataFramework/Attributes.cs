@@ -69,6 +69,7 @@ namespace TestDataFramework
         public MaxAttribute(long max)
         {
             this.Max = max;
+            this.MaxReal = max;
         }
 
         public MaxAttribute(DateTime max)
@@ -91,6 +92,7 @@ namespace TestDataFramework
         public MinAttribute(long min)
         {
             this.Min = min;
+            this.MinReal = min;
         }
 
         public MinAttribute(DateTime min)
@@ -100,12 +102,12 @@ namespace TestDataFramework
 
         public MinAttribute(decimal min)
         {
-            this.RealMin = min;
+            this.MinReal = min;
         }
 
         public long Min { get; }
 
-        public decimal RealMin { get; }
+        public decimal MinReal { get; }
     }
 
     public class PastOrFutureAttribute : Attribute

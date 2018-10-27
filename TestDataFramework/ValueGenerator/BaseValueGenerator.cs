@@ -259,7 +259,7 @@ namespace TestDataFramework.ValueGenerator
             var minAttribute =
                 this.attributeDecorator.GetCustomAttribute<MinAttribute>(propertyInfo);
 
-            min = minAttribute?.RealMin;
+            min = minAttribute?.MinReal;
         }
 
         private object GetInteger(PropertyInfo propertyInfo)

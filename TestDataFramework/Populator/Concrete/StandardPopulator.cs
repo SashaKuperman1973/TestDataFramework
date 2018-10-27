@@ -146,7 +146,7 @@ namespace TestDataFramework.Populator.Concrete
             StandardPopulator.Logger.Debug("Exiting Bind()");
         }
 
-        public override void Bind(RecordReference recordReference)
+        internal override void Bind(RecordReference recordReference)
         {
             if (recordReference.IsPopulated)
             {

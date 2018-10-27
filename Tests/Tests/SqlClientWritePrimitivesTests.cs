@@ -25,6 +25,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers.Interfaces;
+using TestDataFramework.Populator;
 using TestDataFramework.ValueFormatter.Interfaces;
 using TestDataFramework.WritePrimitives.Concrete;
 using Tests.Mocks;
@@ -46,6 +47,7 @@ namespace Tests.Tests
         private Mock<DbCommand> insertCommandMock;
         private SqlClientWritePrimitives primitives;
         private Mock<IRandomSymbolStringGenerator> symbolGeneratorMock;
+        private DbClientConnection dbClientConnection;
 
         [TestInitialize]
         public void Initialize()
@@ -55,8 +57,12 @@ namespace Tests.Tests
             this.dbProviderFactoryMock = new Mock<DbProviderFactory>();
             this.formatterMock = new Mock<IValueFormatter>();
             this.symbolGeneratorMock = new Mock<IRandomSymbolStringGenerator>();
+            this.dbClientConnection = new DbClientConnection
+            {
+                ConnectionStringWithDefaultCatalogue = SqlClientWritePrimitivesTests.ConnectionString
+            };
 
-            this.primitives = new SqlClientWritePrimitives(SqlClientWritePrimitivesTests.ConnectionString,
+            this.primitives = new SqlClientWritePrimitives(this.dbClientConnection,
                 this.dbProviderFactoryMock.Object, this.formatterMock.Object, this.symbolGeneratorMock.Object,
                 false,
                 new NameValueCollection {{"TestDataFramework_DumpSqlInput", "true"}});

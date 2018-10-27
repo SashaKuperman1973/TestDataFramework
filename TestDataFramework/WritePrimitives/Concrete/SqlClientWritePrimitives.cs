@@ -25,6 +25,7 @@ using log4net;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers.Interfaces;
 using TestDataFramework.Logger;
+using TestDataFramework.Populator;
 using TestDataFramework.RepositoryOperations.Model;
 using TestDataFramework.ValueFormatter.Interfaces;
 
@@ -36,10 +37,10 @@ namespace TestDataFramework.WritePrimitives.Concrete
 
         private readonly IRandomSymbolStringGenerator symbolGenerator;
 
-        public SqlClientWritePrimitives(string connectionStringWithDefaultCatalogue,
+        public SqlClientWritePrimitives(DbClientConnection connection,
             DbProviderFactory dbProviderFactory,
             IValueFormatter formatter, IRandomSymbolStringGenerator symbolGenerator, bool mustBeInATransaction,
-            NameValueCollection configuration) : base(connectionStringWithDefaultCatalogue, dbProviderFactory,
+            NameValueCollection configuration) : base(connection, dbProviderFactory,
             formatter, mustBeInATransaction, configuration)
         {
             SqlClientWritePrimitives.Logger.Debug("Entering constructor");

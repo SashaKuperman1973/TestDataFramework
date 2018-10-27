@@ -44,7 +44,9 @@ using TestDataFramework.ListOperations.Concrete;
 using TestDataFramework.Logger;
 using TestDataFramework.Persistence.Concrete;
 using TestDataFramework.Persistence.Interfaces;
+using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete;
+using TestDataFramework.Populator.Concrete.DbClientPopulator;
 using TestDataFramework.Populator.Interfaces;
 using TestDataFramework.PropertyValueAccumulator;
 using TestDataFramework.TypeGenerator.Concrete;
@@ -57,6 +59,7 @@ using TestDataFramework.ValueGenerator.Concrete;
 using TestDataFramework.ValueGenerator.Interfaces;
 using TestDataFramework.ValueProvider.Concrete;
 using TestDataFramework.ValueProvider.Interfaces;
+using TestDataFramework.WritePrimitives;
 using TestDataFramework.WritePrimitives.Concrete;
 using TestDataFramework.WritePrimitives.Interfaces;
 
@@ -98,6 +101,8 @@ namespace TestDataFramework.Factories
         private const string AccumulatorValueGenerator = "AccumulatorValueGenerator";
         private const string GetUniqueValueTypeGenerator = "GetUniqueValueTypeGenerator";
         private const string StandardTypeGenerator = "StandardTypeGenerator";
+        private const string StandardHandledTypeGenerator = "StandardHandledTypeGenerator";
+
         private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(PopulatorFactory));
         private DisposableContainer memoryPopulatorContainer;
 
@@ -109,7 +114,7 @@ namespace TestDataFramework.Factories
             this.memoryPopulatorContainer?.Dispose();
         }
 
-        public IPopulator CreateSqlClientPopulator(string connectionStringWithDefaultCatalogue,
+        public IDbClientPopulator CreateSqlClientPopulator(string connectionStringWithDefaultCatalogue,
             bool mustBeInATransaction = true, string defaultSchema = "dbo",
             bool enforceKeyReferenceCheck = true, bool throwIfUnhandledPrimaryKeyType = true,
             DeepCollectionSettingConverter deepCollectionSettingConverter = null)
@@ -126,7 +131,8 @@ namespace TestDataFramework.Factories
                 mustBeInATransaction, new Schema {Value = defaultSchema}, enforceKeyReferenceCheck,
                 throwIfUnhandledPrimaryKeyType, new AssemblyWrapper(Assembly.GetCallingAssembly()),
                 deepCollectionSettingConverter);
-            var result = iocContainer.Resolve<IPopulator>();
+
+            var result = iocContainer.Resolve<IDbClientPopulator>();
 
             PopulatorFactory.Logger.Debug("Exiting CreateSqlClientPopulator");
             return result;
@@ -180,17 +186,23 @@ namespace TestDataFramework.Factories
                     deepCollectionSettingConverter));
 
             this.sqlClientPopulatorContainer.Container.Register(
-                Component.For<IWritePrimitives>().ImplementedBy<SqlClientWritePrimitives>()
+                Component.For<IPopulator, IDbClientPopulator>().ImplementedBy<StandardDbClientPopulator>()
+                    .DependsOn(ServiceOverride.ForKey<ITypeGenerator>().Eq(PopulatorFactory.StandardTypeGenerator))
+                    .DependsOn(ServiceOverride.ForKey<IHandledTypeGenerator>().Eq(StandardHandledTypeGenerator)),
+                Component.For<DbClientConnection>().Instance(new DbClientConnection
+                {
+                    ConnectionStringWithDefaultCatalogue = connectionStringWithDefaultCatalogue
+                }),
+                Component.For<IWritePrimitives, DbProviderWritePrimitives>().ImplementedBy<SqlClientWritePrimitives>()
                     .DependsOn(new
                     {
-                        connectionStringWithDefaultCatalogue,
                         mustBeInATransaction,
                         configuration = ConfigurationManager.AppSettings
                     }),
                 Component.For<DbProviderFactory>().UsingFactoryMethod(() => SqlClientFactory.Instance, true),
                 Component.For<IValueFormatter>().ImplementedBy<SqlClientValueFormatter>(),
                 Component.For<IPropertyDataGenerator<LargeInteger>>().ImplementedBy<SqlClientInitialCountGenerator>(),
-                Component.For<IPersistence>().ImplementedBy<SqlClientPersistence>()
+                Component.For<IPersistence, SqlClientPersistence>().ImplementedBy<SqlClientPersistence>()
                     .DependsOn(Dependency.OnValue("enforceKeyReferenceCheck", enforceKeyReferenceCheck)),
                 Component.For<IUniqueValueGenerator>().ImplementedBy<KeyTypeUniqueValueGenerator>()
                     .DependsOn(new {throwIfUnhandledType = throwIfUnhandledPrimaryKeyType}),
@@ -237,6 +249,9 @@ namespace TestDataFramework.Factories
                     deepCollectionSettingConverter));
 
             this.memoryPopulatorContainer.Container.Register(
+                Component.For<IPopulator>().ImplementedBy<StandardPopulator>()
+                    .DependsOn(ServiceOverride.ForKey<ITypeGenerator>().Eq(PopulatorFactory.StandardTypeGenerator))
+                    .DependsOn(ServiceOverride.ForKey<IHandledTypeGenerator>().Eq(StandardHandledTypeGenerator)),
                 Component.For<IPropertyDataGenerator<LargeInteger>>().ImplementedBy<DefaultInitialCountGenerator>(),
                 Component.For<IPersistence>().ImplementedBy<MemoryPersistence>(),
                 Component.For<IUniqueValueGenerator>().ImplementedBy<MemoryUniqueValueGenerator>()
@@ -272,7 +287,6 @@ namespace TestDataFramework.Factories
                 deepCollectionSettingConverter = new DeepCollectionSettingConverter();
 
             const string uniqueValueTypeGenerator = "UniqueValueTypeGenerator";
-            const string standardHandledTypeGenerator = "StandardHandledTypeGenerator";
             const string accumulatorValueGenerator_StandardHandledTypeGenerator =
                 "AccumulatorValueGenerator_StandardHandledTypeGenerator ";
 
@@ -283,13 +297,10 @@ namespace TestDataFramework.Factories
                 #region Common Region
 
                 Component.For<DeepCollectionSettingConverter>().Instance(deepCollectionSettingConverter),
-                Component.For<IPopulator>().ImplementedBy<StandardPopulator>()
-                    .DependsOn(ServiceOverride.ForKey<ITypeGenerator>().Eq(PopulatorFactory.StandardTypeGenerator))
-                    .DependsOn(ServiceOverride.ForKey<IHandledTypeGenerator>().Eq(standardHandledTypeGenerator)),
                 Component.For<ITypeGenerator>()
                     .ImplementedBy<StandardTypeGenerator>()
                     .DependsOn(ServiceOverride.ForKey<IValueGenerator>().Eq(PopulatorFactory.StandardValueGenerator))
-                    .DependsOn(ServiceOverride.ForKey<IHandledTypeGenerator>().Eq(standardHandledTypeGenerator))
+                    .DependsOn(ServiceOverride.ForKey<IHandledTypeGenerator>().Eq(StandardHandledTypeGenerator))
                     .Named(PopulatorFactory.StandardTypeGenerator),
                 Component.For<Func<IArrayRandomizer>>()
                     .Instance(
@@ -328,7 +339,7 @@ namespace TestDataFramework.Factories
                     .ImplementedBy<StandardHandledTypeGenerator>()
                     .DependsOn(
                         ServiceOverride.ForKey<IValueGenerator>().Eq(PopulatorFactory.StandardValueGenerator))
-                    .Named(standardHandledTypeGenerator),
+                    .Named(StandardHandledTypeGenerator),
                 Component.For<IHandledTypeGenerator>()
                     .ImplementedBy<StandardHandledTypeGenerator>()
                     .DependsOn(

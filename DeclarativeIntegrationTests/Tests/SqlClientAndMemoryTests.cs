@@ -27,6 +27,7 @@ using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.Factories;
 using TestDataFramework.Populator.Concrete;
+using TestDataFramework.Populator.Concrete.DbClientPopulator;
 using TestDataFramework.Populator.Interfaces;
 
 namespace DeclarativeIntegrationTests.Tests
@@ -54,7 +55,7 @@ namespace DeclarativeIntegrationTests.Tests
         public void Memory_Declarative_Test()
         {
             IPopulator populator = this.factory.CreateMemoryPopulator(defaultSchema: "dbo");
-            SqlClientAndMemoryTests.PrimaryKeyForeignKeyTest(populator, new DeclarativeGeneratorIntegrationTest());
+            SqlClientAndMemoryTests.PrimaryKeyForeignKeyTest(populator, new DeclarativeGeneratorIntegrationTest(), () => populator.Bind());
         }
 
 #if !DBWRITE
@@ -63,14 +64,20 @@ namespace DeclarativeIntegrationTests.Tests
         [TestMethod]
         public void SqlCient_Declarative_Test()
         {
-            IPopulator populator = this.factory.CreateSqlClientPopulator(
+            IDbClientPopulator populator = this.factory.CreateSqlClientPopulator(
                 @"Data Source=localhost;Initial Catalog=TestDataFramework;Integrated Security=SSPI;");
 
-            SqlClientAndMemoryTests.PrimaryKeyForeignKeyTest(populator, new DeclarativeGeneratorIntegrationTest());
+            SqlClientAndMemoryTests.PrimaryKeyForeignKeyTest(populator, new DeclarativeGeneratorIntegrationTest(), () =>
+            {
+                using (DbClientTransaction transaction = populator.BindInATransaction())
+                {
+                    transaction.Commit();
+                }
+            });
         }
 
         private static void PrimaryKeyForeignKeyTest(IPopulator populator,
-            ICodeGeneratorIntegration codeGeneratorIntegration)
+            ICodeGeneratorIntegration codeGeneratorIntegration, Action bind)
         {
             IList<RecordReference<ManualKeyPrimaryTableClass>> primaries = populator.Add<ManualKeyPrimaryTableClass>(2);
 
@@ -87,14 +94,7 @@ namespace DeclarativeIntegrationTests.Tests
 
             foreignSet2[1].Set(o => o.ALong, 11111L).Set(o => o.AShort, (short) 1234);
 
-            using (var transactionScope =
-                new TransactionScope(TransactionScopeOption.Required,
-                    new TransactionOptions {IsolationLevel = IsolationLevel.ReadCommitted}))
-            {
-                populator.Bind();
-
-                transactionScope.Complete();
-            }
+            bind();
 
             Helpers.Dump(primaries);
             Helpers.Dump(foreignSet1);

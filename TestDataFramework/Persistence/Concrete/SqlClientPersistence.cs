@@ -18,6 +18,7 @@
 */
 
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using log4net;
 using TestDataFramework.AttributeDecorator.Interfaces;
@@ -26,6 +27,7 @@ using TestDataFramework.Helpers;
 using TestDataFramework.Logger;
 using TestDataFramework.Persistence.Interfaces;
 using TestDataFramework.Populator;
+using TestDataFramework.Populator.Concrete.DbClientPopulator;
 using TestDataFramework.RepositoryOperations;
 using TestDataFramework.RepositoryOperations.Model;
 using TestDataFramework.RepositoryOperations.Operations.InsertRecord;
@@ -39,20 +41,76 @@ namespace TestDataFramework.Persistence.Concrete
         private readonly IAttributeDecorator attributeDecorator;
         private readonly IDeferredValueGenerator<LargeInteger> deferredValueGenerator;
         private readonly bool enforceKeyReferenceCheck;
+        private readonly DbProviderFactory dbProviderFactory;
 
         private readonly IWritePrimitives writePrimitives;
+        private readonly DbClientConnection dbClientConnection;
+
+        private DbClientTransaction transaction;
 
         public SqlClientPersistence(IWritePrimitives writePrimitives,
             IDeferredValueGenerator<LargeInteger> deferredValueGenerator,
-            IAttributeDecorator attributeDecorator, bool enforceKeyReferenceCheck)
+            IAttributeDecorator attributeDecorator, bool enforceKeyReferenceCheck,
+            DbProviderFactory dbProviderFactory, DbClientConnection connection)
         {
             this.writePrimitives = writePrimitives;
             this.deferredValueGenerator = deferredValueGenerator;
             this.attributeDecorator = attributeDecorator;
             this.enforceKeyReferenceCheck = enforceKeyReferenceCheck;
+            this.dbProviderFactory = dbProviderFactory;
+            this.dbClientConnection = connection;
         }
 
         public virtual void Persist(IEnumerable<RecordReference> recordReferences)
+        {
+            if (this.transaction != null)
+            {
+                this.PersistWithTransaction(recordReferences);
+            }
+            else
+            {
+                this.PersistWithoutATransaction(recordReferences);
+            }
+        }
+
+        private void PersistWithTransaction(IEnumerable<RecordReference> recordReferences)
+        {
+            DbConnection connection = this.dbProviderFactory.CreateConnection();
+            this.dbClientConnection.DbConnection = connection;
+            connection.ConnectionString = this.dbClientConnection.ConnectionStringWithDefaultCatalogue;
+            connection.Open();
+
+            this.transaction.DbTransaction =
+                connection.BeginTransaction(this.transaction.Options.IsolationLevel);
+
+            this.dbClientConnection.DbTransaction = this.transaction.DbTransaction;
+
+            this.transaction.OnDisposed = () =>
+            {
+                this.transaction.DbTransaction = null;
+                this.dbClientConnection.DbTransaction = null;
+                this.transaction.OnDisposed = null;
+                this.transaction = null;
+                connection.Dispose();
+            };
+
+            this.DoPersist(recordReferences);
+        }
+
+        private void PersistWithoutATransaction(IEnumerable<RecordReference> recordReferences)
+        {
+            using (DbConnection connection = this.dbProviderFactory.CreateConnection())
+            {
+                this.dbClientConnection.DbConnection = connection;
+
+                connection.ConnectionString = this.dbClientConnection.ConnectionStringWithDefaultCatalogue;
+                connection.Open();
+
+                this.DoPersist(recordReferences);
+            }
+        }
+
+        private void DoPersist(IEnumerable<RecordReference> recordReferences)
         {
             SqlClientPersistence.Logger.Debug("Entering Persist");
 
@@ -94,6 +152,11 @@ namespace TestDataFramework.Persistence.Concrete
                 orderedOperation.Read(readStreamPointer, returnValues);
 
             SqlClientPersistence.Logger.Debug("Exiting Persist");
+        }
+
+        public virtual void UseTransaction(DbClientTransaction transaction)
+        {
+            this.transaction = transaction;
         }
     }
 }

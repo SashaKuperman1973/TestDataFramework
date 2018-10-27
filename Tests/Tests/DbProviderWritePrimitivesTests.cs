@@ -27,6 +27,7 @@ using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.Exceptions;
+using TestDataFramework.Populator;
 using TestDataFramework.RepositoryOperations.Model;
 using TestDataFramework.ValueFormatter.Interfaces;
 using TestDataFramework.WritePrimitives;
@@ -43,8 +44,9 @@ namespace Tests.Tests
         private Mock<DbProviderFactory> dbProviderFactoryMock;
         private Mock<IValueFormatter> formatterMock;
         private Mock<DbCommand> insertCommandMock;
-        private WritePrimitives primitives;
         private Mock<DbDataReader> readerMock;
+
+        private WritePrimitives primitives;
 
         [TestInitialize]
         public void Initialize()
@@ -54,7 +56,11 @@ namespace Tests.Tests
             this.dbProviderFactoryMock = new Mock<DbProviderFactory>();
             this.formatterMock = new Mock<IValueFormatter>();
 
-            this.primitives = new WritePrimitives(DbProviderWritePrimitivesTests.ConnectionString,
+            this.primitives = new WritePrimitives(
+                new DbClientConnection
+                {
+                    ConnectionStringWithDefaultCatalogue = DbProviderWritePrimitivesTests.ConnectionString
+                },
                 this.dbProviderFactoryMock.Object, this.formatterMock.Object,
                 false,
                 new NameValueCollection {{"TestDataFramework_DumpSqlInput", "true"}});
@@ -115,8 +121,6 @@ namespace Tests.Tests
             // Assert
 
             this.insertCommandMock.VerifySet(m => m.CommandType = CommandType.Text);
-            this.connectionMock.VerifySet(m => m.ConnectionString = DbProviderWritePrimitivesTests.ConnectionString);
-            this.connectionMock.Verify(m => m.Open());
 
             Assert.AreEqual(7, results.Length);
 
@@ -254,12 +258,14 @@ namespace Tests.Tests
         [TestMethod]
         public void NotInATransactionException_Test()
         {
-            this.primitives = new WritePrimitives(null,
+            this.primitives = new WritePrimitives(new DbClientConnection(), 
                 null, null,
                 true,
                 null);
 
-            Helpers.ExceptionTest(() => this.primitives.Execute(), typeof(NotInATransactionException),
+            Helpers.ExceptionTest(() =>
+                    this.primitives.Execute(),
+                typeof(NotInATransactionException),
                 Messages.NotInATransaction);
         }
 
@@ -287,10 +293,10 @@ namespace Tests.Tests
 
         private class WritePrimitives : DbProviderWritePrimitives
         {
-            public WritePrimitives(string connectionStringWithDefaultCatalogue, DbProviderFactory dbProviderFactory,
+            public WritePrimitives(DbClientConnection connection, DbProviderFactory dbProviderFactory,
                 IValueFormatter formatter, bool mustBeInATransaction, NameValueCollection configuration)
                 : base(
-                    connectionStringWithDefaultCatalogue, dbProviderFactory, formatter, mustBeInATransaction,
+                    connection, dbProviderFactory, formatter, mustBeInATransaction,
                     configuration)
             {
             }

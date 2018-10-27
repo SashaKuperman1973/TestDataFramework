@@ -19,6 +19,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -33,6 +34,7 @@ using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete;
 using TestDataFramework.RepositoryOperations.Model;
 using TestDataFramework.WritePrimitives.Interfaces;
+using Tests.Mocks;
 using Tests.TestModels;
 
 namespace Tests.Tests
@@ -43,6 +45,10 @@ namespace Tests.Tests
         private IAttributeDecorator attributeDecorator;
         private Mock<IDeferredValueGenerator<LargeInteger>> deferredValueGeneratorMock;
         private Mock<IWritePrimitives> writePrimitivesMock;
+        private Mock<DbProviderFactory> dbProviderFactoryMock;
+        private DbClientConnection dbClientConnection;
+        private Mock<DbConnection> connectionMock;
+        private const string ConnectionString = "cn";
 
         private SqlClientPersistence persistence;
 
@@ -52,9 +58,21 @@ namespace Tests.Tests
             this.attributeDecorator = new StandardAttributeDecorator(null, new AssemblyWrapper(), new Schema());
             this.writePrimitivesMock = new Mock<IWritePrimitives>();
             this.deferredValueGeneratorMock = new Mock<IDeferredValueGenerator<LargeInteger>>();
+            this.dbProviderFactoryMock = new Mock<DbProviderFactory>();
+            this.dbClientConnection = new DbClientConnection
+            {
+                ConnectionStringWithDefaultCatalogue = SqlClientPersistenceTests.ConnectionString
+            };
 
             this.persistence = new SqlClientPersistence(this.writePrimitivesMock.Object,
-                this.deferredValueGeneratorMock.Object, this.attributeDecorator, true);
+                this.deferredValueGeneratorMock.Object, this.attributeDecorator, true, 
+                this.dbProviderFactoryMock.Object, this.dbClientConnection);
+
+            var insertCommandMock = new Mock<DbCommand>();
+            this.connectionMock = new Mock<DbConnection>();
+
+            this.dbProviderFactoryMock.Setup(m => m.CreateCommand()).Returns(insertCommandMock.Object);
+            this.dbProviderFactoryMock.Setup(m => m.CreateConnection()).Returns(this.connectionMock.Object);
 
             XmlConfigurator.Configure();
         }
@@ -96,6 +114,9 @@ namespace Tests.Tests
             this.deferredValueGeneratorMock.Verify(
                 m => m.Execute(It.Is<IEnumerable<RecordReference>>(e => e.First() == recordReferenceArray[0])),
                 Times.Once);
+
+            this.connectionMock.VerifySet(m => m.ConnectionString = SqlClientPersistenceTests.ConnectionString);
+            this.connectionMock.Verify(m => m.Open());
 
             Assert.IsNotNull(primaryTableColumns);
             Assert.AreEqual(4, primaryTableColumns.Count);
@@ -149,6 +170,9 @@ namespace Tests.Tests
 
             Assert.AreEqual(primaryTable.Integer, columns[0].First(c => c.Name == "Integer").Value);
             Assert.AreEqual(foreignTable.Integer, columns[1].First(c => c.Name == "Integer").Value);
+
+            this.connectionMock.VerifySet(m => m.ConnectionString = SqlClientPersistenceTests.ConnectionString);
+            this.connectionMock.Verify(m => m.Open());
         }
 
         [TestMethod]

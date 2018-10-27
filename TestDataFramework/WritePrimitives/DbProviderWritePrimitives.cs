@@ -27,6 +27,7 @@ using log4net;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
 using TestDataFramework.Logger;
+using TestDataFramework.Populator;
 using TestDataFramework.RepositoryOperations.Model;
 using TestDataFramework.ValueFormatter.Interfaces;
 using TestDataFramework.WritePrimitives.Concrete;
@@ -38,24 +39,25 @@ namespace TestDataFramework.WritePrimitives
     {
         private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(DbProviderWritePrimitives));
         private readonly NameValueCollection configuration;
-        private readonly string connectionStringWithDefaultCatalogue;
         private readonly DbProviderFactory dbProviderFactory;
         private readonly IValueFormatter formatter;
         private readonly bool mustBeInATransaction;
+        private readonly DbClientConnection connection;
 
         protected readonly StringBuilder ExecutionStatements = new StringBuilder();
 
-        protected DbProviderWritePrimitives(string connectionStringWithDefaultCatalogue,
+        protected DbProviderWritePrimitives(
+            DbClientConnection connection,
             DbProviderFactory dbProviderFactory,
             IValueFormatter formatter, bool mustBeInATransaction, NameValueCollection configuration)
         {
             DbProviderWritePrimitives.Logger.Debug("Entering constructor");
 
-            this.connectionStringWithDefaultCatalogue = connectionStringWithDefaultCatalogue;
             this.dbProviderFactory = dbProviderFactory;
             this.formatter = formatter;
             this.mustBeInATransaction = mustBeInATransaction;
             this.configuration = configuration ?? new NameValueCollection();
+            this.connection = connection;
 
             DbProviderWritePrimitives.Logger.Debug("Exiting constructor");
         }
@@ -92,29 +94,31 @@ namespace TestDataFramework.WritePrimitives
         {
             DbProviderWritePrimitives.Logger.Debug("Entering Execute");
 
-            if (this.mustBeInATransaction && !Helper.InAmbientTransaction)
+            if (this.mustBeInATransaction && !Helper.InAmbientTransaction && this.connection.DbTransaction == null)
                 throw new NotInATransactionException();
 
             var result = new List<object>();
 
-            DbCommand command = this.dbProviderFactory.CreateCommand();
-            command.CommandType = CommandType.Text;
-            command.Connection = this.dbProviderFactory.CreateConnection();
-            command.Connection.ConnectionString = this.connectionStringWithDefaultCatalogue;
-
-            string commands = this.ExecutionStatements.ToString();
-
-            bool dumpSqlInput = false;
-            bool.TryParse(this.configuration["TestDataFramework_DumpSqlInput"], out dumpSqlInput);
-
-            if (dumpSqlInput)
-                LogManager.GetLogger(typeof(DbProviderWritePrimitives)).Debug("\r\n" + commands);
-
-            command.CommandText = commands;
-
-            using (command.Connection)
+            using (DbCommand command = this.dbProviderFactory.CreateCommand())
             {
-                command.Connection.Open();
+                command.CommandType = CommandType.Text;
+                command.Connection = this.connection.DbConnection;
+
+                if (this.connection.DbTransaction != null)
+                {
+                    command.Transaction = this.connection.DbTransaction;
+                }
+
+                string commands = this.ExecutionStatements.ToString();
+
+                bool dumpSqlInput = false;
+                bool.TryParse(this.configuration["TestDataFramework_DumpSqlInput"], out dumpSqlInput);
+
+                if (dumpSqlInput)
+                    LogManager.GetLogger(typeof(DbProviderWritePrimitives)).Debug("\r\n" + commands);
+
+                command.CommandText = commands;
+
                 using (DbDataReader reader = command.ExecuteReader())
                 {
                     while (reader.HasRows)

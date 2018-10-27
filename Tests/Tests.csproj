@@ -166,6 +166,7 @@
     <Compile Include="Tests\PopulatorFactoryTests\PopulatorFactoryTests.cs" />
     <Compile Include="Tests\RecursionGuardTests\TestPusher.cs" />
     <Compile Include="Tests\RecursionGuardTests\RecursionGuardTests.cs" />
+    <Compile Include="Tests\SqlClientPopulatorTests.cs" />
     <Compile Include="Tests\SqlClientValueGeneratorTests.cs" />
     <Compile Include="Tests\StandardHandledTypeGeneratorTests.cs" />
     <Compile Include="Tests\MemoryUniqueValueGeneratorTests.cs" />

@@ -127,26 +127,9 @@ namespace Tests.Tests
 
             const int expected = 7;
 
-            var typeGeneratorContext = new TypeGeneratorContext(new List<ExplicitPropertySetter>());
-            List<ExplicitPropertySetter> explicitProperySetters = typeGeneratorContext.ExplicitPropertySetters;
-
             PropertyInfo propertyInfo = typeof(SecondClass).GetProperty(nameof(SecondClass.SecondInteger));
-
             Action<object> setter = @object => propertyInfo.SetValue(@object, expected);
-
-            explicitProperySetters.Add(new ExplicitPropertySetter
-            {
-                Action = setter,
-                PropertyChain = new List<PropertyInfo> {propertyInfo}
-            });
-
-            this.typeGeneratorServiceMock.Setup(m => m.GetExplicitlySetPropertySetters(explicitProperySetters,
-                    It.Is<ObjectGraphNode>(node => node.PropertyInfo.Name == propertyInfo.Name)))
-                .Returns(explicitProperySetters);
-
-            this.typeGeneratorServiceMock.Setup(m => m.GetExplicitlySetPropertySetters(explicitProperySetters,
-                    It.Is<ObjectGraphNode>(node => node.PropertyInfo.Name != propertyInfo.Name)))
-                .Returns(Enumerable.Empty<ExplicitPropertySetter>());
+            TypeGeneratorContext typeGeneratorContext = this.SetupExplicitPropertySetter(propertyInfo, setter);
 
             // Act
 
@@ -159,6 +142,45 @@ namespace Tests.Tests
 
             this.recursionGuardMock.Verify(m => m.Pop(), Times.Once);
             this.recursionGuardMock.Verify();
+        }
+
+        [TestMethod]
+        public void GetObject_With_ExplicitPropertySetter_ThatThrows_Test()
+        {
+            // Act
+
+            var result =
+                this.typeGenerator.GetObject<ClassWithPropertySetterThatThrows>(new TypeGeneratorContext(null))
+                    as ClassWithPropertySetterThatThrows;
+
+            // Assert
+
+            this.valueGeneratorMock.Verify(m => m.GetValue(It.IsAny<PropertyInfo>(), It.IsAny<ObjectGraphNode>(),
+                It.IsAny<TypeGeneratorContext>()), Times.Once);
+
+            Assert.IsNotNull(result);
+        }
+
+        private TypeGeneratorContext SetupExplicitPropertySetter(PropertyInfo propertyInfo, Action<object> setter)
+        {
+            var typeGeneratorContext = new TypeGeneratorContext(new List<ExplicitPropertySetter>());
+            List<ExplicitPropertySetter> explicitProperySetters = typeGeneratorContext.ExplicitPropertySetters;
+
+            explicitProperySetters.Add(new ExplicitPropertySetter
+            {
+                Action = setter,
+                PropertyChain = new List<PropertyInfo> { propertyInfo }
+            });
+
+            this.typeGeneratorServiceMock.Setup(m => m.GetExplicitlySetPropertySetters(explicitProperySetters,
+                    It.Is<ObjectGraphNode>(node => node.PropertyInfo.Name == propertyInfo.Name)))
+                .Returns(explicitProperySetters);
+
+            this.typeGeneratorServiceMock.Setup(m => m.GetExplicitlySetPropertySetters(explicitProperySetters,
+                    It.Is<ObjectGraphNode>(node => node.PropertyInfo.Name != propertyInfo.Name)))
+                .Returns(Enumerable.Empty<ExplicitPropertySetter>());
+
+            return typeGeneratorContext;
         }
 
         [TestMethod]
@@ -263,6 +285,21 @@ namespace Tests.Tests
 
             this.recursionGuardMock.Verify(m => m.Pop(), Times.Once);
             this.recursionGuardMock.Verify();
+        }
+
+        [TestMethod]
+        public void GetObject_WithAConstructor_ThatThrows_Test()
+        {
+            // Act
+
+            object result = this.typeGenerator.GetObject<ClassWithConstructorThatThrows>(new TypeGeneratorContext(null));
+
+            // Assert
+
+            this.valueGeneratorMock.Verify(m => m.GetValue(It.IsAny<PropertyInfo>(), It.IsAny<ObjectGraphNode>(),
+                It.IsAny<TypeGeneratorContext>()), Times.Never);
+
+            Assert.IsNull(result);
         }
 
         [TestMethod]

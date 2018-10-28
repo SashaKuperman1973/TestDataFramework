@@ -180,7 +180,6 @@ namespace TestDataFramework.TypeGenerator.Concrete
                     return true;
             }
 
-
             if (forType.IsValueType)
             {
                 result = StandardTypeGenerator.ConstructObject(() => Activator.CreateInstance(forType));

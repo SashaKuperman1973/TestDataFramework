@@ -175,6 +175,23 @@ namespace Tests.TestModels
         }
     }
 
+    public class ClassWithConstructorThatThrows
+    {
+        public ClassWithConstructorThatThrows()
+        {
+            throw new Exception();
+        }
+    }
+
+    public class ClassWithPropertySetterThatThrows
+    {
+        public string AProperty
+        {
+            get => "A String";
+            set => throw new Exception();
+        }
+    }
+
     public class RecursionRootClass
     {
         public InfiniteRecursiveClass1 RecursionProperty1 { get; set; }

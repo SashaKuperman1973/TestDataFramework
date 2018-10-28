@@ -46,6 +46,8 @@ namespace Tests.Tests
         private Mock<DbCommand> insertCommandMock;
         private Mock<DbDataReader> readerMock;
 
+        private DbClientConnection dbClientConnection;
+
         private WritePrimitives primitives;
 
         [TestInitialize]
@@ -56,11 +58,13 @@ namespace Tests.Tests
             this.dbProviderFactoryMock = new Mock<DbProviderFactory>();
             this.formatterMock = new Mock<IValueFormatter>();
 
+            this.dbClientConnection = new DbClientConnection
+            {
+                ConnectionStringWithDefaultCatalogue = DbProviderWritePrimitivesTests.ConnectionString
+            };
+
             this.primitives = new WritePrimitives(
-                new DbClientConnection
-                {
-                    ConnectionStringWithDefaultCatalogue = DbProviderWritePrimitivesTests.ConnectionString
-                },
+                this.dbClientConnection,
                 this.dbProviderFactoryMock.Object, this.formatterMock.Object,
                 false,
                 new NameValueCollection {{"TestDataFramework_DumpSqlInput", "true"}});
@@ -131,6 +135,50 @@ namespace Tests.Tests
             Assert.AreEqual(expected[1][2], results[4]);
             Assert.AreEqual(expected[2][0], results[5]);
             Assert.AreEqual(expected[2][1], results[6]);
+        }
+
+        [TestMethod]
+        public void Execute_Transaction_Test()
+        {
+            // Arrange
+
+            var fakeDbCommand = new FakeDbCommand(this.readerMock.Object);
+
+            this.dbProviderFactoryMock.Setup(m => m.CreateCommand()).Returns(fakeDbCommand);
+
+            DbTransaction dbTransaction = new Mock<DbTransaction>().Object;
+
+            this.dbClientConnection.DbTransaction = dbTransaction;
+
+            this.readerMock.SetupGet(m => m.HasRows).Returns(false);
+            
+            // Act
+
+            this.primitives.Execute();
+
+            // Assert
+
+            Assert.AreEqual(dbTransaction, fakeDbCommand.Transaction);
+        }
+
+        [TestMethod]
+        public void Execute_NoTransaction_Test()
+        {
+            // Arrange
+
+            var fakeDbCommand = new FakeDbCommand(this.readerMock.Object);
+
+            this.dbProviderFactoryMock.Setup(m => m.CreateCommand()).Returns(fakeDbCommand);
+
+            this.readerMock.SetupGet(m => m.HasRows).Returns(false);
+
+            // Act
+
+            this.primitives.Execute();
+
+            // Assert
+
+            Assert.IsNull(this.dbClientConnection.DbTransaction);
         }
 
         [TestMethod]
@@ -307,6 +355,62 @@ namespace Tests.Tests
             }
 
             public override object WriteGuid(string columnName)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public class FakeDbCommand : DbCommand
+        {
+            private readonly DbDataReader reader;
+
+            public FakeDbCommand(DbDataReader reader)
+            {
+                this.reader = reader;
+            }
+
+            public override void Prepare()
+            {
+                throw new NotImplementedException();
+            }
+
+            public override string CommandText { get; set; }
+            public override int CommandTimeout { get; set; }
+            public override CommandType CommandType { get; set; }
+            public override UpdateRowSource UpdatedRowSource { get; set; }
+            protected override DbConnection DbConnection { get; set; }
+            protected override DbParameterCollection DbParameterCollection { get; }
+            public override bool DesignTimeVisible { get; set; }
+
+            public new DbTransaction Transaction { get; set; }
+
+            protected override DbTransaction DbTransaction
+            {
+                get => this.Transaction;
+                set => this.Transaction = value;
+            }
+
+            public override void Cancel()
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override DbParameter CreateDbParameter()
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override DbDataReader ExecuteDbDataReader(CommandBehavior behavior)
+            {
+                return this.reader;
+            }
+
+            public override int ExecuteNonQuery()
+            {
+                throw new NotImplementedException();
+            }
+
+            public override object ExecuteScalar()
             {
                 throw new NotImplementedException();
             }

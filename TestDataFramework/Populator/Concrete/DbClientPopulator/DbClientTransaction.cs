@@ -62,6 +62,8 @@ namespace TestDataFramework.Populator.Concrete.DbClientPopulator
                 throw new TransactionException(Messages.NoTransaction);
             }
 
+            this.DbTransaction.Dispose();
+
             this.OnDisposed?.Invoke();
         }
 

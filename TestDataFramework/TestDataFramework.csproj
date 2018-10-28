@@ -117,9 +117,11 @@
     <Compile Include="Logger\LoggerHelper.cs" />
     <Compile Include="Logger\NullLogger.cs" />
     <Compile Include="Logger\StandardLogManager.cs" />
+    <Compile Include="Persistence\Concrete\SqlClientPersistenceService.cs" />
     <Compile Include="Persistence\Interfaces\IPersistence.cs" />
     <Compile Include="Persistence\Concrete\MemoryPersistence.cs" />
     <Compile Include="Persistence\Concrete\SqlClientPersistence.cs" />
+    <Compile Include="Persistence\Interfaces\ISqlClientPersistenceService.cs" />
     <Compile Include="Populator\BasePopulator.cs" />
     <Compile Include="Populator\Concrete\FieldExpression\ListParentFieldExpression.cs" />
     <Compile Include="Populator\Concrete\FieldExpression\RootReferenceParentFieldExpression.cs" />

@@ -166,6 +166,8 @@
     <Compile Include="Tests\PopulatorFactoryTests\PopulatorFactoryTests.cs" />
     <Compile Include="Tests\RecursionGuardTests\TestPusher.cs" />
     <Compile Include="Tests\RecursionGuardTests\RecursionGuardTests.cs" />
+    <Compile Include="Tests\SqlClientPersistenceServiceTests.cs" />
+    <Compile Include="Tests\SqlClientPersistenceTests.cs" />
     <Compile Include="Tests\SqlClientPopulatorTests.cs" />
     <Compile Include="Tests\SqlClientValueGeneratorTests.cs" />
     <Compile Include="Tests\StandardHandledTypeGeneratorTests.cs" />
@@ -179,7 +181,7 @@
     <Compile Include="Tests\StandardRandomizerTests.cs" />
     <Compile Include="Tests\RandomSymbolStringGeneratorTest.cs" />
     <Compile Include="Tests\ArrayRandomizerTests.cs" />
-    <Compile Include="Tests\SqlClientPersistenceTests.cs" />
+    <Compile Include="Tests\SqlClientPersistenceComponentTests.cs" />
     <Compile Include="Tests\RecordReferenceTests.cs" />
     <Compile Include="Tests\InsertRecordTests.cs" />
     <Compile Include="Tests\InsertRecordServiceTest.cs" />

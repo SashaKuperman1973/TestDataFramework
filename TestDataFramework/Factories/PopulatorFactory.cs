@@ -193,6 +193,7 @@ namespace TestDataFramework.Factories
                 {
                     ConnectionStringWithDefaultCatalogue = connectionStringWithDefaultCatalogue
                 }),
+                Component.For<ISqlClientPersistenceService>().ImplementedBy<SqlClientPersistenceService>(),
                 Component.For<IWritePrimitives, DbProviderWritePrimitives>().ImplementedBy<SqlClientWritePrimitives>()
                     .DependsOn(new
                     {

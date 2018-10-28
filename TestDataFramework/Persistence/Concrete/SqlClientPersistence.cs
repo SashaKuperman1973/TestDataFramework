@@ -17,11 +17,10 @@
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using log4net;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
-using log4net;
-using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Helpers;
 using TestDataFramework.Logger;
@@ -29,33 +28,28 @@ using TestDataFramework.Persistence.Interfaces;
 using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete.DbClientPopulator;
 using TestDataFramework.RepositoryOperations;
-using TestDataFramework.RepositoryOperations.Model;
-using TestDataFramework.RepositoryOperations.Operations.InsertRecord;
-using TestDataFramework.WritePrimitives.Interfaces;
 
 namespace TestDataFramework.Persistence.Concrete
 {
     public class SqlClientPersistence : IPersistence
     {
         private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(SqlClientPersistence));
-        private readonly IAttributeDecorator attributeDecorator;
         private readonly IDeferredValueGenerator<LargeInteger> deferredValueGenerator;
         private readonly bool enforceKeyReferenceCheck;
         private readonly DbProviderFactory dbProviderFactory;
-
-        private readonly IWritePrimitives writePrimitives;
         private readonly DbClientConnection dbClientConnection;
+        private readonly ISqlClientPersistenceService service;
 
         private DbClientTransaction transaction;
 
-        public SqlClientPersistence(IWritePrimitives writePrimitives,
+        public SqlClientPersistence(
+            ISqlClientPersistenceService service,
             IDeferredValueGenerator<LargeInteger> deferredValueGenerator,
-            IAttributeDecorator attributeDecorator, bool enforceKeyReferenceCheck,
-            DbProviderFactory dbProviderFactory, DbClientConnection connection)
+            bool enforceKeyReferenceCheck, DbProviderFactory dbProviderFactory, 
+            DbClientConnection connection)
         {
-            this.writePrimitives = writePrimitives;
+            this.service = service;
             this.deferredValueGenerator = deferredValueGenerator;
-            this.attributeDecorator = attributeDecorator;
             this.enforceKeyReferenceCheck = enforceKeyReferenceCheck;
             this.dbProviderFactory = dbProviderFactory;
             this.dbClientConnection = connection;
@@ -63,17 +57,25 @@ namespace TestDataFramework.Persistence.Concrete
 
         public virtual void Persist(IEnumerable<RecordReference> recordReferences)
         {
+            recordReferences = recordReferences.ToList();
+
+            if (!recordReferences.Any())
+            {
+                SqlClientPersistence.Logger.Debug("Empty recordReference collection. Exiting.");
+                return;
+            }
+
             if (this.transaction != null)
             {
-                this.PersistWithTransaction(recordReferences);
+                this.PersistWithTransaction(recordReferences.ToList());
             }
             else
             {
-                this.PersistWithoutATransaction(recordReferences);
+                this.PersistWithoutATransaction(recordReferences.ToList());
             }
         }
 
-        private void PersistWithTransaction(IEnumerable<RecordReference> recordReferences)
+        private void PersistWithTransaction(List<RecordReference> recordReferences)
         {
             DbConnection connection = this.dbProviderFactory.CreateConnection();
             this.dbClientConnection.DbConnection = connection;
@@ -97,7 +99,7 @@ namespace TestDataFramework.Persistence.Concrete
             this.DoPersist(recordReferences);
         }
 
-        private void PersistWithoutATransaction(IEnumerable<RecordReference> recordReferences)
+        private void PersistWithoutATransaction(List<RecordReference> recordReferences)
         {
             using (DbConnection connection = this.dbProviderFactory.CreateConnection())
             {
@@ -110,46 +112,23 @@ namespace TestDataFramework.Persistence.Concrete
             }
         }
 
-        private void DoPersist(IEnumerable<RecordReference> recordReferences)
+        private void DoPersist(List<RecordReference> recordReferences)
         {
             SqlClientPersistence.Logger.Debug("Entering Persist");
-
-            recordReferences = recordReferences.ToList();
-
-            if (!recordReferences.Any())
-            {
-                SqlClientPersistence.Logger.Debug("Empty recordReference collection. Exiting.");
-                return;
-            }
 
             SqlClientPersistence.Logger.Debug(
                 $"Records: {string.Join(", ", recordReferences.Select(r => r?.RecordObjectBase))}");
 
             this.deferredValueGenerator.Execute(recordReferences);
 
-            var operations = new List<AbstractRepositoryOperation>();
-
-            foreach (RecordReference recordReference in recordReferences)
-                operations.Add(
-                    new InsertRecord(
-                        new InsertRecordService(recordReference, this.attributeDecorator,
-                            this.enforceKeyReferenceCheck),
-                        recordReference, operations, this.attributeDecorator));
+            List<AbstractRepositoryOperation> operations =
+                this.service.GetOperations(this.enforceKeyReferenceCheck, recordReferences).ToList();
 
             var orderedOperations = new AbstractRepositoryOperation[operations.Count];
 
-            var currentOrder = new Counter();
+            this.service.WriteOperations(operations, orderedOperations);
 
-            foreach (AbstractRepositoryOperation operation in operations)
-                operation.Write(new CircularReferenceBreaker(), this.writePrimitives, currentOrder,
-                    orderedOperations);
-
-            var readStreamPointer = new Counter();
-
-            object[] returnValues = this.writePrimitives.Execute();
-
-            foreach (AbstractRepositoryOperation orderedOperation in orderedOperations)
-                orderedOperation.Read(readStreamPointer, returnValues);
+            this.service.ReadOrderedOperations(orderedOperations);
 
             SqlClientPersistence.Logger.Debug("Exiting Persist");
         }

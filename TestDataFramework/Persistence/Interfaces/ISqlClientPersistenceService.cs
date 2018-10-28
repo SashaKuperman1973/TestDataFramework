@@ -17,14 +17,19 @@
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-using System.Data.Common;
+using System.Collections.Generic;
+using TestDataFramework.Populator;
+using TestDataFramework.RepositoryOperations;
 
-namespace TestDataFramework.Populator
+namespace TestDataFramework.Persistence.Interfaces
 {
-    public class DbClientConnection
+    public interface ISqlClientPersistenceService
     {
-        public virtual string ConnectionStringWithDefaultCatalogue { get; set; }
-        public virtual DbConnection DbConnection { get; set; }
-        public virtual DbTransaction DbTransaction { get; set; }
+        IEnumerable<AbstractRepositoryOperation> GetOperations(
+            bool enforceKeyReferenceCheck, IEnumerable<RecordReference> recordReferences);
+
+        void WriteOperations(List<AbstractRepositoryOperation> operations, AbstractRepositoryOperation[] orderedOperations);
+
+        void ReadOrderedOperations(AbstractRepositoryOperation[] orderedOperations);
     }
 }

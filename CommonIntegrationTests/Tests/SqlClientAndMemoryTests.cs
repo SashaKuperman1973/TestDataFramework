@@ -157,9 +157,11 @@ namespace CommonIntegrationTests.Tests
         [TestMethod]
         public void Guid_Test()
         {
-            IPopulator populator = this.factory.CreateSqlClientPopulator(
-                @"Data Source=localhost;Initial Catalog=TestDataFramework;Integrated Security=SSPI;",
-                false);
+            IPopulator populator = true
+                ? this.factory.CreateSqlClientPopulator(
+                    @"Data Source=localhost;Initial Catalog=TestDataFramework;Integrated Security=SSPI;",
+                    false)
+                : this.factory.CreateMemoryPopulator();
 
             OperableListEx<SqlSubjectClass> result = populator.Add<SqlSubjectClass>(2);
             populator.Bind();

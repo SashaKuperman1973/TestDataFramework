@@ -229,7 +229,12 @@ namespace TestDataFramework.ValueProvider.Concrete
                 throw new ArgumentOutOfRangeException(nameof(precision), precision.Value,
                     Messages.FloatPrecisionOutOfRange);
 
-            float result = (float) this.GetReal(precision.Value, min, (int) Math.Pow(10, 7 - precision.Value));
+            decimal inputMax = max ?? decimal.MaxValue;
+            double highestMax = Math.Pow(10, 7 - precision.Value);
+
+            decimal workingMax = inputMax < (decimal)highestMax ? inputMax : (decimal)highestMax;
+
+            float result = (float)this.GetReal(precision.Value, min, workingMax);
 
             StandardRandomizer.Logger.Debug($"Exiting GetFloat. result: {result}");
             return result;
@@ -267,8 +272,14 @@ namespace TestDataFramework.ValueProvider.Concrete
 
             decimal workingMax = max ?? long.MaxValue;
 
-            long maxWhole = (long)workingMax;
-            if (workingMax != maxWhole)
+            long maxWhole;
+            if (workingMax > long.MaxValue)
+            {
+                maxWhole = long.MaxValue;
+            }
+
+            maxWhole = (long)workingMax;
+            if (workingMax != maxWhole && maxWhole != long.MaxValue)
             {
                 maxWhole++;
             }

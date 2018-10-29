@@ -257,7 +257,7 @@ namespace Tests.Tests
 
             const decimal expected = 12345.12m;
 
-            this.randomMock.Setup(m => m.Next(int.MaxValue)).Returns(12345);
+            this.randomMock.Setup(m => m.Next(ushort.MaxValue)).Returns(12345);
             this.randomMock.Setup(m => m.NextDouble()).Returns(0.12345d);
 
             // Act
@@ -283,7 +283,7 @@ namespace Tests.Tests
 
             const decimal expected = 12345.1234m;
 
-            this.randomMock.Setup(m => m.Next(int.MaxValue)).Returns(12345);
+            this.randomMock.Setup(m => m.Next(ushort.MaxValue)).Returns(12345);
             this.randomMock.Setup(m => m.NextDouble()).Returns(0.12345d);
 
             // Act
@@ -302,7 +302,7 @@ namespace Tests.Tests
 
             const double expected = 12345.12d;
 
-            this.randomMock.Setup(m => m.Next(int.MaxValue)).Returns(12345);
+            this.randomMock.Setup(m => m.Next(ushort.MaxValue)).Returns(12345);
             this.randomMock.Setup(m => m.NextDouble()).Returns(0.12345d);
 
             // Act
@@ -321,7 +321,7 @@ namespace Tests.Tests
 
             const double expected = 12345.1234d;
 
-            this.randomMock.Setup(m => m.Next(int.MaxValue)).Returns(12345);
+            this.randomMock.Setup(m => m.Next(ushort.MaxValue)).Returns(12345);
             this.randomMock.Setup(m => m.NextDouble()).Returns(0.12345d);
 
             // Act
@@ -445,7 +445,7 @@ namespace Tests.Tests
 
             const float expected = 12345.12f;
 
-            this.randomMock.Setup(m => m.Next(100000)).Returns(12345).Verifiable();
+            this.randomMock.Setup(m => m.Next(34464)).Returns(12345).Verifiable();
             this.randomMock.Setup(m => m.NextDouble()).Returns(0.12345d);
 
             // Act
@@ -505,7 +505,7 @@ namespace Tests.Tests
 
             const float expected = 1234567f;
 
-            this.randomMock.Setup(m => m.Next(10000000)).Returns(1234567);
+            this.randomMock.Setup(m => m.Next(38528)).Returns(1234567);
             this.randomMock.Setup(m => m.NextDouble()).Returns(0.12345d);
 
             // Act

@@ -219,9 +219,6 @@ namespace Tests.TestModels
         [Max(-1)]
         public int IntegerMaxLessThanZero { get; set; }
 
-        [Max(long.MaxValue)]
-        public int IntegerMaxOutOfRange { get; set; }
-
         [Max(-1)]
         public long LongMaxLessThanZero { get; set; }
 

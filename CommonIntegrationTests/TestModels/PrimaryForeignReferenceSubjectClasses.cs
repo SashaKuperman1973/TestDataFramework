@@ -79,7 +79,7 @@ namespace CommonIntegrationTests.TestModels
 
         public string AString { get; set; }
 
-        [Precision(2)]
+        [Precision(2)] [Max(int.MaxValue)]
         public decimal ADecimal { get; set; }
 
         [Precision(3)]

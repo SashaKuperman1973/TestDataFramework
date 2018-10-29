@@ -53,11 +53,13 @@ namespace CommonIntegrationTests.TestModels
 
         public int? NullableInteger { get; set; }
 
+        [Max(int.MaxValue)]
         public long LongInteger { get; set; }
 
         [Max(SqlSubjectClass.Max)]
         public long LongIntegerWithMax { get; set; }
 
+        [Max(int.MaxValue)]
         public long? NullableLong { get; set; }
 
         public short ShortInteger { get; set; }
@@ -74,9 +76,11 @@ namespace CommonIntegrationTests.TestModels
 
         public char Character { get; set; }
 
+        [Max(int.MaxValue)]
         public decimal Decimal { get; set; }
 
         [Precision(SqlSubjectClass.Precision)]
+        [Max(int.MaxValue)]
         public decimal DecimalWithPrecision { get; set; }
 
         public bool Boolean { get; set; }
@@ -88,9 +92,11 @@ namespace CommonIntegrationTests.TestModels
 
         public byte Byte { get; set; }
 
+        [Max(short.MaxValue)]
         public double Double { get; set; }
 
         [Precision(SqlSubjectClass.Precision)]
+        [Max(short.MaxValue)]
         public double DoubleWithPrecision { get; set; }
 
         [Email]

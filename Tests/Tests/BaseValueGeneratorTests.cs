@@ -281,12 +281,6 @@ namespace Tests.Tests
                 },
                 new
                 {
-                    Property = "IntegerMaxOutOfRange",
-                    ExceptionType = typeof(ArgumentOutOfRangeException),
-                    Message = string.Format(Messages.MaxAttributeOutOfRange, "int")
-                },
-                new
-                {
                     Property = "LongMaxLessThanZero",
                     ExceptionType = typeof(ArgumentOutOfRangeException),
                     Message = Messages.MaxAttributeLessThanZero

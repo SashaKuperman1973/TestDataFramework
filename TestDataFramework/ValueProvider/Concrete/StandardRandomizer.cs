@@ -265,9 +265,9 @@ namespace TestDataFramework.ValueProvider.Concrete
                 max -= min ?? 0;
             }
 
-            decimal workingMax = max ?? int.MaxValue;
+            decimal workingMax = max ?? long.MaxValue;
 
-            int maxWhole = (int)workingMax;
+            long maxWhole = (long)workingMax;
             if (workingMax != maxWhole)
             {
                 maxWhole++;
@@ -275,7 +275,7 @@ namespace TestDataFramework.ValueProvider.Concrete
 
             decimal maxFraction = workingMax - maxWhole;
 
-            int wholePart = this.random.Next(maxWhole);
+            long wholePart = this.GetLongInteger(0, maxWhole);
 
             decimal decimalPart;
             if (wholePart == maxWhole - 1 && maxFraction > 0)

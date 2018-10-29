@@ -268,6 +268,13 @@ namespace TestDataFramework.ValueGenerator
 
             this.GetIntegerPropertyValues(propertyInfo, out long? min, out long? max);
 
+            if (max > int.MaxValue)
+                max = int.MaxValue;
+
+            if (min > int.MaxValue)
+                throw new ArgumentOutOfRangeException(string.Format(Messages.MinAttributeOutOfRange, "int"),
+                    (Exception)null);
+
             int result = this.ValueProvider.GetInteger((int?) min, (int?)max);
 
             BaseValueGenerator.Logger.Debug("Exiting GetInteger");
@@ -306,6 +313,13 @@ namespace TestDataFramework.ValueGenerator
 
             this.GetIntegerPropertyValues(propertyInfo, out long? min, out long? max);
 
+            if (max > short.MaxValue)
+                max = short.MaxValue;
+
+            if (min > short.MaxValue)
+                throw new ArgumentOutOfRangeException(string.Format(Messages.MinAttributeOutOfRange, "short"),
+                    (Exception)null);
+
             short result = this.ValueProvider.GetShortInteger((short?) min, (short?)max);
 
             BaseValueGenerator.Logger.Debug("Exiting GetShort");
@@ -339,16 +353,8 @@ namespace TestDataFramework.ValueGenerator
             if (max < 0)
                 throw new ArgumentOutOfRangeException(Messages.MaxAttributeLessThanZero, (Exception)null);
 
-            if (max > int.MaxValue)
-                throw new ArgumentOutOfRangeException(string.Format(Messages.MaxAttributeOutOfRange, "int"),
-                    (Exception)null);
-
             if (min < 0)
                 throw new ArgumentOutOfRangeException(Messages.MinAttributeLessThanZero, (Exception)null);
-
-            if (min > int.MaxValue)
-                throw new ArgumentOutOfRangeException(string.Format(Messages.MinAttributeOutOfRange, "int"),
-                    (Exception)null);
         }
 
         private object GetPrimaryKey(PropertyInfo propertyInfo)

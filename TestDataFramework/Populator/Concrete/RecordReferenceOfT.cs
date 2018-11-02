@@ -77,7 +77,8 @@ namespace TestDataFramework.Populator.Concrete
             RecordReference<T>.Logger.Debug($"Entering IsExplicitlySet. propertyInfo: {propertyInfo}");
 
             bool result = this.ExplicitPropertySetters.Any(setter =>
-                setter.PropertyChain.FirstOrDefault()?.Name.Equals(propertyInfo.Name) ?? false);
+                (setter.PropertyChain.FirstOrDefault()?.Name.Equals(propertyInfo.Name) ?? false)
+                && setter.PropertyChain.FirstOrDefault()?.DeclaringType == propertyInfo.DeclaringType);
 
             RecordReference<T>.Logger.Debug("Exiting IsExplicitlySet");
             return result;

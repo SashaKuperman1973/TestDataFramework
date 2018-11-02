@@ -145,6 +145,17 @@ namespace CommonIntegrationTests.TestModels
         }
     }
 
+    public class DeferredTestClass
+    {
+        public IEnumerable<KeyClass> AProperty { get; set; }
+    }
+
+    public class KeyClass
+    {
+        [PrimaryKey]
+        public int Key { get; set; }
+    }
+
     public class InfiniteRecursiveClass1
     {
         public InfiniteRecursiveClass2 InfinietRecursiveClassA { get; set; }

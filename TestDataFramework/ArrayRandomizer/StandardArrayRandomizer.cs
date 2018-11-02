@@ -49,7 +49,7 @@ namespace TestDataFramework.ArrayRandomizer
         public object GetArray(PropertyInfo propertyInfo, Type type, TypeGeneratorContext typeGeneratorContext)
         {
             StandardArrayRandomizer.Logger.Debug(
-                $"Entering GetArray. propertyInfo: {propertyInfo.GetExtendedMemberInfoString()}, type: {type}");
+                $"Entering GetArray. propertyInfo: {propertyInfo?.GetExtendedMemberInfoString()}, type: {type}");
 
             Array resultArray;
 

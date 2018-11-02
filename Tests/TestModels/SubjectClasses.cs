@@ -373,4 +373,15 @@ namespace Tests.TestModels
     {
         public RecursionCheck_Level1 RecursiveProperty { get; set; }
     }
+
+    public class DeferredGeneratorTestClass
+    {
+        public IEnumerable<DeferredKeyClass> AProperty { get; set; }
+    }
+
+    public class DeferredKeyClass
+    {
+        [PrimaryKey]
+        public int Key { get; set; }
+    }
 }

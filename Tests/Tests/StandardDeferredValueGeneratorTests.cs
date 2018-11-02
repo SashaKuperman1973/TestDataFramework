@@ -204,5 +204,44 @@ namespace Tests.Tests
 
             Assert.AreEqual(expected, actual);
         }
+
+        [TestMethod]
+        public void DirectlyRequestedEnumerable_Test()
+        {
+            // Arrange
+
+            Mock<RecordReference<DeferredGeneratorTestClass>> referenceMock =
+                Helpers.GetMock<RecordReference<DeferredGeneratorTestClass>>();
+
+            var deferredGeneratorPropertyEnumerable = new[] {new DeferredKeyClass(),};
+
+            var deferredGeneratorTestObject =
+                new DeferredGeneratorTestClass {AProperty = deferredGeneratorPropertyEnumerable};
+
+            referenceMock.SetupGet(m => m.RecordObject).Returns(deferredGeneratorTestObject);
+            referenceMock.SetupGet(m => m.RecordObjectBase).Returns(deferredGeneratorTestObject);
+
+            var dataSource = new Mock<IPropertyDataGenerator<LargeInteger>>();
+            var generator = new StandardDeferredValueGenerator<LargeInteger>(dataSource.Object);
+
+            PropertyInfo keyClassKeyProperty = typeof(DeferredKeyClass).GetProperty(nameof(DeferredKeyClass.Key));
+
+            dataSource.Setup(m => m.FillData(It.IsAny<Dictionary<PropertyInfo, Data<LargeInteger>>>()))
+                .Callback<IDictionary<PropertyInfo, Data<LargeInteger>>>(
+                    propertyDataDictionary => propertyDataDictionary[keyClassKeyProperty].Item = 1);
+
+            // Act
+
+            generator.AddDelegate(keyClassKeyProperty, input => (int)(uint)input++);
+
+            generator.Execute(new [] {referenceMock.Object});
+
+            // Assert
+
+            IEnumerable<DeferredKeyClass> deferredKeyClassCollectionPropertyValue =
+                referenceMock.Object.RecordObject.AProperty.ToList();
+
+            Assert.AreEqual(1, deferredKeyClassCollectionPropertyValue.First().Key);
+        }
     }
 }

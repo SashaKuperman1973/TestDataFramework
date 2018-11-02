@@ -17,6 +17,8 @@
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -38,7 +40,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
         private readonly IPropertyDataGenerator<T> dataSource;
 
         private readonly Dictionary<PropertyInfo, Data<T>> propertyDataDictionary =
-            new Dictionary<PropertyInfo, Data<T>>();
+            new Dictionary<PropertyInfo, Data<T>>(new PropertyInfoEqualityComparer());
 
         public StandardDeferredValueGenerator(IPropertyDataGenerator<T> dataSource)
         {
@@ -79,28 +81,48 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
                 StandardDeferredValueGenerator<T>.Logger.Debug(
                     "Target object type: " + targetRecordReference.RecordType);
 
-                targetRecordReference.RecordType.GetPropertiesHelper().ToList().ForEach(propertyInfo =>
+                this.SetValue(targetRecordReference, targetRecordReference.RecordObjectBase);
+
+            });
+
+            this.propertyDataDictionary.Clear();
+
+            StandardDeferredValueGenerator<T>.Logger.Debug("Exiting Execute");
+        }
+
+        private void SetValue(RecordReference targetRecordReference, object currentGraphObject)
+        {
+            var collection = currentGraphObject as IEnumerable;
+            if (collection != null)
+            {
+                foreach (object element in collection)
+                {
+                    this.DoSetValue(targetRecordReference, element);
+                }
+            }
+            else
+            {
+                this.DoSetValue(targetRecordReference, currentGraphObject);
+            }
+        }
+
+        private void DoSetValue(RecordReference targetRecordReference, object currentGraphObject)
+        {
+            currentGraphObject?.GetType().GetPropertiesHelper().ToList().ForEach(propertyInfo =>
+            {
+                StandardDeferredValueGenerator<T>.Logger.Debug(
+                    "Property: " + propertyInfo.GetExtendedMemberInfoString());
+
+                if (targetRecordReference.IsExplicitlySet(propertyInfo))
                 {
                     StandardDeferredValueGenerator<T>.Logger.Debug(
-                        "Property: " + propertyInfo.GetExtendedMemberInfoString());
+                        "Property explicitly set. Continuing to next iteration.");
 
-                    if (targetRecordReference.IsExplicitlySet(propertyInfo))
-                    {
-                        StandardDeferredValueGenerator<T>.Logger.Debug(
-                            "Property explicitly set. Continuing to next iteration.");
+                    return;
+                }
 
-                        return;
-                    }
-
-                    Data<T> data;
-                    if (!this.propertyDataDictionary.TryGetValue(propertyInfo, out data))
-                    {
-                        StandardDeferredValueGenerator<T>.Logger.Debug(
-                            "Property not in deferred properties dictionary. Continuing to next iteration.");
-
-                        return;
-                    }
-
+                if (this.propertyDataDictionary.TryGetValue(propertyInfo, out Data<T> data))
+                {
                     StandardDeferredValueGenerator<T>.Logger.Debug(
                         $"Property found in deferred properties dictionary. Data: {data}");
 
@@ -108,13 +130,17 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
 
                     value = value ?? Helper.GetDefaultValue(propertyInfo.PropertyType);
 
-                    propertyInfo.SetValue(targetRecordReference.RecordObjectBase, value);
-                });
+                    propertyInfo.SetValue(currentGraphObject, value);
+
+                    return;
+                }
+
+                StandardDeferredValueGenerator<T>.Logger.Debug(
+                    "Property not in deferred properties dictionary. Going deeper into the object graph.");
+
+                object nextGraphObject = propertyInfo.GetValue(currentGraphObject);
+                this.SetValue(targetRecordReference, nextGraphObject);
             });
-
-            this.propertyDataDictionary.Clear();
-
-            StandardDeferredValueGenerator<T>.Logger.Debug("Exiting Execute");
         }
 
         private static IEnumerable<RecordReference> GetUniqueTargets(IEnumerable<RecordReference> targets)
@@ -143,6 +169,19 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
             public int GetHashCode(RecordReference obj)
             {
                 return obj.RecordObjectBase.GetHashCode();
+            }
+        }
+
+        internal class PropertyInfoEqualityComparer : IEqualityComparer<PropertyInfo>
+        {
+            public bool Equals(PropertyInfo x, PropertyInfo y)
+            {
+                return x.DeclaringType == y.DeclaringType && x.Name.Equals(y.Name, StringComparison.Ordinal);
+            }
+
+            public int GetHashCode(PropertyInfo obj)
+            {
+                return obj.GetHashCode();
             }
         }
     }

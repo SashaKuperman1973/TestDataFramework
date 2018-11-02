@@ -789,5 +789,15 @@ namespace CommonIntegrationTests.Tests
 
             Assert.IsNotNull(result.Instance);
         }
+
+        [TestMethod]
+        public void Generate_DirectlyRequested_Array()
+        {
+            IPopulator populator = this.factory.CreateMemoryPopulator();
+
+            var result = populator.Make<DeferredTestClass[]>();
+
+            Assert.IsNotNull(result);
+        }
     }
 }

@@ -40,6 +40,8 @@ namespace TestDataFramework.Populator.Interfaces
 
         RecordReference<T> Add<T>(params RecordReference[] primaryRecordReferences);
 
+        void Remove(Populatable populatable);
+
         BasePopulator.Decorator<T> DecorateType<T>();
 
         void Extend(Type type, HandledTypeValueGetter valueGetter);

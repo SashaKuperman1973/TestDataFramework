@@ -41,6 +41,8 @@ namespace TestDataFramework.Populator
         private readonly ConcurrentDictionary<Type, Decorator> decoratorDictionary =
             new ConcurrentDictionary<Type, Decorator>();
 
+        internal readonly List<Populatable> Populatables = new List<Populatable>();
+
         protected BasePopulator(IAttributeDecorator attributeDecorator)
         {
             this.AttributeDecorator = attributeDecorator;
@@ -70,17 +72,26 @@ namespace TestDataFramework.Populator
 
         public virtual T Make<T>()
         {
-            T result = this.Add<T>().Make();
+            RecordReference<T> recordReference = this.Add<T>();
+            T result = recordReference.Make();
+            this.Remove(recordReference);
             return result;
         }
 
         public virtual IEnumerable<T> Make<T>(int count)
         {
-            IEnumerable<T> result = this.Add<T>(count).Make();
+            OperableListEx<T> collection = this.Add<T>(count);
+            IEnumerable<T> result = collection.Make();
+            this.Remove(collection);
             return result;
         }
 
         internal abstract void Bind(RecordReference recordReference);
+
+        public virtual void Remove(Populatable populatable)
+        {
+            this.Populatables.Remove(populatable);
+        }
 
         public class Decorator
         {

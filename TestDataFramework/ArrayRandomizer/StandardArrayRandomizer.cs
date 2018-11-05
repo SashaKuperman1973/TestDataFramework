@@ -90,7 +90,7 @@ namespace TestDataFramework.ArrayRandomizer
                 for (int i = 0; i < StandardArrayRandomizer.DimensionLength; i++)
                 {
                     object value = this.valueGenerator.GetValue(propertyInfo, basicType, typeGeneratorContext);
-                    StandardArrayRandomizer.Logger.Debug($"Element value: {value}");
+                    StandardArrayRandomizer.Logger.Debug("Generated Element.");
                     resultArray.SetValue(value, i);
                 }
             }

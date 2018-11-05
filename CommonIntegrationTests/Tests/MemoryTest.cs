@@ -23,6 +23,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Factories;
 using TestDataFramework.Populator.Concrete;
@@ -798,6 +800,30 @@ namespace CommonIntegrationTests.Tests
             var result = populator.Make<DeferredTestClass[]>();
 
             Assert.IsNotNull(result);
+        }
+
+        [TestMethod]
+        public void Test()
+        {
+            IPopulator populator = this.factory.CreateMemoryPopulator();
+
+            var tasks = new Task[1000];
+
+            for (int i = 0; i < 1000; i++)
+            {
+                tasks[i] = new Task(() =>
+                {
+                    lock (populator)
+                    {
+                        var result = populator.Make<DirectArrayClass[]>();
+                        Assert.IsNotNull(result[4].A);
+                    }
+                });
+            }
+
+            tasks.ToList().ForEach(t => t.Start());
+
+            Task.WaitAll(tasks);
         }
     }
 }

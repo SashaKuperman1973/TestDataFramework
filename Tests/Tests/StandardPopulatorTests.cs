@@ -326,6 +326,7 @@ namespace Tests.Tests
             var result = this.populator.Make<SubjectClass>();
 
             Assert.AreEqual(subject, result);
+            Assert.AreEqual(0, this.populator.Populatables.Count);
         }
 
         [TestMethod]
@@ -342,6 +343,20 @@ namespace Tests.Tests
             Assert.AreEqual(5, result.Count);
 
             result.ForEach(s => Assert.AreEqual(subject, s));
+
+            Assert.AreEqual(0, this.populator.Populatables.Count);
+        }
+
+        [TestMethod]
+        public void Remove_Test()
+        {
+            Populatable recordReference = this.populator.Add<SubjectClass>();
+
+            Assert.AreEqual(recordReference, this.populator.Populatables.Single());
+
+            this.populator.Remove(recordReference);
+
+            Assert.AreEqual(0, this.populator.Populatables.Count);
         }
     }
 }

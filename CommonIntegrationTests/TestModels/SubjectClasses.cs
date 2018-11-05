@@ -276,4 +276,17 @@ namespace CommonIntegrationTests.TestModels
             throw new Exception("Messsage 1");
         }
     }
+
+    public class DirectArrayClass
+    {
+        public int[] A { get; set; }
+
+        public string B => this.A[0].ToString();
+
+        public string C => this.A[0].ToString();
+
+        public string D => this.A[0].ToString();
+
+        public string E => this.A[0].ToString();
+    }
 }

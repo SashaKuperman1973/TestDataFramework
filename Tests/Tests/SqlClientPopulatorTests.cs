@@ -11,6 +11,7 @@ using TestDataFramework.Persistence.Concrete;
 using TestDataFramework.Persistence.Interfaces;
 using TestDataFramework.Populator.Concrete;
 using TestDataFramework.Populator.Concrete.DbClientPopulator;
+using TestDataFramework.Populator.Interfaces;
 using TestDataFramework.WritePrimitives;
 
 namespace Tests.Tests
@@ -49,14 +50,16 @@ namespace Tests.Tests
         {
             // Act
 
-            using (DbClientTransaction transaction = this.sqlClientPopulator.BindInATransaction())
+            using (IDbClientTransaction transaction = this.sqlClientPopulator.BindInATransaction())
             {
                 // Assert
 
-                Assert.IsNotNull(transaction);
-                Assert.IsNotNull(transaction.Options);
+                var sqlTransaction = transaction as DbClientTransaction;
 
-                Assert.AreEqual(transaction.Options.IsolationLevel, IsolationLevel.ReadCommitted);
+                Assert.IsNotNull(sqlTransaction);
+                Assert.IsNotNull(sqlTransaction.Options);
+
+                Assert.AreEqual(sqlTransaction.Options.IsolationLevel, IsolationLevel.ReadCommitted);
             }
         }
 
@@ -66,20 +69,22 @@ namespace Tests.Tests
             // Arrange
 
             var options = new DbClientTransactionOptions();
+            this.sqlClientPopulator.SetTransationOptions(options);
 
             // Act
 
-            using (DbClientTransaction transaction = this.sqlClientPopulator.BindInATransaction(options))
+            using (IDbClientTransaction transaction = this.sqlClientPopulator.BindInATransaction())
             {
+                var sqlTransaction = transaction as DbClientTransaction;
 
                 // Assert
 
-                Assert.IsNotNull(transaction);
-                Assert.IsNotNull(transaction.Options);
+                Assert.IsNotNull(sqlTransaction);
+                Assert.IsNotNull(sqlTransaction.Options);
 
-                Assert.AreEqual(options, transaction.Options);
+                Assert.AreEqual(options, sqlTransaction.Options);
 
-                Assert.AreEqual(transaction.Options.IsolationLevel, IsolationLevel.ReadCommitted);
+                Assert.AreEqual(sqlTransaction.Options.IsolationLevel, IsolationLevel.ReadCommitted);
             }
         }
     }

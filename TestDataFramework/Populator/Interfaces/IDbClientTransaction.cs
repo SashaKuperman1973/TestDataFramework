@@ -18,36 +18,13 @@
 */
 
 using System;
-using System.Collections.Generic;
-using TestDataFramework.HandledTypeGenerator;
-using TestDataFramework.Populator.Concrete;
-using TestDataFramework.Populator.Concrete.OperableList;
-using TestDataFramework.ValueGenerator.Interfaces;
 
 namespace TestDataFramework.Populator.Interfaces
 {
-    public interface IPopulator
+    public interface IDbClientTransaction : IDisposable
     {
-        IValueGenerator ValueGenerator { get; }
+        void Commit();
 
-        void Bind();
-
-        IDbClientTransaction BindInATransaction();
-
-        T Make<T>();
-
-        IEnumerable<T> Make<T>(int count);
-            
-        OperableListEx<T> Add<T>(int copies, params RecordReference[] primaryRecordReferences);
-
-        RecordReference<T> Add<T>(params RecordReference[] primaryRecordReferences);
-
-        void Remove(Populatable populatable);
-
-        BasePopulator.Decorator<T> DecorateType<T>();
-
-        void Extend(Type type, HandledTypeValueGetter valueGetter);
-
-        void Clear();
+        void Rollback();
     }
 }

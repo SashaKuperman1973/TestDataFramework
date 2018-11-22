@@ -32,7 +32,7 @@ using TestDataFramework.ValueGenerator.Interfaces;
 
 namespace TestDataFramework.Populator
 {
-    public abstract class BasePopulator : IPopulator
+    public abstract class BasePopulator
     {
         private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(BasePopulator));
 

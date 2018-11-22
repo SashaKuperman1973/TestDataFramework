@@ -27,13 +27,15 @@ using TestDataFramework.HandledTypeGenerator;
 using TestDataFramework.ListOperations.Concrete;
 using TestDataFramework.Logger;
 using TestDataFramework.Persistence.Interfaces;
+using TestDataFramework.Populator.Concrete.DbClientPopulator;
 using TestDataFramework.Populator.Concrete.OperableList;
+using TestDataFramework.Populator.Interfaces;
 using TestDataFramework.TypeGenerator.Interfaces;
 using TestDataFramework.ValueGenerator.Interfaces;
 
 namespace TestDataFramework.Populator.Concrete
 {
-    public class StandardPopulator : BasePopulator
+    public class StandardPopulator : BasePopulator, IPopulator
     {
         private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(StandardPopulator));
         private readonly DeepCollectionSettingConverter deepCollectionSettingConverter;
@@ -143,6 +145,11 @@ namespace TestDataFramework.Populator.Concrete
             this.Persist();
 
             StandardPopulator.Logger.Debug("Exiting Bind()");
+        }
+
+        public virtual IDbClientTransaction BindInATransaction()
+        {
+            return new NoOpDbClientTransaction();
         }
 
         internal override void Bind(RecordReference recordReference)

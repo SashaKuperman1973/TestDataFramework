@@ -123,6 +123,7 @@
     <Compile Include="Persistence\Concrete\SqlClientPersistence.cs" />
     <Compile Include="Persistence\Interfaces\ISqlClientPersistenceService.cs" />
     <Compile Include="Populator\BasePopulator.cs" />
+    <Compile Include="Populator\Concrete\DbClientPopulator\NoOpDbClientTransaction.cs" />
     <Compile Include="Populator\Concrete\FieldExpression\ListParentFieldExpression.cs" />
     <Compile Include="Populator\Concrete\FieldExpression\RootReferenceParentFieldExpression.cs" />
     <Compile Include="Populator\Concrete\FieldExpression\ReferenceParentFieldExpression.cs" />
@@ -133,6 +134,7 @@
     <Compile Include="Populator\Concrete\DbClientPopulator\DbClientTransaction.cs" />
     <Compile Include="Populator\Concrete\DbClientPopulator\DbClientTransactionOptions.cs" />
     <Compile Include="Populator\Concrete\DbClientPopulator\StandardDbClientPopulator.cs" />
+    <Compile Include="Populator\Interfaces\IDbClientTransaction.cs" />
     <Compile Include="Populator\Interfaces\IDbClientPopulator.cs" />
     <Compile Include="Populator\Interfaces\IMakeable.cs" />
     <Compile Include="Populator\Concrete\MakeableEnumerable\ListParentMakeableEnumerable.cs" />

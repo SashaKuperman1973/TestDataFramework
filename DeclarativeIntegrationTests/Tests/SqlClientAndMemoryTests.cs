@@ -69,7 +69,7 @@ namespace DeclarativeIntegrationTests.Tests
 
             SqlClientAndMemoryTests.PrimaryKeyForeignKeyTest(populator, new DeclarativeGeneratorIntegrationTest(), () =>
             {
-                using (DbClientTransaction transaction = populator.BindInATransaction())
+                using (IDbClientTransaction transaction = populator.BindInATransaction())
                 {
                     transaction.Commit();
                 }

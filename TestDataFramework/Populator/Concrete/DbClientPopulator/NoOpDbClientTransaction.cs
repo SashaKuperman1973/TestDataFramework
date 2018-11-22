@@ -17,12 +17,26 @@
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-using TestDataFramework.Populator.Concrete.DbClientPopulator;
+using System;
+using TestDataFramework.Populator.Interfaces;
 
-namespace TestDataFramework.Populator.Interfaces
+namespace TestDataFramework.Populator.Concrete.DbClientPopulator
 {
-    public interface IDbClientPopulator : IPopulator
+    public class NoOpDbClientTransaction : IDbClientTransaction
     {
-        void SetTransationOptions(DbClientTransactionOptions options);
+        public void Dispose()
+        {
+            // NoOp
+        }
+
+        public void Commit()
+        {
+            // NoOp
+        }
+
+        public void Rollback()
+        {
+            // NoOp
+        }
     }
 }

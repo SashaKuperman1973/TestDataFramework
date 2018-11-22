@@ -21,10 +21,11 @@ using System;
 using System.Data.Common;
 using System.Transactions;
 using TestDataFramework.Exceptions;
+using TestDataFramework.Populator.Interfaces;
 
 namespace TestDataFramework.Populator.Concrete.DbClientPopulator
 {
-    public class DbClientTransaction : IDisposable
+    public class DbClientTransaction : IDbClientTransaction
     {
         internal DbTransaction DbTransaction { get; set; }
 

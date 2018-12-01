@@ -39,8 +39,19 @@ namespace TestDataFramework.ValueFormatter.Concrete
                 return "@" + variable.Symbol;
             }
 
-            SqlClientValueFormatter.Logger.Debug("Value is not a Variable. Calling base.Format.");
-            string result = base.Format(value);
+            SqlClientValueFormatter.Logger.Debug("Value is not a Variable");
+
+            string result;
+
+            if (value?.GetType() == typeof(string))
+            {
+                SqlClientValueFormatter.Logger.Debug("Doing string formatting.");
+                result = "'" + ((string)value).Replace("'", "''") + "'";
+                return result;
+            }
+
+            SqlClientValueFormatter.Logger.Debug("Calling base.Format.");
+            result = base.Format(value);
 
             SqlClientValueFormatter.Logger.Debug($"Exiting Format. Result: {result ?? "<Null>"}");
             return result ?? "null";

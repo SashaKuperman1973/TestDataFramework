@@ -149,6 +149,7 @@ namespace TestDataFramework.Populator.Concrete
 
         public virtual IDbClientTransaction BindInATransaction()
         {
+            this.Bind();
             return new NoOpDbClientTransaction();
         }
 

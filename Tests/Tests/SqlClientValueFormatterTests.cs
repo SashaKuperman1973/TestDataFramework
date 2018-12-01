@@ -77,6 +77,18 @@ namespace Tests.Tests
             Assert.AreEqual("5", result);
         }
 
+        [TestMethod]
+        public void Format_StringWithQuotes_Test()
+        {
+            // Act
+
+            object result = this.formatter.Format("'AB''CD'");
+
+            // Assert
+
+            Assert.AreEqual("'''AB''''CD'''", result);
+        }
+
         private class NotHandledType
         {
         }

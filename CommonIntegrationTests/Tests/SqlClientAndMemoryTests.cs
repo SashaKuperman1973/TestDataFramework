@@ -160,10 +160,38 @@ namespace CommonIntegrationTests.Tests
             IPopulator populator = true
                 ? this.factory.CreateSqlClientPopulator(
                     @"Data Source=localhost;Initial Catalog=TestDataFramework;Integrated Security=SSPI;",
-                    false)
+                    mustBeInATransaction: false)
                 : this.factory.CreateMemoryPopulator();
 
             OperableListEx<SqlSubjectClass> result = populator.Add<SqlSubjectClass>(2);
+            populator.Bind();
+        }
+
+#if !DBWRITE
+        [Ignore]
+#endif
+        [TestMethod]
+        public void StringWithQuotes_Test()
+        {
+            IPopulator populator = this.factory.CreateSqlClientPopulator(
+                @"Data Source=localhost;Initial Catalog=TestDataFramework;Integrated Security=SSPI;",
+                mustBeInATransaction: false);
+
+            populator.Add<SqlSubjectClass>().Set(p => p.Text, "--'AB''CD'");
+            populator.Bind();
+        }
+
+#if !DBWRITE
+        [Ignore]
+#endif
+        [TestMethod]
+        public void StringWithoutQuotes_Test()
+        {
+            IPopulator populator = this.factory.CreateSqlClientPopulator(
+                @"Data Source=localhost;Initial Catalog=TestDataFramework;Integrated Security=SSPI;",
+                mustBeInATransaction: false);
+
+            populator.Add<SqlSubjectClass>().Set(p => p.Text, "ABCD");
             populator.Bind();
         }
     }

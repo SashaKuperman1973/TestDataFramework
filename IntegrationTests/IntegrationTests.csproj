@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{1642E415-58D1-488D-8B0A-9320F61E965D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>IntegrationTests</RootNamespace>
+    <AssemblyName>IntegrationTests</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;DBWRITE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="FluentAssertions, Version=4.17.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentAssertions.4.17.0\lib\net45\FluentAssertions.dll</HintPath>
+    </Reference>
+    <Reference Include="FluentAssertions.Core, Version=4.17.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentAssertions.4.17.0\lib\net45\FluentAssertions.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CommonIntegrationTests\Helpers.cs" />
+    <Compile Include="CommonIntegrationTests\ICodeGeneratorIntegration.cs" />
+    <Compile Include="CommonIntegrationTests\TestModels\ComplexClasses.cs" />
+    <Compile Include="CommonIntegrationTests\TestModels\DeepListSetClasses.cs" />
+    <Compile Include="CommonIntegrationTests\TestModels\PrimaryForeignReferenceSubjectClasses.cs" />
+    <Compile Include="CommonIntegrationTests\TestModels\SubjectClasses.cs" />
+    <Compile Include="CommonIntegrationTests\Tests\GuaranteePropertiesTests\ListParent_GuaranteePropertiesTests.cs" />
+    <Compile Include="CommonIntegrationTests\Tests\GuaranteePropertiesTests\ReferenceParent_GuaranteePropertiesTests.cs" />
+    <Compile Include="CommonIntegrationTests\Tests\GuaranteeTests\ListParent_GuaranteeTests.cs" />
+    <Compile Include="CommonIntegrationTests\Tests\GuaranteeTests\ReferenceParent_GuaranteeTests.cs" />
+    <Compile Include="CommonIntegrationTests\Tests\MemoryTest.cs" />
+    <Compile Include="CommonIntegrationTests\Tests\SqlClientAndMemoryTests.cs" />
+    <Compile Include="DeclarativeIntegrationTests\TestModels\ForeignToAutoPrimaryTable.cs" />
+    <Compile Include="DeclarativeIntegrationTests\TestModels\TertiaryManualKeyForeignTable.cs" />
+    <Compile Include="DeclarativeIntegrationTests\Tests\DeclarativeGeneratorIntegrationTest.cs" />
+    <Compile Include="DeclarativeIntegrationTests\Tests\SqlClientAndMemoryTests.cs" />
+    <Compile Include="PocoIntegrationTests\TestModels\Decorator.cs" />
+    <Compile Include="PocoIntegrationTests\TestModels\ForeignToAutoPrimaryTable.cs" />
+    <Compile Include="PocoIntegrationTests\TestModels\TertiaryManualKeyForeignTable.cs" />
+    <Compile Include="PocoIntegrationTests\Tests\PocoGeneratorIntegrationTest.cs" />
+    <Compile Include="PocoIntegrationTests\Tests\SqlClientAndMemoryTests.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TestDataFramework\TestDataFramework.csproj">
+      <Project>{AD19D50D-ADEC-40BE-8142-256E3A24D8F8}</Project>
+      <Name>TestDataFramework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tests\Tests.csproj">
+      <Project>{FE195F47-2BB4-4FCC-99C6-21FA3B33E196}</Project>
+      <Name>Tests</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="CommonIntegrationTests\App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="CommonIntegrationTests\packages.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

@@ -85,8 +85,13 @@ namespace Tests.TestModels
 
         public DateTime DateTime { get; set; }
 
+        public DateTimeOffset DateTimeOffset { get; set; }
+
         [PastOrFuture(PastOrFuture.Future)]
         public DateTime DateTimeWithTense { get; set; }
+
+        [PastOrFuture(PastOrFuture.Future)]
+        public DateTimeOffset DateTimeOffsetWithTense { get; set; }
 
         public byte Byte { get; set; }
 
@@ -150,6 +155,8 @@ namespace Tests.TestModels
     public class SecondClass
     {
         public int SecondInteger { get; set; }
+
+        public int? SecondNullableInteger { get; set; }
 
         public ThirdClass ThirdObject { get; set; }
     }

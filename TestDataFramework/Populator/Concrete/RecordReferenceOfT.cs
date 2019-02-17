@@ -23,14 +23,18 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using log4net;
+using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeepSetting;
-using TestDataFramework.DeepSetting.Concrete;
 using TestDataFramework.DeepSetting.Interfaces;
+using TestDataFramework.Exceptions;
+using TestDataFramework.Helpers;
+using TestDataFramework.Helpers.FieldExpressionValidator.Concrete;
 using TestDataFramework.ListOperations.Concrete;
 using TestDataFramework.Logger;
 using TestDataFramework.Populator.Concrete.OperableList;
 using TestDataFramework.Populator.Interfaces;
+using TestDataFramework.RepositoryOperations.Model;
 using TestDataFramework.TypeGenerator.Concrete;
 using TestDataFramework.TypeGenerator.Interfaces;
 
@@ -48,6 +52,9 @@ namespace TestDataFramework.Populator.Concrete
         private readonly ValueGuaranteePopulator valueGuaranteePopulator;
 
         private readonly BasePopulator populator;
+
+        private readonly PropertySetFieldExpressionValidator fieldExpressionValidator =
+            new PropertySetFieldExpressionValidator();
 
         public RecordReference(ITypeGenerator typeGenerator, IAttributeDecorator attributeDecorator,
             BasePopulator populator, IObjectGraphService objectGraphService,
@@ -68,6 +75,68 @@ namespace TestDataFramework.Populator.Concrete
         public virtual T RecordObject => (T) (base.RecordObjectBase ?? default(T));
 
         public override Type RecordType { get; }
+
+        public virtual void AddPrimaryRecordReference<TPrimaryRecord, TPrimaryKey>(
+            RecordReference<TPrimaryRecord> primaryRecordReference,
+            Expression<Func<T, TPrimaryKey>> foreignKeyExpression)
+        {
+            if (foreignKeyExpression == null || primaryRecordReference == null)
+                throw new ArgumentNullException();
+
+            MemberExpression memberExpression =
+                this.fieldExpressionValidator.ValidateMemberAccessExpression(foreignKeyExpression);
+
+            PropertyInfo foreignKeyPropertyInfo = memberExpression.Member as PropertyInfo;
+
+            if (foreignKeyPropertyInfo == null)
+                throw new MemberAccessExpressionException(Messages.PropertySetExpressionMustBePropertyAccess);
+
+            ForeignKeyAttribute foreignKeyAttribute =
+                this.AttributeDecorator.GetCustomAttribute<ForeignKeyAttribute>(foreignKeyPropertyInfo);
+
+            if (foreignKeyAttribute == null)
+            {
+                throw new ArgumentException(Messages.NotAForeignKey);
+            }
+
+            string primaryRecordTableName = Helper.GetTableName(typeof(TPrimaryRecord), this.AttributeDecorator).Name;
+
+            if (!foreignKeyAttribute.PrimaryTableName.Equals(primaryRecordTableName, StringComparison.Ordinal))
+            {
+                throw new ArgumentException(Messages.PrimaryForeignTableMismatch);
+            }
+
+            IEnumerable<PropertyAttribute<PrimaryKeyAttribute>> primaryKeyPropertyAttributes =
+                this.AttributeDecorator.GetPropertyAttributes<PrimaryKeyAttribute>(typeof(TPrimaryRecord));
+
+            bool isThereAForeignToPrimaryKeyMatch = primaryKeyPropertyAttributes.Any(primaryKeyPropertyAttribute =>
+
+                foreignKeyAttribute.PrimaryKeyName.Equals(
+                    Helper.GetColumnName(primaryKeyPropertyAttribute.PropertyInfo, this.AttributeDecorator),
+                    StringComparison.Ordinal)
+
+                &&
+
+                foreignKeyPropertyInfo.PropertyType == primaryKeyPropertyAttribute.PropertyInfo.PropertyType
+            );
+
+            if (!isThereAForeignToPrimaryKeyMatch)
+            {                
+                throw new ArgumentException(Messages.NoForeignPrimaryKeyMatch);
+            }
+
+            if (foreignKeyAttribute.ExplicitPrimaryKeyRecord != null)
+            {
+                // TODO Put message in messages
+                throw new ArgumentException(
+                    $"Foreign key of {foreignKeyPropertyInfo.DeclaringType.Name}.{foreignKeyPropertyInfo.PropertyType.Name} is already explicitly set");
+            }
+
+            if (this.PrimaryKeyReferences.Contains(primaryRecordReference))
+                return;
+
+            this.PrimaryKeyReferences.Add(primaryRecordReference);
+        }
 
         // Caller is responsible for ensuring Declaring Type is a type of the property being set.
         // This method only checks if the given property on the record reference object is set, 

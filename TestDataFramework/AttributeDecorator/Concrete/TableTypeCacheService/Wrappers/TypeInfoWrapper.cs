@@ -81,7 +81,15 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wr
 
         public override bool Equals(object obj)
         {
-            bool result = EqualityHelper.Equals<TypeInfoWrapper, TypeInfo>(this, obj);
+            TypeInfoWrapper toCompare = null;
+
+            var typeInfo = obj as TypeInfo;
+            if (typeInfo != null)
+            {
+                toCompare = new TypeInfoWrapper(typeInfo);
+            }
+
+            bool result = EqualityHelper.Equals<TypeInfo>(this, toCompare ?? obj as TypeInfoWrapper);
             return result;
         }
 

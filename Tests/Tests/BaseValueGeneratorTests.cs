@@ -56,6 +56,7 @@ namespace Tests.Tests
         private const string EmailAddress = "address@domain.com";
         private static readonly string StringResult = Guid.NewGuid().ToString("N");
         private static readonly DateTime DateTimeResult = DateTime.Now;
+        private static readonly DateTimeOffset DateTimeOffsetResult = new DateTimeOffset(BaseValueGeneratorTests.DateTimeResult);
         private const AnEnum AnEnumeration = AnEnum.SymbolA;
         private Mock<IArrayRandomizer> arrayRandomizerMock;
         private Mock<IValueProvider> randomizerMock;
@@ -130,6 +131,7 @@ namespace Tests.Tests
                 new Tuple<string, object>(nameof(SubjectClass.Decimal), BaseValueGeneratorTests.DecimalResult),
                 new Tuple<string, object>(nameof(SubjectClass.Boolean), BaseValueGeneratorTests.BooleanResult),
                 new Tuple<string, object>(nameof(SubjectClass.DateTime), BaseValueGeneratorTests.DateTimeResult),
+                new Tuple<string, object>(nameof(SubjectClass.DateTimeOffset), BaseValueGeneratorTests.DateTimeOffsetResult),
                 new Tuple<string, object>(nameof(SubjectClass.Byte), BaseValueGeneratorTests.ByteResult),
                 new Tuple<string, object>(nameof(SubjectClass.Double), BaseValueGeneratorTests.DoubleResult),
                 new Tuple<string, object>(nameof(SubjectClass.Float), BaseValueGeneratorTests.FloatResult),
@@ -187,7 +189,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var propertyNameAnVerifierList = new List<Tuple<string, Action>>
+            var propertyNameAndVerifierList = new List<Tuple<string, Action>>
             {
                 new Tuple<string, Action>(
                     "DecimalWithPrecision",
@@ -231,13 +233,23 @@ namespace Tests.Tests
                                 It.Is<PastOrFuture?>(pastOrFuture => pastOrFuture == PastOrFuture.Future),
                                 It.IsAny<Func<long?, long?, long>>(), null, null),
                             Times.Once())
-                )
+                ),
+                new Tuple<string, Action>(
+                                  "DateTimeOffsetWithTense",
+                                  () =>
+                                      this.randomizerMock.Verify(
+                                          m => m.GetDateTime(
+                                              It.Is<PastOrFuture?>(pastOrFuture => pastOrFuture == PastOrFuture.Future),
+                                              It.IsAny<Func<long?, long?, long>>(), null, null),
+                                          Times.Exactly(2))
+                                  ),
             };
 
             // Act and Assert
 
-            propertyNameAnVerifierList.ForEach(propertyNameVerifier =>
+            propertyNameAndVerifierList.ForEach(propertyNameVerifier =>
             {
+                Console.WriteLine(propertyNameVerifier);
                 PropertyInfo propertyInfo = typeof(SubjectClass).GetProperty(propertyNameVerifier.Item1);
                 this.valueGenerator.GetValue(propertyInfo, (ObjectGraphNode) null, null);
                 propertyNameVerifier.Item2();

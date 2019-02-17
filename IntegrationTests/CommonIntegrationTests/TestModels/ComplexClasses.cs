@@ -17,25 +17,41 @@
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers
+using System.Collections.Generic;
+
+namespace IntegrationTests.CommonIntegrationTests.TestModels
 {
-    internal static class EqualityHelper
+    public class DeepA
     {
-        public static bool Equals<TWrapped>(IWrapper<TWrapped> wrapper, IWrapper<TWrapped> toCompare)
-        {
-            if (wrapper == null && toCompare == null)
-                return true;
+        public int Integer { get; set; }
 
-            if (wrapper == null || toCompare == null)
-                return false;
+        public DeepB DeepB { get; set; }
+    }
 
-            if (wrapper.Wrapped == null && toCompare.Wrapped == null)
-                return wrapper == toCompare;
+    public class DeepB
+    {
+        public string String { get; set; }
 
-            if (wrapper.Wrapped == null && toCompare.Wrapped != null)
-                return false;
+        public DeepC DeepC { get; set; }
 
-            return wrapper.Wrapped.Equals(toCompare.Wrapped);
-        }
+        public List<DeepA> DeepAList { get; set; }
+
+        public List<DeepC> DeepCList { get; set; }
+    }
+
+    public class DeepC
+    {
+        public string DeepString { get; set; }
+
+        public List<int> IntList { get; set; }
+
+        public DeepA DeepA { get; set; }
+
+        public List<DeepD> DeepDList { get; set; }
+    }
+
+    public class DeepD
+    {
+        public int Integer { get; set; }
     }
 }

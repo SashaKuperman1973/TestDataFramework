@@ -75,6 +75,7 @@ namespace TestDataFramework.ValueGenerator
                 {typeof(bool), x => this.ValueProvider.GetBoolean()},
                 {typeof(char), x => this.ValueProvider.GetCharacter()},
                 {typeof(DateTime), this.GetDateTime},
+                {typeof(DateTimeOffset), this.GetDateTimeOffset},
                 {typeof(byte), x => this.ValueProvider.GetByte()},
                 {typeof(double), this.GetDouble},
                 {typeof(float), this.GetFloat},
@@ -183,6 +184,13 @@ namespace TestDataFramework.ValueGenerator
             DateTime result = this.ValueProvider.GetDateTime(pastOrFuture, this.ValueProvider.GetLongInteger, min, max);
 
             BaseValueGenerator.Logger.Debug("Exiting GetDateTime");
+            return result;
+        }
+
+        protected virtual object GetDateTimeOffset(PropertyInfo propertyInfo)
+        {
+            DateTime dateTime = (DateTime)this.GetDateTime(propertyInfo);
+            DateTimeOffset result = new DateTimeOffset(dateTime);
             return result;
         }
 

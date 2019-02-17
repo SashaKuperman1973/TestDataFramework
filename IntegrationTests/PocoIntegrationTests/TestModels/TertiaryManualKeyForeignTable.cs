@@ -1,4 +1,4 @@
-﻿/*
+/*
     Copyright 2016, 2017, 2018 Alexander Kuperman
 
     This file is part of TestDataFramework.
@@ -17,25 +17,18 @@
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers
+using System;
+
+namespace IntegrationTests.PocoIntegrationTests.TestModels
 {
-    internal static class EqualityHelper
+    public class TertiaryManualKeyForeignTable
     {
-        public static bool Equals<TWrapped>(IWrapper<TWrapped> wrapper, IWrapper<TWrapped> toCompare)
-        {
-            if (wrapper == null && toCompare == null)
-                return true;
+        public int Pk { get; set; }
 
-            if (wrapper == null || toCompare == null)
-                return false;
+        public Guid FkManualKeyForeignTable { get; set; }
 
-            if (wrapper.Wrapped == null && toCompare.Wrapped == null)
-                return wrapper == toCompare;
+        public string FkStringForeignKey { get; set; }
 
-            if (wrapper.Wrapped == null && toCompare.Wrapped != null)
-                return false;
-
-            return wrapper.Wrapped.Equals(toCompare.Wrapped);
-        }
+        public int AnInt { get; set; }
     }
 }

@@ -157,5 +157,11 @@ namespace TestDataFramework.Exceptions
         public const string OperableListIsReadOnly = "List is read-only";
 
         public const string NoTransaction = "There is no transaction active for the test data populator";
+
+        public const string NotAForeignKey = "Property is not designated as a foreign key";
+
+        public const string PrimaryForeignTableMismatch = "Primary class/table type doesn't match foreign key class/table type";
+
+        public const string NoForeignPrimaryKeyMatch = "Foreign Key doesn't match any primary key";
     }
 }

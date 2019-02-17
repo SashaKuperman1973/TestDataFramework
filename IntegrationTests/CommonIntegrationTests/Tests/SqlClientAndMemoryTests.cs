@@ -17,18 +17,18 @@
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-using CommonIntegrationTests.TestModels;
-using log4net.Config;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using IntegrationTests.CommonIntegrationTests.TestModels;
+using log4net.Config;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.Factories;
 using TestDataFramework.Populator.Concrete;
 using TestDataFramework.Populator.Concrete.OperableList;
 using TestDataFramework.Populator.Interfaces;
 
-namespace CommonIntegrationTests.Tests
+namespace IntegrationTests.CommonIntegrationTests.Tests
 {
     [TestClass]
     public class SqlClientAndMemoryTests

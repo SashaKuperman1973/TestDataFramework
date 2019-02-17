@@ -155,6 +155,12 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
         #region GetColumnData
 
+        private struct PrimaryKeyColumn
+        {
+            public ColumnSymbol Column { get; set; }
+            public bool HasBeenMatched { get; set; }
+        }
+
         public virtual IEnumerable<ExtendedColumnSymbol> GetForeignKeyColumns(
             IEnumerable<InsertRecord> primaryKeyOperations)
         {
@@ -165,8 +171,14 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             InsertRecordService.Logger.Debug(
                 $"primaryKeyOperations: {primaryKeyOperations.GetRecordTypesString()}");
 
-            List<IEnumerable<ColumnSymbol>> keyTableList =
-                primaryKeyOperations.Select(o => o.GetPrimaryKeySymbols()).ToList();
+            var keyTableList =
+                primaryKeyOperations.Select(o => new
+                {
+                    Columns = o.GetPrimaryKeySymbols()
+                        .Select(pkColumn => new PrimaryKeyColumn { Column = pkColumn, HasBeenMatched = false}),
+
+                    RecordReference = o.RecordReference
+                }).ToList();
 
             InsertRecordService.Logger.Debug(
                 $"keyTableList: {Helper.ToCompositeString(keyTableList.Select(kt => string.Join(", ", kt)))}");
@@ -178,43 +190,81 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             {
                 InsertRecordService.Logger.Debug($"fkpa (foreign Key Property Arttribute) : {fkpa}");
 
-                ColumnSymbol pkColumnMatch = null;
-
-
-                bool isForeignKeyPrimaryKeyMatch = keyTableList.Any(pkTable =>
-                    pkTable.Any(pk =>
-                        this.attributeDecorator.GetTableType(fkpa.Attribute,
-                            new TypeInfoWrapper(this.recordReference.RecordType.GetTypeInfo())) ==
-                        (pkColumnMatch = pk).TableType
-                        && fkpa.Attribute.PrimaryKeyName.Equals(pk.ColumnName, StringComparison.Ordinal)
-                    )
-                );
+                PrimaryKeyColumn pkColumnMatch = new PrimaryKeyColumn();
 
                 bool isExplicitlySet = this.recordReference.IsExplicitlySet(fkpa.PropertyInfo);
 
-                if (!isExplicitlySet)
-                    if (this.enforceKeyReferenceCheck && !isForeignKeyPrimaryKeyMatch)
-                    {
-                        InsertRecordService.Logger.Debug(
-                            $"Key reference check branch taken. Referential integrity check failed. Foreign Key PropertyAttribute : {fkpa}");
+                if (isExplicitlySet)
+                {
+                    pkColumnMatch.Column =
+                        new ColumnSymbol {Value = fkpa.PropertyInfo.GetValue(this.recordReference.RecordObjectBase)};
+                    pkColumnMatch.HasBeenMatched = true;
 
-                        throw new InserRecordServiceException(Messages.ForeignKeyRecordWithNoPrimaryKeyRecord,
-                            fkpa.PropertyInfo.DeclaringType.FullName, fkpa.PropertyInfo.Name);
-                    }
+                    return
+                        new
+                        {
+                            PkColumn = pkColumnMatch,
+                            FkPropertyAttribute = fkpa
+                        };
+                }
+
+                bool isForeignKeyPrimaryKeyMatch = keyTableList.Any(pkTable =>
+
+                    pkTable.Columns.Any(pkColumn =>
+                        fkpa.Attribute.PrimaryKeyName.Equals((pkColumnMatch = pkColumn).Column.ColumnName,
+                            StringComparison.Ordinal)
+                    )
+
+                    &&
+
+                    (fkpa.Attribute.ExplicitPrimaryKeyRecord == pkTable.RecordReference
+
+                     || this.attributeDecorator.GetTableType(fkpa.Attribute,
+                         new TypeInfoWrapper(this.recordReference.RecordType.GetTypeInfo())) ==
+                     pkTable.RecordReference.RecordType
+                    )
+
+                );
+
+                if (this.enforceKeyReferenceCheck && !isForeignKeyPrimaryKeyMatch)
+                {
+                    InsertRecordService.ThrowReferentialIntegrityException(fkpa);
+                }
+
+                if (isForeignKeyPrimaryKeyMatch)
+                {
+                    pkColumnMatch.HasBeenMatched = true;
+
+                    return new
+                    {
+                        PkColumn = pkColumnMatch,
+                        FkPropertyAttribute = fkpa
+                    };
+                }
 
                 return
                     new
                     {
-                        PkColumnValue =
-                        isExplicitlySet
-                            ? fkpa.PropertyInfo.GetValue(this.recordReference.RecordObjectBase)
-                            : isForeignKeyPrimaryKeyMatch
-                                ? pkColumnMatch.Value
-                                : Helper.GetDefaultValue(fkpa.PropertyInfo.PropertyType),
+                        PkColumn = new PrimaryKeyColumn
+                        {
+                            HasBeenMatched = false,
+                            Column = new ColumnSymbol {Value = Helper.GetDefaultValue(fkpa.PropertyInfo.PropertyType)}
+                        },
 
                         FkPropertyAttribute = fkpa
                     };
-            });
+            }).ToList();
+
+            PropertyAttribute<ForeignKeyAttribute> enforcedFkpa = null;
+
+            if (this.enforceKeyReferenceCheck && foreignKeys.Any(fk =>
+            {
+                enforcedFkpa = fk.FkPropertyAttribute;
+                return !fk.PkColumn.HasBeenMatched;
+            }))
+            {
+                InsertRecordService.ThrowReferentialIntegrityException(enforcedFkpa);
+            }
 
             IEnumerable<ExtendedColumnSymbol> result =
                 foreignKeys.Select(
@@ -224,13 +274,22 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                             TableType = fk.FkPropertyAttribute.PropertyInfo.DeclaringType,
                             ColumnName =
                                 Helper.GetColumnName(fk.FkPropertyAttribute.PropertyInfo, this.attributeDecorator),
-                            Value = fk.PkColumnValue,
+                            Value = fk.PkColumn.Column.Value,
                             PropertyAttribute = fk.FkPropertyAttribute
                         }).ToList();
 
             InsertRecordService.Logger.Debug(
                 $"Entering GetForeignKeyVariables. Result: {Helper.ToCompositeString(result)}");
             return result;
+        }
+
+        private static void ThrowReferentialIntegrityException(PropertyAttribute<ForeignKeyAttribute> fkpa)
+        {
+            InsertRecordService.Logger.Debug(
+                $"Key reference check branch taken. Referential integrity check failed. Foreign Key PropertyAttribute : {fkpa}");
+
+            throw new InserRecordServiceException(Messages.ForeignKeyRecordWithNoPrimaryKeyRecord,
+                fkpa.PropertyInfo.DeclaringType.FullName, fkpa.PropertyInfo.Name);
         }
 
         public virtual IEnumerable<Column> GetRegularColumns(IWritePrimitives writer)

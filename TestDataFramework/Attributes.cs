@@ -21,6 +21,7 @@ using System;
 using System.Linq;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
+using TestDataFramework.Populator;
 using TestDataFramework.ValueProvider.Interfaces;
 
 namespace TestDataFramework
@@ -151,6 +152,7 @@ namespace TestDataFramework
         public string Schema { get; }
         public string PrimaryTableName { get; }
         public string PrimaryKeyName { get; }
+        public RecordReference ExplicitPrimaryKeyRecord { get; internal set; }
 
         public virtual Attribute GetAttributeUsingDefaultSchema(string defaultSchema)
         {

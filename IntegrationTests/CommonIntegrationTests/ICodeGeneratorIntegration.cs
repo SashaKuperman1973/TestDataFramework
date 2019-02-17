@@ -17,25 +17,18 @@
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers
+using System.Collections.Generic;
+using IntegrationTests.CommonIntegrationTests.TestModels;
+using TestDataFramework.Populator.Concrete;
+using TestDataFramework.Populator.Interfaces;
+
+namespace IntegrationTests.CommonIntegrationTests
 {
-    internal static class EqualityHelper
+    public interface ICodeGeneratorIntegration
     {
-        public static bool Equals<TWrapped>(IWrapper<TWrapped> wrapper, IWrapper<TWrapped> toCompare)
-        {
-            if (wrapper == null && toCompare == null)
-                return true;
+        void AddTypes(IPopulator populator, IList<RecordReference<ManualKeyForeignTable>> foreignSet1,
+            IList<RecordReference<ManualKeyForeignTable>> foreignSet2);
 
-            if (wrapper == null || toCompare == null)
-                return false;
-
-            if (wrapper.Wrapped == null && toCompare.Wrapped == null)
-                return wrapper == toCompare;
-
-            if (wrapper.Wrapped == null && toCompare.Wrapped != null)
-                return false;
-
-            return wrapper.Wrapped.Equals(toCompare.Wrapped);
-        }
+        void Dump();
     }
 }

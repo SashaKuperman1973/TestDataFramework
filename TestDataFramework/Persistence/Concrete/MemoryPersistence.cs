@@ -76,7 +76,7 @@ namespace TestDataFramework.Persistence.Concrete
             var primaryKeys = recordReference.PrimaryKeyReferences.SelectMany(
                 pkRef =>
                     this.attributeDecorator.GetPropertyAttributes<PrimaryKeyAttribute>(pkRef.RecordType)
-                        .Select(pkpa => new {Object = pkRef.RecordObjectBase, PkProperty = pkpa.PropertyInfo}));
+                        .Select(pkpa => new { PrimaryKeyReference = pkRef, PkProperty = pkpa.PropertyInfo}));
 
             IEnumerable<PropertyAttribute<ForeignKeyAttribute>> foreignKeyPropertyAttributes =
                 this.attributeDecorator.GetPropertyAttributes<ForeignKeyAttribute>(recordReference.RecordType);
@@ -86,16 +86,24 @@ namespace TestDataFramework.Persistence.Concrete
                 var primaryKey =
                     primaryKeys.FirstOrDefault(
                         pk =>
-                            pk.PkProperty.DeclaringType == this.attributeDecorator.GetTableType(fkpa.Attribute,
-                                new TypeInfoWrapper(recordReference.RecordType.GetTypeInfo())) &&
                             Helper.GetColumnName(pk.PkProperty, this.attributeDecorator) ==
-                            fkpa.Attribute.PrimaryKeyName);
+                            fkpa.Attribute.PrimaryKeyName
 
-                if (primaryKey?.Object == null)
+                            &&
+
+                            (fkpa.Attribute.ExplicitPrimaryKeyRecord == pk.PrimaryKeyReference
+
+                             || pk.PkProperty.DeclaringType == this.attributeDecorator.GetTableType(fkpa.Attribute,
+                                 new TypeInfoWrapper(recordReference.RecordType.GetTypeInfo()))
+                            )
+                    );
+
+                if (primaryKey?.PrimaryKeyReference.RecordObjectBase == null)
                     return;
 
                 MemoryPersistence.Logger.Debug($"PropertyInfo to get from: {primaryKey.PkProperty}");
-                object primaryKeyPropertyValue = primaryKey.PkProperty.GetValue(primaryKey.Object);
+                object primaryKeyPropertyValue =
+                    primaryKey.PkProperty.GetValue(primaryKey.PrimaryKeyReference.RecordObjectBase);
                 MemoryPersistence.Logger.Debug($"primaryKeyPropertyValue: {primaryKeyPropertyValue}");
 
                 MemoryPersistence.Logger.Debug($"PropertyInfo to set: {fkpa.PropertyInfo}");

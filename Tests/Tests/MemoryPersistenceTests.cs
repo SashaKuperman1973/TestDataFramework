@@ -109,13 +109,26 @@ namespace Tests.Tests
         [TestMethod]
         public void Persist_NoPrimaryKey_ForForeignKey_Test()
         {
+            // Arrange
+
             var deferredValueGeneratorMock = new Mock<IDeferredValueGenerator<LargeInteger>>();
             var attributeDecoratorMock = new Mock<IAttributeDecorator>();
 
             var persistence = new MemoryPersistence(deferredValueGeneratorMock.Object, attributeDecoratorMock.Object);
 
-            var recordReference = new RecordReference<SubjectClass>(null, null, null, null, null, null);
-            var primaryKeyReference = new RecordReference<SecondClass>(null, null, null, null, null, null);
+            var recordReference = new RecordReference<SubjectClass>(null, null, null, null, null, null)
+            {
+                RecordObjectBase = new SubjectClass()
+            };
+
+            var primaryKeyReference = new RecordReference<SecondClass>(null, null, null, null, null, null)
+            {
+                RecordObjectBase = new SecondClass
+                {
+                    SecondNullableInteger = 5
+                }
+            };
+
             recordReference.PrimaryKeyReferences.Add(primaryKeyReference);
 
             attributeDecoratorMock.Setup(m => m.GetPropertyAttributes<PrimaryKeyAttribute>(typeof(SecondClass)))
@@ -123,18 +136,31 @@ namespace Tests.Tests
                 {
                     new PropertyAttribute<PrimaryKeyAttribute>
                     {
-                        PropertyInfo = typeof(SecondClass).GetProperty(nameof(SecondClass.SecondInteger))
+                        PropertyInfo = typeof(SecondClass).GetProperty(nameof(SecondClass.SecondInteger)),
+                        Attribute = new PrimaryKeyAttribute()
                     }
                 });
 
-            var foreignKeyPropertyAttribute = new PropertyAttribute<ForeignKeyAttribute>();
+            var foreignKeyPropertyAttribute = new PropertyAttribute<ForeignKeyAttribute>
+            {
+                PropertyInfo = typeof(SubjectClass).GetProperty(nameof(SubjectClass.NullableInteger)),
+                Attribute = new ForeignKeyAttribute(typeof(SecondClass), nameof(SecondClass.SecondNullableInteger))
+            };
 
             attributeDecoratorMock.Setup(m => m.GetPropertyAttributes<ForeignKeyAttribute>(typeof(SubjectClass)))
                 .Returns(new[] { foreignKeyPropertyAttribute });
 
-            persistence.Persist(new [] { recordReference });
+            attributeDecoratorMock
+                .Setup(m => m.GetTableType(foreignKeyPropertyAttribute.Attribute, It.IsAny<TypeInfoWrapper>()))
+                .Returns(typeof(SecondClass));
 
-            Assert.IsNull(foreignKeyPropertyAttribute.PropertyInfo);
+            // Act
+
+            persistence.Persist(new[] {recordReference});
+
+            // Assert
+
+            Assert.IsNull(recordReference.RecordObject.NullableInteger);
         }
     }
 }

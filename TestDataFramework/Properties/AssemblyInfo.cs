@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2016, 2017, 2018 Alexander Kuperman
+    Copyright 2016, 2017, 2018, 2019 Alexander Kuperman
 
     This file is part of TestDataFramework.
 
@@ -63,5 +63,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("3.3.5")]
-[assembly: AssemblyFileVersion("3.3.5")]
+[assembly: AssemblyVersion("3.4.0")]
+[assembly: AssemblyFileVersion("3.4.0")]

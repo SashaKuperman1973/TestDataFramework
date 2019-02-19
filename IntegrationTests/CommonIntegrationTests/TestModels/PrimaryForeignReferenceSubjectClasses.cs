@@ -22,7 +22,8 @@ using TestDataFramework;
 
 namespace IntegrationTests.CommonIntegrationTests.TestModels
 {
-    public class PrimaryTable
+    [Table("dbo", "TestPrimaryTable")]
+    public class TestPrimaryTable
     {
         [PrimaryKey]
         public int Key1 { get; set; }
@@ -30,6 +31,7 @@ namespace IntegrationTests.CommonIntegrationTests.TestModels
         [PrimaryKey]
         public int Key2 { get; set; }
 
+        [StringLength(10)]
         public string Text { get; set; }
 
         public int Integer { get; set; }
@@ -46,10 +48,10 @@ namespace IntegrationTests.CommonIntegrationTests.TestModels
         [PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Auto)]
         public int Key { get; set; }
 
-        [ForeignKey(typeof(PrimaryTable), nameof(PrimaryTable.Key1))]
+        [ForeignKey(typeof(TestPrimaryTable), nameof(TestPrimaryTable.Key1))]
         public int ForeignKeyA1 { get; set; }
 
-        [ForeignKey(typeof(PrimaryTable), nameof(PrimaryTable.Key2))]
+        [ForeignKey(typeof(TestPrimaryTable), nameof(TestPrimaryTable.Key2))]
         public int ForeignKeyA2 { get; set; }
 
         [ForeignKey(typeof(PrimaryTableB), nameof(PrimaryTableB.Key1))]

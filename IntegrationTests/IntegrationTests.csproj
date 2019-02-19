@@ -54,6 +54,7 @@
     <Compile Include="CommonIntegrationTests\Helpers.cs" />
     <Compile Include="CommonIntegrationTests\ICodeGeneratorIntegration.cs" />
     <Compile Include="CommonIntegrationTests\TestModels\ComplexClasses.cs" />
+    <Compile Include="CommonIntegrationTests\TestModels\dbo.MultiPrimaryRowForeignTable.cs" />
     <Compile Include="CommonIntegrationTests\TestModels\DeepListSetClasses.cs" />
     <Compile Include="CommonIntegrationTests\TestModels\PrimaryForeignReferenceSubjectClasses.cs" />
     <Compile Include="CommonIntegrationTests\TestModels\SubjectClasses.cs" />

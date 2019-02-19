@@ -41,6 +41,9 @@ namespace TestDataFramework.Populator
 
         internal readonly List<RecordReference> PrimaryKeyReferences = new List<RecordReference>();
 
+        internal Dictionary<string, RecordReference> ExplicitPrimaryKeyRecords
+            = new Dictionary<string, RecordReference>();
+
         protected RecordReference(ITypeGenerator typeGenerator, IAttributeDecorator attributeDecorator)
         {
             this.TypeGenerator = typeGenerator;

@@ -19,12 +19,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using IntegrationTests.CommonIntegrationTests.TestModels;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.Factories;
 using TestDataFramework.Populator.Concrete;
+using TestDataFramework.Populator.Concrete.DbClientPopulator;
 using TestDataFramework.Populator.Concrete.OperableList;
 using TestDataFramework.Populator.Interfaces;
 
@@ -57,7 +59,7 @@ namespace IntegrationTests.CommonIntegrationTests.Tests
         {
             IPopulator populator = this.factory.CreateMemoryPopulator();
 
-            OperableListEx<PrimaryTable> primaryA = populator.Add<PrimaryTable>(2);
+            OperableListEx<TestPrimaryTable> primaryA = populator.Add<TestPrimaryTable>(2);
             OperableListEx<PrimaryTableB> primaryB = populator.Add<PrimaryTableB>(2);
 
             OperableListEx<ForeignTable> foreignA = populator.Add<ForeignTable>(2, primaryA[0], primaryB[0]);
@@ -77,7 +79,7 @@ namespace IntegrationTests.CommonIntegrationTests.Tests
         {
             IPopulator populator = this.factory.CreateMemoryPopulator();
 
-            OperableListEx<PrimaryTable> primary = populator.Add<PrimaryTable>(2);
+            OperableListEx<TestPrimaryTable> primary = populator.Add<TestPrimaryTable>(2);
 
             populator.Bind();
 
@@ -99,6 +101,46 @@ namespace IntegrationTests.CommonIntegrationTests.Tests
             Console.WriteLine(foreignB[0].ForeignKeyA2);
             Console.WriteLine(foreignB[1].ForeignKeyA1);
             Console.WriteLine(foreignB[1].ForeignKeyA2);
+        }
+
+#if !DBWRITE
+        [Ignore]
+#endif
+        [TestMethod]
+        public void Explicit_ForeignKeyToPrimaryKey_Assignment_Test()
+        {
+            IPopulator populator = this.factory.CreateSqlClientPopulator(
+                @"Data Source=localhost;Initial Catalog=TestDataFramework;Integrated Security=SSPI;",
+                false);
+
+            //IPopulator populator = this.factory.CreateMemoryPopulator();
+
+            var manualKeyPrimaryTableRecords = populator.Add<ManualKeyPrimaryTableClass>(2);
+            var primaryTableRecords = populator.Add<TestPrimaryTable>(2);
+
+            var foreignTable = populator.Add<MultiPrimaryRowForeignTable>(primaryTableRecords[1]);
+
+            foreignTable.AddPrimaryRecordReference(manualKeyPrimaryTableRecords[0], p => p.ForeignKey1Alpha);
+            foreignTable.AddPrimaryRecordReference(manualKeyPrimaryTableRecords[0], p => p.ForeignKey2Alpha);
+            foreignTable.AddPrimaryRecordReference(manualKeyPrimaryTableRecords[0], p => p.TesterForeignKeyAlpha);
+
+            foreignTable.AddPrimaryRecordReference(manualKeyPrimaryTableRecords[1], p => p.ForeignKey1Beta);
+            foreignTable.AddPrimaryRecordReference(manualKeyPrimaryTableRecords[1], p => p.ForeignKey2Beta);
+            foreignTable.AddPrimaryRecordReference(manualKeyPrimaryTableRecords[1], p => p.TesterForeignKeyBeta);
+
+            populator.Bind();
+
+            Assert.AreEqual(manualKeyPrimaryTableRecords[0].RecordObject.Tester, foreignTable.RecordObject.TesterForeignKeyAlpha);
+            Assert.AreEqual(manualKeyPrimaryTableRecords[0].RecordObject.Key1, foreignTable.RecordObject.ForeignKey1Alpha);
+            Assert.AreEqual(manualKeyPrimaryTableRecords[0].RecordObject.Key2, foreignTable.RecordObject.ForeignKey2Alpha);
+
+            Assert.AreEqual(manualKeyPrimaryTableRecords[1].RecordObject.Tester, foreignTable.RecordObject.TesterForeignKeyBeta);
+            Assert.AreEqual(manualKeyPrimaryTableRecords[1].RecordObject.Key1, foreignTable.RecordObject.ForeignKey1Beta);
+            Assert.AreEqual(manualKeyPrimaryTableRecords[1].RecordObject.Key2, foreignTable.RecordObject.ForeignKey2Beta);
+
+            Assert.AreEqual(primaryTableRecords[1].RecordObject.Key1, foreignTable.RecordObject.ForeignToPrimaryKey1);
+            Assert.AreEqual(primaryTableRecords[1].RecordObject.Key2, foreignTable.RecordObject.ForeignToPrimaryKey2);
+
         }
 
 #if !DBWRITE

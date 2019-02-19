@@ -20,6 +20,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Web.UI.WebControls;
 using log4net;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.AttributeDecorator.Interfaces;
@@ -91,11 +92,11 @@ namespace TestDataFramework.Persistence.Concrete
 
                             &&
 
-                            (fkpa.Attribute.ExplicitPrimaryKeyRecord == pk.PrimaryKeyReference
-
-                             || pk.PkProperty.DeclaringType == this.attributeDecorator.GetTableType(fkpa.Attribute,
-                                 new TypeInfoWrapper(recordReference.RecordType.GetTypeInfo()))
-                            )
+                            Helper.IsForeignToPrimaryKeyMatch(
+                                recordReference,
+                                fkpa,
+                                pk.PrimaryKeyReference,
+                                this.attributeDecorator)
                     );
 
                 if (primaryKey?.PrimaryKeyReference.RecordObjectBase == null)

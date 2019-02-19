@@ -20,10 +20,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Configuration;
 using System.Reflection;
 using System.Text;
 using System.Transactions;
+using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.AttributeDecorator.Interfaces;
+using TestDataFramework.Populator;
 using TestDataFramework.RepositoryOperations;
 using TestDataFramework.RepositoryOperations.Model;
 
@@ -155,6 +158,50 @@ namespace TestDataFramework.Helpers
         public static object ToCompositeString(IEnumerable<object> columns)
         {
             return string.Join(" || ", columns);
+        }
+
+        private static bool IsForeignKeyExplicitlySetToPrimaryKey(
+            RecordReference foreignRecordReference, 
+            PropertyInfo foreignKeyProperty, 
+            RecordReference primaryRecordReference)
+        {
+            bool result = foreignRecordReference.ExplicitPrimaryKeyRecords.TryGetValue(
+                              foreignKeyProperty.Name,
+                              out RecordReference pkReferenceInForeignReference) &&
+                          pkReferenceInForeignReference == primaryRecordReference;
+
+            return result;
+        }
+
+        private static bool IsForeignKeyExplicitlySet(
+            RecordReference foreignRecordReference,
+            PropertyInfo foreignKeyProperty)
+        {
+            bool result = foreignRecordReference
+                .ExplicitPrimaryKeyRecords.ContainsKey(foreignKeyProperty.Name);
+
+            return result;
+        }
+
+        public static bool IsForeignToPrimaryKeyMatch(
+            RecordReference foreignRecordReference, 
+            PropertyAttribute<ForeignKeyAttribute> fkpa, 
+            RecordReference primaryKeyReference, 
+            IAttributeDecorator attributeDecorator)
+        {
+            bool result = Helper.IsForeignKeyExplicitlySetToPrimaryKey(foreignRecordReference, fkpa.PropertyInfo,
+                    primaryKeyReference)
+
+                ||
+
+                !Helper.IsForeignKeyExplicitlySet(foreignRecordReference, fkpa.PropertyInfo)
+
+                &&
+
+                primaryKeyReference.RecordType == attributeDecorator.GetTableType(fkpa.Attribute,
+                    new TypeInfoWrapper(foreignRecordReference.RecordType.GetTypeInfo()));
+
+            return result;
         }
     }
 }

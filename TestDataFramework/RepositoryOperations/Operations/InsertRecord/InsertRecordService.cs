@@ -217,13 +217,12 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
                     &&
 
-                    (fkpa.Attribute.ExplicitPrimaryKeyRecord == pkTable.RecordReference
-
-                     || this.attributeDecorator.GetTableType(fkpa.Attribute,
-                         new TypeInfoWrapper(this.recordReference.RecordType.GetTypeInfo())) ==
-                     pkTable.RecordReference.RecordType
+                    Helper.IsForeignToPrimaryKeyMatch(
+                        this.recordReference,
+                        fkpa,
+                        pkTable.RecordReference,
+                        this.attributeDecorator
                     )
-
                 );
 
                 if (this.enforceKeyReferenceCheck && !isForeignKeyPrimaryKeyMatch)

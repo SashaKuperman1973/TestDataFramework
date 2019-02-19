@@ -23,7 +23,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using log4net;
-using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeepSetting;
 using TestDataFramework.DeepSetting.Interfaces;
@@ -125,12 +124,15 @@ namespace TestDataFramework.Populator.Concrete
                 throw new ArgumentException(Messages.NoForeignPrimaryKeyMatch);
             }
 
-            if (foreignKeyAttribute.ExplicitPrimaryKeyRecord != null)
+            if (this.ExplicitPrimaryKeyRecords.ContainsKey(foreignKeyPropertyInfo.Name))
             {
-                // TODO Put message in messages
                 throw new ArgumentException(
-                    $"Foreign key of {foreignKeyPropertyInfo.DeclaringType.Name}.{foreignKeyPropertyInfo.PropertyType.Name} is already explicitly set");
+                    string.Format(Messages.ForeignKeyAlreadySet, foreignKeyPropertyInfo.DeclaringType.Name,
+                        foreignKeyPropertyInfo.PropertyType.Name)
+                    );
             }
+
+            this.ExplicitPrimaryKeyRecords[foreignKeyPropertyInfo.Name] = primaryRecordReference;
 
             if (this.PrimaryKeyReferences.Contains(primaryRecordReference))
                 return;

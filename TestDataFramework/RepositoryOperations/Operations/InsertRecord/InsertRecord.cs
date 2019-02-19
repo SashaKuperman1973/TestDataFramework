@@ -157,9 +157,9 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                 InsertRecord.Logger.Debug($"fkColumn: {fkColumn}");
 
                 InsertRecord primaryKeyOperation = this.primaryKeyOperations.First(selectedPrimaryKeyOperation =>
-                    selectedPrimaryKeyOperation.RecordReference.RecordType ==
-                    this.attributeDecorator.GetTableType(fkColumn.PropertyAttribute.Attribute,
-                        new TypeInfoWrapper(fkColumn.TableType.GetTypeInfo())));
+                    Helper.IsForeignToPrimaryKeyMatch(this.RecordReference, fkColumn.PropertyAttribute,
+                        selectedPrimaryKeyOperation.RecordReference, this.attributeDecorator)
+                );
 
                 InsertRecord.Logger.Debug($"primaryKeyOperation: {primaryKeyOperation}");
 

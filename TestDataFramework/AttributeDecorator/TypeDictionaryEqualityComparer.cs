@@ -35,7 +35,8 @@ namespace TestDataFramework.AttributeDecorator
 
         public int GetHashCode(Table obj)
         {
-            return obj.GetHashCode();
+            int result = obj.GetHashCode();
+            return result;
         }
 
         public void SetEqualsCriteria(EqualsCriteriaDelegate equalsCriteria)

@@ -152,7 +152,6 @@ namespace TestDataFramework
         public string Schema { get; }
         public string PrimaryTableName { get; }
         public string PrimaryKeyName { get; }
-        public RecordReference ExplicitPrimaryKeyRecord { get; internal set; }
 
         public virtual Attribute GetAttributeUsingDefaultSchema(string defaultSchema)
         {

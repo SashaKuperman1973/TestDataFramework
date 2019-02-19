@@ -163,5 +163,8 @@ namespace TestDataFramework.Exceptions
         public const string PrimaryForeignTableMismatch = "Primary class/table type doesn't match foreign key class/table type";
 
         public const string NoForeignPrimaryKeyMatch = "Foreign Key doesn't match any primary key";
+
+        public const string ForeignKeyAlreadySet =
+            "Foreign key of {0}.{1} is already explicitly set";
     }
 }

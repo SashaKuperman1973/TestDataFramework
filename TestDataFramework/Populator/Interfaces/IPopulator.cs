@@ -49,5 +49,7 @@ namespace TestDataFramework.Populator.Interfaces
         void Extend(Type type, HandledTypeValueGetter valueGetter);
 
         void Clear();
+
+        void DeleteAll();
     }
 }

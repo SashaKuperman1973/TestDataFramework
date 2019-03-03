@@ -67,6 +67,11 @@ namespace TestDataFramework.Persistence.Concrete
             MemoryPersistence.Logger.Debug("Exiting Persist");
         }
 
+        public void DeleteAll(IEnumerable<RecordReference> recordReferences)
+        {
+            // NoOp
+        }
+
         private void CopyPrimaryToForeignKeys(IEnumerable<RecordReference> recordReferences)
         {
             recordReferences.ToList().ForEach(this.CopyPrimaryToForeignKeys);

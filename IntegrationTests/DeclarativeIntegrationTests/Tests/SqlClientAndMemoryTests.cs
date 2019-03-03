@@ -63,9 +63,28 @@ namespace IntegrationTests.DeclarativeIntegrationTests.Tests
         [TestMethod]
         public void SqlCient_Declarative_Test()
         {
-            IDbClientPopulator populator = this.factory.CreateSqlClientPopulator(
+            IPopulator populator = this.factory.CreateSqlClientPopulator(
                 @"Data Source=localhost;Initial Catalog=TestDataFramework;Integrated Security=SSPI;");
 
+            SqlClientAndMemoryTests.RunPrimaryKeyForeignKeyTest(populator);
+        }
+
+#if !DBWRITE
+        [Ignore]
+#endif
+        [TestMethod]
+        public void SqlCient_Declarative_Test_With_Deletion()
+        {
+            IPopulator populator = this.factory.CreateSqlClientPopulator(
+                @"Data Source=localhost;Initial Catalog=TestDataFramework;Integrated Security=SSPI;");
+
+            SqlClientAndMemoryTests.RunPrimaryKeyForeignKeyTest(populator);
+
+            populator.DeleteAll();
+        }
+
+        private static void RunPrimaryKeyForeignKeyTest(IPopulator populator)
+        {
             SqlClientAndMemoryTests.PrimaryKeyForeignKeyTest(populator, new DeclarativeGeneratorIntegrationTest(), () =>
             {
                 using (IDbClientTransaction transaction = populator.BindInATransaction())

@@ -18,6 +18,7 @@
 */
 
 using System.Collections.Generic;
+using System.Linq;
 using log4net;
 using TestDataFramework.Logger;
 
@@ -28,6 +29,20 @@ namespace TestDataFramework.Populator
         private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(Populatable));
 
         internal virtual bool IsPopulated { get; set; }
+
+        internal bool IsPersisted { get; set; }
+
+        internal IEnumerable<Populatable> SelectMany()
+        {
+            var self = new[] { this };
+
+            if (!this.children.Any())
+            {
+                return self;
+            }
+
+            return self.Concat(this.children.SelectMany(p => p.SelectMany()));
+        }
 
         protected void PopulateChildren()
         {

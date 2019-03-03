@@ -25,5 +25,6 @@ namespace TestDataFramework.Persistence.Interfaces
     public interface IPersistence
     {
         void Persist(IEnumerable<RecordReference> recordReferences);
+        void DeleteAll(IEnumerable<RecordReference> recordReferences);
     }
 }

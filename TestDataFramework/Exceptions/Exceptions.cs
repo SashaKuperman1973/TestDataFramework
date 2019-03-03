@@ -188,4 +188,11 @@ namespace TestDataFramework.Exceptions
         {
         }
     }
+
+    public class SqlPersistenceException : ApplicationException
+    {
+        public SqlPersistenceException(string message) : base(message)
+        {
+        }
+    }
 }

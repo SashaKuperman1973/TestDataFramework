@@ -69,7 +69,8 @@ namespace Tests.Tests
 
             this.persistence = new SqlClientPersistence(persistenceService,
                 this.deferredValueGeneratorMock.Object, true, 
-                this.dbProviderFactoryMock.Object, this.dbClientConnection);
+                this.dbProviderFactoryMock.Object, this.dbClientConnection,
+                this.attributeDecorator);
 
             var insertCommandMock = new Mock<DbCommand>();
             this.connectionMock = new Mock<DbConnection>();

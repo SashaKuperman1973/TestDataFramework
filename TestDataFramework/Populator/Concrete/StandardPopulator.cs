@@ -21,6 +21,7 @@ using log4net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Castle.Components.DictionaryAdapter;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.HandledTypeGenerator;
@@ -46,6 +47,9 @@ namespace TestDataFramework.Populator.Concrete
         private readonly ITypeGenerator typeGenerator;
         private readonly ValueGuaranteePopulator valueGuaranteePopulator;
 
+        private readonly List<RecordReference> persisted = new List<RecordReference>();
+        private bool isDeleted = false;
+
         public StandardPopulator(ITypeGenerator typeGenerator, IPersistence persistence,
             IAttributeDecorator attributeDecorator, IHandledTypeGenerator handledTypeGenerator,
             IValueGenerator valueGenerator, ValueGuaranteePopulator valueGuaranteePopulator,
@@ -70,6 +74,21 @@ namespace TestDataFramework.Populator.Concrete
         public override void Clear()
         {
             this.Populatables.Clear();
+        }
+
+        public void DeleteAll()
+        {
+            if (this.isDeleted)
+            {
+                return;
+            }
+
+            var reversePersisted = new List<RecordReference>(this.persisted);
+            reversePersisted.Reverse();
+
+            this.persistence.DeleteAll(reversePersisted);
+
+            this.isDeleted = true;
         }
 
         public override void Extend(Type type, HandledTypeValueGetter valueGetter)
@@ -170,8 +189,16 @@ namespace TestDataFramework.Populator.Concrete
         private void Persist()
         {
             var recordReferences = new List<RecordReference>();
-            this.Populatables.ForEach(populatable => populatable.AddToReferences(recordReferences));
+            this.Populatables.ForEach(populatable =>
+            {
+                if (!populatable.IsPersisted)
+                {
+                    populatable.AddToReferences(recordReferences);
+                    populatable.SelectMany().ToList().ForEach(selfAndDescendants => selfAndDescendants.IsPersisted = true);
+                }
+            });
             this.persistence.Persist(recordReferences);
+            this.persisted.AddRange(recordReferences);
         }
     }
 }

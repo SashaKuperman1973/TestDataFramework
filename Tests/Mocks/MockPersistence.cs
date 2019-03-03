@@ -32,8 +32,6 @@ namespace Tests.Mocks
 
         public void Persist(IEnumerable<RecordReference> recordReferences)
         {
-            this.Storage.Clear();
-
             recordReferences.Select(r => r.RecordObjectBase).ToList().ForEach(recordObject =>
             {
                 var propertyDictionary = new Dictionary<string, object>();
@@ -46,6 +44,11 @@ namespace Tests.Mocks
                     .ForEach(
                         propertyInfo => propertyDictionary.Add(propertyInfo.Name, propertyInfo.GetValue(recordObject)));
             });
+        }
+
+        public void DeleteAll(IEnumerable<RecordReference> recordReferences)
+        {
+            // NoOp
         }
     }
 }

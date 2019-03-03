@@ -141,6 +141,14 @@ namespace Tests.Tests
         }
 
         [TestMethod]
+        public void DateTimeOffset_Test()
+        {
+            DateTimeOffset input = DateTimeOffset.Parse("January 1, 2016 1:30 PM");
+            string result = this.formatter.Format(input);
+            Assert.AreEqual("'2016-01-01T13:30:00.000'", result);
+        }
+
+        [TestMethod]
         public void Byte_Test()
         {
             const byte input = (byte) 5;

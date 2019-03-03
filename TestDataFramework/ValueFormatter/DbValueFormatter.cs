@@ -69,6 +69,7 @@ namespace TestDataFramework.ValueFormatter
                 {typeof(float), DbValueFormatter.FloatFomatter},
                 {typeof(bool), DbValueFormatter.BoolFormatter},
                 {typeof(DateTime), DbValueFormatter.DateTimeFormatter},
+                {typeof(DateTimeOffset), DbValueFormatter.DateTimeOffsetFormatter},
                 {typeof(byte), DbValueFormatter.ByteFormatter},
                 {typeof(Guid), DbValueFormatter.GuidFormatter}
             };
@@ -122,12 +123,24 @@ namespace TestDataFramework.ValueFormatter
             return result;
         }
 
+        private const string DateAndTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff";
+
         private static string DateTimeFormatter(object value)
         {
             DbValueFormatter.Logger.Debug("Executing DateTimeFormatter");
 
             var dateTime = (DateTime) value;
-            string result = "'" + dateTime.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff") + "'";
+            string result = "'" + dateTime.ToString(DbValueFormatter.DateAndTimeFormat) + "'";
+
+            return result;
+        }
+
+        private static string DateTimeOffsetFormatter(object value)
+        {
+            DbValueFormatter.Logger.Debug("Executing DateTimeOffsetFormatter");
+
+            var dateTimeOffset = (DateTimeOffset) value;
+            string result = "'" + dateTimeOffset.ToString(DbValueFormatter.DateAndTimeFormat) + "'";
 
             return result;
         }

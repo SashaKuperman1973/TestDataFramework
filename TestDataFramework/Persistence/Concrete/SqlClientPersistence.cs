@@ -17,17 +17,23 @@
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using System;
 using log4net;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using System.Linq;
+using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
+using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
 using TestDataFramework.Logger;
 using TestDataFramework.Persistence.Interfaces;
 using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete.DbClientPopulator;
 using TestDataFramework.RepositoryOperations;
+using TestDataFramework.RepositoryOperations.Model;
+using TestDataFramework.ValueFormatter.Concrete;
 
 namespace TestDataFramework.Persistence.Concrete
 {
@@ -39,6 +45,8 @@ namespace TestDataFramework.Persistence.Concrete
         private readonly DbProviderFactory dbProviderFactory;
         private readonly DbClientConnection dbClientConnection;
         private readonly ISqlClientPersistenceService service;
+        private readonly IAttributeDecorator attributeDecorator;
+        private readonly SqlClientValueFormatter formatter = new SqlClientValueFormatter();
 
         private DbClientTransaction transaction;
 
@@ -46,13 +54,15 @@ namespace TestDataFramework.Persistence.Concrete
             ISqlClientPersistenceService service,
             IDeferredValueGenerator<LargeInteger> deferredValueGenerator,
             bool enforceKeyReferenceCheck, DbProviderFactory dbProviderFactory, 
-            DbClientConnection connection)
+            DbClientConnection connection,
+            IAttributeDecorator attributeDecorator)
         {
             this.service = service;
             this.deferredValueGenerator = deferredValueGenerator;
             this.enforceKeyReferenceCheck = enforceKeyReferenceCheck;
             this.dbProviderFactory = dbProviderFactory;
             this.dbClientConnection = connection;
+            this.attributeDecorator = attributeDecorator;
         }
 
         public virtual void Persist(IEnumerable<RecordReference> recordReferences)
@@ -73,6 +83,84 @@ namespace TestDataFramework.Persistence.Concrete
             {
                 this.PersistWithoutATransaction(recordReferences.ToList());
             }
+        }
+
+        public void DeleteAll(IEnumerable<RecordReference> recordReferences)
+        {
+            using (DbConnection connection = this.dbProviderFactory.CreateConnection())
+            {
+                connection.ConnectionString = this.dbClientConnection.ConnectionStringWithDefaultCatalogue;
+                connection.Open();
+
+                using (DbTransaction transaction = connection.BeginTransaction())
+                {
+                    try
+                    {
+                        foreach (RecordReference recordReference in recordReferences)
+                        {
+                            string commandText;
+
+                            try
+                            {
+                                commandText = this.GetDeleteSql(recordReference);
+                            }
+                            catch (SqlPersistenceException e)
+                            {
+                                SqlClientPersistence.Logger.Warn($"{e.Message}. Skipping.");
+                                continue;
+                            }
+
+                            using (DbCommand command = connection.CreateCommand())
+                            {
+                                command.Connection = connection;
+                                command.Transaction = transaction;
+                                command.CommandType = CommandType.Text;
+                                command.CommandText = commandText;
+
+                                command.ExecuteNonQuery();
+                            }
+                        }
+
+                        transaction.Commit();
+                    }
+                    catch (Exception)
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                }
+            }
+        }
+
+        private string GetDeleteSql(RecordReference recordReference)
+        {
+            TableName tableName = Helper.GetTableName(recordReference.RecordType, this.attributeDecorator);
+
+            IEnumerable<PropertyAttribute<PrimaryKeyAttribute>> primaryKeys =
+                this.attributeDecorator.GetPropertyAttributes<PrimaryKeyAttribute>(recordReference.RecordType);
+
+            string tableNameString = $"[{(tableName.IsDefaultSchema ? "dbo" : tableName.Schema)}].[{tableName.Name}]";
+
+            string deletePredicate = this.GetDeletePredicate(recordReference.RecordObjectBase, primaryKeys);
+
+            if (string.IsNullOrEmpty(deletePredicate))
+            {
+                throw new SqlPersistenceException($"Deletion: Table '{tableNameString}', type '{recordReference.RecordType}' does not have a primary key");
+            }
+
+            string deleteSql = $"delete from {tableNameString} where {deletePredicate};";
+
+            return deleteSql;
+        }
+
+        private string GetDeletePredicate(object objectValue, IEnumerable<PropertyAttribute<PrimaryKeyAttribute>> primaryKeys)
+        {
+            string criteria = string.Join(" and ",
+                primaryKeys.Select(
+                    key =>
+                        $"{Helper.GetColumnName(key.PropertyInfo, this.attributeDecorator)} = {this.formatter.Format(key.PropertyInfo.GetValue(objectValue))}"));
+            
+            return criteria;
         }
 
         private void PersistWithTransaction(List<RecordReference> recordReferences)

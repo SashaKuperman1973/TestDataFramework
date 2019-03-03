@@ -23,6 +23,9 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using TestDataFramework.AttributeDecorator.Concrete;
+using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
+using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Helpers;
 using TestDataFramework.Persistence.Concrete;
@@ -36,6 +39,7 @@ namespace Tests.Tests
     [TestClass]
     public class SqlClientPersistenceTests
     {
+        private IAttributeDecorator attributeDecorator;
         private Mock<ISqlClientPersistenceService> serviceMock;
         private Mock<IDeferredValueGenerator<LargeInteger>> deferredValueGeneratorMock;
         private Mock<DbProviderFactory> dbProviderFactoryMock;
@@ -46,6 +50,7 @@ namespace Tests.Tests
         [TestInitialize]
         public void Initialize()
         {
+            this.attributeDecorator = new StandardAttributeDecorator(null, new AssemblyWrapper(), new Schema());
             this.serviceMock = new Mock<ISqlClientPersistenceService>();
             this.deferredValueGeneratorMock = new Mock<IDeferredValueGenerator<LargeInteger>>();
             this.dbProviderFactoryMock = new Mock<DbProviderFactory>();
@@ -56,8 +61,8 @@ namespace Tests.Tests
                 this.deferredValueGeneratorMock.Object,
                 true,
                 this.dbProviderFactoryMock.Object,
-                this.connectionMock.Object
-                );
+                this.connectionMock.Object,
+                this.attributeDecorator);
         }
 
         [TestMethod]

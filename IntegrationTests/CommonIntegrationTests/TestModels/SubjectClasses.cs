@@ -90,6 +90,9 @@ namespace IntegrationTests.CommonIntegrationTests.TestModels
         [PastOrFuture(PastOrFuture.Future)]
         public DateTime DateTimeWithTense { get; set; }
 
+        [PastOrFuture(PastOrFuture.Future)]
+        public DateTimeOffset DateTimeOffsetWithTense { get; set; }
+
         public byte Byte { get; set; }
 
         [Max(short.MaxValue)]

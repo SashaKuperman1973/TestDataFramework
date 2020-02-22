@@ -1,7 +1,9 @@
 # TestDataFramework
 This is a unit testing tool. It randomizes values in your classes automatically so you don't need to do data entry.
 
-See detailed instructions on the wiki: https://github.com/SashaKuperman1973/TestDataFramework/wiki
+In addition to the source code here, TestDataFramework is available as a nuget package for use in .NET applications.
+
+Detailed instructions are on the wiki: https://github.com/SashaKuperman1973/TestDataFramework/wiki
 
 This tool includes the ability to write out objects to a database for tests which involve data access.
 

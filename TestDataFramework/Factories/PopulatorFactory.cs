@@ -108,6 +108,13 @@ namespace TestDataFramework.Factories
 
         private DisposableContainer sqlClientPopulatorContainer;
 
+        private static Random random;
+
+        static PopulatorFactory()
+        {
+            PopulatorFactory.random = new Random();
+        }
+
         public void Dispose()
         {
             this.sqlClientPopulatorContainer?.Dispose();
@@ -306,7 +313,7 @@ namespace TestDataFramework.Factories
                 Component.For<Func<IArrayRandomizer>>()
                     .Instance(
                         () => commonContainer.Resolve<IArrayRandomizer>()),
-                Component.For<Random>().ImplementedBy<Random>(),
+                Component.For<Random>().Instance(PopulatorFactory.random),
                 Component.For<DateTimeProvider>().Instance(() => Helper.Now),
                 Component.For<IArrayRandomizer>()
                     .ImplementedBy<StandardArrayRandomizer>()

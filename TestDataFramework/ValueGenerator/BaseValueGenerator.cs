@@ -214,7 +214,7 @@ namespace TestDataFramework.ValueGenerator
         {
             BaseValueGenerator.Logger.Debug("Entering GetDecimal");
 
-            this.GetRealPropertyValues(propertyInfo, out int? precision, out decimal? min, out decimal? max);
+            this.GetRealPropertyValues(propertyInfo, out int? precision, out double? min, out double? max);
 
             decimal result = this.ValueProvider.GetDecimal(precision, min, max);
 
@@ -226,7 +226,7 @@ namespace TestDataFramework.ValueGenerator
         {
             BaseValueGenerator.Logger.Debug("Entering GetDouble");
 
-            this.GetRealPropertyValues(propertyInfo, out int? precision, out decimal? min, out decimal? max);
+            this.GetRealPropertyValues(propertyInfo, out int? precision, out double? min, out double? max);
 
             double result = this.ValueProvider.GetDouble(precision, min, max);
 
@@ -238,7 +238,7 @@ namespace TestDataFramework.ValueGenerator
         {
             BaseValueGenerator.Logger.Debug("Entering GetFloat");
 
-            this.GetRealPropertyValues(propertyInfo, out int? precision, out decimal? min, out decimal? max);
+            this.GetRealPropertyValues(propertyInfo, out int? precision, out double? min, out double? max);
 
             float result = this.ValueProvider.GetFloat(precision, min, max);
 
@@ -246,7 +246,7 @@ namespace TestDataFramework.ValueGenerator
             return result;
         }
 
-        private void GetRealPropertyValues(PropertyInfo propertyInfo, out int? precision, out decimal? min, out decimal? max)
+        private void GetRealPropertyValues(PropertyInfo propertyInfo, out int? precision, out double? min, out double? max)
         {
             precision = null;
             min = null;

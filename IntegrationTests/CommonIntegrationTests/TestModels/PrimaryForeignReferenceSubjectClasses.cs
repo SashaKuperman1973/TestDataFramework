@@ -43,6 +43,74 @@ namespace IntegrationTests.CommonIntegrationTests.TestModels
         public int Key1 { get; set; }
     }
 
+    public class ManualParentTable
+    {
+        public ManualChildValueTable[] ChildValues { get; set; }
+        public int FieldInParent { get; set; }
+    }
+
+    public class ManualChildValueTable
+    {
+        [PrimaryKey]
+        public int Key { get; set; }
+
+        public int InChildFieldA { get; set; }
+
+        public int InChildFieldB { get; set; }
+    }
+
+    public class SetPrimaryTable
+    {
+        [PrimaryKey]
+        public int Key { get; set; }
+    }
+
+    public class SetForeignTable
+    {
+        [ForeignKey(typeof(SetPrimaryTable), nameof(SetPrimaryTable.Key))]
+        public int Foreign { get; set; }
+    }
+
+    public class SetCollectionTable
+    {
+        public SetForeignTable[] ForeignSet { get; set; }
+    }
+
+    public class BaseNestedTable
+    {
+        public TargetNestedTable1 Target1 { get; set; }
+        public NestedTable1 Nested1 { get; set; }
+    }
+
+    public class TargetNestedTable1
+    {
+        public TargetNestedTable2[] TargetNestedTable2 { get; set; }
+    }
+
+    public class TargetNestedTable2
+    {
+        [PrimaryKey]
+        public int Id { get; set; }
+
+        public bool Boolean { get; set; }
+    }
+
+    public class NestedTable1
+    {
+        public NestedTable2[] NestedTable2 { get; set; }
+    }
+
+    public class NestedTable2
+    {
+        public NestedTable3[] NestedTable3 { get; set; }
+    }
+
+    public class NestedTable3
+    {
+        [ForeignKey(typeof(TargetNestedTable2), nameof(TargetNestedTable2.Id))]
+        public int Id { get; set; }
+    }
+
     public class ForeignTable
     {
         [PrimaryKey(PrimaryKeyAttribute.KeyTypeEnum.Auto)]

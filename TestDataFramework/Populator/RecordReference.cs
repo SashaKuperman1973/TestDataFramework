@@ -78,6 +78,8 @@ namespace TestDataFramework.Populator
 
         public abstract bool IsExplicitlySet(PropertyInfo propertyInfo);
 
+        public abstract bool IsExplicitlySetAndNotCollectionSizeChangeOnly(PropertyInfo propertyInfo);
+
         private bool ValidateRelationship(RecordReference primaryRecordReference)
         {
             RecordReference.Logger.Debug("Entering ValidateRelationship");

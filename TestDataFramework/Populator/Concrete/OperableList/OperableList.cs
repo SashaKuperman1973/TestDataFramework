@@ -110,6 +110,14 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             OperableList<TListElement>.Logger.Exiting(nameof(this.Populate));
         }
 
+        internal override IEnumerable<Populatable> SelectMany()
+        {
+            IEnumerable<Populatable> baseSelectMany = base.SelectMany();
+            IEnumerable<Populatable> manyResult = this.InternalEnumerable.SelectMany(item => item.SelectMany());
+            IEnumerable<Populatable> result = baseSelectMany.Concat(manyResult);
+            return result;
+        }
+
         internal override void AddToReferences(IList<RecordReference> collection)
         {
             OperableList<TListElement>.Logger.Entering(nameof(this.AddToReferences));

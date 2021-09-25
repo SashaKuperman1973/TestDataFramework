@@ -32,7 +32,7 @@ namespace TestDataFramework.Populator
 
         internal bool IsPersisted { get; set; }
 
-        internal IEnumerable<Populatable> SelectMany()
+        internal virtual IEnumerable<Populatable> SelectMany()
         {
             var self = new[] { this };
 
@@ -44,7 +44,7 @@ namespace TestDataFramework.Populator
             return self.Concat(this.children.SelectMany(p => p.SelectMany()));
         }
 
-        protected void PopulateChildren()
+        protected internal virtual void PopulateChildren()
         {
             Populatable.Logger.Entering(nameof(this.PopulateChildren), $"Count: {this.children.Count}");
             this.children.ForEach(c =>
@@ -59,6 +59,13 @@ namespace TestDataFramework.Populator
         internal abstract void AddToReferences(IList<RecordReference> collection);
 
         private readonly List<Populatable> children = new List<Populatable>();
+
+        protected internal void AddChildren(IEnumerable<Populatable> populatables)
+        {
+            Populatable.Logger.Entering(nameof(this.AddChildren));
+            this.children.AddRange(populatables);
+            Populatable.Logger.Exiting(nameof(this.AddChildren));
+        }
 
         protected internal void AddChild(Populatable populatable)
         {

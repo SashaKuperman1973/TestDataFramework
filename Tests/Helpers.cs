@@ -243,5 +243,7 @@ namespace Tests
 
             return (T)result;
         }
+
+        public const ushort ShortMax = 64513;
     }
 }

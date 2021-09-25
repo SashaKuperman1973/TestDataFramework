@@ -113,7 +113,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
                 StandardDeferredValueGenerator<T>.Logger.Debug(
                     "Property: " + propertyInfo.GetExtendedMemberInfoString());
 
-                if (targetRecordReference.IsExplicitlySet(propertyInfo))
+                if (targetRecordReference.IsExplicitlySetAndNotCollectionSizeChangeOnly(propertyInfo))
                 {
                     StandardDeferredValueGenerator<T>.Logger.Debug(
                         "Property explicitly set. Continuing to next iteration.");

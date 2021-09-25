@@ -88,7 +88,7 @@ namespace Tests.Tests
 
             Assert.AreEqual(StandardRandomizerTests.Integer, result);
             this.randomMock.Verify(m => m.Next(), Times.Never());
-            this.randomMock.Verify(m => m.Next(It.Is<int>(max => max == maximum)), Times.Once());
+            this.randomMock.Verify(m => m.Next(It.Is<int>(max => max == maximum + 1)), Times.Once());
         }
 
         [TestMethod]
@@ -120,17 +120,17 @@ namespace Tests.Tests
             if ((maxValue & 0xffff) == 0)
                 maxValue--;
 
-            this.randomMock.Setup(m => m.Next((int) ((maxValue >> (16 * 0)) & 0xffff)))
+            this.randomMock.Setup(m => m.Next((int) ((maxValue >> (16 * 0)) & 0xffff) + 1))
                 .Returns((int) ((expected >> (16 * 0)) & 0xffff)).Verifiable();
 
-            this.randomMock.Setup(m => m.Next((int) ((maxValue >> (16 * 1)) & 0xffff) + 1))
-                .Returns((int) ((expected >> (16 * 1)) & 0xffff)).Verifiable();
+            this.randomMock.Setup(m => m.Next((int)((maxValue >> (16 * 1)) & 0xffff) + 1))
+                .Returns((int)((expected >> (16 * 1)) & 0xffff)).Verifiable();
 
-            this.randomMock.Setup(m => m.Next((int) ((maxValue >> (16 * 2)) & 0xffff) + 1))
-                .Returns((int) ((expected >> (16 * 2)) & 0xffff)).Verifiable();
+            this.randomMock.Setup(m => m.Next((int)((maxValue >> (16 * 2)) & 0xffff) + 1))
+                .Returns((int)((expected >> (16 * 2)) & 0xffff)).Verifiable();
 
-            this.randomMock.Setup(m => m.Next((int) ((maxValue >> (16 * 3)) & 0xffff) + 1))
-                .Returns((int) ((expected >> (16 * 3)) & 0xffff)).Verifiable();
+            this.randomMock.Setup(m => m.Next((int)((maxValue >> (16 * 3)) & 0xffff) + 1))
+                .Returns((int)((expected >> (16 * 3)) & 0xffff)).Verifiable();
 
             // Act
 
@@ -187,7 +187,7 @@ namespace Tests.Tests
             // Arrange
 
             const int max = 7;
-            this.randomMock.Setup(m => m.Next(It.Is<int>(i => i == max))).Returns(StandardRandomizerTests.Integer)
+            this.randomMock.Setup(m => m.Next(It.Is<int>(i => i == max + 1))).Returns(StandardRandomizerTests.Integer)
                 .Verifiable();
 
             // Act
@@ -257,7 +257,7 @@ namespace Tests.Tests
 
             const decimal expected = 12345.12m;
 
-            this.randomMock.Setup(m => m.Next(ushort.MaxValue)).Returns(12345);
+            this.randomMock.Setup(m => m.Next(Helpers.ShortMax)).Returns(12345);
             this.randomMock.Setup(m => m.NextDouble()).Returns(0.12345d);
 
             // Act
@@ -283,7 +283,7 @@ namespace Tests.Tests
 
             const decimal expected = 12345.1234m;
 
-            this.randomMock.Setup(m => m.Next(ushort.MaxValue)).Returns(12345);
+            this.randomMock.Setup(m => m.Next(Helpers.ShortMax)).Returns(12345);
             this.randomMock.Setup(m => m.NextDouble()).Returns(0.12345d);
 
             // Act
@@ -302,7 +302,7 @@ namespace Tests.Tests
 
             const double expected = 12345.12d;
 
-            this.randomMock.Setup(m => m.Next(ushort.MaxValue)).Returns(12345);
+            this.randomMock.Setup(m => m.Next(Helpers.ShortMax)).Returns(12345);
             this.randomMock.Setup(m => m.NextDouble()).Returns(0.12345d);
 
             // Act
@@ -321,7 +321,7 @@ namespace Tests.Tests
 
             const double expected = 12345.1234d;
 
-            this.randomMock.Setup(m => m.Next(ushort.MaxValue)).Returns(12345);
+            this.randomMock.Setup(m => m.Next(Helpers.ShortMax)).Returns(12345);
             this.randomMock.Setup(m => m.NextDouble()).Returns(0.12345d);
 
             // Act
@@ -445,7 +445,7 @@ namespace Tests.Tests
 
             const float expected = 12345.12f;
 
-            this.randomMock.Setup(m => m.Next(34464)).Returns(12345).Verifiable();
+            this.randomMock.Setup(m => m.Next(34465)).Returns(12345).Verifiable();
             this.randomMock.Setup(m => m.NextDouble()).Returns(0.12345d);
 
             // Act
@@ -465,7 +465,7 @@ namespace Tests.Tests
 
             const float expected = 123.1234f;
 
-            this.randomMock.Setup(m => m.Next(1000)).Returns(123).Verifiable();
+            this.randomMock.Setup(m => m.Next(1001)).Returns(123).Verifiable();
             this.randomMock.Setup(m => m.NextDouble()).Returns(0.12345d);
 
             // Act
@@ -505,7 +505,7 @@ namespace Tests.Tests
 
             const float expected = 1234567f;
 
-            this.randomMock.Setup(m => m.Next(38528)).Returns(1234567);
+            this.randomMock.Setup(m => m.Next(38529)).Returns(1234567);
             this.randomMock.Setup(m => m.NextDouble()).Returns(0.12345d);
 
             // Act

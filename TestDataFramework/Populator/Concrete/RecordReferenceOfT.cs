@@ -147,11 +147,32 @@ namespace TestDataFramework.Populator.Concrete
         {
             RecordReference<T>.Logger.Debug($"Entering IsExplicitlySet. propertyInfo: {propertyInfo}");
 
-            bool result = this.ExplicitPropertySetters.Any(setter =>
+            ExplicitPropertySetter explicitPropertySetter = this.FindExplicitPropertySetter(propertyInfo);
+
+            bool result = explicitPropertySetter != null;
+
+            RecordReference<T>.Logger.Debug("Exiting IsExplicitlySet");
+            return result;
+        }
+
+        public override bool IsExplicitlySetAndNotCollectionSizeChangeOnly(PropertyInfo propertyInfo)
+        {
+            RecordReference<T>.Logger.Debug($"Entering IsExplicitlySetCollectionSizeChangeOnly. propertyInfo: {propertyInfo}");
+
+            ExplicitPropertySetter explicitPropertySetter = this.FindExplicitPropertySetter(propertyInfo);
+
+            bool result = !explicitPropertySetter?.CollectionSizeChangeOnly ?? false;
+
+            RecordReference<T>.Logger.Debug("Exiting IsExplicitlySetCollectionSizeChangeOnly");
+            return result;
+        }
+
+        private ExplicitPropertySetter FindExplicitPropertySetter(PropertyInfo propertyInfo)
+        {
+            ExplicitPropertySetter result = this.ExplicitPropertySetters.FirstOrDefault(setter =>
                 (setter.PropertyChain.FirstOrDefault()?.Name.Equals(propertyInfo.Name) ?? false)
                 && setter.PropertyChain.FirstOrDefault()?.DeclaringType == propertyInfo.DeclaringType);
 
-            RecordReference<T>.Logger.Debug("Exiting IsExplicitlySet");
             return result;
         }
 
@@ -183,8 +204,11 @@ namespace TestDataFramework.Populator.Concrete
 
             List<PropertyInfo> objectPropertyGraph = this.objectGraphService.GetObjectGraph(listFieldExpression);
 
-            this.AddToExplicitPropertySetters(listFieldExpression,
-                () => this.deepCollectionSettingConverter.Convert(list.RecordObjects, objectPropertyGraph.Last()));
+            this.AddToExplicitPropertySetters(
+                listFieldExpression,
+                () => this.deepCollectionSettingConverter.Convert(list.RecordObjects, objectPropertyGraph.Last()),
+                true
+            );
         }
 
         public virtual RecordReference<T> Set<TBasePropertyValue, TPropertyValue>(
@@ -297,15 +321,15 @@ namespace TestDataFramework.Populator.Concrete
         }
 
         private void AddToExplicitPropertySetters<TBasePropertyValue, TPropertyValue>(
-            Expression<Func<T, TBasePropertyValue>> fieldExpression, Func<TPropertyValue> valueFactory)
+            Expression<Func<T, TBasePropertyValue>> fieldExpression, Func<TPropertyValue> valueFactory, bool collectionSizeChangeOnly = false)
         {
             object ObjectValueFactory() => valueFactory();
 
-            this.AddToExplicitPropertySetters(fieldExpression, ObjectValueFactory);
+            this.AddToExplicitPropertySetters(fieldExpression, ObjectValueFactory, collectionSizeChangeOnly);
         }
 
         private void AddToExplicitPropertySetters<TPropertyValue>(Expression<Func<T, TPropertyValue>> fieldExpression,
-            Func<object> valueFactory)
+            Func<object> valueFactory, bool collectionSizeChangeOnly)
         {
             List<PropertyInfo> setterObjectGraph = this.objectGraphService.GetObjectGraph(fieldExpression);
 
@@ -320,7 +344,7 @@ namespace TestDataFramework.Populator.Concrete
             }
 
             this.ExplicitPropertySetters.Add(
-                new ExplicitPropertySetter {PropertyChain = setterObjectGraph, Action = Setter});
+                new ExplicitPropertySetter {PropertyChain = setterObjectGraph, Action = Setter, CollectionSizeChangeOnly = collectionSizeChangeOnly});
         }
     }
 }

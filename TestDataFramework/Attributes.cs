@@ -21,7 +21,6 @@ using System;
 using System.Linq;
 using TestDataFramework.Exceptions;
 using TestDataFramework.Helpers;
-using TestDataFramework.Populator;
 using TestDataFramework.ValueProvider.Interfaces;
 
 namespace TestDataFramework
@@ -78,14 +77,14 @@ namespace TestDataFramework
             this.Max = max.Ticks;
         }
 
-        public MaxAttribute(decimal max)
+        public MaxAttribute(double max)
         {
             this.MaxReal = max;
         }
 
         public long Max { get; }
 
-        public decimal MaxReal { get; }
+        public double MaxReal { get; }
     }
 
     public class MinAttribute : Attribute
@@ -101,14 +100,14 @@ namespace TestDataFramework
             this.Min = min.Ticks;
         }
 
-        public MinAttribute(decimal min)
+        public MinAttribute(double min)
         {
             this.MinReal = min;
         }
 
         public long Min { get; }
 
-        public decimal MinReal { get; }
+        public double MinReal { get; }
     }
 
     public class PastOrFutureAttribute : Attribute

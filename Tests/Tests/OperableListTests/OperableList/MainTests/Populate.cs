@@ -130,7 +130,7 @@ namespace Tests.Tests.OperableListTests.OperableList.MainTests
 
             // Assert
 
-            this.testContext.InputMocks.ForEach(m => m.Verify(n => n.Populate(), Times.Never));
+            this.testContext.InputMocks.ForEach(m => m.Verify(n => n.PopulateChildren(), Times.Never));
 
             this.testContext.ValueGuaranteePopulatorMock.Verify(m => m.Bind(
                 operableList,

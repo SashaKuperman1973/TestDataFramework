@@ -28,5 +28,7 @@ namespace TestDataFramework.DeepSetting
         public List<PropertyInfo> PropertyChain { get; set; }
 
         public Action<object> Action { get; set; }
+
+        public bool CollectionSizeChangeOnly { get; set; } = false;
     }
 }

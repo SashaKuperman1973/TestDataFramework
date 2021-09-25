@@ -679,6 +679,32 @@ namespace TestDataFramework.Helpers
 
         public LargeInteger Pow(ulong power)
         {
+            if (this == 0 && power == 0)
+            {
+                throw new DivideByZeroException();
+            }
+
+            LargeInteger x = this;
+            LargeInteger result = 1;
+
+            for(;;)
+            {
+                if ((power & 1) != 0)
+                {
+                    result *= x;
+                }
+
+                if ((power >>= 1) == 0)
+                {
+                    return result;
+                }
+
+                x *= x;
+            }
+        }
+
+        public LargeInteger PowX(ulong power)
+        {
             LargeInteger.Logger.Debug($"Entering Pow. this: {this}, power: {power}");
 
             this.Ensure();
@@ -694,7 +720,7 @@ namespace TestDataFramework.Helpers
             LargeInteger.Logger.Debug($"Exiting Pow. result: {result.PrintLargeInteger()}");
             return result;
         }
-
+        
         private static void Encode(ulong value, LargeInteger largeInteger)
         {
             uint lower = (uint) (value & 0xffffffff);

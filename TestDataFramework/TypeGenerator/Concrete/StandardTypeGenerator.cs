@@ -17,14 +17,12 @@
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using log4net;
 using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Web;
-using log4net;
 using TestDataFramework.DeepSetting;
 using TestDataFramework.HandledTypeGenerator;
 using TestDataFramework.Helpers;

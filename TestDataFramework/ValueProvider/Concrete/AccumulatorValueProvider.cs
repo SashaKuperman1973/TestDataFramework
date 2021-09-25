@@ -105,7 +105,7 @@ namespace TestDataFramework.ValueProvider.Concrete
             return result;
         }
 
-        public decimal GetDecimal(int? precision, decimal? min, decimal? max)
+        public decimal GetDecimal(int? precision, double? min, double? max)
         {
             AccumulatorValueProvider.Logger.Debug("Entering GetDecimal");
             decimal result = this.Count++;
@@ -149,7 +149,7 @@ namespace TestDataFramework.ValueProvider.Concrete
             return result;
         }
 
-        public double GetDouble(int? precision, decimal? min, decimal? max)
+        public double GetDouble(int? precision, double? min, double? max)
         {
             AccumulatorValueProvider.Logger.Debug("Entering GetDouble");
             double result = this.Count++;
@@ -158,7 +158,7 @@ namespace TestDataFramework.ValueProvider.Concrete
             return result;
         }
 
-        public float GetFloat(int? precision, decimal? min, decimal? max)
+        public float GetFloat(int? precision, double? min, double? max)
         {
             AccumulatorValueProvider.Logger.Debug("Entering GetFloat");
             float result = this.Count++;

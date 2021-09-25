@@ -74,7 +74,13 @@ namespace TestDataFramework.Persistence.Concrete
 
         private void CopyPrimaryToForeignKeys(IEnumerable<RecordReference> recordReferences)
         {
-            recordReferences.ToList().ForEach(this.CopyPrimaryToForeignKeys);
+            recordReferences.ToList().ForEach(recordReference =>
+            {
+                var recordReferenceSet = new List<RecordReference>();
+                var selfAndDescendants = recordReference.SelectMany().ToList();
+                selfAndDescendants.ForEach(populatable => populatable.AddToReferences(recordReferenceSet));
+                recordReferenceSet.ForEach(this.CopyPrimaryToForeignKeys);
+            });
         }
 
         private void CopyPrimaryToForeignKeys(RecordReference recordReference)

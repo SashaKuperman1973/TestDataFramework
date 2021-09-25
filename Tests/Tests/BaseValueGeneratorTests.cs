@@ -85,8 +85,8 @@ namespace Tests.Tests
             this.randomizerMock.Setup(m => m.GetCharacter()).Returns(BaseValueGeneratorTests.CharacterResult);
             this.randomizerMock.Setup(m => m.GetDecimal(
                 It.Is<int?>(precision => precision == null), 
-                It.Is<decimal?>(min => min == null), 
-                It.Is<decimal?>(max => max == null)))
+                It.Is<double?>(min => min == null), 
+                It.Is<double?>(max => max == null)))
                 .Returns(BaseValueGeneratorTests.DecimalResult);
             this.randomizerMock.Setup(m => m.GetBoolean()).Returns(BaseValueGeneratorTests.BooleanResult);
             this.randomizerMock.Setup(
@@ -99,13 +99,13 @@ namespace Tests.Tests
             this.randomizerMock.Setup(m => m.GetByte()).Returns(BaseValueGeneratorTests.ByteResult);
             this.randomizerMock.Setup(m => m.GetDouble(
                 It.Is<int?>(precision => precision == null), 
-                It.Is<decimal?>(min => min == null), 
-                It.Is<decimal?>(max => max == null)))
+                It.Is<double?>(min => min == null), 
+                It.Is<double?>(max => max == null)))
                 .Returns(BaseValueGeneratorTests.DoubleResult);
             this.randomizerMock.Setup(m => m.GetFloat(
                     It.Is<int?>(precision => precision == null),
-                    It.Is<decimal?>(min => min == null),
-                    It.Is<decimal?>(max => max == null)))
+                    It.Is<double?>(min => min == null),
+                    It.Is<double?>(max => max == null)))
                 .Returns(BaseValueGeneratorTests.FloatResult);
             this.randomizerMock.Setup(m => m.GetEmailAddress()).Returns(BaseValueGeneratorTests.EmailAddress);
             this.randomizerMock.Setup(m => m.GetEnum(It.IsAny<Type>())).Returns(AnEnum.SymbolA);

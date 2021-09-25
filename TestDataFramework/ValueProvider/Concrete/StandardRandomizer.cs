@@ -56,12 +56,12 @@ namespace TestDataFramework.ValueProvider.Concrete
         {
             StandardRandomizer.Logger.Debug("Entering GetInteger");
 
-            max = max ?? int.MaxValue;
+            max = max ?? int.MaxValue - 1;
             min = min ?? 0;
 
             StandardRandomizer.Logger.Debug("max = " + max);
 
-            int result = this.random.Next(max.Value - min.Value) + min.Value;
+            int result = this.random.Next(max.Value - min.Value + 1) + min.Value;
 
             StandardRandomizer.Logger.Debug($"Exiting GetInteger. result: {result}");
             return result;
@@ -71,7 +71,7 @@ namespace TestDataFramework.ValueProvider.Concrete
         {
             StandardRandomizer.Logger.Debug("Entering GetLongInteger");
 
-            long workingMax = (max ?? long.MaxValue) - (min ?? 0);
+            long workingMax = (max ?? long.MaxValue - 1) - (min ?? 0);
 
             StandardRandomizer.Logger.Debug("workingMax = " + workingMax);
 
@@ -79,15 +79,15 @@ namespace TestDataFramework.ValueProvider.Concrete
 
             int lowerMaxWord = (int) (workingMax & wordMask);
             if (lowerMaxWord == 0)
-                lowerMaxWord = 0x10000;
+                lowerMaxWord = 0xffff;
 
-            long result = this.random.Next(lowerMaxWord);
+            long result = this.random.Next(lowerMaxWord + 1);
 
             for (int i = 0; i < 3; i++)
             {
                 workingMax >>= 16;
-                int maxRandom = (int) (workingMax & wordMask) + 1;
-                long randomValue = this.random.Next(maxRandom);
+                int maxRandom = (int) (workingMax & wordMask);
+                long randomValue = this.random.Next(maxRandom + 1);
                 randomValue <<= 16 * (i + 1);
                 result |= randomValue;
             }
@@ -101,11 +101,11 @@ namespace TestDataFramework.ValueProvider.Concrete
         {
             StandardRandomizer.Logger.Debug("Entering GetShortInteger");
 
-            max = (short)((max ?? short.MaxValue) - (min ?? 0));
+            max = (short)((max ?? short.MaxValue - 1) - (min ?? 0));
 
             StandardRandomizer.Logger.Debug("max = " + max);
 
-            int result = this.random.Next(max.Value);
+            int result = this.random.Next(max.Value + 1);
             result += min ?? 0;
 
             StandardRandomizer.Logger.Debug($"Exiting GetShortInteger. result: {result}");
@@ -134,7 +134,7 @@ namespace TestDataFramework.ValueProvider.Concrete
             return result;
         }
 
-        public virtual decimal GetDecimal(int? precision, decimal? min, decimal? max)
+        public virtual decimal GetDecimal(int? precision, double? min, double? max)
         {
             StandardRandomizer.Logger.Debug("Entering GetDecimal");
             StandardRandomizer.Logger.Debug("precision = " + precision);
@@ -205,7 +205,7 @@ namespace TestDataFramework.ValueProvider.Concrete
             return result;
         }
 
-        public virtual double GetDouble(int? precision, decimal? min, decimal? max)
+        public virtual double GetDouble(int? precision, double? min, double? max)
         {
             StandardRandomizer.Logger.Debug("Entering GetDouble");
             StandardRandomizer.Logger.Debug("precision = " + precision);
@@ -218,7 +218,7 @@ namespace TestDataFramework.ValueProvider.Concrete
             return result;
         }
 
-        public virtual float GetFloat(int? precision, decimal? min, decimal? max)
+        public virtual float GetFloat(int? precision, double? min, double? max)
         {
             StandardRandomizer.Logger.Debug("Entering GetFloat");
             StandardRandomizer.Logger.Debug("precision = " + precision);
@@ -229,10 +229,10 @@ namespace TestDataFramework.ValueProvider.Concrete
                 throw new ArgumentOutOfRangeException(nameof(precision), precision.Value,
                     Messages.FloatPrecisionOutOfRange);
 
-            decimal inputMax = max ?? decimal.MaxValue;
+            double inputMax = max ?? double.MaxValue;
             double highestMax = Math.Pow(10, 7 - precision.Value);
 
-            decimal workingMax = inputMax < (decimal)highestMax ? inputMax : (decimal)highestMax;
+            double workingMax = inputMax < highestMax ? inputMax : highestMax;
 
             float result = (float)this.GetReal(precision.Value, min, workingMax);
 
@@ -259,7 +259,7 @@ namespace TestDataFramework.ValueProvider.Concrete
             return result;
         }
 
-        private double GetReal(int precision, decimal? min, decimal? max)
+        private double GetReal(int precision, double? min, double? max)
         {
             if (precision < 0)
                 throw new ArgumentOutOfRangeException(nameof(precision), precision,
@@ -270,35 +270,34 @@ namespace TestDataFramework.ValueProvider.Concrete
                 max -= min ?? 0;
             }
 
-            decimal workingMax = max ?? long.MaxValue;
+            double workingMax = max ?? long.MaxValue - 513;
 
             long maxWhole;
             if (workingMax > long.MaxValue)
             {
                 maxWhole = long.MaxValue;
             }
-
-            maxWhole = (long)workingMax;
-            if (workingMax != maxWhole && maxWhole != long.MaxValue)
+            else
             {
-                maxWhole++;
+                maxWhole = Convert.ToInt64(Math.Truncate(workingMax));
             }
 
-            decimal maxFraction = workingMax - maxWhole;
+            double maxFraction = workingMax - maxWhole;
 
             long wholePart = this.GetLongInteger(0, maxWhole);
 
-            decimal decimalPart;
-            if (wholePart == maxWhole - 1 && maxFraction > 0)
+            double decimalPart;
+
+            if (wholePart == maxWhole && maxFraction > 0)
             {
-                decimalPart = (decimal)this.random.NextDouble() % maxFraction;
+                decimalPart = this.random.NextDouble() % maxFraction;
             }
             else
             {
-                decimalPart = (decimal)this.random.NextDouble();
+                decimalPart = this.random.NextDouble();
             }
 
-            decimal decimalResult = wholePart + decimalPart;
+            double decimalResult = wholePart + decimalPart;
             decimalResult += min ?? 0;
             double result = Math.Round((double)decimalResult, precision);
 

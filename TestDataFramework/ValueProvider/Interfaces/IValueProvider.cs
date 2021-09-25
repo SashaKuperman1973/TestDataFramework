@@ -39,7 +39,7 @@ namespace TestDataFramework.ValueProvider.Interfaces
 
         char GetCharacter();
 
-        decimal GetDecimal(int? precision, decimal? min, decimal? max);
+        decimal GetDecimal(int? precision, double? min, double? max);
 
         bool GetBoolean();
 
@@ -47,9 +47,9 @@ namespace TestDataFramework.ValueProvider.Interfaces
 
         byte GetByte();
 
-        double GetDouble(int? precision, decimal? min, decimal? max);
+        double GetDouble(int? precision, double? min, double? max);
 
-        float GetFloat(int? precision, decimal? min, decimal? max);
+        float GetFloat(int? precision, double? min, double? max);
 
         string GetEmailAddress();
 

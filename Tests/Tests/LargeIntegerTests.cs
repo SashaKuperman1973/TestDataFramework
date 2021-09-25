@@ -385,6 +385,18 @@ namespace Tests.Tests
         }
 
         [TestMethod]
+        public void Pow_Test()
+        {
+            ulong expectedLong = (ulong) Math.Pow(4, 12);
+            var expected = new LargeInteger(expectedLong);
+
+            var @base = new LargeInteger(4);
+            LargeInteger exponent = @base.Pow(12);
+
+            Assert.AreEqual(expected, exponent);
+        }
+
+        [TestMethod]
         public void Divide_DivisionByZero()
         {
             var a = new LargeInteger(5);

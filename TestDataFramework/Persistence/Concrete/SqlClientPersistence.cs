@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
+using System.Text;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeferredValueGenerator.Interfaces;
 using TestDataFramework.Exceptions;
@@ -87,6 +88,20 @@ namespace TestDataFramework.Persistence.Concrete
 
         public void DeleteAll(IEnumerable<RecordReference> recordReferences)
         {
+            var sb = new StringBuilder();
+
+            foreach (RecordReference recordReference in recordReferences)
+            {
+                try
+                {
+                    sb.AppendLine(this.GetDeleteSql(recordReference));
+                }
+                catch (SqlPersistenceException e)
+                {
+                    SqlClientPersistence.Logger.Warn($"{e.Message}. Skipping.");
+                }
+            }
+
             using (DbConnection connection = this.dbProviderFactory.CreateConnection())
             {
                 connection.ConnectionString = this.dbClientConnection.ConnectionStringWithDefaultCatalogue;
@@ -96,29 +111,14 @@ namespace TestDataFramework.Persistence.Concrete
                 {
                     try
                     {
-                        foreach (RecordReference recordReference in recordReferences)
+                        using (DbCommand command = connection.CreateCommand())
                         {
-                            string commandText;
+                            command.Connection = connection;
+                            command.Transaction = transaction;
+                            command.CommandType = CommandType.Text;
+                            command.CommandText = sb.ToString();
 
-                            try
-                            {
-                                commandText = this.GetDeleteSql(recordReference);
-                            }
-                            catch (SqlPersistenceException e)
-                            {
-                                SqlClientPersistence.Logger.Warn($"{e.Message}. Skipping.");
-                                continue;
-                            }
-
-                            using (DbCommand command = connection.CreateCommand())
-                            {
-                                command.Connection = connection;
-                                command.Transaction = transaction;
-                                command.CommandType = CommandType.Text;
-                                command.CommandText = commandText;
-
-                                command.ExecuteNonQuery();
-                            }
+                            command.ExecuteNonQuery();
                         }
 
                         transaction.Commit();

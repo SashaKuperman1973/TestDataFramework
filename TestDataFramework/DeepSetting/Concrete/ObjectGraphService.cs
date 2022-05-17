@@ -24,6 +24,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using log4net;
 using TestDataFramework.DeepSetting.Interfaces;
+using TestDataFramework.Helpers;
 using TestDataFramework.Helpers.FieldExpressionValidator.Concrete;
 using TestDataFramework.Logger;
 using TestDataFramework.TypeGenerator.Concrete;
@@ -37,7 +38,7 @@ namespace TestDataFramework.DeepSetting.Concrete
         private readonly PropertySetFieldExpressionValidator fieldExpressionValidator =
             new PropertySetFieldExpressionValidator();
 
-        public List<PropertyInfo> GetObjectGraph<T, TPropertyValue>(Expression<Func<T, TPropertyValue>> fieldExpression)
+        public List<PropertyInfoProxy> GetObjectGraph<T, TPropertyValue>(Expression<Func<T, TPropertyValue>> fieldExpression)
         {
             ObjectGraphService.Logger.Entering(nameof(this.GetObjectGraph), fieldExpression);
 
@@ -48,7 +49,7 @@ namespace TestDataFramework.DeepSetting.Concrete
             return propertyChain;
         }
 
-        public bool DoesPropertyHaveSetter(List<PropertyInfo> objectGraphNodeList, IEnumerable<ExplicitPropertySetter> explicitPropertySetters)
+        public bool DoesPropertyHaveSetter(List<PropertyInfoProxy> objectGraphNodeList, IEnumerable<ExplicitPropertySetter> explicitPropertySetters)
         {
             ObjectGraphService.Logger.Entering(nameof(this.DoesPropertyHaveSetter), objectGraphNodeList);
 
@@ -94,7 +95,7 @@ namespace TestDataFramework.DeepSetting.Concrete
             return false;
         }
 
-        private void GetMemberInfo(ICollection<PropertyInfo> list, Expression expression)
+        private void GetMemberInfo(ICollection<PropertyInfoProxy> list, Expression expression)
         {
             if (expression.NodeType == ExpressionType.Parameter || expression.NodeType == ExpressionType.Convert)
                 return;
@@ -103,7 +104,20 @@ namespace TestDataFramework.DeepSetting.Concrete
                 this.fieldExpressionValidator.ValidateMemberAccessExpression(expression);
 
             this.GetMemberInfo(list, memberExpression.Expression);
-            list.Add((PropertyInfo) memberExpression.Member);
+
+            if (memberExpression.Member is PropertyInfo)
+            {
+                list.Add(new PropertyInfoProxy((PropertyInfo)memberExpression.Member));
+                return;
+            }
+
+            if (memberExpression.Member is FieldInfo)
+            {
+                list.Add(new PropertyInfoProxy((FieldInfo)memberExpression.Member));
+                return;
+            }
+
+            throw new Exceptions.BadExpressionMemberException(Exceptions.Messages.BadExpressionMember);
         }
     }
 }

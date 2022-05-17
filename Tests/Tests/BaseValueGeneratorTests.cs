@@ -154,7 +154,7 @@ namespace Tests.Tests
 
             // Arrange
 
-            PropertyInfo propertyInfo = typeof(SubjectClass).GetProperty(propertyName);
+            PropertyInfoProxy propertyInfo = typeof(SubjectClass).GetPropertyInfoProxy(propertyName);
 
             // Act
 
@@ -170,7 +170,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            PropertyInfo propertyInfo = typeof(SubjectClass).GetProperty("TextWithLength");
+            PropertyInfoProxy propertyInfo = typeof(SubjectClass).GetPropertyInfoProxy("TextWithLength");
 
             this.randomizerMock.Setup(m => m.GetString(It.Is<int?>(length => length == SubjectClass.StringLength)))
                 .Verifiable();
@@ -250,7 +250,7 @@ namespace Tests.Tests
             propertyNameAndVerifierList.ForEach(propertyNameVerifier =>
             {
                 Console.WriteLine(propertyNameVerifier);
-                PropertyInfo propertyInfo = typeof(SubjectClass).GetProperty(propertyNameVerifier.Item1);
+                PropertyInfoProxy propertyInfo = typeof(SubjectClass).GetPropertyInfoProxy(propertyNameVerifier.Item1);
                 this.valueGenerator.GetValue(propertyInfo, (ObjectGraphNode) null, null);
                 propertyNameVerifier.Item2();
             });
@@ -265,7 +265,7 @@ namespace Tests.Tests
 
             this.typeGeneratorMock.Setup(m => m.GetObject(It.Is<Type>(t => t == typeof(SecondClass)), null, null))
                 .Returns(secondClass);
-            PropertyInfo propertyInfo = typeof(SubjectClass).GetProperty("SecondObject");
+            PropertyInfoProxy propertyInfo = typeof(SubjectClass).GetPropertyInfoProxy("SecondObject");
 
             // Act
 
@@ -308,7 +308,7 @@ namespace Tests.Tests
             foreach (var input in inputs)
             {
                 Action action =
-                    () => this.valueGenerator.GetValue(typeof(ClassWithMaxInvalidMaxRanges).GetProperty(input.Property),
+                    () => this.valueGenerator.GetValue(typeof(ClassWithMaxInvalidMaxRanges).GetPropertyInfoProxy(input.Property),
                         (ObjectGraphNode) null, null);
 
                 Helpers.ExceptionTest(action, input.ExceptionType, input.Message, failureMessage: input.Property);
@@ -322,11 +322,11 @@ namespace Tests.Tests
 
             var expected = new int[0];
 
-            PropertyInfo simpleArrayPropertyInfo = typeof(SubjectClass).GetProperty("SimpleArray");
+            PropertyInfoProxy simpleArrayPropertyInfo = typeof(SubjectClass).GetPropertyInfoProxy("SimpleArray");
 
             this.arrayRandomizerMock.Setup(
                     m =>
-                        m.GetArray(It.Is<PropertyInfo>(p => p == simpleArrayPropertyInfo),
+                        m.GetArray(It.Is<PropertyInfoProxy>(p => p == simpleArrayPropertyInfo),
                             It.Is<Type>(t => t == simpleArrayPropertyInfo.PropertyType), null))
                 .Returns(expected);
 
@@ -342,7 +342,7 @@ namespace Tests.Tests
         [TestMethod]
         public void ManualPrimaryKey_ReturnsDefaultIntegral_Test()
         {
-            PropertyInfo primaryKeyPropertyInfo = typeof(ManualKeyPrimaryTable).GetProperty("Key2");
+            PropertyInfoProxy primaryKeyPropertyInfo = typeof(ManualKeyPrimaryTable).GetPropertyInfoProxy("Key2");
             const int expected = default(int);
 
             this.uniqueValueGeneratorMock.Setup(m => m.GetValue(primaryKeyPropertyInfo)).Returns(default(int));
@@ -358,7 +358,7 @@ namespace Tests.Tests
         [TestMethod]
         public void AutoPrimaryKey_Test()
         {
-            PropertyInfo primaryKeyPropertyInfo = typeof(PrimaryTable).GetProperty("Key");
+            PropertyInfoProxy primaryKeyPropertyInfo = typeof(PrimaryTable).GetPropertyInfoProxy("Key");
 
             this.uniqueValueGeneratorMock.Setup(m => m.GetValue(primaryKeyPropertyInfo)).Returns(1).Verifiable();
 
@@ -409,7 +409,7 @@ namespace Tests.Tests
             {
             }
 
-            protected override object GetGuid(PropertyInfo propertyInfo)
+            protected override object GetGuid(PropertyInfoProxy propertyInfo)
             {
                 return default(Guid);
             }

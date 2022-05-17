@@ -56,13 +56,13 @@ namespace Tests.Tests
         {
             // Arrange
 
-            PropertyInfo propertyInfo = typeof(PrimaryTable).GetProperty("Text");
+            PropertyInfoProxy propertyInfo = typeof(PrimaryTable).GetPropertyInfoProxy("Text");
 
             DeferredValueGetterDelegate<LargeInteger> inputDelegate = null;
 
             this.deferredValueGeneratorMock.Setup(
                     m => m.AddDelegate(propertyInfo, It.IsAny<DeferredValueGetterDelegate<LargeInteger>>()))
-                .Callback<PropertyInfo, DeferredValueGetterDelegate<LargeInteger>>((pi, d) => inputDelegate = d)
+                .Callback<PropertyInfoProxy, DeferredValueGetterDelegate<LargeInteger>>((pi, d) => inputDelegate = d)
                 .Verifiable();
 
             const long initialCount = 5;
@@ -85,7 +85,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            PropertyInfo propertyInfo = typeof(PrimaryTable).GetProperty("Text");
+            PropertyInfoProxy propertyInfo = typeof(PrimaryTable).GetPropertyInfoProxy("Text");
 
             // Act
 
@@ -108,7 +108,7 @@ namespace Tests.Tests
             // Act
 
             Helpers.ExceptionTest(() =>
-                this.generatorThrowsIfUnhandledType.GetValue(typeof(SubjectClass).GetProperty(nameof(SubjectClass.SecondObject))),
+                this.generatorThrowsIfUnhandledType.GetValue(typeof(SubjectClass).GetPropertyInfoProxy(nameof(SubjectClass.SecondObject))),
                 typeof(UnHandledTypeException), Messages.UnhandledUniqueKeyType.Substring(0, 30), MessageOption.MessageStartsWith);
         }
 
@@ -120,7 +120,7 @@ namespace Tests.Tests
             {
             }
 
-            public new void DeferValue(PropertyInfo propertyInfo)
+            public new void DeferValue(PropertyInfoProxy propertyInfo)
             {
                 base.DeferValue(propertyInfo);
             }

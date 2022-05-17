@@ -61,7 +61,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            PropertyInfo keyPropertyInfo = typeof(ClassWithIntAutoPrimaryKey).GetProperty(nameof(ClassWithIntAutoPrimaryKey.Key));
+            PropertyInfoProxy keyPropertyInfo = typeof(ClassWithIntAutoPrimaryKey).GetPropertyInfoProxy(nameof(ClassWithIntAutoPrimaryKey.Key));
 
             // Act
 
@@ -78,7 +78,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            PropertyInfo keyPropertyInfo = typeof(ClassWithIntManualPrimaryKey).GetProperty(nameof(ClassWithIntManualPrimaryKey.Key));
+            PropertyInfoProxy keyPropertyInfo = typeof(ClassWithIntManualPrimaryKey).GetPropertyInfoProxy(nameof(ClassWithIntManualPrimaryKey.Key));
 
             // Act
 
@@ -95,7 +95,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            PropertyInfo keyPropertyInfo = typeof(ClassWithIntUnsupportedPrimaryKey).GetProperty(nameof(ClassWithIntUnsupportedPrimaryKey.Key));
+            PropertyInfoProxy keyPropertyInfo = typeof(ClassWithIntUnsupportedPrimaryKey).GetPropertyInfoProxy(nameof(ClassWithIntUnsupportedPrimaryKey.Key));
 
             // Act
 
@@ -104,7 +104,7 @@ namespace Tests.Tests
             // Assert
 
             this.deferredValueGeneratorMock.Verify(
-                m => m.AddDelegate(It.IsAny<PropertyInfo>(), It.IsAny<DeferredValueGetterDelegate<LargeInteger>>()),
+                m => m.AddDelegate(It.IsAny<PropertyInfoProxy>(), It.IsAny<DeferredValueGetterDelegate<LargeInteger>>()),
                 Times.Never);
         }
 
@@ -113,7 +113,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            PropertyInfo keyPropertyInfo = typeof(SubjectClass).GetProperty(nameof(SubjectClass.Integer));
+            PropertyInfoProxy keyPropertyInfo = typeof(SubjectClass).GetPropertyInfoProxy(nameof(SubjectClass.Integer));
 
             // Act
 
@@ -129,7 +129,7 @@ namespace Tests.Tests
         [TestMethod]
         public void GetValue_Guid_Test()
         {
-            PropertyInfo guidPropertyInfo = typeof(SubjectClass).GetProperty(nameof(SubjectClass.AGuid));
+            PropertyInfoProxy guidPropertyInfo = typeof(SubjectClass).GetPropertyInfoProxy(nameof(SubjectClass.AGuid));
 
             object result = this.generator.GetValue(guidPropertyInfo);
             Assert.IsTrue(result is Guid);

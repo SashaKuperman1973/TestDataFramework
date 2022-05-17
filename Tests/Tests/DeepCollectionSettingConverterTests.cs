@@ -21,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.Exceptions;
+using TestDataFramework.Helpers;
 using TestDataFramework.Populator.Concrete;
 
 namespace Tests.Tests
@@ -36,15 +37,15 @@ namespace Tests.Tests
             var input = new[] {1, 2, 3, 4, 5};
 
             IEnumerable<int> iEnumerableResult = converter.Convert(input,
-                typeof(ConverterTestSubject).GetProperty(nameof(ConverterTestSubject.AnIEnumerable)));
+                typeof(ConverterTestSubject).GetPropertyInfoProxy(nameof(ConverterTestSubject.AnIEnumerable)));
             Assert.IsNotNull(iEnumerableResult);
 
             IEnumerable<int> listResult = converter.Convert(input,
-                typeof(ConverterTestSubject).GetProperty(nameof(ConverterTestSubject.AList)));
+                typeof(ConverterTestSubject).GetPropertyInfoProxy(nameof(ConverterTestSubject.AList)));
             Assert.AreEqual(typeof(List<int>), listResult.GetType());
 
             IEnumerable<int> arrayResult = converter.Convert(input,
-                typeof(ConverterTestSubject).GetProperty(nameof(ConverterTestSubject.AnArray)));
+                typeof(ConverterTestSubject).GetPropertyInfoProxy(nameof(ConverterTestSubject.AnArray)));
             Assert.AreEqual(typeof(int[]), arrayResult.GetType());
         }
 
@@ -57,10 +58,10 @@ namespace Tests.Tests
 
             Helpers.ExceptionTest(
                 () => converter.Convert(input,
-                    typeof(ConverterTestSubject).GetProperty(nameof(ConverterTestSubject.AHashSet))),
+                    typeof(ConverterTestSubject).GetPropertyInfoProxy(nameof(ConverterTestSubject.AHashSet))),
                 typeof(ArgumentException),
                 string.Format(Messages.TypeNotSupportedForDeepCollectionSetting,
-                    typeof(ConverterTestSubject).GetProperty(nameof(ConverterTestSubject.AHashSet)).PropertyType));
+                    typeof(ConverterTestSubject).GetPropertyInfoProxy(nameof(ConverterTestSubject.AHashSet)).PropertyType));
         }
 
         private class ConverterTestSubject

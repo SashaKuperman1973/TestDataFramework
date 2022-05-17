@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
+using TestDataFramework.Helpers;
 using TestDataFramework.RepositoryOperations.Model;
 using PropertyAttributes = TestDataFramework.RepositoryOperations.Model.PropertyAttributes;
 
@@ -29,21 +30,21 @@ namespace TestDataFramework.AttributeDecorator.Interfaces
 {
     public interface IAttributeDecorator
     {
-        T GetSingleAttribute<T>(MemberInfo memberInfo) where T : Attribute;
+        T GetSingleAttribute<T>(MemberInfoProxy memberInfo) where T : Attribute;
 
         IEnumerable<T> GetUniqueAttributes<T>(Type type) where T : Attribute;
 
-        PropertyAttribute<T> GetPropertyAttribute<T>(PropertyInfo propertyInfo) where T : Attribute;
+        PropertyAttribute<T> GetPropertyAttribute<T>(PropertyInfoProxy propertyInfo) where T : Attribute;
 
         IEnumerable<PropertyAttribute<T>> GetPropertyAttributes<T>(Type type) where T : Attribute;
 
         IEnumerable<PropertyAttributes> GetPropertyAttributes(Type type);
 
-        IEnumerable<T> GetCustomAttributes<T>(MemberInfo memberInfo) where T : Attribute;
+        IEnumerable<T> GetCustomAttributes<T>(MemberInfoProxy memberInfo) where T : Attribute;
 
-        T GetCustomAttribute<T>(MemberInfo memberInfo) where T : Attribute;
+        T GetCustomAttribute<T>(MemberInfoProxy memberInfo) where T : Attribute;
 
-        IEnumerable<Attribute> GetCustomAttributes(MemberInfo memberInfo);
+        IEnumerable<Attribute> GetCustomAttributes(MemberInfoProxy memberInfo);
 
         void DecorateMember<T, TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression, Attribute attribute);
 

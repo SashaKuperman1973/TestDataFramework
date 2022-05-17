@@ -56,8 +56,9 @@ namespace TestDataFramework.AttributeDecorator.Concrete
         {
             StandardAttributeDecorator.Logger.Debug($"Entering DecorateMember. Attribute: {attribute}");
 
-            MemberInfo memberInfo = this.fieldExpressionValidator.ValidateMemberAccessExpression(fieldExpression)
-                .Member;
+            MemberInfoProxy memberInfo = new MemberInfoProxy(
+                this.fieldExpressionValidator.ValidateMemberAccessExpression(fieldExpression).Member
+            );
 
             this.MemberAttributeDicitonary.AddOrUpdate(memberInfo, new List<Attribute> {attribute},
                 (mi, list) =>
@@ -73,7 +74,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete
         {
             StandardAttributeDecorator.Logger.Debug($"Entering DecorateType. Type: {type}. Attribute: {attribute}");
 
-            this.MemberAttributeDicitonary.AddOrUpdate(type, new List<Attribute> {attribute}, (t, list) =>
+            this.MemberAttributeDicitonary.AddOrUpdate(new MemberInfoProxy(type), new List<Attribute> {attribute}, (t, list) =>
             {
                 list.Add(attribute);
                 return list;
@@ -91,14 +92,14 @@ namespace TestDataFramework.AttributeDecorator.Concrete
             return result;
         }
 
-        public virtual PropertyAttribute<T> GetPropertyAttribute<T>(PropertyInfo propertyInfo) where T : Attribute
+        public virtual PropertyAttribute<T> GetPropertyAttribute<T>(PropertyInfoProxy propertyInfo) where T : Attribute
         {
             StandardAttributeDecorator.Logger.Debug(
                 $"Entering GetPropertyAttribute. T: {typeof(T)} propertyInfo: {propertyInfo.GetExtendedMemberInfoString()}");
 
             var result = new PropertyAttribute<T>
             {
-                PropertyInfo = propertyInfo,
+                PropertyInfoProxy = propertyInfo,
                 Attribute = this.GetSingleAttribute<T>(propertyInfo)
             };
 
@@ -129,17 +130,17 @@ namespace TestDataFramework.AttributeDecorator.Concrete
                             new PropertyAttributes
                             {
                                 Attributes = this.GetCustomAttributes(pi).ToArray(),
-                                PropertyInfo = pi
+                                PropertyInfoProxy = pi
                             });
 
             StandardAttributeDecorator.Logger.Debug($"Exiting GetPropertyAttributes. result: {result}");
             return result;
         }
 
-        public virtual T GetCustomAttribute<T>(MemberInfo memberInfo) where T : Attribute
+        public virtual T GetCustomAttribute<T>(MemberInfoProxy memberInfo) where T : Attribute
         {
             StandardAttributeDecorator.Logger.Debug(
-                $"Entering GetCustomAttribute<T>. T: {typeof(T)}. MemberInfo: {memberInfo}");
+                $"Entering GetCustomAttribute<T>. T: {typeof(T)}. MemberInfoProxy: {memberInfo}");
 
             T result = this.GetCustomAttributes<T>(memberInfo).FirstOrDefault();
 

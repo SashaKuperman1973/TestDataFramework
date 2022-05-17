@@ -118,18 +118,18 @@ namespace Tests.Tests
 
             var objectGraphServiceMock = new Mock<IObjectGraphService>();
 
-            PropertyInfo intPropertyInfo = typeof(PrimaryTable).GetProperty(nameof(PrimaryTable.Integer));
-            PropertyInfo stringPropertyInfo = typeof(PrimaryTable).GetProperty(nameof(PrimaryTable.Text));
-            PropertyInfo arrayPropertyInfo = typeof(PrimaryTable).GetProperty(nameof(PrimaryTable.Array));
+            PropertyInfoProxy intPropertyInfo = typeof(PrimaryTable).GetPropertyInfoProxy(nameof(PrimaryTable.Integer));
+            PropertyInfoProxy stringPropertyInfo = typeof(PrimaryTable).GetPropertyInfoProxy(nameof(PrimaryTable.Text));
+            PropertyInfoProxy arrayPropertyInfo = typeof(PrimaryTable).GetPropertyInfoProxy(nameof(PrimaryTable.Array));
 
             objectGraphServiceMock.Setup(m => m.GetObjectGraph(It.IsAny<Expression<Func<PrimaryTable, int>>>()))
-                .Returns(new List<PropertyInfo> {intPropertyInfo});
+                .Returns(new List<PropertyInfoProxy> {intPropertyInfo});
 
             objectGraphServiceMock.Setup(m => m.GetObjectGraph(It.IsAny<Expression<Func<PrimaryTable, string>>>()))
-                .Returns(new List<PropertyInfo> {stringPropertyInfo});
+                .Returns(new List<PropertyInfoProxy> {stringPropertyInfo});
 
             objectGraphServiceMock.Setup(m => m.GetObjectGraph(It.IsAny<Expression<Func<PrimaryTable, int[]>>>()))
-                .Returns(new List<PropertyInfo> {arrayPropertyInfo});
+                .Returns(new List<PropertyInfoProxy> {arrayPropertyInfo});
 
             var recordReference =
                 new RecordReference<PrimaryTable>(null, null, null, objectGraphServiceMock.Object, null, null);
@@ -173,7 +173,7 @@ namespace Tests.Tests
                 null, null, objectGraphServiceMock.Object, null, null);
 
             var setterObjectGraph =
-                new List<PropertyInfo> {typeof(PrimaryTable).GetProperty(nameof(PrimaryTable.Guid))};
+                new List<PropertyInfoProxy> {typeof(PrimaryTable).GetPropertyInfoProxy(nameof(PrimaryTable.Guid))};
 
             objectGraphServiceMock.Setup(m => m.GetObjectGraph(It.IsAny<Expression<Func<PrimaryTable, Guid>>>()))
                 .Returns(setterObjectGraph);
@@ -223,17 +223,17 @@ namespace Tests.Tests
 
             objectGraphServiceMock
                 .Setup(m => m.GetObjectGraph(It.IsAny<Expression<Func<ThirdDeepPropertyTable, string>>>()))
-                .Returns(new List<PropertyInfo>
+                .Returns(new List<PropertyInfoProxy>
                 {
-                    typeof(FirstDeepPropertyTable).GetProperty(nameof(FirstDeepPropertyTable.Value))
+                    typeof(FirstDeepPropertyTable).GetPropertyInfoProxy(nameof(FirstDeepPropertyTable.Value))
                 });
 
             objectGraphServiceMock
                 .Setup(m => m.GetObjectGraph(
                     It.IsAny<Expression<Func<ThirdDeepPropertyTable, FirstDeepPropertyTable>>>()))
-                .Returns(new List<PropertyInfo>
+                .Returns(new List<PropertyInfoProxy>
                 {
-                    typeof(SecondDeepPropertyTable).GetProperty(nameof(SecondDeepPropertyTable.Deep1))
+                    typeof(SecondDeepPropertyTable).GetPropertyInfoProxy(nameof(SecondDeepPropertyTable.Deep1))
                 });
 
             var recordReference = new RecordReference<ThirdDeepPropertyTable>(null,
@@ -249,7 +249,7 @@ namespace Tests.Tests
 
             // Assert
 
-            PropertyInfo propertyChain = recordReference.ExplicitPropertySetters[0].PropertyChain.Single();
+            PropertyInfoProxy propertyChain = recordReference.ExplicitPropertySetters[0].PropertyChain.Single();
 
             Assert.AreEqual(nameof(FirstDeepPropertyTable), propertyChain.DeclaringType.Name);
             Assert.AreEqual(nameof(FirstDeepPropertyTable.Value), propertyChain.Name);
@@ -269,11 +269,11 @@ namespace Tests.Tests
 
             var expected = new List<int> {1, 2, 3, 4};
 
-            deepSettingConverterMock.Setup(m => m.Convert(It.IsAny<IEnumerable<int>>(), It.IsAny<PropertyInfo>()))
+            deepSettingConverterMock.Setup(m => m.Convert(It.IsAny<IEnumerable<int>>(), It.IsAny<PropertyInfoProxy>()))
                 .Returns(expected);
 
             objectGraphServiceMock.Setup(m => m.GetObjectGraph(It.IsAny<Expression<Func<SubjectClass, IEnumerable<int>>>>()))
-                .Returns(new List<PropertyInfo> {typeof(SubjectClass).GetProperty(nameof(SubjectClass.IntegerList))});
+                .Returns(new List<PropertyInfoProxy> {typeof(SubjectClass).GetPropertyInfoProxy(nameof(SubjectClass.IntegerList))});
 
             var recordReference = new RecordReference<SubjectClass>(
                 typeGeneratorMock.Object, null, null, objectGraphServiceMock.Object, null, deepSettingConverterMock.Object);
@@ -301,7 +301,7 @@ namespace Tests.Tests
 
             var objectGraphService = new ObjectGraphService();
 
-            List<PropertyInfo> expectedPropertyChain = objectGraphService.GetObjectGraph(expression);
+            List<PropertyInfoProxy> expectedPropertyChain = objectGraphService.GetObjectGraph(expression);
 
             var objectGraphServiceMock = new Mock<IObjectGraphService>();
             objectGraphServiceMock.Setup(m => m.GetObjectGraph(expression)).Returns(expectedPropertyChain);
@@ -317,7 +317,7 @@ namespace Tests.Tests
 
             ExplicitPropertySetter setter = recordReference.ExplicitPropertySetters.Single();
 
-            List<PropertyInfo> setterPropertyChain = setter.PropertyChain;
+            List<PropertyInfoProxy> setterPropertyChain = setter.PropertyChain;
 
             Assert.AreEqual(1, setterPropertyChain.Count);
 

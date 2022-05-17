@@ -158,7 +158,7 @@ namespace TestDataFramework.Persistence.Concrete
             string criteria = string.Join(" and ",
                 primaryKeys.Select(
                     key =>
-                        $"{Helper.GetColumnName(key.PropertyInfo, this.attributeDecorator)} = {this.formatter.Format(key.PropertyInfo.GetValue(objectValue))}"));
+                        $"{Helper.GetColumnName(key.PropertyInfoProxy, this.attributeDecorator)} = {this.formatter.Format(key.PropertyInfoProxy.GetValue(objectValue))}"));
             
             return criteria;
         }

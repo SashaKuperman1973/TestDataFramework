@@ -140,7 +140,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                 if (c.Value.IsSpecialType())
                     return;
 
-                PropertyInfo targetProperty =
+                PropertyInfoProxy targetProperty =
                     this.recordReference.RecordType.GetPropertiesHelper().First(p =>
                         Helper.GetColumnName(p, this.attributeDecorator).Equals(c.Name)
                     );
@@ -192,12 +192,12 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
                 PrimaryKeyColumn pkColumnMatch = new PrimaryKeyColumn();
 
-                bool isExplicitlySet = this.recordReference.IsExplicitlySet(fkpa.PropertyInfo);
+                bool isExplicitlySet = this.recordReference.IsExplicitlySet(fkpa.PropertyInfoProxy);
 
                 if (isExplicitlySet)
                 {
                     pkColumnMatch.Column =
-                        new ColumnSymbol {Value = fkpa.PropertyInfo.GetValue(this.recordReference.RecordObjectBase)};
+                        new ColumnSymbol {Value = fkpa.PropertyInfoProxy.GetValue(this.recordReference.RecordObjectBase)};
                     pkColumnMatch.HasBeenMatched = true;
 
                     return
@@ -247,7 +247,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                         PkColumn = new PrimaryKeyColumn
                         {
                             HasBeenMatched = false,
-                            Column = new ColumnSymbol {Value = Helper.GetDefaultValue(fkpa.PropertyInfo.PropertyType)}
+                            Column = new ColumnSymbol {Value = Helper.GetDefaultValue(fkpa.PropertyInfoProxy.PropertyType)}
                         },
 
                         FkPropertyAttribute = fkpa
@@ -270,9 +270,9 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                     fk =>
                         new ExtendedColumnSymbol
                         {
-                            TableType = fk.FkPropertyAttribute.PropertyInfo.DeclaringType,
+                            TableType = fk.FkPropertyAttribute.PropertyInfoProxy.DeclaringType,
                             ColumnName =
-                                Helper.GetColumnName(fk.FkPropertyAttribute.PropertyInfo, this.attributeDecorator),
+                                Helper.GetColumnName(fk.FkPropertyAttribute.PropertyInfoProxy, this.attributeDecorator),
                             Value = fk.PkColumn.Column.Value,
                             PropertyAttribute = fk.FkPropertyAttribute
                         }).ToList();
@@ -288,7 +288,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
                 $"Key reference check branch taken. Referential integrity check failed. Foreign Key PropertyAttribute : {fkpa}");
 
             throw new InserRecordServiceException(Messages.ForeignKeyRecordWithNoPrimaryKeyRecord,
-                fkpa.PropertyInfo.DeclaringType.FullName, fkpa.PropertyInfo.Name);
+                fkpa.PropertyInfoProxy.DeclaringType.FullName, fkpa.PropertyInfoProxy.Name);
         }
 
         public virtual IEnumerable<Column> GetRegularColumns(IWritePrimitives writer)
@@ -367,20 +367,20 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
             IEnumerable<ColumnSymbol> result = pkPropertyAttributes.Select(pa =>
             {
-                string columnName = Helper.GetColumnName(pa.PropertyInfo, this.attributeDecorator);
+                string columnName = Helper.GetColumnName(pa.PropertyInfoProxy, this.attributeDecorator);
 
                 Column sourceColumn = columns.FirstOrDefault(c => c.Name.Equals(columnName, StringComparison.Ordinal));
 
                 if (sourceColumn == null)
                 {
                     if (pa.Attribute.KeyType != PrimaryKeyAttribute.KeyTypeEnum.Auto)
-                        throw new PopulatePrimaryKeyException(Messages.ColumnNotInInputList, pa.PropertyInfo);
+                        throw new PopulatePrimaryKeyException(Messages.ColumnNotInInputList, pa.PropertyInfoProxy);
 
                     if (
                         !new[]
                                 {typeof(int), typeof(short), typeof(long), typeof(uint), typeof(ushort), typeof(ulong)}
-                            .Contains(pa.PropertyInfo.PropertyType.GetUnderLyingType()))
-                        throw new PopulatePrimaryKeyException(Messages.AutoKeyMustBeInteger, pa.PropertyInfo);
+                            .Contains(pa.PropertyInfoProxy.PropertyType.GetUnderLyingType()))
+                        throw new PopulatePrimaryKeyException(Messages.AutoKeyMustBeInteger, pa.PropertyInfoProxy);
 
                     sourceColumn = new Column {Name = columnName, Value = writer.SelectIdentity(columnName)};
                 }

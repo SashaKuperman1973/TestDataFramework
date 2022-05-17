@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using TestDataFramework.DeepSetting;
+using TestDataFramework.Helpers;
 using TestDataFramework.TypeGenerator.Concrete;
 
 namespace Tests.Tests.RecursionGuardTests
@@ -10,12 +11,12 @@ namespace Tests.Tests.RecursionGuardTests
     {
         private readonly List<ExplicitPropertySetter> explicitPropertySetters;
         private ObjectGraphNode objectGraphNode = null;
-        private readonly List<PropertyInfo> runningObjectGraph;
+        private readonly List<PropertyInfoProxy> runningObjectGraph;
         private readonly RecursionGuard recursionGuard;
         private int runningObjectGraphIndex = 0;
 
         public TestPusher(List<ExplicitPropertySetter> explicitPropertySetters,
-            List<PropertyInfo> runningObjectGraph, RecursionGuard recursionGuard)
+            List<PropertyInfoProxy> runningObjectGraph, RecursionGuard recursionGuard)
         {
             this.explicitPropertySetters = explicitPropertySetters;
             this.runningObjectGraph = runningObjectGraph;

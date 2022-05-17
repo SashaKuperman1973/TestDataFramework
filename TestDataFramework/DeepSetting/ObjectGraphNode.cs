@@ -18,18 +18,19 @@
 */
 
 using System.Reflection;
+using TestDataFramework.Helpers;
 
 namespace TestDataFramework.DeepSetting
 {
     public class ObjectGraphNode
     {
-        public ObjectGraphNode(PropertyInfo propertyInfo, ObjectGraphNode parent)
+        public ObjectGraphNode(PropertyInfoProxy propertyInfo, ObjectGraphNode parent)
         {
-            this.PropertyInfo = propertyInfo;
+            this.PropertyInfoProxy = propertyInfo;
             this.Parent = parent;
         }
 
-        public PropertyInfo PropertyInfo { get; }
+        public PropertyInfoProxy PropertyInfoProxy { get; }
 
         public ObjectGraphNode Parent { get; }
     }

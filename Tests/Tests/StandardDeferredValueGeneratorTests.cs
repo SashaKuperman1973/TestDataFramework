@@ -79,10 +79,10 @@ namespace Tests.Tests
             recordObject1.Populate();
             recordObject2.Populate();
 
-            generator.AddDelegate(recordObject1.RecordType.GetProperty("Text"), ul => "A");
-            generator.AddDelegate(recordObject1.RecordType.GetProperty("Integer"), ul => 1);
-            generator.AddDelegate(recordObject2.RecordType.GetProperty("Text"), ul => "B");
-            generator.AddDelegate(recordObject2.RecordType.GetProperty("Integer"), ul => 2);
+            generator.AddDelegate(recordObject1.RecordType.GetPropertyInfoProxy("Text"), ul => "A");
+            generator.AddDelegate(recordObject1.RecordType.GetPropertyInfoProxy("Integer"), ul => 1);
+            generator.AddDelegate(recordObject2.RecordType.GetPropertyInfoProxy("Text"), ul => "B");
+            generator.AddDelegate(recordObject2.RecordType.GetPropertyInfoProxy("Integer"), ul => 2);
 
             generator.Execute(new RecordReference[] {recordObject2, recordObject1});
 
@@ -97,7 +97,7 @@ namespace Tests.Tests
         [TestMethod]
         public void AddDelegate_KeyAlreadyExists_Test()
         {
-            PropertyInfo targetPropertyInfo = typeof(SubjectClass).GetProperty(nameof(SubjectClass.Integer));
+            PropertyInfoProxy targetPropertyInfo = typeof(SubjectClass).GetPropertyInfoProxy(nameof(SubjectClass.Integer));
             DeferredValueGetterDelegate<LargeInteger> valueGetter = i => new object();
 
             var generator = new StandardDeferredValueGenerator<LargeInteger>(null);
@@ -115,7 +115,7 @@ namespace Tests.Tests
             // Arrange
 
             var dataSource = new Mock<IPropertyDataGenerator<LargeInteger>>();
-            PropertyInfo targetPropertyInfo = typeof(SubjectClass).GetProperty(nameof(SubjectClass.Integer));
+            PropertyInfoProxy targetPropertyInfo = typeof(SubjectClass).GetPropertyInfoProxy(nameof(SubjectClass.Integer));
 
             var generator = new StandardDeferredValueGenerator<LargeInteger>(dataSource.Object);
             generator.AddDelegate(targetPropertyInfo, i => 7);
@@ -128,7 +128,7 @@ namespace Tests.Tests
 
             var propertySetter = new ExplicitPropertySetter
             {
-                PropertyChain = new List<PropertyInfo> {typeof(SubjectClass).GetProperty(nameof(SubjectClass.Integer))}
+                PropertyChain = new List<PropertyInfoProxy> {typeof(SubjectClass).GetPropertyInfoProxy(nameof(SubjectClass.Integer))}
             };
 
             recordObject.ExplicitPropertySetters.Add(propertySetter);
@@ -224,10 +224,10 @@ namespace Tests.Tests
             var dataSource = new Mock<IPropertyDataGenerator<LargeInteger>>();
             var generator = new StandardDeferredValueGenerator<LargeInteger>(dataSource.Object);
 
-            PropertyInfo keyClassKeyProperty = typeof(DeferredKeyClass).GetProperty(nameof(DeferredKeyClass.Key));
+            PropertyInfoProxy keyClassKeyProperty = typeof(DeferredKeyClass).GetPropertyInfoProxy(nameof(DeferredKeyClass.Key));
 
-            dataSource.Setup(m => m.FillData(It.IsAny<Dictionary<PropertyInfo, Data<LargeInteger>>>()))
-                .Callback<IDictionary<PropertyInfo, Data<LargeInteger>>>(
+            dataSource.Setup(m => m.FillData(It.IsAny<Dictionary<PropertyInfoProxy, Data<LargeInteger>>>()))
+                .Callback<IDictionary<PropertyInfoProxy, Data<LargeInteger>>>(
                     propertyDataDictionary => propertyDataDictionary[keyClassKeyProperty].Item = 1);
 
             // Act

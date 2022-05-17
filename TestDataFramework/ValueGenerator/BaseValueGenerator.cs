@@ -86,10 +86,10 @@ namespace TestDataFramework.ValueGenerator
         }
 
         // This is the general entry point.
-        public virtual object GetValue(PropertyInfo propertyInfo, ObjectGraphNode objectGraphNode, TypeGeneratorContext context)
+        public virtual object GetValue(PropertyInfoProxy propertyInfo, ObjectGraphNode objectGraphNode, TypeGeneratorContext context)
         {
             BaseValueGenerator.Logger.Debug(
-                $"Entering GetValue(PropertyInfo, ObjectGraphNode). propertyInfo: {propertyInfo}");
+                $"Entering GetValue(PropertyInfoProxy, ObjectGraphNode). propertyInfo: {propertyInfo}");
 
             propertyInfo.IsNotNull(nameof(propertyInfo));
 
@@ -107,31 +107,31 @@ namespace TestDataFramework.ValueGenerator
                     propertyInfo.PropertyType,
                     forType => this.getTypeGenerator().GetObject(forType, objectGraphNode, context), context);
 
-            BaseValueGenerator.Logger.Debug($"Exiting GetValue(PropertyInfo, ObjectGraphNode). result: {result?.GetType()}");
+            BaseValueGenerator.Logger.Debug($"Exiting GetValue(PropertyInfoProxy, ObjectGraphNode). result: {result?.GetType()}");
             return result;
         }
 
         // This entry point is used when a different type is requested for a particular 
-        // PropertyInfo or property info doesn't exist in the calling context.
-        public virtual object GetValue(PropertyInfo propertyInfo, Type type, TypeGeneratorContext context)
+        // PropertyInfoProxy or property info doesn't exist in the calling context.
+        public virtual object GetValue(PropertyInfoProxy propertyInfo, Type type, TypeGeneratorContext context)
         {
             return this.GetValue(propertyInfo, type, forType => this.getTypeGenerator().GetObject(forType, null, context), context);
         }
 
-        public virtual object GetIntrinsicValue(PropertyInfo propertyInfo, Type type, TypeGeneratorContext typeGeneratorContext)
+        public virtual object GetIntrinsicValue(PropertyInfoProxy propertyInfo, Type type, TypeGeneratorContext typeGeneratorContext)
         {
             return this.GetValue(propertyInfo, type, forType => null, typeGeneratorContext);
         }
 
-        private delegate object GetValueForTypeDelegate(PropertyInfo propertyInfo);
+        private delegate object GetValueForTypeDelegate(PropertyInfoProxy propertyInfo);
 
         #region Private Methods
 
-        private object GetValue(PropertyInfo propertyInfo, Type type, Func<Type, object> nonIntrinsicTypeGenerator,
+        private object GetValue(PropertyInfoProxy propertyInfo, Type type, Func<Type, object> nonIntrinsicTypeGenerator,
             TypeGeneratorContext typeGeneratorContext)
         {
             BaseValueGenerator.Logger.Debug(
-                $"Entering GetValue(PropertyInfo, Type, ObjectGraphNode). propertyInfo: {propertyInfo}, type: {type}");
+                $"Entering GetValue(PropertyInfoProxy, Type, ObjectGraphNode). propertyInfo: {propertyInfo}, type: {type}");
 
             type.IsNotNull(nameof(type));
 
@@ -153,13 +153,13 @@ namespace TestDataFramework.ValueGenerator
                     ? getter(propertyInfo)
                     : nonIntrinsicTypeGenerator(forType);
 
-            BaseValueGenerator.Logger.Debug($"Exiting GetValue(PropertyInfo, Type). result: {result?.GetType()}");
+            BaseValueGenerator.Logger.Debug($"Exiting GetValue(PropertyInfoProxy, Type). result: {result?.GetType()}");
             return result;
         }
 
-        protected abstract object GetGuid(PropertyInfo propertyInfo);
+        protected abstract object GetGuid(PropertyInfoProxy propertyInfo);
 
-        protected virtual object GetDateTime(PropertyInfo propertyInfo)
+        protected virtual object GetDateTime(PropertyInfoProxy propertyInfo)
         {
             BaseValueGenerator.Logger.Debug("Entering GetDateTime");
 
@@ -187,14 +187,14 @@ namespace TestDataFramework.ValueGenerator
             return result;
         }
 
-        protected virtual object GetDateTimeOffset(PropertyInfo propertyInfo)
+        protected virtual object GetDateTimeOffset(PropertyInfoProxy propertyInfo)
         {
             DateTime dateTime = (DateTime)this.GetDateTime(propertyInfo);
             DateTimeOffset result = new DateTimeOffset(dateTime);
             return result;
         }
 
-        private object GetString(PropertyInfo propertyInfo)
+        private object GetString(PropertyInfoProxy propertyInfo)
         {
             BaseValueGenerator.Logger.Debug("Entering GetString");
 
@@ -210,7 +210,7 @@ namespace TestDataFramework.ValueGenerator
             return result;
         }
 
-        private object GetDecimal(PropertyInfo propertyInfo)
+        private object GetDecimal(PropertyInfoProxy propertyInfo)
         {
             BaseValueGenerator.Logger.Debug("Entering GetDecimal");
 
@@ -222,7 +222,7 @@ namespace TestDataFramework.ValueGenerator
             return result;
         }
 
-        private object GetDouble(PropertyInfo propertyInfo)
+        private object GetDouble(PropertyInfoProxy propertyInfo)
         {
             BaseValueGenerator.Logger.Debug("Entering GetDouble");
 
@@ -234,7 +234,7 @@ namespace TestDataFramework.ValueGenerator
             return result;
         }
 
-        private object GetFloat(PropertyInfo propertyInfo)
+        private object GetFloat(PropertyInfoProxy propertyInfo)
         {
             BaseValueGenerator.Logger.Debug("Entering GetFloat");
 
@@ -246,7 +246,7 @@ namespace TestDataFramework.ValueGenerator
             return result;
         }
 
-        private void GetRealPropertyValues(PropertyInfo propertyInfo, out int? precision, out double? min, out double? max)
+        private void GetRealPropertyValues(PropertyInfoProxy propertyInfo, out int? precision, out double? min, out double? max)
         {
             precision = null;
             min = null;
@@ -270,7 +270,7 @@ namespace TestDataFramework.ValueGenerator
             min = minAttribute?.MinReal;
         }
 
-        private object GetInteger(PropertyInfo propertyInfo)
+        private object GetInteger(PropertyInfoProxy propertyInfo)
         {
             BaseValueGenerator.Logger.Debug("Entering GetInteger");
 
@@ -289,14 +289,14 @@ namespace TestDataFramework.ValueGenerator
             return result;
         }
 
-        private object GetUnsignedInteger(PropertyInfo propertyInfo)
+        private object GetUnsignedInteger(PropertyInfoProxy propertyInfo)
         {
             object integer = this.GetInteger(propertyInfo);
             uint result = Convert.ToUInt32(integer);
             return result;
         }
 
-        private object GetLong(PropertyInfo propertyInfo)
+        private object GetLong(PropertyInfoProxy propertyInfo)
         {
             BaseValueGenerator.Logger.Debug("Entering GetLong");
 
@@ -308,14 +308,14 @@ namespace TestDataFramework.ValueGenerator
             return result;
         }
 
-        private object GetUnsignedLong(PropertyInfo propertyInfo)
+        private object GetUnsignedLong(PropertyInfoProxy propertyInfo)
         {
             object integer = this.GetLong(propertyInfo);
             ulong result = Convert.ToUInt64(integer);
             return result;
         }
 
-        private object GetShort(PropertyInfo propertyInfo)
+        private object GetShort(PropertyInfoProxy propertyInfo)
         {
             BaseValueGenerator.Logger.Debug("Entering GetShort");
 
@@ -334,14 +334,14 @@ namespace TestDataFramework.ValueGenerator
             return result;
         }
 
-        private object GetUnsignedShort(PropertyInfo propertyInfo)
+        private object GetUnsignedShort(PropertyInfoProxy propertyInfo)
         {
             object integer = this.GetShort(propertyInfo);
             ushort result = Convert.ToUInt16(integer);
             return result;
         }
 
-        private void GetIntegerPropertyValues(PropertyInfo propertyInfo, out long? min, out long? max)
+        private void GetIntegerPropertyValues(PropertyInfoProxy propertyInfo, out long? min, out long? max)
         {
             min = null;
             max = null;
@@ -365,7 +365,7 @@ namespace TestDataFramework.ValueGenerator
                 throw new ArgumentOutOfRangeException(Messages.MinAttributeLessThanZero, (Exception)null);
         }
 
-        private object GetPrimaryKey(PropertyInfo propertyInfo)
+        private object GetPrimaryKey(PropertyInfoProxy propertyInfo)
         {
             BaseValueGenerator.Logger.Debug("Entering GetPrimaryKey");
 

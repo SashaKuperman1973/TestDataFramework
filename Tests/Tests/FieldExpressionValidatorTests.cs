@@ -31,11 +31,23 @@ namespace Tests.Tests
     public class FieldExpressionValidatorTests
     {
         [TestMethod]
-        public void FieldExpressionValidatorBase_Test()
+        public void FieldExpressionValidatorBase_Property_Test()
         {
             var fieldExpressionValidator = new TestFieldExpressionValidator();
 
             var expression = (Expression<Func<SubjectClass, SecondClass>>) (subject => subject.SecondObject);
+
+            MemberExpression result = fieldExpressionValidator.ValidateMemberAccessExpression(expression);
+
+            Assert.IsNotNull(result);
+        }
+
+        [TestMethod]
+        public void FieldExpressionValidatorBase_Field_Test()
+        {
+            var fieldExpressionValidator = new AddAttributeFieldExpressionValidator();
+
+            var expression = (Expression<Func<SubjectClass, int>>)(subject => subject.AField);
 
             MemberExpression result = fieldExpressionValidator.ValidateMemberAccessExpression(expression);
 
@@ -50,7 +62,7 @@ namespace Tests.Tests
             var expression = (Expression<Action<SubjectClass>>) (subject => subject.Integer.ToString());
 
             Helpers.ExceptionTest(() => fieldExpressionValidator.ValidateMemberAccessExpression(expression),
-                typeof(MemberAccessExpressionException), Messages.AddAttributeExpressionMustBePropertyAccess);
+                typeof(MemberAccessExpressionException), Messages.AddAttributeExpressionMustBePropertyOrFieldAccess);
         }
 
         [TestMethod]
@@ -61,18 +73,7 @@ namespace Tests.Tests
             var expression = (Expression<Action<SubjectClass>>) (subject => subject.Integer.ToString());
 
             Helpers.ExceptionTest(() => fieldExpressionValidator.ValidateMemberAccessExpression(expression),
-                typeof(MemberAccessExpressionException), Messages.PropertySetExpressionMustBePropertyAccess);
-        }
-
-        [TestMethod]
-        public void CannotBeField_Test()
-        {
-            var fieldExpressionValidator = new AddAttributeFieldExpressionValidator();
-
-            var expression = (Expression<Func<SubjectClass, int>>) (subject => subject.AField);
-
-            Helpers.ExceptionTest(() => fieldExpressionValidator.ValidateMemberAccessExpression(expression),
-                typeof(MemberAccessExpressionException), Messages.AddAttributeExpressionMustBePropertyAccess);
+                typeof(MemberAccessExpressionException), Messages.PropertySetExpressionMustBePropertyOrFieldAccess);
         }
 
         private class TestFieldExpressionValidator : FieldExpressionValidatorBase

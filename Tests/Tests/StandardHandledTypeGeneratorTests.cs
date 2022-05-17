@@ -24,6 +24,7 @@ using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.HandledTypeGenerator;
+using TestDataFramework.Helpers;
 using TestDataFramework.TypeGenerator.Concrete;
 using TestDataFramework.ValueGenerator.Interfaces;
 using Tests.TestModels;
@@ -126,7 +127,7 @@ namespace Tests.Tests
             var dictionary = result as Dictionary<AnEnum, string>;
 
             Assert.IsNotNull(dictionary);
-            this.accumulatorValueGeneratorMock.Verify(m => m.GetValue(It.IsAny<PropertyInfo>(), It.IsAny<Type>(), null),
+            this.accumulatorValueGeneratorMock.Verify(m => m.GetValue(It.IsAny<PropertyInfoProxy>(), It.IsAny<Type>(), null),
                 Times.Never);
             this.valueGeneratorMock.Verify(m => m.GetValue(null, typeof(string), It.IsAny<TypeGeneratorContext>()), Times.Exactly(2));
 

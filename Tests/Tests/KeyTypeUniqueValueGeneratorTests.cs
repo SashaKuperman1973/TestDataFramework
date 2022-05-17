@@ -75,7 +75,7 @@ namespace Tests.Tests
 
             this.Initialize();
 
-            PropertyInfo keyPropertyInfo = @class.GetProperty("Key");
+            PropertyInfoProxy keyPropertyInfo = @class.GetPropertyInfoProxy("Key");
 
             // Act
 
@@ -108,7 +108,7 @@ namespace Tests.Tests
 
             this.Initialize();
 
-            PropertyInfo keyPropertyInfo = @class.GetProperty("Key");
+            PropertyInfoProxy keyPropertyInfo = @class.GetPropertyInfoProxy("Key");
 
             // Act
 
@@ -117,7 +117,7 @@ namespace Tests.Tests
             // Assert
 
             this.deferredValueGeneratorMock.Verify(
-                m => m.AddDelegate(It.IsAny<PropertyInfo>(), It.IsAny<DeferredValueGetterDelegate<LargeInteger>>()),
+                m => m.AddDelegate(It.IsAny<PropertyInfoProxy>(), It.IsAny<DeferredValueGetterDelegate<LargeInteger>>()),
                 Times.Never);
         }
 
@@ -126,7 +126,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            PropertyInfo propertyInfo = typeof(SubjectClass).GetProperty("LongInteger");
+            PropertyInfoProxy propertyInfo = typeof(SubjectClass).GetPropertyInfoProxy("LongInteger");
 
             this.propertyValueAccumulatorMock.Setup(m => m.GetValue(propertyInfo, It.IsAny<LargeInteger>())).Returns(5);
 

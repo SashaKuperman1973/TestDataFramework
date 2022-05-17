@@ -22,6 +22,7 @@ using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.DeepSetting;
 using TestDataFramework.DeepSetting.Concrete;
+using TestDataFramework.Helpers;
 using Tests.TestModels;
 
 namespace Tests.Tests
@@ -36,7 +37,7 @@ namespace Tests.Tests
 
             var objectGraphService = new ObjectGraphService();
 
-            List<PropertyInfo> objectGraph =
+            List<PropertyInfoProxy> objectGraph =
                 objectGraphService.GetObjectGraph<SubjectClass, int>(subjectClassParam => subjectClassParam.SecondObject
                     .SecondInteger);
 
@@ -52,7 +53,7 @@ namespace Tests.Tests
         {
             var objectGraphService = new ObjectGraphService();
 
-            List<PropertyInfo> objectGraph =
+            List<PropertyInfoProxy> objectGraph =
                 objectGraphService.GetObjectGraph<SubjectClass, int>(subjectClassParam => subjectClassParam.SecondObject
                     .SecondInteger);
 
@@ -76,11 +77,11 @@ namespace Tests.Tests
         {
             var objectGraphService = new ObjectGraphService();
 
-            List<PropertyInfo> objectGraph =
+            List<PropertyInfoProxy> objectGraph =
                 objectGraphService.GetObjectGraph<SubjectClass, ThirdClass>(subjectClassParam => subjectClassParam.SecondObject
                     .ThirdObject);
 
-            List<PropertyInfo> propertyChain =
+            List<PropertyInfoProxy> propertyChain =
                 objectGraphService.GetObjectGraph<SubjectClass, int>(subjectClassParam => subjectClassParam.SecondObject
                     .ThirdObject.ThirdInteger);
 
@@ -104,11 +105,11 @@ namespace Tests.Tests
         {
             var objectGraphService = new ObjectGraphService();
 
-            List<PropertyInfo> objectGraph =
+            List<PropertyInfoProxy> objectGraph =
                 objectGraphService.GetObjectGraph<SubjectClass, int>(subjectClassParam => subjectClassParam.SecondObject
                     .SecondInteger);
 
-            List<PropertyInfo> propertyChain =
+            List<PropertyInfoProxy> propertyChain =
                 objectGraphService.GetObjectGraph<SubjectClass, int>(subjectClassParam => subjectClassParam.SecondObject
                     .ThirdObject.ThirdInteger);
 
@@ -132,11 +133,11 @@ namespace Tests.Tests
         {
             var objectGraphService = new ObjectGraphService();
 
-            List<PropertyInfo> objectGraph =
+            List<PropertyInfoProxy> objectGraph =
                 objectGraphService.GetObjectGraph<SubjectClass, int>(subjectClassParam => subjectClassParam.SecondObject
                     .ThirdObject.ThirdInteger);
 
-            List<PropertyInfo> propertyChain =
+            List<PropertyInfoProxy> propertyChain =
                 objectGraphService.GetObjectGraph<SubjectClass, ThirdClass>(subjectClassParam => subjectClassParam.SecondObject
                     .ThirdObject);
 

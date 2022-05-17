@@ -27,6 +27,7 @@ using Moq;
 using TestDataFramework.DeepSetting;
 using TestDataFramework.DeepSetting.Concrete;
 using TestDataFramework.HandledTypeGenerator;
+using TestDataFramework.Helpers;
 using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete;
 using TestDataFramework.TypeGenerator.Concrete;
@@ -72,7 +73,7 @@ namespace Tests.Tests
             const int expected = 5;
 
             this.valueGeneratorMock.Setup(m => m.GetValue(
-                    It.Is<PropertyInfo>(p => p.PropertyType == typeof(int)),
+                    It.Is<PropertyInfoProxy>(p => p.PropertyType == typeof(int)),
                     It.IsAny<ObjectGraphNode>(),
                     It.IsAny<TypeGeneratorContext>()))
                 .Returns(expected);
@@ -89,7 +90,7 @@ namespace Tests.Tests
             Assert.AreEqual(expected, secondClassObject.SecondInteger);
 
             this.valueGeneratorMock.Verify(
-                m => m.GetValue(It.Is<PropertyInfo>(p => p.PropertyType == typeof(int)),
+                m => m.GetValue(It.Is<PropertyInfoProxy>(p => p.PropertyType == typeof(int)),
                     It.IsAny<ObjectGraphNode>(),
                     It.IsAny<TypeGeneratorContext>()),
                 Times.Once);
@@ -127,7 +128,7 @@ namespace Tests.Tests
 
             const int expected = 7;
 
-            PropertyInfo propertyInfo = typeof(SecondClass).GetProperty(nameof(SecondClass.SecondInteger));
+            PropertyInfoProxy propertyInfo = typeof(SecondClass).GetPropertyInfoProxy(nameof(SecondClass.SecondInteger));
             Action<object> setter = @object => propertyInfo.SetValue(@object, expected);
             TypeGeneratorContext typeGeneratorContext = this.SetupExplicitPropertySetter(propertyInfo, setter);
 
@@ -155,13 +156,13 @@ namespace Tests.Tests
 
             // Assert
 
-            this.valueGeneratorMock.Verify(m => m.GetValue(It.IsAny<PropertyInfo>(), It.IsAny<ObjectGraphNode>(),
+            this.valueGeneratorMock.Verify(m => m.GetValue(It.IsAny<PropertyInfoProxy>(), It.IsAny<ObjectGraphNode>(),
                 It.IsAny<TypeGeneratorContext>()), Times.Once);
 
             Assert.IsNotNull(result);
         }
 
-        private TypeGeneratorContext SetupExplicitPropertySetter(PropertyInfo propertyInfo, Action<object> setter)
+        private TypeGeneratorContext SetupExplicitPropertySetter(PropertyInfoProxy propertyInfo, Action<object> setter)
         {
             var typeGeneratorContext = new TypeGeneratorContext(new List<ExplicitPropertySetter>());
             List<ExplicitPropertySetter> explicitProperySetters = typeGeneratorContext.ExplicitPropertySetters;
@@ -169,15 +170,15 @@ namespace Tests.Tests
             explicitProperySetters.Add(new ExplicitPropertySetter
             {
                 Action = setter,
-                PropertyChain = new List<PropertyInfo> { propertyInfo }
+                PropertyChain = new List<PropertyInfoProxy> { propertyInfo }
             });
 
             this.typeGeneratorServiceMock.Setup(m => m.GetExplicitlySetPropertySetters(explicitProperySetters,
-                    It.Is<ObjectGraphNode>(node => node.PropertyInfo.Name == propertyInfo.Name)))
+                    It.Is<ObjectGraphNode>(node => node.PropertyInfoProxy.Name == propertyInfo.Name)))
                 .Returns(explicitProperySetters);
 
             this.typeGeneratorServiceMock.Setup(m => m.GetExplicitlySetPropertySetters(explicitProperySetters,
-                    It.Is<ObjectGraphNode>(node => node.PropertyInfo.Name != propertyInfo.Name)))
+                    It.Is<ObjectGraphNode>(node => node.PropertyInfoProxy.Name != propertyInfo.Name)))
                 .Returns(Enumerable.Empty<ExplicitPropertySetter>());
 
             return typeGeneratorContext;
@@ -265,7 +266,15 @@ namespace Tests.Tests
             this.valueGeneratorMock.Setup(m => m.GetValue(
                     null,
                     It.Is<Type>(p => p == typeof(SecondClass)), It.IsAny<TypeGeneratorContext>()))
-                .Returns(expected);
+                .Returns(expected)
+                .Verifiable();
+
+            this.valueGeneratorMock.Setup(
+                    m => m.GetValue(It.Is<PropertyInfoProxy>(p => p.PropertyType == typeof(SecondClass)),
+                        It.Is<ObjectGraphNode>(p => p.PropertyInfoProxy.PropertyType == typeof(SecondClass)),
+                        It.IsAny<TypeGeneratorContext>()))
+                .Returns(expected)
+                .Verifiable();
 
             // Act
 
@@ -278,11 +287,7 @@ namespace Tests.Tests
 
             Assert.AreEqual(expected, secondClassObject.SecondClass);
 
-            this.valueGeneratorMock.Verify(
-                m => m.GetValue(null,
-                    It.Is<Type>(p => p == typeof(SecondClass)), context)
-                , Times.Once);
-
+            this.valueGeneratorMock.Verify();
             this.recursionGuardMock.Verify(m => m.Pop(), Times.Once);
             this.recursionGuardMock.Verify();
         }
@@ -296,7 +301,7 @@ namespace Tests.Tests
 
             // Assert
 
-            this.valueGeneratorMock.Verify(m => m.GetValue(It.IsAny<PropertyInfo>(), It.IsAny<ObjectGraphNode>(),
+            this.valueGeneratorMock.Verify(m => m.GetValue(It.IsAny<PropertyInfoProxy>(), It.IsAny<ObjectGraphNode>(),
                 It.IsAny<TypeGeneratorContext>()), Times.Never);
 
             Assert.IsNull(result);

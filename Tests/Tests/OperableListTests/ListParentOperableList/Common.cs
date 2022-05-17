@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Security.Policy;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using TestDataFramework.Helpers;
 using TestDataFramework.Populator;
 using TestDataFramework.Populator.Concrete.FieldExpression;
 using TestDataFramework.Populator.Concrete.MakeableEnumerable;
@@ -140,7 +141,7 @@ namespace Tests.Tests.OperableListTests.ListParentOperableList
             this.testContext.ObjectGraphServiceMock.Setup(
                 m => m.GetObjectGraph(
                     It.IsAny<Expression<Func<ElementType, ElementType.PropertyType>>>())
-            ).Returns(new[] {typeof(ElementType).GetProperty(nameof(ElementType.AnEnumerable))}.ToList);
+            ).Returns(new[] {typeof(ElementType).GetPropertyInfoProxy(nameof(ElementType.AnEnumerable))}.ToList);
 
             // Act
 

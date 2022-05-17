@@ -15,8 +15,8 @@ namespace TestDataFramework.AttributeDecorator.Concrete
     {
         private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(StandardAttributeDecoratorBase));
 
-        protected readonly ConcurrentDictionary<MemberInfo, List<Attribute>> MemberAttributeDicitonary =
-            new ConcurrentDictionary<MemberInfo, List<Attribute>>();
+        protected readonly ConcurrentDictionary<MemberInfoProxy, List<Attribute>> MemberAttributeDicitonary =
+            new ConcurrentDictionary<MemberInfoProxy, List<Attribute>>();
 
         protected string DefaultSchema;
 
@@ -30,7 +30,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete
             this.DefaultSchema = defaultSchema.Value;
         }
 
-        public virtual T GetSingleAttribute<T>(MemberInfo memberInfo) where T : Attribute
+        public virtual T GetSingleAttribute<T>(MemberInfoProxy memberInfo) where T : Attribute
         {
             StandardAttributeDecoratorBase.Logger.Debug(
                 $"Entering GetSingleAttribute. T: {typeof(T)} memberInfo: {memberInfo.GetExtendedMemberInfoString()}");
@@ -57,7 +57,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete
                 memberInfo.DeclaringType));
         }
 
-        public virtual IEnumerable<T> GetCustomAttributes<T>(MemberInfo memberInfo) where T : Attribute
+        public virtual IEnumerable<T> GetCustomAttributes<T>(MemberInfoProxy memberInfo) where T : Attribute
         {
             StandardAttributeDecoratorBase.Logger.Debug(
                 $"Entering GetCustomAttributes<T>. T: {typeof(T)}. memberInfo: {memberInfo}");
@@ -77,10 +77,10 @@ namespace TestDataFramework.AttributeDecorator.Concrete
             return result;
         }
 
-        public virtual IEnumerable<Attribute> GetCustomAttributes(MemberInfo memberInfo)
+        public virtual IEnumerable<Attribute> GetCustomAttributes(MemberInfoProxy memberInfo)
         {
             StandardAttributeDecoratorBase.Logger.Debug(
-                $"Entering GetCustomAttributes. MemberInfo: {memberInfo}");
+                $"Entering GetCustomAttributes. MemberInfoProxy: {memberInfo}");
 
             List<Attribute> result;
 

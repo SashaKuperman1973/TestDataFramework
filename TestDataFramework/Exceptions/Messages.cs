@@ -77,11 +77,14 @@ namespace TestDataFramework.Exceptions
         public const string SetExpressionNotAssignment =
             "Set expression must be an assignment expression (and not a +=, etc. type of expression)";
 
-        public const string PropertySetExpressionMustBePropertyAccess =
-            "Set operation expression must be a property access expression";
+        public const string PropertySetExpressionMustBePropertyOrFieldAccess =
+            "Set operation expression must be a property access or field access expression";
 
-        public const string AddAttributeExpressionMustBePropertyAccess =
-            "Add attribute expression must be a property access expression";
+        public const string AddAttributeExpressionMustBePropertyOrFieldAccess =
+            "Add attribute expression must be a property access or field access expression";
+
+        public const string BadExpressionMember =
+            "Expression Member can only be a PropertyInfo or a FieldInfo";
 
         public const string NoSetter = "The property given has no setter";
 

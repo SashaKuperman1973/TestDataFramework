@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using TestDataFramework.Helpers;
 using TestDataFramework.Populator.Concrete.FieldExpression;
 using TestDataFramework.Populator.Concrete.MakeableEnumerable;
 using TestDataFramework.Populator.Concrete.OperableList;
@@ -115,7 +116,7 @@ namespace Tests.Tests.OperableListTests.ReferenceParentOperableList
             this.testContext.ObjectGraphServiceMock.Setup(
                 m => m.GetObjectGraph(
                     It.IsAny<Expression<Func<ElementSubType, IEnumerable<int>>>>())
-            ).Returns(new[] {typeof(ElementType).GetProperty(nameof(ElementType.AnEnumerable))}.ToList);
+            ).Returns(new[] {typeof(ElementType).GetPropertyInfoProxy(nameof(ElementType.AnEnumerable))}.ToList);
 
             // Act
 

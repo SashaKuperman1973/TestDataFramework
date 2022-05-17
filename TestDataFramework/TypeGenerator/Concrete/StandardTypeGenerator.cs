@@ -51,10 +51,10 @@ namespace TestDataFramework.TypeGenerator.Concrete
 
         #region Protected Methods
 
-        protected virtual void SetProperty(object objectToFill, PropertyInfo targetPropertyInfo,
+        protected virtual void SetProperty(object objectToFill, PropertyInfoProxy targetPropertyInfo,
             ObjectGraphNode objectGraphNode, TypeGeneratorContext context)
         {
-            StandardTypeGenerator.Logger.Debug("Entering SetProperty. PropertyInfo: " +
+            StandardTypeGenerator.Logger.Debug("Entering SetProperty. PropertyInfoProxy: " +
                                                targetPropertyInfo.GetExtendedMemberInfoString());
 
             object targetPropertyValue = this.valueGenerator.GetValue(targetPropertyInfo, objectGraphNode, context);
@@ -66,7 +66,7 @@ namespace TestDataFramework.TypeGenerator.Concrete
             }
             catch (Exception e)
             {
-                var message = new StringBuilder("PropertyInfo.SetValue threw.");
+                var message = new StringBuilder("PropertyInfoProxy.SetValue threw.");
 
                 do
                 {
@@ -230,9 +230,9 @@ namespace TestDataFramework.TypeGenerator.Concrete
         {
             StandardTypeGenerator.Logger.Debug("Entering FillObject<T>");
 
-            PropertyInfo[] targetProperties = StandardTypeGenerator.GetProperties(objectToFill);
+            PropertyInfoProxy[] targetProperties = StandardTypeGenerator.GetProperties(objectToFill);
 
-            foreach (PropertyInfo targetPropertyInfo in targetProperties)
+            foreach (PropertyInfoProxy targetPropertyInfo in targetProperties)
             {
                 ObjectGraphNode propertyObjectGraphNode = objectGraphNode != null
                     ? new ObjectGraphNode(targetPropertyInfo, objectGraphNode)
@@ -258,9 +258,9 @@ namespace TestDataFramework.TypeGenerator.Concrete
             StandardTypeGenerator.Logger.Debug("Exiting FillObject<T>");
         }
 
-        private static PropertyInfo[] GetProperties(object objectToFill)
+        private static PropertyInfoProxy[] GetProperties(object objectToFill)
         {
-            PropertyInfo[] targetProperties = objectToFill.GetType().GetPropertiesHelper();
+            PropertyInfoProxy[] targetProperties = objectToFill.GetType().GetPropertiesHelper();
             return targetProperties;
         }
 

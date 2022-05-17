@@ -618,7 +618,7 @@ namespace Tests.Tests
             Assert.AreEqual(1, fkColumns.Count);
             Assert.AreEqual("ForeignKey", fkColumns[0].ColumnName);
 
-            Assert.AreEqual(Helper.GetDefaultValue(typeof(ForeignTable).GetProperty("ForeignKey").PropertyType),
+            Assert.AreEqual(Helper.GetDefaultValue(typeof(ForeignTable).GetPropertyInfoProxy("ForeignKey").PropertyType),
                 fkColumns[0].Value);
         }
 

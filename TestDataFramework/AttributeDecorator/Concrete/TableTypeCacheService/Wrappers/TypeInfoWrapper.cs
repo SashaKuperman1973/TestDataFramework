@@ -18,20 +18,23 @@
 */
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using TestDataFramework.Helpers;
 
 namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers
 {
-    public class TypeInfoWrapper : MemberInfo, IWrapper<TypeInfo>
+    public class TypeInfoWrapper : MemberInfoProxy, IWrapper<TypeInfo>
     {
         public readonly Guid Id = Guid.NewGuid();
 
-        public TypeInfoWrapper(TypeInfo typeInfo)
+        public TypeInfoWrapper(TypeInfo typeInfo) : base(typeInfo)
         {
             this.Wrapped = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
         }
 
-        public TypeInfoWrapper(Type type)
+        public TypeInfoWrapper(Type type) : base(type)
         {
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
@@ -39,7 +42,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wr
             this.Wrapped = type.GetTypeInfo();
         }
 
-        public TypeInfoWrapper()
+        public TypeInfoWrapper(): base(null)
         {
         }
 
@@ -51,27 +54,27 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wr
 
         public virtual Type Type => this.Wrapped;
 
-        public override MemberTypes MemberType => this.Wrapped.MemberType;
+        public Type ReflectedType => this.Wrapped.ReflectedType;
 
-        public override Type DeclaringType => this.Wrapped.DeclaringType;
-
-        public override Type ReflectedType => this.Wrapped.ReflectedType;
-
-        public override string Name => this.Wrapped.Name;
-
-        public override object[] GetCustomAttributes(bool inherit)
+        public object[] GetCustomAttributes(bool inherit)
         {
             return this.Wrapped.GetCustomAttributes(inherit);
         }
 
-        public override bool IsDefined(Type attributeType, bool inherit)
+        public bool IsDefined(Type attributeType, bool inherit)
         {
             return this.Wrapped.IsDefined(attributeType, inherit);
         }
 
-        public override object[] GetCustomAttributes(Type attributeType, bool inherit)
+        public object[] GetCustomAttributes(Type attributeType, bool inherit)
         {
             return this.Wrapped.GetCustomAttributes(attributeType, inherit);
+        }
+
+        public PropertyInfoProxy GetField(string fieldName)
+        {
+            var fieldInfoProxy = new PropertyInfoProxy(this.Wrapped.GetField(fieldName));
+            return fieldInfoProxy;
         }
 
         public override string ToString()
@@ -97,6 +100,41 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wr
         {
             int result = this.Wrapped == null ? 0 : this.Wrapped.GetHashCode();
             return result;
+        }
+
+        public PropertyInfoProxy[] GetProperties()
+        {
+            PropertyInfo[] properties = this.Wrapped.GetProperties(BindingFlags.Instance | BindingFlags.Public |
+                BindingFlags.GetProperty | BindingFlags.SetProperty);
+
+            FieldInfo[] fields = this.Wrapped.GetFields(BindingFlags.Instance | BindingFlags.Public);
+
+            IEnumerable<PropertyInfoProxy> propertyProxies =
+                properties.Select(property => new PropertyInfoProxy(property));
+
+            IEnumerable<PropertyInfoProxy> fieldProxies =
+                fields.Select(field => new PropertyInfoProxy(field));
+
+            PropertyInfoProxy[] result = propertyProxies.Concat(fieldProxies).ToArray();
+
+            return result;
+        }
+
+        public PropertyInfoProxy GetProperty(string propertyNamne)
+        {
+            PropertyInfoProxy propertyInfoProxy;
+            PropertyInfo propertyInfo = this.Wrapped.GetProperty(propertyNamne);
+            if (propertyInfo != null)
+            {
+                propertyInfoProxy = new PropertyInfoProxy(propertyInfo);
+            }
+            else
+            {
+                FieldInfo fieldInfo = this.Wrapped.GetField(propertyNamne);
+                propertyInfoProxy = new PropertyInfoProxy(fieldInfo);
+            }
+
+            return propertyInfoProxy;
         }
     }
 }

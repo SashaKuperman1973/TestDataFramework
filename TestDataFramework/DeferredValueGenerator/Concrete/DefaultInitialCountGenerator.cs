@@ -31,7 +31,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
     {
         private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(DefaultInitialCountGenerator));
 
-        public void FillData(IDictionary<PropertyInfo, Data<LargeInteger>> propertyDataDictionary)
+        public void FillData(IDictionary<PropertyInfoProxy, Data<LargeInteger>> propertyDataDictionary)
         {
             DefaultInitialCountGenerator.Logger.Debug("Entering FillData");
 

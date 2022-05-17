@@ -24,6 +24,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using log4net;
 using TestDataFramework.DeepSetting.Interfaces;
+using TestDataFramework.Helpers;
 using TestDataFramework.ListOperations.Concrete;
 using TestDataFramework.Logger;
 using TestDataFramework.Populator.Concrete.OperableList;
@@ -67,7 +68,7 @@ namespace TestDataFramework.Populator.Concrete.FieldExpression
         {
             FieldExpression<TListElement, TProperty>.Logger.Entering(nameof(this.GuaranteePropertiesByFixedQuantity));
 
-            List<PropertyInfo> setterObjectGraph = this.objectGraphService.GetObjectGraph(this.expression);
+            List<PropertyInfoProxy> setterObjectGraph = this.objectGraphService.GetObjectGraph(this.expression);
 
             guaranteedValues = guaranteedValues.ToList();
 
@@ -136,7 +137,7 @@ namespace TestDataFramework.Populator.Concrete.FieldExpression
         {
             FieldExpression<TListElement, TProperty>.Logger.Entering(nameof(this.GuaranteePropertiesByPercentageOfTotal));
 
-            List<PropertyInfo> setterObjectGraph = this.objectGraphService.GetObjectGraph(this.expression);
+            List<PropertyInfoProxy> setterObjectGraph = this.objectGraphService.GetObjectGraph(this.expression);
 
             guaranteedValues = guaranteedValues.ToList();
 

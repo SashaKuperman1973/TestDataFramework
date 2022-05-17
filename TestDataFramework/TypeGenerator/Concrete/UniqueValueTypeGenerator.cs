@@ -47,7 +47,7 @@ namespace TestDataFramework.TypeGenerator.Concrete
             this.accumulatorValueGenerator = getAccumulatorValueGenerator(this);
         }
 
-        protected override void SetProperty(object objectToFill, PropertyInfo targetPropertyInfo,
+        protected override void SetProperty(object objectToFill, PropertyInfoProxy targetPropertyInfo,
             ObjectGraphNode objectGraphNode, TypeGeneratorContext typeGeneratorContext)
         {
             UniqueValueTypeGenerator.Logger.Debug("Entering SetProperty. targetPropertyInfo: " +

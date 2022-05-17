@@ -20,15 +20,16 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using TestDataFramework.Helpers;
 
 namespace TestDataFramework.AttributeDecorator.Interfaces
 {
     public interface IAttributeDecoratorBase
     {
-        T GetSingleAttribute<T>(MemberInfo memberInfo) where T : Attribute;
+        T GetSingleAttribute<T>(MemberInfoProxy memberInfo) where T : Attribute;
 
-        IEnumerable<T> GetCustomAttributes<T>(MemberInfo memberInfo) where T : Attribute;
+        IEnumerable<T> GetCustomAttributes<T>(MemberInfoProxy memberInfo) where T : Attribute;
 
-        IEnumerable<Attribute> GetCustomAttributes(MemberInfo memberInfo);
+        IEnumerable<Attribute> GetCustomAttributes(MemberInfoProxy memberInfo);
     }
 }

@@ -10,6 +10,7 @@ using TestDataFramework;
 using TestDataFramework.AttributeDecorator;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService;
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
+using TestDataFramework.Helpers;
 using Tests.TestModels;
 
 namespace Tests.Tests.TableTypeCacheServiceTests
@@ -255,7 +256,7 @@ namespace Tests.Tests.TableTypeCacheServiceTests
 
             var definedType = new TypeInfoWrapper(typeof(SubjectClass));
 
-            TableAttribute GetTableAttibute(TypeInfoWrapper type)
+            TableAttribute GetTableAttibute(MemberInfoProxy type)
             {
                 return null;
             }
@@ -282,7 +283,7 @@ namespace Tests.Tests.TableTypeCacheServiceTests
 
             var definedType = new TypeInfoWrapper(typeof(SubjectClass));
 
-            TableAttribute GetTableAttibute(TypeInfoWrapper type)
+            TableAttribute GetTableAttibute(MemberInfoProxy type)
             {
                 return null;
             }
@@ -324,7 +325,7 @@ namespace Tests.Tests.TableTypeCacheServiceTests
 
             var definedType = new TypeInfoWrapper(typeof(SubjectClass));
 
-            TableAttribute GetTableAttibute(TypeInfoWrapper type)
+            TableAttribute GetTableAttibute(MemberInfoProxy type)
             {
                 return null;
             }

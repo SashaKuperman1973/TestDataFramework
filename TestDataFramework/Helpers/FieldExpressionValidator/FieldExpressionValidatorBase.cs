@@ -4,6 +4,7 @@ using TestDataFramework.Exceptions;
 
 namespace TestDataFramework.Helpers.FieldExpressionValidator
 {
+    // TODO: Test with fields
     public abstract class FieldExpressionValidatorBase
     {
         protected abstract string ErrorMessage { get; }
@@ -35,7 +36,7 @@ namespace TestDataFramework.Helpers.FieldExpressionValidator
 
         private MemberExpression ValidatePropertyInfo(MemberExpression memberExpression)
         {
-            if (!(memberExpression.Member is PropertyInfo))
+            if (!(memberExpression.Member is PropertyInfo || memberExpression.Member is FieldInfo))
                 throw new MemberAccessExpressionException(this.ErrorMessage);
 
             return memberExpression;

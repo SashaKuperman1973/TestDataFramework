@@ -17,12 +17,17 @@
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using System.Configuration;
+using System.Diagnostics;
 using System.Reflection;
+using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework;
+using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeferredValueGenerator.Concrete;
+using TestDataFramework.Helpers;
 using Tests.TestModels;
 
 namespace Tests.Tests
@@ -38,6 +43,8 @@ namespace Tests.Tests
         [TestInitialize]
         public void Initialize()
         {
+            XmlConfigurator.Configure();
+
             this.sqlWriterCommandTextMock = new Mock<SqlWriterCommandText>();
             this.attributeDecoratorMock = new Mock<IAttributeDecorator>();
 
@@ -52,14 +59,14 @@ namespace Tests.Tests
 
             var tableAttribute = new TableAttribute("CatalogueName", "SchemaName", "TableName");
 
-            PropertyInfo propertyInfo = typeof(PrimaryTable).GetProperty("Key");
+            PropertyInfoProxy propertyInfo = typeof(PrimaryTable).GetPropertyInfoProxy("Key");
 
             this.sqlWriterCommandTextMock.Setup(
                     m => m.GetStringSelect(tableAttribute.CatalogueName, tableAttribute.Schema, tableAttribute.Name,
                         "Key"))
                 .Returns(testString);
 
-            this.attributeDecoratorMock.Setup(m => m.GetCustomAttributes<TableAttribute>(typeof(PrimaryTable)))
+            this.attributeDecoratorMock.Setup(m => m.GetCustomAttributes<TableAttribute>(new TypeInfoWrapper(typeof(PrimaryTable))))
                 .Returns(new[] {tableAttribute});
 
             string result = this.textGenerator.WriteString(propertyInfo);
@@ -74,14 +81,14 @@ namespace Tests.Tests
 
             var tableAttribute = new TableAttribute("CatalogueName", "SchemaName", "TableName");
 
-            PropertyInfo propertyInfo = typeof(PrimaryTable).GetProperty("Key");
+            PropertyInfoProxy propertyInfo = typeof(PrimaryTable).GetPropertyInfoProxy("Key");
 
             this.sqlWriterCommandTextMock.Setup(
                     m => m.GetNumberSelect(tableAttribute.CatalogueName, tableAttribute.Schema, tableAttribute.Name,
                         "Key"))
                 .Returns(testString);
 
-            this.attributeDecoratorMock.Setup(m => m.GetCustomAttributes<TableAttribute>(typeof(PrimaryTable)))
+            this.attributeDecoratorMock.Setup(m => m.GetCustomAttributes<TableAttribute>(new TypeInfoWrapper(typeof(PrimaryTable))))
                 .Returns(new[] {tableAttribute});
 
             string result = this.textGenerator.WriteNumber(propertyInfo);

@@ -58,7 +58,7 @@ namespace TestDataFramework.Helpers
         public static TableName GetTableName(Type recordType, IAttributeDecorator attributeDecorator)
         {
             IEnumerable<TableAttribute> attrs =
-                attributeDecorator.GetCustomAttributes<TableAttribute>(recordType)?.ToList();
+                attributeDecorator.GetCustomAttributes<TableAttribute>(new TypeInfoWrapper(recordType))?.ToList();
 
             if (attrs == null || !(attrs = attrs.ToList()).Any())
                 return new TableName(recordType.Name);
@@ -68,9 +68,9 @@ namespace TestDataFramework.Helpers
             return new TableName(tableAttribute.CatalogueName, tableAttribute.Schema, tableAttribute.Name);
         }
 
-        public static string GetColumnName(PropertyInfo propertyInfo, IAttributeDecorator attributeDecorator)
+        public static string GetColumnName(PropertyInfoProxy propertyInfo, IAttributeDecorator attributeDecorator)
         {
-            var columnAttribute = attributeDecorator.GetCustomAttribute<ColumnAttribute>(propertyInfo);
+            ColumnAttribute columnAttribute = attributeDecorator.GetCustomAttribute<ColumnAttribute>(propertyInfo);
 
             string result = columnAttribute?.Name ?? propertyInfo.Name;
             return result;
@@ -85,9 +85,9 @@ namespace TestDataFramework.Helpers
 
             sb.AppendLine(objectValue.GetType().ToString());
 
-            IEnumerable<PropertyInfo> propertyInfos = objectValue.GetType().GetPropertiesHelper();
+            IEnumerable<PropertyInfoProxy> propertyInfos = objectValue.GetType().GetPropertiesHelper();
 
-            foreach (PropertyInfo propertyInfo in propertyInfos)
+            foreach (PropertyInfoProxy propertyInfo in propertyInfos)
             {
                 object value = propertyInfo.GetValue(objectValue);
 
@@ -108,11 +108,9 @@ namespace TestDataFramework.Helpers
             return result;
         }
 
-        public static PropertyInfo[] GetPropertiesHelper(this Type type)
+        public static PropertyInfoProxy[] GetPropertiesHelper(this Type type)
         {
-            PropertyInfo[] results =
-                type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty |
-                                   BindingFlags.SetProperty);
+            PropertyInfoProxy[] results = new TypeInfoWrapper(type).GetProperties();
 
             results = results.Where(r => r.CanRead && r.CanWrite && !r.GetIndexParameters().Any()).ToArray();
 
@@ -145,7 +143,7 @@ namespace TestDataFramework.Helpers
                 : null;
         }
 
-        public static string GetExtendedMemberInfoString(this MemberInfo memberInfo)
+        public static string GetExtendedMemberInfoString(this MemberInfoProxy memberInfo)
         {
             return memberInfo + " - " + memberInfo.DeclaringType;
         }
@@ -162,7 +160,7 @@ namespace TestDataFramework.Helpers
 
         private static bool IsForeignKeyExplicitlySetToPrimaryKey(
             RecordReference foreignRecordReference, 
-            PropertyInfo foreignKeyProperty, 
+            PropertyInfoProxy foreignKeyProperty, 
             RecordReference primaryRecordReference)
         {
             bool result = foreignRecordReference.ExplicitPrimaryKeyRecords.TryGetValue(
@@ -175,7 +173,7 @@ namespace TestDataFramework.Helpers
 
         private static bool IsForeignKeyExplicitlySet(
             RecordReference foreignRecordReference,
-            PropertyInfo foreignKeyProperty)
+            PropertyInfoProxy foreignKeyProperty)
         {
             bool result = foreignRecordReference
                 .ExplicitPrimaryKeyRecords.ContainsKey(foreignKeyProperty.Name);
@@ -189,18 +187,30 @@ namespace TestDataFramework.Helpers
             RecordReference primaryKeyReference, 
             IAttributeDecorator attributeDecorator)
         {
-            bool result = Helper.IsForeignKeyExplicitlySetToPrimaryKey(foreignRecordReference, fkpa.PropertyInfo,
+            bool result = Helper.IsForeignKeyExplicitlySetToPrimaryKey(foreignRecordReference, fkpa.PropertyInfoProxy,
                     primaryKeyReference)
 
                 ||
 
-                !Helper.IsForeignKeyExplicitlySet(foreignRecordReference, fkpa.PropertyInfo)
+                !Helper.IsForeignKeyExplicitlySet(foreignRecordReference, fkpa.PropertyInfoProxy)
 
                 &&
 
                 primaryKeyReference.RecordType == attributeDecorator.GetTableType(fkpa.Attribute,
                     new TypeInfoWrapper(foreignRecordReference.RecordType.GetTypeInfo()));
 
+            return result;
+        }
+
+        public static PropertyInfoProxy GetPropertyInfoProxy(this Type type, string propertyName)
+        {
+            PropertyInfoProxy result = new TypeInfoWrapper(type).GetProperty(propertyName);
+            return result;
+        }
+
+        public static PropertyInfoProxy[] GetPropertyInfoProxies(this Type type)
+        {
+            PropertyInfoProxy[] result = new TypeInfoWrapper(type).GetProperties();
             return result;
         }
     }

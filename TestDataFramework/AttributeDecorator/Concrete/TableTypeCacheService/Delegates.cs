@@ -18,6 +18,7 @@
 */
 
 using TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService.Wrappers;
+using TestDataFramework.Helpers;
 
 namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
 {

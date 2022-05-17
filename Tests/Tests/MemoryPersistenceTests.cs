@@ -136,14 +136,14 @@ namespace Tests.Tests
                 {
                     new PropertyAttribute<PrimaryKeyAttribute>
                     {
-                        PropertyInfo = typeof(SecondClass).GetProperty(nameof(SecondClass.SecondInteger)),
+                        PropertyInfoProxy = typeof(SecondClass).GetPropertyInfoProxy(nameof(SecondClass.SecondInteger)),
                         Attribute = new PrimaryKeyAttribute()
                     }
                 });
 
             var foreignKeyPropertyAttribute = new PropertyAttribute<ForeignKeyAttribute>
             {
-                PropertyInfo = typeof(SubjectClass).GetProperty(nameof(SubjectClass.NullableInteger)),
+                PropertyInfoProxy = typeof(SubjectClass).GetPropertyInfoProxy(nameof(SubjectClass.NullableInteger)),
                 Attribute = new ForeignKeyAttribute(typeof(SecondClass), nameof(SecondClass.SecondNullableInteger))
             };
 

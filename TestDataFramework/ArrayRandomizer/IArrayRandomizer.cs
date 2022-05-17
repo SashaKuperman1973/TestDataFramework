@@ -18,13 +18,13 @@
 */
 
 using System;
-using System.Reflection;
+using TestDataFramework.Helpers;
 using TestDataFramework.TypeGenerator.Concrete;
 
 namespace TestDataFramework.ArrayRandomizer
 {
     public interface IArrayRandomizer
     {
-        object GetArray(PropertyInfo propertyInfo, Type type, TypeGeneratorContext context);
+        object GetArray(PropertyInfoProxy propertyInfo, Type type, TypeGeneratorContext context);
     }
 }

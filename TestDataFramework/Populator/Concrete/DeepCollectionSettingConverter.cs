@@ -23,6 +23,7 @@ using System.Linq;
 using System.Reflection;
 using log4net;
 using TestDataFramework.Exceptions;
+using TestDataFramework.Helpers;
 using TestDataFramework.Logger;
 
 namespace TestDataFramework.Populator.Concrete
@@ -32,7 +33,7 @@ namespace TestDataFramework.Populator.Concrete
         private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(DeepCollectionSettingConverter));
 
         public virtual IEnumerable<TListElement> Convert<TListElement>(IEnumerable<TListElement> convertInput,
-            PropertyInfo propertyInfo)
+            PropertyInfoProxy propertyInfo)
         {
             DeepCollectionSettingConverter.Logger.Calling(nameof(this.Convert));
 

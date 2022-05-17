@@ -133,7 +133,7 @@ namespace Tests.Tests
 
             var attribute =
                 this.attributeDecorator.GetCustomAttribute<PrimaryKeyAttribute>(
-                    typeof(AttributeReadWriteTestClass).GetProperty("Key1"));
+                    typeof(AttributeReadWriteTestClass).GetPropertyInfoProxy("Key1"));
 
             // Assert
 
@@ -147,7 +147,7 @@ namespace Tests.Tests
 
             var attribute =
                 this.attributeDecorator.GetCustomAttribute<StringLengthAttribute>(
-                    typeof(AttributeReadWriteTestClass).GetProperty("Text"));
+                    typeof(AttributeReadWriteTestClass).GetPropertyInfoProxy("Text"));
 
             // Assert
 
@@ -167,11 +167,11 @@ namespace Tests.Tests
 
             var primaryKeyAttribute =
                 this.attributeDecorator.GetCustomAttribute<PrimaryKeyAttribute>(
-                    typeof(AttributeReadWriteTestClass).GetProperty("Text"));
+                    typeof(AttributeReadWriteTestClass).GetPropertyInfoProxy("Text"));
 
             var stringLengthAttribute =
                 this.attributeDecorator.GetCustomAttribute<StringLengthAttribute>(
-                    typeof(AttributeReadWriteTestClass).GetProperty("Text"));
+                    typeof(AttributeReadWriteTestClass).GetPropertyInfoProxy("Text"));
 
             // Assert
 
@@ -188,7 +188,7 @@ namespace Tests.Tests
         {
             var result =
                 this.attributeDecorator
-                    .GetSingleAttribute<PrimaryKeyAttribute>(typeof(PrimaryTable).GetProperty("Key"));
+                    .GetSingleAttribute<PrimaryKeyAttribute>(typeof(PrimaryTable).GetPropertyInfoProxy("Key"));
 
             Assert.AreEqual(PrimaryKeyAttribute.KeyTypeEnum.Auto, result.KeyType);
         }
@@ -198,7 +198,7 @@ namespace Tests.Tests
         {
             var result =
                 this.attributeDecorator.GetSingleAttribute<StringLengthAttribute>(
-                    typeof(PrimaryTable).GetProperty("Key"));
+                    typeof(PrimaryTable).GetPropertyInfoProxy("Key"));
 
             Assert.IsNull(result);
         }
@@ -207,26 +207,26 @@ namespace Tests.Tests
         public void GetSingleAttribute_DuplicatePropertyAttributesThrow_Test()
         {
             this.GetSingleAttribute_DuplicateAttributesThrow_Test(Messages.AmbigousPropertyAttributeMatch,
-                typeof(AmbiguousAttributeClass).GetProperty("A"));
+                typeof(AmbiguousAttributeClass).GetPropertyInfoProxy("A"));
         }
 
         [TestMethod]
         public void GetSingleAttribute_DuplicateClassAttributesThrow_Test()
         {
             this.GetSingleAttribute_DuplicateAttributesThrow_Test(Messages.AmbigousTypeAttributeMatch,
-                typeof(AmbiguousAttributeClass));
+                new TypeInfoWrapper(typeof(AmbiguousAttributeClass)));
         }
 
         [TestMethod]
         public void GetSingleAttribute_DuplicateFieldAttributesThrow_Test()
         {
             this.GetSingleAttribute_DuplicateAttributesThrow_Test(Messages.AmbigousAttributeMatch,
-                typeof(AmbiguousAttributeClass).GetField("B"));
+                new TypeInfoWrapper(typeof(AmbiguousAttributeClass)).GetField("B"));
         }
 
-        private void GetSingleAttribute_DuplicateAttributesThrow_Test(string message, MemberInfo memberInfo)
+        private void GetSingleAttribute_DuplicateAttributesThrow_Test(string message, MemberInfoProxy memberInfo)
         {
-            Func<MemberInfo, MultiAllowedAttribute> func = this.attributeDecorator
+            Func<MemberInfoProxy, MultiAllowedAttribute> func = this.attributeDecorator
                 .GetSingleAttribute<MultiAllowedAttribute>;
             string funcMessage = string.Format(message, typeof(MultiAllowedAttribute), memberInfo.Name,
                 memberInfo.DeclaringType);
@@ -257,7 +257,7 @@ namespace Tests.Tests
 
             IEnumerable<StringLengthAttribute> attributes =
                 this.attributeDecorator.GetCustomAttributes<StringLengthAttribute>(
-                    typeof(AttributeReadWriteTestClass).GetProperty("Key2")).ToList();
+                    typeof(AttributeReadWriteTestClass).GetPropertyInfoProxy("Key2")).ToList();
 
             // Assert
 
@@ -273,7 +273,7 @@ namespace Tests.Tests
 
             IEnumerable<MultiAllowedAttribute> attributes =
                 this.attributeDecorator.GetCustomAttributes<MultiAllowedAttribute>(
-                    typeof(AttributeReadWriteTestClass).GetProperty("MultiAllowedProperty")).ToList();
+                    typeof(AttributeReadWriteTestClass).GetPropertyInfoProxy("MultiAllowedProperty")).ToList();
 
             // Assert
 
@@ -294,7 +294,7 @@ namespace Tests.Tests
 
             IEnumerable<MultiAllowedAttribute> attributes =
                 this.attributeDecorator.GetCustomAttributes<MultiAllowedAttribute>(
-                    typeof(AttributeReadWriteTestClass).GetProperty("MultiAllowedProperty")).ToList();
+                    typeof(AttributeReadWriteTestClass).GetPropertyInfoProxy("MultiAllowedProperty")).ToList();
 
             // Assert
 
@@ -322,7 +322,7 @@ namespace Tests.Tests
             // Act
 
             IEnumerable<Attribute> attributes =
-                this.attributeDecorator.GetCustomAttributes(typeof(AttributeReadWriteTestClass).GetProperty("Key2"))
+                this.attributeDecorator.GetCustomAttributes(typeof(AttributeReadWriteTestClass).GetPropertyInfoProxy("Key2"))
                     .ToList();
 
             // Assert
@@ -339,7 +339,7 @@ namespace Tests.Tests
 
             IEnumerable<Attribute> attributes =
                 this.attributeDecorator.GetCustomAttributes(
-                    typeof(AttributeReadWriteTestClass).GetProperty("MultiAtributeProperty"));
+                    typeof(AttributeReadWriteTestClass).GetPropertyInfoProxy("MultiAtributeProperty"));
 
             // Assert
 
@@ -360,7 +360,7 @@ namespace Tests.Tests
 
             IEnumerable<Attribute> attributes =
                 this.attributeDecorator.GetCustomAttributes(
-                    typeof(AttributeReadWriteTestClass).GetProperty("MultiAllowedProperty")).ToList();
+                    typeof(AttributeReadWriteTestClass).GetPropertyInfoProxy("MultiAllowedProperty")).ToList();
 
             // Assert
 
@@ -391,7 +391,7 @@ namespace Tests.Tests
             // Act
 
             IEnumerable<TableAttribute> attributes =
-                this.attributeDecorator.GetCustomAttributes<TableAttribute>(typeof(AttributeReadWriteTestClass))
+                this.attributeDecorator.GetCustomAttributes<TableAttribute>(new TypeInfoWrapper(typeof(AttributeReadWriteTestClass)))
                     .ToList();
 
             // Assert
@@ -407,7 +407,7 @@ namespace Tests.Tests
             // Arrange. Act
 
             IEnumerable<MultiAllowedAttribute> attributes =
-                this.attributeDecorator.GetCustomAttributes<MultiAllowedAttribute>(typeof(AttributeReadWriteTestClass))
+                this.attributeDecorator.GetCustomAttributes<MultiAllowedAttribute>(new TypeInfoWrapper(typeof(AttributeReadWriteTestClass)))
                     .ToList();
 
             // Assert
@@ -429,7 +429,7 @@ namespace Tests.Tests
 
             IEnumerable<Attribute> attributes =
                 this.attributeDecorator.GetCustomAttributes(
-                    typeof(AttributeReadWriteTestClass)).ToList();
+                    new TypeInfoWrapper(typeof(AttributeReadWriteTestClass))).ToList();
 
             // Assert
 
@@ -708,7 +708,7 @@ namespace Tests.Tests
             // Act
 
             IEnumerable<Attribute> resultSet =
-                attributeDecorator.GetCustomAttributes(typeof(ForeignClass).GetProperty("ForeignKey"));
+                attributeDecorator.GetCustomAttributes(typeof(ForeignClass).GetPropertyInfoProxy("ForeignKey"));
 
             Attribute result = resultSet.First();
 
@@ -727,7 +727,7 @@ namespace Tests.Tests
             // Act
 
             IEnumerable<Attribute> resultSet =
-                attributeDecorator.GetCustomAttributes(typeof(ClassWithSchemaInForeignKey).GetProperty("ForeignKey"));
+                attributeDecorator.GetCustomAttributes(typeof(ClassWithSchemaInForeignKey).GetPropertyInfoProxy("ForeignKey"));
 
             Attribute result = resultSet.First();
 
@@ -750,7 +750,7 @@ namespace Tests.Tests
 
             IEnumerable<ForeignKeyAttribute> resultSet =
                 attributeDecorator.GetCustomAttributes<ForeignKeyAttribute>(
-                    typeof(ForeignClass).GetProperty("ForeignKey"));
+                    typeof(ForeignClass).GetPropertyInfoProxy("ForeignKey"));
 
             ForeignKeyAttribute result = resultSet.First();
 
@@ -770,7 +770,7 @@ namespace Tests.Tests
 
             IEnumerable<ForeignKeyAttribute> resultSet =
                 attributeDecorator.GetCustomAttributes<ForeignKeyAttribute>(
-                    typeof(ClassWithSchemaInForeignKey).GetProperty("ForeignKey"));
+                    typeof(ClassWithSchemaInForeignKey).GetPropertyInfoProxy("ForeignKey"));
 
             ForeignKeyAttribute result = resultSet.First();
 

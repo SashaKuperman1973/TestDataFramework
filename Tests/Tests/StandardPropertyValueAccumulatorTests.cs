@@ -78,7 +78,7 @@ namespace Tests.Tests
 
         private object[] Test(Type inputClass)
         {
-            PropertyInfo keyPropertyInfo = inputClass.GetProperty("Key");
+            PropertyInfoProxy keyPropertyInfo = inputClass.GetPropertyInfoProxy("Key");
 
             var resultArray = new object[2];
 

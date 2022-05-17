@@ -61,7 +61,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            PropertyInfo propertyInfo = typeof(ClassWithIntAutoPrimaryKey).GetProperty("Key");
+            PropertyInfoProxy propertyInfo = typeof(ClassWithIntAutoPrimaryKey).GetPropertyInfoProxy("Key");
 
             const string command = "XXXX";
             this.commandGeneratorMock.Setup(m => m.WriteNumber(propertyInfo)).Returns(command);
@@ -88,7 +88,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            PropertyInfo propertyInfo = typeof(ClassWithIntAutoPrimaryKey).GetProperty("Key");
+            PropertyInfoProxy propertyInfo = typeof(ClassWithIntAutoPrimaryKey).GetPropertyInfoProxy("Key");
 
             WriterDelegate numberWriter = this.writerDictionary[typeof(int)];
             DecoderDelegate numberDecoder = numberWriter(propertyInfo);
@@ -107,7 +107,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            PropertyInfo propertyInfo = typeof(SubjectClass).GetProperty(nameof(SubjectClass.Text));
+            PropertyInfoProxy propertyInfo = typeof(SubjectClass).GetPropertyInfoProxy(nameof(SubjectClass.Text));
 
             WriterDelegate stringWriter = this.writerDictionary[typeof(string)];
             DecoderDelegate stringDecoder = stringWriter(propertyInfo);
@@ -135,7 +135,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            PropertyInfo propertyInfo = typeof(ClassWithStringAutoPrimaryKey).GetProperty("Key");
+            PropertyInfoProxy propertyInfo = typeof(ClassWithStringAutoPrimaryKey).GetPropertyInfoProxy("Key");
             const string value = "X";
             var expected = new LargeInteger(7);
 
@@ -172,7 +172,7 @@ namespace Tests.Tests
         [TestMethod]
         public void NotANumberException_Test()
         {
-            PropertyInfo propertyInfo = typeof(ClassWithIntAutoPrimaryKey).GetProperty("Key");
+            PropertyInfoProxy propertyInfo = typeof(ClassWithIntAutoPrimaryKey).GetPropertyInfoProxy("Key");
             const string input = "ABC";
 
             WriterDelegate stringWriter = this.writerDictionary[typeof(int)];
@@ -185,7 +185,7 @@ namespace Tests.Tests
         [TestMethod]
         public void NotAStringException_Test()
         {
-            PropertyInfo propertyInfo = typeof(ClassWithStringAutoPrimaryKey).GetProperty("Key");
+            PropertyInfoProxy propertyInfo = typeof(ClassWithStringAutoPrimaryKey).GetPropertyInfoProxy("Key");
             const int input = 5;
 
             WriterDelegate stringWriter = this.writerDictionary[typeof(string)];

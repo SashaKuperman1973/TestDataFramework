@@ -86,12 +86,14 @@ namespace TestDataFramework.Populator.Concrete
                 this.fieldExpressionValidator.ValidateMemberAccessExpression(foreignKeyExpression);
 
             PropertyInfo foreignKeyPropertyInfo = memberExpression.Member as PropertyInfo;
-
             if (foreignKeyPropertyInfo == null)
-                throw new MemberAccessExpressionException(Messages.PropertySetExpressionMustBePropertyAccess);
+                throw new MemberAccessExpressionException(Messages.PropertySetExpressionMustBePropertyOrFieldAccess);
+
+            PropertyInfoProxy foreignKeyPropertyInfoProxy = new PropertyInfoProxy((PropertyInfo)memberExpression.Member);
+
 
             ForeignKeyAttribute foreignKeyAttribute =
-                this.AttributeDecorator.GetCustomAttribute<ForeignKeyAttribute>(foreignKeyPropertyInfo);
+                this.AttributeDecorator.GetCustomAttribute<ForeignKeyAttribute>(foreignKeyPropertyInfoProxy);
 
             if (foreignKeyAttribute == null)
             {
@@ -111,12 +113,12 @@ namespace TestDataFramework.Populator.Concrete
             bool isThereAForeignToPrimaryKeyMatch = primaryKeyPropertyAttributes.Any(primaryKeyPropertyAttribute =>
 
                 foreignKeyAttribute.PrimaryKeyName.Equals(
-                    Helper.GetColumnName(primaryKeyPropertyAttribute.PropertyInfo, this.AttributeDecorator),
+                    Helper.GetColumnName(primaryKeyPropertyAttribute.PropertyInfoProxy, this.AttributeDecorator),
                     StringComparison.Ordinal)
 
                 &&
 
-                foreignKeyPropertyInfo.PropertyType == primaryKeyPropertyAttribute.PropertyInfo.PropertyType
+                foreignKeyPropertyInfo.PropertyType == primaryKeyPropertyAttribute.PropertyInfoProxy.PropertyType
             );
 
             if (!isThereAForeignToPrimaryKeyMatch)
@@ -143,7 +145,7 @@ namespace TestDataFramework.Populator.Concrete
         // Caller is responsible for ensuring Declaring Type is a type of the property being set.
         // This method only checks if the given property on the record reference object is set, 
         // not sub-properties.
-        public override bool IsExplicitlySet(PropertyInfo propertyInfo)
+        public override bool IsExplicitlySet(PropertyInfoProxy propertyInfo)
         {
             RecordReference<T>.Logger.Debug($"Entering IsExplicitlySet. propertyInfo: {propertyInfo}");
 
@@ -155,7 +157,7 @@ namespace TestDataFramework.Populator.Concrete
             return result;
         }
 
-        public override bool IsExplicitlySetAndNotCollectionSizeChangeOnly(PropertyInfo propertyInfo)
+        public override bool IsExplicitlySetAndNotCollectionSizeChangeOnly(PropertyInfoProxy propertyInfo)
         {
             RecordReference<T>.Logger.Debug($"Entering IsExplicitlySetCollectionSizeChangeOnly. propertyInfo: {propertyInfo}");
 
@@ -167,7 +169,7 @@ namespace TestDataFramework.Populator.Concrete
             return result;
         }
 
-        private ExplicitPropertySetter FindExplicitPropertySetter(PropertyInfo propertyInfo)
+        private ExplicitPropertySetter FindExplicitPropertySetter(PropertyInfoProxy propertyInfo)
         {
             ExplicitPropertySetter result = this.ExplicitPropertySetters.FirstOrDefault(setter =>
                 (setter.PropertyChain.FirstOrDefault()?.Name.Equals(propertyInfo.Name) ?? false)
@@ -202,7 +204,7 @@ namespace TestDataFramework.Populator.Concrete
         {
             RecordReference<T>.Logger.Calling(nameof(this.AddToExplicitPropertySetters));
 
-            List<PropertyInfo> objectPropertyGraph = this.objectGraphService.GetObjectGraph(listFieldExpression);
+            List<PropertyInfoProxy> objectPropertyGraph = this.objectGraphService.GetObjectGraph(listFieldExpression);
 
             this.AddToExplicitPropertySetters(
                 listFieldExpression,
@@ -331,7 +333,7 @@ namespace TestDataFramework.Populator.Concrete
         private void AddToExplicitPropertySetters<TPropertyValue>(Expression<Func<T, TPropertyValue>> fieldExpression,
             Func<object> valueFactory, bool collectionSizeChangeOnly)
         {
-            List<PropertyInfo> setterObjectGraph = this.objectGraphService.GetObjectGraph(fieldExpression);
+            List<PropertyInfoProxy> setterObjectGraph = this.objectGraphService.GetObjectGraph(fieldExpression);
 
             void Setter(object @object)
             {

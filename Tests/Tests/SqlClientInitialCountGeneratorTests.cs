@@ -53,12 +53,12 @@ namespace Tests.Tests
             var returnValue1 = new LargeInteger(7);
             var returnValue2 = new LargeInteger(14);
 
-            PropertyInfo propertyInfo1 = typeof(ClassWithStringAutoPrimaryKey).GetProperty("Key");
-            PropertyInfo propertyInfo2 = typeof(ClassWithIntAutoPrimaryKey).GetProperty("Key");
+            PropertyInfoProxy propertyInfo1 = typeof(ClassWithStringAutoPrimaryKey).GetPropertyInfoProxy("Key");
+            PropertyInfoProxy propertyInfo2 = typeof(ClassWithIntAutoPrimaryKey).GetPropertyInfoProxy("Key");
 
             var data1 = new Data<LargeInteger>(null);
             var data2 = new Data<LargeInteger>(null);
-            var dictionary = new Dictionary<PropertyInfo, Data<LargeInteger>>
+            var dictionary = new Dictionary<PropertyInfoProxy, Data<LargeInteger>>
             {
                 {propertyInfo1, data1},
                 {propertyInfo2, data2}
@@ -87,7 +87,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var dictionary = new Dictionary<PropertyInfo, Data<LargeInteger>>();
+            var dictionary = new Dictionary<PropertyInfoProxy, Data<LargeInteger>>();
 
             // Act
 
@@ -105,13 +105,13 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var dictionary = new Dictionary<PropertyInfo, Data<LargeInteger>>();
+            var dictionary = new Dictionary<PropertyInfoProxy, Data<LargeInteger>>();
 
-            PropertyInfo property = typeof(SubjectClass).GetProperty(nameof(SubjectClass.Integer));
+            PropertyInfoProxy property = typeof(SubjectClass).GetPropertyInfoProxy(nameof(SubjectClass.Integer));
             var data = new Data<LargeInteger>(null);
             dictionary.Add(property, data);
 
-            DecoderDelegate WriterCall(PropertyInfo propertyInfo) => (decoderPropertyInfo, input) => new LargeInteger();
+            DecoderDelegate WriterCall(PropertyInfoProxy propertyInfo) => (decoderPropertyInfo, input) => new LargeInteger();
 
             this.writersMock.Setup(m => m[typeof(int)]).Returns(WriterCall);
             this.writersMock.Setup(m => m.Execute()).Returns(new[] {new object(), new object()});

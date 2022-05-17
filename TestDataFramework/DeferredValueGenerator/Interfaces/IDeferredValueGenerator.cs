@@ -19,6 +19,7 @@
 
 using System.Collections.Generic;
 using System.Reflection;
+using TestDataFramework.Helpers;
 using TestDataFramework.Populator;
 
 namespace TestDataFramework.DeferredValueGenerator.Interfaces
@@ -44,7 +45,7 @@ namespace TestDataFramework.DeferredValueGenerator.Interfaces
 
     public interface IDeferredValueGenerator<out T>
     {
-        void AddDelegate(PropertyInfo targetPropertyInfo, DeferredValueGetterDelegate<T> getValue);
+        void AddDelegate(PropertyInfoProxy targetPropertyInfo, DeferredValueGetterDelegate<T> getValue);
         void Execute(IEnumerable<RecordReference> targets);
     }
 }

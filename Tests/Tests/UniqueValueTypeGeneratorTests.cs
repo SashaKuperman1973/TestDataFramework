@@ -25,6 +25,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.DeepSetting;
 using TestDataFramework.HandledTypeGenerator;
+using TestDataFramework.Helpers;
 using TestDataFramework.TypeGenerator.Concrete;
 using TestDataFramework.TypeGenerator.Interfaces;
 using TestDataFramework.ValueGenerator.Interfaces;
@@ -76,7 +77,7 @@ namespace Tests.Tests
 
             this.accumulatorValueGeneratorMock.Setup(
                 m => m.GetValue(
-                    It.Is<PropertyInfo>(propertyInfo => propertyInfo.Name ==
+                    It.Is<PropertyInfoProxy>(propertyInfo => propertyInfo.Name ==
                                                         nameof(ClassWithValueAndRefernceTypeProperties.AnInteger)),
                     It.IsAny<ObjectGraphNode>(), It.IsAny<TypeGeneratorContext>())).Returns(uniqueReturnValue);
 
@@ -107,7 +108,7 @@ namespace Tests.Tests
 
             this.valueGeneratorMock.Setup(
                 m => m.GetValue(
-                    It.Is<PropertyInfo>(propertyInfo => propertyInfo.Name ==
+                    It.Is<PropertyInfoProxy>(propertyInfo => propertyInfo.Name ==
                                                         nameof(ClassWithValueAndRefernceTypeProperties.ARefernce)),
                     It.IsAny<ObjectGraphNode>(), It.IsAny<TypeGeneratorContext>())).Returns(referenceReturnValue);
 

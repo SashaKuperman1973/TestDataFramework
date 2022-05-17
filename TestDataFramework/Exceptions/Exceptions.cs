@@ -108,7 +108,7 @@ namespace TestDataFramework.Exceptions
 
     public class PopulatePrimaryKeyException : ApplicationException
     {
-        public PopulatePrimaryKeyException(string message, PropertyInfo propertyInfo)
+        public PopulatePrimaryKeyException(string message, PropertyInfoProxy propertyInfo)
             : base(string.Format(message, propertyInfo.GetExtendedMemberInfoString()))
         {
         }
@@ -192,6 +192,13 @@ namespace TestDataFramework.Exceptions
     public class SqlPersistenceException : ApplicationException
     {
         public SqlPersistenceException(string message) : base(message)
+        {
+        }
+    }
+
+    public class BadExpressionMemberException : ApplicationException
+    {
+        public BadExpressionMemberException(string message) : base(message)
         {
         }
     }

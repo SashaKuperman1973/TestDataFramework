@@ -7,6 +7,7 @@ using Moq;
 using TestDataFramework.DeepSetting;
 using TestDataFramework.DeepSetting.Concrete;
 using TestDataFramework.DeepSetting.Interfaces;
+using TestDataFramework.Helpers;
 using TestDataFramework.TypeGenerator.Concrete;
 using Tests.TestModels;
 
@@ -32,7 +33,7 @@ namespace Tests.Tests.RecursionGuardTests
 
             var objectGraphService = new ObjectGraphService();
 
-            List<PropertyInfo> objectGraph = objectGraphService.GetObjectGraph<RecursionRootClass, InfiniteRecursiveClass2>(
+            List<PropertyInfoProxy> objectGraph = objectGraphService.GetObjectGraph<RecursionRootClass, InfiniteRecursiveClass2>(
                 m => m.RecursionProperty1.InfinietRecursiveObjectA.InfiniteRecursiveObjectB.InfinietRecursiveObjectA);
 
             var explicitPropertySetters = new List<ExplicitPropertySetter>
@@ -44,7 +45,7 @@ namespace Tests.Tests.RecursionGuardTests
             };
 
             this.objectGraphServiceMock
-                .Setup(m => m.DoesPropertyHaveSetter(It.IsAny<List<PropertyInfo>>(), explicitPropertySetters))
+                .Setup(m => m.DoesPropertyHaveSetter(It.IsAny<List<PropertyInfoProxy>>(), explicitPropertySetters))
                 .Returns(true).Verifiable();
 
             // Act
@@ -78,7 +79,7 @@ namespace Tests.Tests.RecursionGuardTests
         {
             var objectGraphService = new ObjectGraphService();
 
-            List<PropertyInfo> setterObjectGraph = objectGraphService.GetObjectGraph<RecursionRootClass, InfiniteRecursiveClass2>(
+            List<PropertyInfoProxy> setterObjectGraph = objectGraphService.GetObjectGraph<RecursionRootClass, InfiniteRecursiveClass2>(
                 m => m.RecursionProperty1.InfinietRecursiveObjectA.InfiniteRecursiveObjectB.InfinietRecursiveObjectA);
 
             var explicitPropertySetters = new List<ExplicitPropertySetter>
@@ -90,15 +91,15 @@ namespace Tests.Tests.RecursionGuardTests
             };
 
             this.objectGraphServiceMock
-                .Setup(m => m.DoesPropertyHaveSetter(It.Is<List<PropertyInfo>>(piList => piList.Count < 5), explicitPropertySetters))
+                .Setup(m => m.DoesPropertyHaveSetter(It.Is<List<PropertyInfoProxy>>(piList => piList.Count < 5), explicitPropertySetters))
                 .Returns(true).Verifiable();
 
             this.objectGraphServiceMock
-                .Setup(m => m.DoesPropertyHaveSetter(It.Is<List<PropertyInfo>>(piList => piList.Count == 5 ), explicitPropertySetters))
+                .Setup(m => m.DoesPropertyHaveSetter(It.Is<List<PropertyInfoProxy>>(piList => piList.Count == 5 ), explicitPropertySetters))
                 .Returns(false).Verifiable();
 
 
-            List<PropertyInfo> runningObjectGraph =
+            List<PropertyInfoProxy> runningObjectGraph =
                 objectGraphService.GetObjectGraph<RecursionRootClass, InfiniteRecursiveClass1>(
                     m => m.RecursionProperty1.InfinietRecursiveObjectA.InfiniteRecursiveObjectB.InfinietRecursiveObjectA
                         .InfiniteRecursiveObjectB);
@@ -132,7 +133,7 @@ namespace Tests.Tests.RecursionGuardTests
         {
             var objectGraphService = new ObjectGraphService();
 
-            List<PropertyInfo> runningObjectGraph =
+            List<PropertyInfoProxy> runningObjectGraph =
                 objectGraphService.GetObjectGraph<RecursionRootClass, InfiniteRecursiveClass1>(
                     m => m.RecursionProperty1.InfinietRecursiveObjectA.InfiniteRecursiveObjectB);
 

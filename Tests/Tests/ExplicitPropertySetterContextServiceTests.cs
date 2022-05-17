@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using TestDataFramework.DeepSetting;
+using TestDataFramework.Helpers;
 using TestDataFramework.ListOperations.Concrete;
 using TestDataFramework.Populator.Concrete;
 using Tests.TestModels;
@@ -59,10 +60,10 @@ namespace Tests.Tests
 
             var references = new List<RecordReference<SubjectClass>>();
 
-            var propertyChain = new List<PropertyInfo>
+            var propertyChain = new List<PropertyInfoProxy>
             {
-                typeof(SubjectClass).GetProperty(nameof(SubjectClass.Integer)),
-                typeof(SubjectClass).GetProperty(nameof(SubjectClass.AnEmailAddress)),
+                typeof(SubjectClass).GetPropertyInfoProxy(nameof(SubjectClass.Integer)),
+                typeof(SubjectClass).GetPropertyInfoProxy(nameof(SubjectClass.AnEmailAddress)),
             };
 
             for (int i = 0; i < 20; i++)
@@ -106,17 +107,17 @@ namespace Tests.Tests
 
             var service = ExplicitPropertySetterContextService.Instance;
 
-            var propertyChain1 = new List<PropertyInfo>
+            var propertyChain1 = new List<PropertyInfoProxy>
             {
-                typeof(SubjectClass).GetProperty(nameof(SubjectClass.Integer)),
-                typeof(SubjectClass).GetProperty(nameof(SubjectClass.AnEmailAddress)),
+                typeof(SubjectClass).GetPropertyInfoProxy(nameof(SubjectClass.Integer)),
+                typeof(SubjectClass).GetPropertyInfoProxy(nameof(SubjectClass.AnEmailAddress)),
             };
 
-            var propertyChain2 = new List<PropertyInfo>
+            var propertyChain2 = new List<PropertyInfoProxy>
             {
-                typeof(SubjectClass).GetProperty(nameof(SubjectClass.Integer)),
-                typeof(SubjectClass).GetProperty(nameof(SubjectClass.AnEmailAddress)),
-                typeof(SubjectClass).GetProperty(nameof(SubjectClass.Decimal)),
+                typeof(SubjectClass).GetPropertyInfoProxy(nameof(SubjectClass.Integer)),
+                typeof(SubjectClass).GetPropertyInfoProxy(nameof(SubjectClass.AnEmailAddress)),
+                typeof(SubjectClass).GetPropertyInfoProxy(nameof(SubjectClass.Decimal)),
             };
 
             var referencePropertySetter =
@@ -163,16 +164,16 @@ namespace Tests.Tests
 
             var service = ExplicitPropertySetterContextService.Instance;
 
-            var propertyChain1 = new List<PropertyInfo>
+            var propertyChain1 = new List<PropertyInfoProxy>
             {
-                typeof(SubjectClass).GetProperty(nameof(SubjectClass.Integer)),
-                typeof(SubjectClass).GetProperty(nameof(SubjectClass.AnEmailAddress)),
+                typeof(SubjectClass).GetPropertyInfoProxy(nameof(SubjectClass.Integer)),
+                typeof(SubjectClass).GetPropertyInfoProxy(nameof(SubjectClass.AnEmailAddress)),
             };
 
-            var propertyChain2 = new List<PropertyInfo>
+            var propertyChain2 = new List<PropertyInfoProxy>
             {
-                typeof(SubjectClass).GetProperty(nameof(SubjectClass.Integer)),
-                typeof(SubjectClass).GetProperty(nameof(SubjectClass.Decimal)),
+                typeof(SubjectClass).GetPropertyInfoProxy(nameof(SubjectClass.Integer)),
+                typeof(SubjectClass).GetPropertyInfoProxy(nameof(SubjectClass.Decimal)),
             };
 
             var referencePropertySetter =

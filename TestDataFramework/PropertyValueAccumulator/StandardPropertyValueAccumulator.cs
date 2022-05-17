@@ -35,8 +35,8 @@ namespace TestDataFramework.PropertyValueAccumulator
         private static readonly ILog Logger = StandardLogManager.GetLogger(typeof(StandardPropertyValueAccumulator));
         private readonly IAttributeDecorator attributeDecorator;
 
-        private readonly ConcurrentDictionary<PropertyInfo, LargeInteger> countDictionary =
-            new ConcurrentDictionary<PropertyInfo, LargeInteger>();
+        private readonly ConcurrentDictionary<PropertyInfoProxy, LargeInteger> countDictionary =
+            new ConcurrentDictionary<PropertyInfoProxy, LargeInteger>();
 
         private readonly LetterEncoder stringGenerator;
 
@@ -50,7 +50,7 @@ namespace TestDataFramework.PropertyValueAccumulator
             StandardPropertyValueAccumulator.Logger.Debug("Exiting contructor");
         }
 
-        public object GetValue(PropertyInfo propertyInfo, LargeInteger initialCount)
+        public object GetValue(PropertyInfoProxy propertyInfo, LargeInteger initialCount)
         {
             StandardPropertyValueAccumulator.Logger.Debug(
                 $"Entering GetValue. propertyInfo: {propertyInfo}, initialCount: {initialCount}");
@@ -77,7 +77,7 @@ namespace TestDataFramework.PropertyValueAccumulator
             return result;
         }
 
-        private object PrivateGetValue(PropertyInfo propertyInfo)
+        private object PrivateGetValue(PropertyInfoProxy propertyInfo)
         {
             StandardPropertyValueAccumulator.Logger.Debug("Entering PrivateGetValue");
 
@@ -112,7 +112,7 @@ namespace TestDataFramework.PropertyValueAccumulator
             return result;
         }
 
-        private LargeInteger GetCount(PropertyInfo propertyInfo)
+        private LargeInteger GetCount(PropertyInfoProxy propertyInfo)
         {
             LargeInteger result = this.countDictionary.GetOrAdd(propertyInfo,
                 pi => { throw new KeyNotFoundException(string.Format(Messages.PropertyNotFound, pi)); });
@@ -120,7 +120,7 @@ namespace TestDataFramework.PropertyValueAccumulator
             return result;
         }
 
-        private string GetString(PropertyInfo propertyInfo)
+        private string GetString(PropertyInfoProxy propertyInfo)
         {
             const int defaultStringLength = 10;
 

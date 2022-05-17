@@ -30,9 +30,9 @@ using TestDataFramework.WritePrimitives.Interfaces;
 
 namespace TestDataFramework.DeferredValueGenerator.Concrete
 {
-    public delegate LargeInteger DecoderDelegate(PropertyInfo propertyInfo, object input);
+    public delegate LargeInteger DecoderDelegate(PropertyInfoProxy propertyInfo, object input);
 
-    public delegate DecoderDelegate WriterDelegate(PropertyInfo propertyInfo);
+    public delegate DecoderDelegate WriterDelegate(PropertyInfoProxy propertyInfo);
 
     public class SqlWriterDictionary : IWriterDictinary
     {
@@ -99,7 +99,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
             };
         }
 
-        private DecoderDelegate WriteNumberCommand(PropertyInfo propertyInfo)
+        private DecoderDelegate WriteNumberCommand(PropertyInfoProxy propertyInfo)
         {
             SqlWriterDictionary.Logger.Debug("Entering WriteNumberCommand. propertyInfo: " +
                                              propertyInfo.GetExtendedMemberInfoString());
@@ -112,7 +112,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
             return SqlWriterDictionary.DecodeNumber;
         }
 
-        private static LargeInteger DecodeNumber(PropertyInfo propertyInfo, object input)
+        private static LargeInteger DecodeNumber(PropertyInfoProxy propertyInfo, object input)
         {
             SqlWriterDictionary.Logger.Debug(
                 $"Entering DecodeNumber. propertyInfo: {propertyInfo.GetExtendedMemberInfoString()}, input: {input}");
@@ -135,7 +135,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
             return result;
         }
 
-        private DecoderDelegate WriteStringCommand(PropertyInfo propertyInfo)
+        private DecoderDelegate WriteStringCommand(PropertyInfoProxy propertyInfo)
         {
             SqlWriterDictionary.Logger.Debug("Entering WriteStringCommand. propertyInfo: " +
                                              propertyInfo.GetExtendedMemberInfoString());
@@ -149,7 +149,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
             return this.DecodeString;
         }
 
-        private LargeInteger DecodeString(PropertyInfo propertyInfo, object input)
+        private LargeInteger DecodeString(PropertyInfoProxy propertyInfo, object input)
         {
             SqlWriterDictionary.Logger.Debug(
                 $"Entering DecodeString. propertyInfo: {propertyInfo.GetExtendedMemberInfoString()}, input: {input}");

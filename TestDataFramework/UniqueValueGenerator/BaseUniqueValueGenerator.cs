@@ -46,7 +46,7 @@ namespace TestDataFramework.UniqueValueGenerator
             this.throwIfUnhandledType = throwIfUnhandledType;
         }
 
-        public virtual object GetValue(PropertyInfo propertyInfo)
+        public virtual object GetValue(PropertyInfoProxy propertyInfo)
         {
             BaseUniqueValueGenerator.Logger.Debug("Entering GetValue");
 
@@ -58,7 +58,7 @@ namespace TestDataFramework.UniqueValueGenerator
             return result;
         }
 
-        protected virtual void DeferValue(PropertyInfo propertyInfo)
+        protected virtual void DeferValue(PropertyInfoProxy propertyInfo)
         {
             BaseUniqueValueGenerator.Logger.Debug("Entering DeferValue");
 

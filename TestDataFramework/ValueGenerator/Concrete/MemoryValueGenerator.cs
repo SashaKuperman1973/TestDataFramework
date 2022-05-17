@@ -22,6 +22,7 @@ using System.Reflection;
 using log4net;
 using TestDataFramework.ArrayRandomizer;
 using TestDataFramework.AttributeDecorator.Interfaces;
+using TestDataFramework.Helpers;
 using TestDataFramework.Logger;
 using TestDataFramework.TypeGenerator.Interfaces;
 using TestDataFramework.UniqueValueGenerator.Interfaces;
@@ -40,7 +41,7 @@ namespace TestDataFramework.ValueGenerator.Concrete
         {
         }
 
-        protected override object GetGuid(PropertyInfo propertyInfo)
+        protected override object GetGuid(PropertyInfoProxy propertyInfo)
         {
             MemoryValueGenerator.Logger.Debug("Executing GetGuid");
 

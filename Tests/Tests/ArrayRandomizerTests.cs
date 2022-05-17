@@ -24,6 +24,7 @@ using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework.ArrayRandomizer;
+using TestDataFramework.Helpers;
 using TestDataFramework.TypeGenerator.Concrete;
 using TestDataFramework.ValueGenerator.Interfaces;
 using Tests.TestModels;
@@ -46,11 +47,11 @@ namespace Tests.Tests
             this.valueGeneratorMock = new Mock<IValueGenerator>();
             this.arrayRandomizer = new StandardArrayRandomizer(this.randomMock.Object, this.valueGeneratorMock.Object);
 
-            this.valueGeneratorMock.Setup(m => m.GetValue(It.IsAny<PropertyInfo>(), It.IsAny<Type>(), It.IsAny<TypeGeneratorContext>()))
+            this.valueGeneratorMock.Setup(m => m.GetValue(It.IsAny<PropertyInfoProxy>(), It.IsAny<Type>(), It.IsAny<TypeGeneratorContext>()))
                 .Returns(ArrayRandomizerTests.Integer);
 
-            this.valueGeneratorMock.Setup(m => m.GetValue(It.IsAny<PropertyInfo>(), It.Is<Type>(t => t.IsArray), It.IsAny<TypeGeneratorContext>()))
-                .Returns<PropertyInfo, Type, TypeGeneratorContext>((p, t, c) => this.arrayRandomizer.GetArray(p, t, c));
+            this.valueGeneratorMock.Setup(m => m.GetValue(It.IsAny<PropertyInfoProxy>(), It.Is<Type>(t => t.IsArray), It.IsAny<TypeGeneratorContext>()))
+                .Returns<PropertyInfoProxy, Type, TypeGeneratorContext>((p, t, c) => this.arrayRandomizer.GetArray(p, t, c));
 
             this.randomMock.Setup(m => m.Next(It.IsAny<int>())).Returns(ArrayRandomizerTests.ElementLength - 1);
 
@@ -62,7 +63,7 @@ namespace Tests.Tests
         {
             // Act
 
-            PropertyInfo propertyInfo = typeof(SubjectClass).GetProperty("SimpleArray");
+            PropertyInfoProxy propertyInfo = typeof(SubjectClass).GetPropertyInfoProxy("SimpleArray");
             object value = this.arrayRandomizer.GetArray(propertyInfo, propertyInfo.PropertyType, null);
 
             // Assert
@@ -76,7 +77,7 @@ namespace Tests.Tests
         {
             // Act
 
-            PropertyInfo propertyInfo = typeof(SubjectClass).GetProperty("MultiDimensionalArray");
+            PropertyInfoProxy propertyInfo = typeof(SubjectClass).GetPropertyInfoProxy("MultiDimensionalArray");
             object value = this.arrayRandomizer.GetArray(propertyInfo, propertyInfo.PropertyType, null);
 
             // Assert
@@ -90,7 +91,7 @@ namespace Tests.Tests
         {
             // Act
 
-            PropertyInfo propertyInfo = typeof(SubjectClass).GetProperty("JaggedArray");
+            PropertyInfoProxy propertyInfo = typeof(SubjectClass).GetPropertyInfoProxy("JaggedArray");
             object value = this.arrayRandomizer.GetArray(propertyInfo, propertyInfo.PropertyType, null);
 
             // Assert
@@ -104,7 +105,7 @@ namespace Tests.Tests
         {
             // Act
 
-            PropertyInfo propertyInfo = typeof(SubjectClass).GetProperty("MultiDimensionalJaggedArray");
+            PropertyInfoProxy propertyInfo = typeof(SubjectClass).GetPropertyInfoProxy("MultiDimensionalJaggedArray");
             object value = this.arrayRandomizer.GetArray(propertyInfo, propertyInfo.PropertyType, null);
 
             // Assert
@@ -118,7 +119,7 @@ namespace Tests.Tests
         {
             // Act
 
-            PropertyInfo propertyInfo = typeof(SubjectClass).GetProperty("JaggedMultiDimensionalArray");
+            PropertyInfoProxy propertyInfo = typeof(SubjectClass).GetPropertyInfoProxy("JaggedMultiDimensionalArray");
             object value = this.arrayRandomizer.GetArray(propertyInfo, propertyInfo.PropertyType, null);
 
             // Assert

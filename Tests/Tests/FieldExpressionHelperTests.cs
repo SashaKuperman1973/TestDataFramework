@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using TestDataFramework.DeepSetting;
 using TestDataFramework.Exceptions;
+using TestDataFramework.Helpers;
 using TestDataFramework.Populator.Concrete;
 using TestDataFramework.Populator.Concrete.FieldExpression;
 using Tests.TestModels;
@@ -37,7 +38,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var objectGraph = new List<PropertyInfo> {typeof(SubjectClass).GetProperty(nameof(SubjectClass.Integer))};
+            var objectGraph = new List<PropertyInfoProxy> {typeof(SubjectClass).GetPropertyInfoProxy(nameof(SubjectClass.Integer))};
 
             // Act
 
@@ -67,7 +68,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var objectGraph = new List<PropertyInfo> { typeof(SubjectClass).GetProperty(nameof(SubjectClass.Integer)) };
+            var objectGraph = new List<PropertyInfoProxy> { typeof(SubjectClass).GetPropertyInfoProxy(nameof(SubjectClass.Integer)) };
 
             // Act
 
@@ -88,7 +89,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            var objectGraph = new List<PropertyInfo> { typeof(SubjectClass).GetProperty(nameof(SubjectClass.Integer)) };
+            var objectGraph = new List<PropertyInfoProxy> { typeof(SubjectClass).GetPropertyInfoProxy(nameof(SubjectClass.Integer)) };
 
             // Act
 

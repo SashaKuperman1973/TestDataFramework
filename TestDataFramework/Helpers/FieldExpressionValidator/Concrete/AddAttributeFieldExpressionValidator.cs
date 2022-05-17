@@ -23,6 +23,6 @@ namespace TestDataFramework.Helpers.FieldExpressionValidator.Concrete
 {
     public class AddAttributeFieldExpressionValidator : FieldExpressionValidatorBase
     {
-        protected override string ErrorMessage => Messages.AddAttributeExpressionMustBePropertyAccess;
+        protected override string ErrorMessage => Messages.AddAttributeExpressionMustBePropertyOrFieldAccess;
     }
 }

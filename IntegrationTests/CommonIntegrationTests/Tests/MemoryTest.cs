@@ -90,6 +90,7 @@ namespace IntegrationTests.CommonIntegrationTests.Tests
         {
             IPopulator populator = this.factory.CreateMemoryPopulator();
             RecordReference<TwoParameterConstructor> reference = populator.Add<TwoParameterConstructor>();
+            reference.Ignore(p => p.SubjectReference);
             populator.Bind();
 
             TwoParameterConstructor result = reference.RecordObject;

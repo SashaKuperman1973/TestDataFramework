@@ -1,16 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
+using TestDataFramework.Helpers;
 
 namespace TestDataFramework.TypeGenerator.Concrete
 {
-    public class ObjectGraphNodeList : List<PropertyInfo>
+    public class ObjectGraphNodeList : List<PropertyInfoProxy>
     {
         public ObjectGraphNodeList()
         {
         }
 
-        public ObjectGraphNodeList(IEnumerable<PropertyInfo> collection) : base(collection)
+        public ObjectGraphNodeList(IEnumerable<PropertyInfoProxy> collection) : base(collection)
         {
         }
 

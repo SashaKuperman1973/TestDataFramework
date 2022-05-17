@@ -117,7 +117,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             IEnumerable<PropertyAttributes> propertyAttributes =
                 this.attributeDecorator.GetPropertyAttributes(this.RecordReference.RecordType).ToList();
 
-            List<PropertyInfo> propertiesForRead = this.GetPropertiesForRead(propertyAttributes).ToList();
+            List<PropertyInfoProxy> propertiesForRead = this.GetPropertiesForRead(propertyAttributes).ToList();
 
             InsertRecord.Logger.Debug(
                 $"propertiesForRead: {string.Join(",", propertiesForRead.Select(p => p.GetExtendedMemberInfoString()))}");
@@ -126,7 +126,7 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             {
                 string columnName = (string) data[readStreamPointer.Value++];
 
-                PropertyInfo property = propertiesForRead.First(
+                PropertyInfoProxy property = propertiesForRead.First(
                     p => Helper.GetColumnName(p, this.attributeDecorator).Equals(columnName, StringComparison.Ordinal)
                 );
 
@@ -163,13 +163,13 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
                 InsertRecord.Logger.Debug($"primaryKeyOperation: {primaryKeyOperation}");
 
-                PropertyInfo primaryKeyProperty =
+                PropertyInfoProxy primaryKeyProperty =
                     this.GetPrimaryKeyProperty(primaryKeyOperation.RecordReference.RecordType,
                         fkColumn.PropertyAttribute.Attribute);
 
                 InsertRecord.Logger.Debug($"primaryKeyProperty : {primaryKeyProperty.GetExtendedMemberInfoString()}");
 
-                fkColumn.PropertyAttribute.PropertyInfo.SetValue(this.RecordReference.RecordObjectBase,
+                fkColumn.PropertyAttribute.PropertyInfoProxy.SetValue(this.RecordReference.RecordObjectBase,
                     primaryKeyProperty.GetValue(primaryKeyOperation.RecordReference.RecordObjectBase));
             });
 
@@ -187,9 +187,9 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
 
         #region Private methods
 
-        private PropertyInfo GetPrimaryKeyProperty(Type recordType, ForeignKeyAttribute foreignKeyAttribute)
+        private PropertyInfoProxy GetPrimaryKeyProperty(Type recordType, ForeignKeyAttribute foreignKeyAttribute)
         {
-            PropertyInfo result =
+            PropertyInfoProxy result =
                 recordType.GetPropertiesHelper()
                     .First(
                         p =>
@@ -218,24 +218,24 @@ namespace TestDataFramework.RepositoryOperations.Operations.InsertRecord
             return result;
         }
 
-        private IEnumerable<PropertyInfo> GetPropertiesForRead(IEnumerable<PropertyAttributes> propertyAttributes)
+        private IEnumerable<PropertyInfoProxy> GetPropertiesForRead(IEnumerable<PropertyAttributes> propertyAttributes)
         {
             InsertRecord.Logger.Debug("Entering GetPropertiesForRead");
 
             IEnumerable<PropertyAttributes> result = propertyAttributes.Where(pa =>
-                !this.RecordReference.IsExplicitlySet(pa.PropertyInfo)
+                !this.RecordReference.IsExplicitlySet(pa.PropertyInfoProxy)
                 &&
                 (pa.Attributes.Any(
                      a =>
                          a.GetType() == typeof(PrimaryKeyAttribute) &&
                          ((PrimaryKeyAttribute) a).KeyType == PrimaryKeyAttribute.KeyTypeEnum.Auto
                  )
-                 || pa.PropertyInfo.PropertyType.IsGuid() &&
+                 || pa.PropertyInfoProxy.PropertyType.IsGuid() &&
                  pa.Attributes.All(a => a.GetType() != typeof(ForeignKeyAttribute)))
             );
 
             InsertRecord.Logger.Debug("Exiting GetPropertiesForRead");
-            return result.Select(pa => pa.PropertyInfo);
+            return result.Select(pa => pa.PropertyInfoProxy);
         }
 
         #endregion Private methods

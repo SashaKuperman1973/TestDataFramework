@@ -37,13 +37,13 @@ namespace Tests.Tests
 
             var generator = new DefaultInitialCountGenerator();
 
-            var propertyDataDictionary = new Dictionary<PropertyInfo, Data<LargeInteger>>();
+            var propertyDataDictionary = new Dictionary<PropertyInfoProxy, Data<LargeInteger>>();
 
             var value1 = new Data<LargeInteger>(null) { Item = new LargeInteger() };
             var value2 = new Data<LargeInteger>(null) { Item = new LargeInteger() };
 
-            propertyDataDictionary.Add(typeof(SubjectClass).GetProperty(nameof(SubjectClass.Integer)), value1);
-            propertyDataDictionary.Add(typeof(SubjectClass).GetProperty(nameof(SubjectClass.Decimal)), value2);
+            propertyDataDictionary.Add(typeof(SubjectClass).GetPropertyInfoProxy(nameof(SubjectClass.Integer)), value1);
+            propertyDataDictionary.Add(typeof(SubjectClass).GetPropertyInfoProxy(nameof(SubjectClass.Decimal)), value2);
 
             // Act
 

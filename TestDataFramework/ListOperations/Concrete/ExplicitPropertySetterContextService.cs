@@ -23,6 +23,7 @@ using System.Reflection;
 using log4net;
 using TestDataFramework.DeepSetting;
 using TestDataFramework.DeepSetting.Concrete;
+using TestDataFramework.Helpers;
 using TestDataFramework.ListOperations.Interfaces;
 using TestDataFramework.Logger;
 using TestDataFramework.Populator.Concrete;
@@ -87,7 +88,7 @@ namespace TestDataFramework.ListOperations.Concrete
             return result;
         }
 
-        private static bool AreEqual(IReadOnlyList<PropertyInfo> left, IReadOnlyList<PropertyInfo> right)
+        private static bool AreEqual(IReadOnlyList<PropertyInfoProxy> left, IReadOnlyList<PropertyInfoProxy> right)
         {
             if (left.Count != right.Count)
             {

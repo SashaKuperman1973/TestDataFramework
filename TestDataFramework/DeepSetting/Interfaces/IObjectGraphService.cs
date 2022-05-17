@@ -21,14 +21,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
+using TestDataFramework.Helpers;
 
 namespace TestDataFramework.DeepSetting.Interfaces
 {
     public interface IObjectGraphService
     {
-        List<PropertyInfo> GetObjectGraph<T, TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression);
+        List<PropertyInfoProxy> GetObjectGraph<T, TPropertyType>(Expression<Func<T, TPropertyType>> fieldExpression);
 
-        bool DoesPropertyHaveSetter(List<PropertyInfo> objectGraphNodeList,
+        bool DoesPropertyHaveSetter(List<PropertyInfoProxy> objectGraphNodeList,
             IEnumerable<ExplicitPropertySetter> explicitPropertySetters);
     }
 }

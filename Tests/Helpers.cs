@@ -107,7 +107,7 @@ namespace Tests
             PrimaryKeyAttribute primaryKeyAttribute;
 
             List<Column> result = record.GetType()
-                .GetProperties()
+                .GetPropertyInfoProxies()
                 .Where(
                     p =>
                         (primaryKeyAttribute = attributeDecorator.GetSingleAttribute<PrimaryKeyAttribute>(p)) == null ||
@@ -157,7 +157,7 @@ namespace Tests
                     .Setup(m => m.GetObjectGraph(
                         It.Is<Expression<Func<T, TPropertyType>>>(
                             expression => evaluatePropertyInfo(expression, propertyName))))
-                    .Returns(new List<PropertyInfo>(new[] {typeof(T).GetProperty(propertyName)}));
+                    .Returns(new List<PropertyInfoProxy>(new[] {typeof(T).GetPropertyInfoProxy(propertyName)}));
 
                 return this;
             }
@@ -190,7 +190,7 @@ namespace Tests
 
             private static MemberExpression ValidatePropertyInfo(MemberExpression memberExpression)
             {
-                if (!(memberExpression.Member is PropertyInfo))
+                if (!(memberExpression.Member is PropertyInfo || memberExpression.Member is FieldInfo))
                     throw new MemberAccessException();
 
                 return memberExpression;

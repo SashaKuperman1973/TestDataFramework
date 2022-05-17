@@ -22,6 +22,7 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.DeepSetting;
+using TestDataFramework.Helpers;
 using TestDataFramework.TypeGenerator.Concrete;
 using Tests.TestModels;
 
@@ -41,10 +42,10 @@ namespace Tests.Tests
         [TestMethod]
         public void IsPropertyExplicitlySet_Test()
         {
-            PropertyInfo[] properties = typeof(SubjectClass).GetProperties();
+            PropertyInfoProxy[] properties = typeof(SubjectClass).GetPropertyInfoProxies();
 
             ObjectGraphNode objectGraphNode =
-                properties.Aggregate<PropertyInfo, ObjectGraphNode>(null,
+                properties.Aggregate<PropertyInfoProxy, ObjectGraphNode>(null,
                     (current, property) => new ObjectGraphNode(property, current));
 
             var explicitPropertySetter = new ExplicitPropertySetter
@@ -55,7 +56,7 @@ namespace Tests.Tests
             var propertySetters =
                 new List<ExplicitPropertySetter>
                 {
-                    new ExplicitPropertySetter {PropertyChain = new List<PropertyInfo>()},
+                    new ExplicitPropertySetter {PropertyChain = new List<PropertyInfoProxy>()},
                     explicitPropertySetter
                 };
 
@@ -84,9 +85,9 @@ namespace Tests.Tests
         {
             var objectGraphMatch = new ExplicitPropertySetter
             {
-                PropertyChain = new List<PropertyInfo>
+                PropertyChain = new List<PropertyInfoProxy>
                 {
-                    typeof(SubjectClass).GetProperty(nameof(SubjectClass.SecondObject))
+                    typeof(SubjectClass).GetPropertyInfoProxy(nameof(SubjectClass.SecondObject))
                 }
             };
 
@@ -94,9 +95,9 @@ namespace Tests.Tests
             {
                 new ExplicitPropertySetter
                 {
-                    PropertyChain = new List<PropertyInfo>
+                    PropertyChain = new List<PropertyInfoProxy>
                     {
-                        typeof(SubjectClass).GetProperty(nameof(SubjectClass.Integer)),
+                        typeof(SubjectClass).GetPropertyInfoProxy(nameof(SubjectClass.Integer)),
                     }
                 },
 
@@ -104,7 +105,7 @@ namespace Tests.Tests
             };
 
             var objectGraphNode = new ObjectGraphNode(
-                typeof(SubjectClass).GetProperty(nameof(SubjectClass.SecondObject)),
+                typeof(SubjectClass).GetPropertyInfoProxy(nameof(SubjectClass.SecondObject)),
                 null);
 
             IEnumerable<ExplicitPropertySetter> result =

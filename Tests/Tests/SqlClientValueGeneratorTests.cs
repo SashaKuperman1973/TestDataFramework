@@ -23,6 +23,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework;
 using TestDataFramework.AttributeDecorator.Interfaces;
+using TestDataFramework.Helpers;
 using TestDataFramework.ValueGenerator.Concrete;
 using TestDataFramework.ValueProvider.Interfaces;
 using Tests.TestModels;
@@ -54,7 +55,7 @@ namespace Tests.Tests
 
             DateTime now = DateTime.Now;
 
-            PropertyInfo propertyInfo = typeof(SubjectClass).GetProperty(nameof(SubjectClass.DateTime));
+            PropertyInfoProxy propertyInfo = typeof(SubjectClass).GetPropertyInfoProxy(nameof(SubjectClass.DateTime));
 
             this.valueProviderMock.Setup(m => m.GetDateTime(It.IsAny<PastOrFuture?>(), It.IsAny<Func<long?, long?, long>>(),
                 It.IsAny<long?>(), It.IsAny<long?>())).Returns(now);
@@ -81,7 +82,7 @@ namespace Tests.Tests
         {
             // Arrange
 
-            PropertyInfo propertyInfo = typeof(SubjectClass).GetProperty(nameof(SubjectClass.AGuid));
+            PropertyInfoProxy propertyInfo = typeof(SubjectClass).GetPropertyInfoProxy(nameof(SubjectClass.AGuid));
 
             // Act
 

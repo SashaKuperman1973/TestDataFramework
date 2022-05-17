@@ -76,9 +76,9 @@ namespace TestDataFramework.Populator
             RecordReference.Logger.Debug("Exiting AddPrimaryRecordReference(RecordReference)");
         }
 
-        public abstract bool IsExplicitlySet(PropertyInfo propertyInfo);
+        public abstract bool IsExplicitlySet(PropertyInfoProxy propertyInfo);
 
-        public abstract bool IsExplicitlySetAndNotCollectionSizeChangeOnly(PropertyInfo propertyInfo);
+        public abstract bool IsExplicitlySetAndNotCollectionSizeChangeOnly(PropertyInfoProxy propertyInfo);
 
         private bool ValidateRelationship(RecordReference primaryRecordReference)
         {
@@ -93,16 +93,16 @@ namespace TestDataFramework.Populator
                         pkPa =>
                             foreignKeyPropertyAttributes.Any(
                                 fkPa =>
-                                    pkPa.PropertyInfo.DeclaringType ==
+                                    pkPa.PropertyInfoProxy.DeclaringType ==
                                     this.AttributeDecorator.GetTableType(fkPa.Attribute,
                                         new TypeInfoWrapper(this.RecordType.GetTypeInfo()))
                                     &&
-                                    Helper.GetColumnName(pkPa.PropertyInfo, this.AttributeDecorator)
+                                    Helper.GetColumnName(pkPa.PropertyInfoProxy, this.AttributeDecorator)
                                         .Equals(fkPa.Attribute.PrimaryKeyName, StringComparison.Ordinal)
                                     &&
-                                    pkPa.PropertyInfo.PropertyType ==
-                                    (Nullable.GetUnderlyingType(fkPa.PropertyInfo.PropertyType) ??
-                                     fkPa.PropertyInfo.PropertyType
+                                    pkPa.PropertyInfoProxy.PropertyType ==
+                                    (Nullable.GetUnderlyingType(fkPa.PropertyInfoProxy.PropertyType) ??
+                                     fkPa.PropertyInfoProxy.PropertyType
                                     )
                             )
                     );

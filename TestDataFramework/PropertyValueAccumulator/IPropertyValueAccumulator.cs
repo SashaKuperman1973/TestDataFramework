@@ -25,7 +25,7 @@ namespace TestDataFramework.PropertyValueAccumulator
 {
     public interface IPropertyValueAccumulator
     {
-        object GetValue(PropertyInfo propertyInfo, LargeInteger initialCount);
+        object GetValue(PropertyInfoProxy propertyInfo, LargeInteger initialCount);
         bool IsTypeHandled(Type type);
     }
 }

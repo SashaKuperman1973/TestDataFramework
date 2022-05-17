@@ -39,8 +39,8 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
 
         private readonly IPropertyDataGenerator<T> dataSource;
 
-        private readonly Dictionary<PropertyInfo, Data<T>> propertyDataDictionary =
-            new Dictionary<PropertyInfo, Data<T>>(new PropertyInfoEqualityComparer());
+        private readonly Dictionary<PropertyInfoProxy, Data<T>> propertyDataDictionary =
+            new Dictionary<PropertyInfoProxy, Data<T>>(new PropertyInfoEqualityComparer());
 
         public StandardDeferredValueGenerator(IPropertyDataGenerator<T> dataSource)
         {
@@ -51,7 +51,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
             StandardDeferredValueGenerator<T>.Logger.Debug("Exiting constructor");
         }
 
-        public void AddDelegate(PropertyInfo targetPropertyInfo, DeferredValueGetterDelegate<T> valueGetter)
+        public void AddDelegate(PropertyInfoProxy targetPropertyInfo, DeferredValueGetterDelegate<T> valueGetter)
         {
             StandardDeferredValueGenerator<T>.Logger.Debug(
                 $"Entering AddDelegate. targetPropertyInfo: {targetPropertyInfo.GetExtendedMemberInfoString()}");
@@ -172,14 +172,14 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
             }
         }
 
-        internal class PropertyInfoEqualityComparer : IEqualityComparer<PropertyInfo>
+        internal class PropertyInfoEqualityComparer : IEqualityComparer<PropertyInfoProxy>
         {
-            public bool Equals(PropertyInfo x, PropertyInfo y)
+            public bool Equals(PropertyInfoProxy x, PropertyInfoProxy y)
             {
                 return x.DeclaringType == y.DeclaringType && x.Name.Equals(y.Name, StringComparison.Ordinal);
             }
 
-            public int GetHashCode(PropertyInfo obj)
+            public int GetHashCode(PropertyInfoProxy obj)
             {
                 return obj.GetHashCode();
             }

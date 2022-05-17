@@ -46,7 +46,7 @@ namespace TestDataFramework.ArrayRandomizer
             StandardArrayRandomizer.Logger.Debug("Exiting constructor");
         }
 
-        public object GetArray(PropertyInfo propertyInfo, Type type, TypeGeneratorContext typeGeneratorContext)
+        public object GetArray(PropertyInfoProxy propertyInfo, Type type, TypeGeneratorContext typeGeneratorContext)
         {
             StandardArrayRandomizer.Logger.Debug(
                 $"Entering GetArray. propertyInfo: {propertyInfo?.GetExtendedMemberInfoString()}, type: {type}");

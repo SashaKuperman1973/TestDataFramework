@@ -88,7 +88,7 @@ namespace TestDataFramework.Persistence.Concrete
             var primaryKeys = recordReference.PrimaryKeyReferences.SelectMany(
                 pkRef =>
                     this.attributeDecorator.GetPropertyAttributes<PrimaryKeyAttribute>(pkRef.RecordType)
-                        .Select(pkpa => new { PrimaryKeyReference = pkRef, PkProperty = pkpa.PropertyInfo}));
+                        .Select(pkpa => new { PrimaryKeyReference = pkRef, PkProperty = pkpa.PropertyInfoProxy}));
 
             IEnumerable<PropertyAttribute<ForeignKeyAttribute>> foreignKeyPropertyAttributes =
                 this.attributeDecorator.GetPropertyAttributes<ForeignKeyAttribute>(recordReference.RecordType);
@@ -113,13 +113,13 @@ namespace TestDataFramework.Persistence.Concrete
                 if (primaryKey?.PrimaryKeyReference.RecordObjectBase == null)
                     return;
 
-                MemoryPersistence.Logger.Debug($"PropertyInfo to get from: {primaryKey.PkProperty}");
+                MemoryPersistence.Logger.Debug($"PropertyInfoProxy to get from: {primaryKey.PkProperty}");
                 object primaryKeyPropertyValue =
                     primaryKey.PkProperty.GetValue(primaryKey.PrimaryKeyReference.RecordObjectBase);
                 MemoryPersistence.Logger.Debug($"primaryKeyPropertyValue: {primaryKeyPropertyValue}");
 
-                MemoryPersistence.Logger.Debug($"PropertyInfo to set: {fkpa.PropertyInfo}");
-                fkpa.PropertyInfo.SetValue(recordReference.RecordObjectBase, primaryKeyPropertyValue);
+                MemoryPersistence.Logger.Debug($"PropertyInfoProxy to set: {fkpa.PropertyInfoProxy}");
+                fkpa.PropertyInfoProxy.SetValue(recordReference.RecordObjectBase, primaryKeyPropertyValue);
             });
         }
     }

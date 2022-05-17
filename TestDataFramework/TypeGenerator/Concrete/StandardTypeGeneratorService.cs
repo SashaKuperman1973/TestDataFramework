@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using TestDataFramework.DeepSetting;
+using TestDataFramework.Helpers;
 using TestDataFramework.TypeGenerator.Interfaces;
 
 namespace TestDataFramework.TypeGenerator.Concrete
@@ -44,16 +45,16 @@ namespace TestDataFramework.TypeGenerator.Concrete
         private static bool IsPropertyExplicitlySet(ExplicitPropertySetter explicitPropertySetter,
             ObjectGraphNode objectGraphNode)
         {
-            var stack = new Stack<PropertyInfo>(explicitPropertySetter.PropertyChain);
+            var stack = new Stack<PropertyInfoProxy>(explicitPropertySetter.PropertyChain);
 
-            while (objectGraphNode?.PropertyInfo != null)
+            while (objectGraphNode?.PropertyInfoProxy != null)
             {
                 if (!stack.Any())
                     return false;
 
-                PropertyInfo setterProperty = stack.Pop();
+                PropertyInfoProxy setterProperty = stack.Pop();
 
-                if (!objectGraphNode.PropertyInfo.Name.Equals(setterProperty.Name, StringComparison.Ordinal))
+                if (!objectGraphNode.PropertyInfoProxy.Name.Equals(setterProperty.Name, StringComparison.Ordinal))
                     return false;
 
                 objectGraphNode = objectGraphNode.Parent;

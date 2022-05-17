@@ -18,11 +18,12 @@
 */
 
 using System.Reflection;
+using TestDataFramework.Helpers;
 
 namespace TestDataFramework.UniqueValueGenerator.Interfaces
 {
     public interface IUniqueValueGenerator
     {
-        object GetValue(PropertyInfo propertyInfo);
+        object GetValue(PropertyInfoProxy propertyInfo);
     }
 }

@@ -23,12 +23,13 @@ using System.Linq;
 using System.Reflection;
 using TestDataFramework.DeepSetting;
 using TestDataFramework.Exceptions;
+using TestDataFramework.Helpers;
 
 namespace TestDataFramework.Populator.Concrete.FieldExpression
 {
     public static class FieldExpressionHelper
     {
-        public static ExplicitPropertySetter GetFuncOrValueBasedExlicitPropertySetter<TProperty>(object value, List<PropertyInfo> setterObjectGraph)
+        public static ExplicitPropertySetter GetFuncOrValueBasedExlicitPropertySetter<TProperty>(object value, List<PropertyInfoProxy> setterObjectGraph)
         {
             if (value == null)
                 return new ExplicitPropertySetter

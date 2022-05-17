@@ -58,9 +58,9 @@ namespace TestDataFramework.TypeGenerator.Concrete
                 return false;
 
             var objectGraphNodeList = new ObjectGraphNodeList();
-            while (objectGraphNode.PropertyInfo != null)
+            while (objectGraphNode.PropertyInfoProxy != null)
             {
-                objectGraphNodeList.Add(objectGraphNode.PropertyInfo);
+                objectGraphNodeList.Add(objectGraphNode.PropertyInfoProxy);
                 objectGraphNode = objectGraphNode.Parent;
             }
 

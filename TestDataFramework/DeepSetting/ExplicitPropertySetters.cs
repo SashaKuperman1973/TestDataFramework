@@ -20,12 +20,13 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using TestDataFramework.Helpers;
 
 namespace TestDataFramework.DeepSetting
 {
     public class ExplicitPropertySetter
     {
-        public List<PropertyInfo> PropertyChain { get; set; }
+        public List<PropertyInfoProxy> PropertyChain { get; set; }
 
         public Action<object> Action { get; set; }
 

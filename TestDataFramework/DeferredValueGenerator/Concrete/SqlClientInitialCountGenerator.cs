@@ -43,7 +43,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
             SqlClientInitialCountGenerator.Logger.Debug("Exiting constructor");
         }
 
-        public void FillData(IDictionary<PropertyInfo, Data<LargeInteger>> propertyDataDictionary)
+        public void FillData(IDictionary<PropertyInfoProxy, Data<LargeInteger>> propertyDataDictionary)
         {
             SqlClientInitialCountGenerator.Logger.Debug("Entering FillData");
 
@@ -55,12 +55,12 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
 
             var decoders = new List<DecoderDelegate>();
 
-            List<KeyValuePair<PropertyInfo, Data<LargeInteger>>> propertyDataList =
+            List<KeyValuePair<PropertyInfoProxy, Data<LargeInteger>>> propertyDataList =
                 propertyDataDictionary.ToList();
 
             propertyDataList.ForEach(data =>
             {
-                SqlClientInitialCountGenerator.Logger.Debug($"PropertyInfo keying the writerDictionary: {data.Key}");
+                SqlClientInitialCountGenerator.Logger.Debug($"PropertyInfoProxy keying the writerDictionary: {data.Key}");
 
                 WriterDelegate writer = this.writerDictionary[data.Key.PropertyType];
 
@@ -81,7 +81,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
             for (int i = 0; i < results.Length; i++)
             {
                 SqlClientInitialCountGenerator.Logger.Debug(
-                    $"PropertyInfo to set: {propertyDataList[i].Key}, Db result: {results[i]}");
+                    $"PropertyInfoProxy to set: {propertyDataList[i].Key}, Db result: {results[i]}");
 
                 propertyDataList[i].Value.Item = decoders[i](propertyDataList[i].Key, results[i]) + 1;
 

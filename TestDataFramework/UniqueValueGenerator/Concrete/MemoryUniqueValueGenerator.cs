@@ -41,7 +41,7 @@ namespace TestDataFramework.UniqueValueGenerator.Concrete
             this.attributeDecorator = attributeDecorator;
         }
 
-        public override object GetValue(PropertyInfo propertyInfo)
+        public override object GetValue(PropertyInfoProxy propertyInfo)
         {
             MemoryUniqueValueGenerator.Logger.Debug(
                 $"Entering GetValue. propertyInfo: {propertyInfo.GetExtendedMemberInfoString()}");

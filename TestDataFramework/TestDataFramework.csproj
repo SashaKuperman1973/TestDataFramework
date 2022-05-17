@@ -108,6 +108,8 @@
     <Compile Include="Helpers\Helper.cs" />
     <Compile Include="Helpers\Interfaces\IRandomSymbolStringGenerator.cs" />
     <Compile Include="Helpers\LargeInteger.cs" />
+    <Compile Include="Helpers\MemberInfoProxy.cs" />
+    <Compile Include="Helpers\PropertyInfoProxy.cs" />
     <Compile Include="Helpers\Schema.cs" />
     <Compile Include="Helpers\TableName.cs" />
     <Compile Include="ListOperations\Concrete\ExplicitPropertySetterContextService.cs" />

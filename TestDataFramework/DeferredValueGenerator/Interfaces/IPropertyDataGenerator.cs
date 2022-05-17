@@ -19,11 +19,12 @@
 
 using System.Collections.Generic;
 using System.Reflection;
+using TestDataFramework.Helpers;
 
 namespace TestDataFramework.DeferredValueGenerator.Interfaces
 {
     public interface IPropertyDataGenerator<T>
     {
-        void FillData(IDictionary<PropertyInfo, Data<T>> propertyDataDictionary);
+        void FillData(IDictionary<PropertyInfoProxy, Data<T>> propertyDataDictionary);
     }
 }

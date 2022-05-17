@@ -26,6 +26,7 @@ using Moq;
 using TestDataFramework;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.Exceptions;
+using TestDataFramework.Helpers;
 using TestDataFramework.RepositoryOperations;
 using TestDataFramework.RepositoryOperations.Model;
 using TestDataFramework.RepositoryOperations.Operations.InsertRecord;
@@ -266,7 +267,7 @@ namespace Tests.Tests
                     new PropertyAttributes
                     {
                         Attributes = new Attribute[] {new PrimaryKeyAttribute(PrimaryKeyAttribute.KeyTypeEnum.Auto)},
-                        PropertyInfo = typeof(PrimaryTable).GetProperty(nameof(PrimaryTable.Key))
+                        PropertyInfoProxy = typeof(PrimaryTable).GetPropertyInfoProxy(nameof(PrimaryTable.Key))
                     }
                 });
 
@@ -304,19 +305,19 @@ namespace Tests.Tests
                     new PropertyAttributes
                     {
                         Attributes = new Attribute[] {new PrimaryKeyAttribute()},
-                        PropertyInfo = typeof(ClassWithGuidKeys).GetProperty(nameof(ClassWithGuidKeys.Key1))
+                        PropertyInfoProxy = typeof(ClassWithGuidKeys).GetPropertyInfoProxy(nameof(ClassWithGuidKeys.Key1))
                     },
 
                     new PropertyAttributes
                     {
                         Attributes = new Attribute[] {new PrimaryKeyAttribute()},
-                        PropertyInfo = typeof(ClassWithGuidKeys).GetProperty(nameof(ClassWithGuidKeys.Key3))
+                        PropertyInfoProxy = typeof(ClassWithGuidKeys).GetPropertyInfoProxy(nameof(ClassWithGuidKeys.Key3))
                     },
 
                     new PropertyAttributes
                     {
                         Attributes = new Attribute[] {new PrimaryKeyAttribute()},
-                        PropertyInfo = typeof(ClassWithGuidKeys).GetProperty(nameof(ClassWithGuidKeys.Key4))
+                        PropertyInfoProxy = typeof(ClassWithGuidKeys).GetPropertyInfoProxy(nameof(ClassWithGuidKeys.Key4))
                     },
 
                 });
@@ -354,7 +355,7 @@ namespace Tests.Tests
                     new PropertyAttributes
                     {
                         Attributes = new Attribute[] {new PrimaryKeyAttribute(PrimaryKeyAttribute.KeyTypeEnum.Auto)},
-                        PropertyInfo = typeof(SubjectClass).GetProperty(nameof(SubjectClass.Key))
+                        PropertyInfoProxy = typeof(SubjectClass).GetPropertyInfoProxy(nameof(SubjectClass.Key))
                     }
                 });
 

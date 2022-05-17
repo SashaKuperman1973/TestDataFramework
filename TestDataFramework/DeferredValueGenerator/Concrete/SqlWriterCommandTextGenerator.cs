@@ -73,7 +73,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
             this.sqlWriterCommandText = sqlWriterCommandText;
         }
 
-        public virtual string WriteString(PropertyInfo propertyInfo)
+        public virtual string WriteString(PropertyInfoProxy propertyInfo)
         {
             SqlWriterCommandTextGenerator.Logger.Debug("Entering WriteString");
 
@@ -83,7 +83,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
             return result;
         }
 
-        public virtual string WriteNumber(PropertyInfo propertyInfo)
+        public virtual string WriteNumber(PropertyInfoProxy propertyInfo)
         {
             SqlWriterCommandTextGenerator.Logger.Debug("Entering WriteNumber");
 
@@ -93,7 +93,7 @@ namespace TestDataFramework.DeferredValueGenerator.Concrete
             return result;
         }
 
-        private string Write(PropertyInfo propertyInfo, GetSelectDelegate getSelectDelegate)
+        private string Write(PropertyInfoProxy propertyInfo, GetSelectDelegate getSelectDelegate)
         {
             SqlWriterCommandTextGenerator.Logger.Debug("Entering Write. propertyInfo: " +
                                                        propertyInfo.GetExtendedMemberInfoString());

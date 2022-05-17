@@ -19,12 +19,13 @@
 
 using System;
 using System.Reflection;
+using TestDataFramework.Helpers;
 
 namespace TestDataFramework.RepositoryOperations.Model
 {
     public class PropertyAttributes
     {
-        public PropertyInfo PropertyInfo { get; set; }
+        public PropertyInfoProxy PropertyInfoProxy { get; set; }
         public Attribute[] Attributes { get; set; }
     }
 }

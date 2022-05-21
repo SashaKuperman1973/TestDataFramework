@@ -129,6 +129,7 @@
     <Compile Include="Populator\Concrete\FieldExpression\ListParentFieldExpression.cs" />
     <Compile Include="Populator\Concrete\FieldExpression\RootReferenceParentFieldExpression.cs" />
     <Compile Include="Populator\Concrete\FieldExpression\ReferenceParentFieldExpression.cs" />
+    <Compile Include="Populator\Concrete\FieldExpression\FieldExpressionsSet.cs" />
     <Compile Include="Populator\Concrete\MakeableEnumerable\ReferenceParentMakeableEnumerable.cs" />
     <Compile Include="Populator\Concrete\OperableList\RootReferenceParentOperableList.cs" />
     <Compile Include="Populator\Concrete\OperableList\ReferenceParentOperableList.cs" />

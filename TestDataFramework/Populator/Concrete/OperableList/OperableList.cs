@@ -231,7 +231,8 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             {
                 FrequencyPercentage = frequencyPercentage,
                 Values = guaranteedValues,
-                ValueCountRequestOption = valueCountRequestOption
+                ValueCountRequestOption = valueCountRequestOption,
+                FieldSetterIdentifier = new object()
             });
 
             return this;

@@ -68,25 +68,11 @@ namespace TestDataFramework.Populator.Concrete.FieldExpression
         {
             FieldExpression<TListElement, TProperty>.Logger.Entering(nameof(this.GuaranteePropertiesByFixedQuantity));
 
-            List<PropertyInfoProxy> setterObjectGraph = this.objectGraphService.GetObjectGraph(this.expression);
+            var fieldExpressionSet =
+                new FieldExpressionsSet<TListElement>(this.OperableList, this.objectGraphService);
 
-            guaranteedValues = guaranteedValues.ToList();
-
-            FieldExpression<TListElement, TProperty>.Logger.Debug(
-                $"Guaranteed value count: {guaranteedValues.Count()}, FixedQuantity: {fixedQuantity}");
-
-            if (fixedQuantity == 0)
-                fixedQuantity = guaranteedValues.Count();
-
-            this.OperableList.AddGuaranteedPropertySetter(new GuaranteedValues
-            {
-                TotalFrequency = fixedQuantity,
-
-                Values = guaranteedValues.Select(value => FieldExpressionHelper
-                    .GetFuncOrValueBasedExlicitPropertySetter<TProperty>(value, setterObjectGraph)),
-
-                ValueCountRequestOption = valueCountRequestOption
-            });
+            fieldExpressionSet.GuaranteePropertiesByFixedQuantity(this.expression, guaranteedValues, fixedQuantity,
+                valueCountRequestOption);
 
             FieldExpression<TListElement, TProperty>.Logger.Exiting(nameof(this.GuaranteePropertiesByFixedQuantity));
             return this;
@@ -135,26 +121,15 @@ namespace TestDataFramework.Populator.Concrete.FieldExpression
             IEnumerable<object> guaranteedValues, int frequencyPercentage,
             ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
         {
-            FieldExpression<TListElement, TProperty>.Logger.Entering(nameof(this.GuaranteePropertiesByPercentageOfTotal));
+            FieldExpression<TListElement, TProperty>.Logger.Entering(nameof(this.GuaranteePropertiesByFixedQuantity));
 
-            List<PropertyInfoProxy> setterObjectGraph = this.objectGraphService.GetObjectGraph(this.expression);
+            var fieldExpressionSet =
+                new FieldExpressionsSet<TListElement>(this.OperableList, this.objectGraphService);
 
-            guaranteedValues = guaranteedValues.ToList();
+            fieldExpressionSet.GuaranteePropertiesByPercentageOfTotal(this.expression, guaranteedValues, frequencyPercentage,
+                valueCountRequestOption);
 
-            FieldExpression<TListElement, TProperty>.Logger.Debug(
-                $"Guaranteed value count: {guaranteedValues.Count()}, Frequency percentage: {frequencyPercentage}");
-
-            this.OperableList.AddGuaranteedPropertySetter(new GuaranteedValues
-            {
-                FrequencyPercentage = frequencyPercentage,
-
-                Values = guaranteedValues.Select(value => FieldExpressionHelper
-                    .GetFuncOrValueBasedExlicitPropertySetter<TProperty>(value, setterObjectGraph)),
-
-                ValueCountRequestOption = valueCountRequestOption
-            });
-
-            FieldExpression<TListElement, TProperty>.Logger.Exiting(nameof(this.GuaranteePropertiesByPercentageOfTotal));
+            FieldExpression<TListElement, TProperty>.Logger.Exiting(nameof(this.GuaranteePropertiesByFixedQuantity));
             return this;
         }
 

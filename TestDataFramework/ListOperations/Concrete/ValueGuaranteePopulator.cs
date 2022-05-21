@@ -33,6 +33,7 @@ namespace TestDataFramework.ListOperations.Concrete
         public int? FrequencyPercentage { get; set; }
         public int? TotalFrequency { get; set; }
         public ValueCountRequestOption ValueCountRequestOption { get; set; }
+        public object FieldSetterIdentifier { get; set; }
     }
 
     public enum ValueCountRequestOption
@@ -43,6 +44,17 @@ namespace TestDataFramework.ListOperations.Concrete
 
     public class ValueGuaranteePopulator
     {
+        private class ValuesWithQuantity
+        {
+            public List<object> Values { get; set; }
+            public int Quantity { get; set; }
+        }
+
+        private class ValuesWithFieldSetId : ValuesWithQuantity
+        {
+            public object FieldSetterIdentifier { get; set; }
+        }
+
         public virtual void Bind<T>(OperableList<T> references, IEnumerable<GuaranteedValues> guaranteedValuesList,
             IValueGauranteePopulatorContextService contextService)
         {
@@ -56,10 +68,10 @@ namespace TestDataFramework.ListOperations.Concrete
                 throw new ValueGuaranteeException(Messages.NeitherPercentageNorTotalGiven);
             }
 
-            List<RecordReference<T>> workingList =
+            List<RecordReference<T>> workingReferenceList =
                 contextService.FilterInWorkingListOfReferfences(references, guaranteedValuesList);
 
-            List<Tuple<IEnumerable<object>, int>> valuesPerPercentageSet =
+            List<ValuesWithFieldSetId> valuesPerPercentageSet =
                 guaranteedValuesList.Where(valueSet => valueSet.FrequencyPercentage.HasValue)
                     .Select(
                         valueSet =>
@@ -77,12 +89,17 @@ namespace TestDataFramework.ListOperations.Concrete
                                         valueSet.FrequencyPercentage, quantity, references.Count));
                             }
 
-                            var percentageValuesResult = new Tuple<IEnumerable<object>, int>(valueSet.Values, quantity);
-
+                            var percentageValuesResult = new ValuesWithFieldSetId
+                            {
+                                Values = valueSet.Values.ToList(),
+                                Quantity = quantity,
+                                FieldSetterIdentifier = valueSet.FieldSetterIdentifier
+                            };
+                            
                             return percentageValuesResult;
                         }).ToList();
 
-            List<Tuple<IEnumerable<object>, int>> valuesPerTotalSet =
+            List<ValuesWithFieldSetId> valuesPerTotalSet =
                 guaranteedValuesList.Where(valueSet => valueSet.TotalFrequency.HasValue)
                     .Select(
                         valueSet =>
@@ -96,46 +113,97 @@ namespace TestDataFramework.ListOperations.Concrete
                                         valueSet.TotalFrequency, references.Count));
                             }
 
-                            return new Tuple<IEnumerable<object>, int>(valueSet.Values, valueSet.TotalFrequency.Value);
+                            var totalValuesResult = new ValuesWithFieldSetId
+                            {
+                                Values = valueSet.Values.ToList(),
+                                Quantity = valueSet.TotalFrequency.Value,
+                                FieldSetterIdentifier = valueSet.FieldSetterIdentifier
+                            };
+
+                            return totalValuesResult;
                         })
                     .ToList();
 
-            IEnumerable<Tuple<List<object>, int>> allValues =
-                valuesPerPercentageSet.Concat(valuesPerTotalSet)
-                    .Select(valueSet => new Tuple<List<object>, int>(valueSet.Item1.ToList(), valueSet.Item2))
-                    .ToList();
+            IEnumerable<ValuesWithFieldSetId> allValues = valuesPerPercentageSet.Concat(valuesPerTotalSet);
+
+            IEnumerable<IGrouping<object, ValuesWithFieldSetId>> fieldSetGroups = allValues.GroupBy(p => p.FieldSetterIdentifier).ToArray();
 
             int totalQuantityOfGuaranteedValues =
-                allValues.Sum(tuple => tuple.Item2);
+                fieldSetGroups.Sum(fieldSet => fieldSet.Max(values => values.Quantity));
 
-            if (totalQuantityOfGuaranteedValues > workingList.Count)
+            if (totalQuantityOfGuaranteedValues > workingReferenceList.Count)
                 throw new ValueGuaranteeException(Messages.TooFewReferencesForValueGuarantee);
 
             var random = new Random();
 
-            foreach (Tuple<List<object>, int> valueAndPopulationQuantity in allValues)
-                for (int valueIndex = 0; valueIndex < valueAndPopulationQuantity.Item2; valueIndex++)
+            foreach (IEnumerable<ValuesWithFieldSetId> fieldSet in fieldSetGroups)
+            {
+                List<ValuesWithQuantity> workingFieldSet = fieldSet.Select(value => new ValuesWithQuantity
                 {
-                    int referenceIndex = random.Next(workingList.Count);
-                    RecordReference<T> reference = workingList[referenceIndex];
+                    Values = new List<object>(value.Values),
+                    Quantity = value.Quantity
+                }).ToList();
 
-                    object subject =
-                        valueAndPopulationQuantity.Item1[valueIndex % valueAndPopulationQuantity.Item1.Count];
+                Dictionary<ValuesWithQuantity, List<object>> fieldValues =
+                    workingFieldSet.ToDictionary(fieldSetParam => fieldSetParam, fieldSetParam => new List<object>(fieldSetParam.Values));
 
-                    Type subjectType = subject.GetType();
+                do
+                {
+                    var workingValues = new List<object>();
 
-                    if (subjectType.IsGenericType && subjectType.GetGenericTypeDefinition() == typeof(Func<>))
+                    for (int i = 0; i < workingFieldSet.Count; i++)
                     {
-                        var objectFunc = (Func<object>) subject;
-                        contextService.SetRecordReference(reference, objectFunc());
-                    }
-                    else
-                    {
-                        contextService.SetRecordReference(reference, subject);
+                        int selectedValueIndex = random.Next(workingFieldSet[i].Values.Count);
+                        object selectedValue = workingFieldSet[i].Values[selectedValueIndex];
+                        workingValues.Add(selectedValue);
+
+                        workingFieldSet[i].Values.RemoveAt(selectedValueIndex);
+                        workingFieldSet[i].Quantity--;
+
+                        if (workingFieldSet[i].Quantity == 0)
+                        {
+                            workingFieldSet.RemoveAt(i);
+                            i--;
+                            continue;
+                        }
+
+                        if (!workingFieldSet[i].Values.Any())
+                        {
+                            workingFieldSet[i].Values = new List<object>(fieldValues[workingFieldSet[i]]);
+                        }
                     }
 
-                    workingList.RemoveAt(referenceIndex);
-                }
+                    int referenceIndex = random.Next(workingReferenceList.Count);
+                    RecordReference<T> reference = workingReferenceList[referenceIndex];
+
+                    foreach (object value in workingValues)
+                    {
+                        ValueGuaranteePopulator.SetRecordReference(value, contextService, reference);
+                    }
+
+                    workingReferenceList.RemoveAt(referenceIndex);
+
+                } while (workingFieldSet.Any());
+            } 
+        }
+
+        private static void SetRecordReference<T>(
+            object value, 
+            IValueGauranteePopulatorContextService contextService, 
+            RecordReference<T> reference
+        )
+        {
+            Type valueType = value.GetType();
+
+            if (valueType.IsGenericType && valueType.GetGenericTypeDefinition() == typeof(Func<>))
+            {
+                var valueFunc = (Func<object>)value;
+                contextService.SetRecordReference(reference, valueFunc());
+            }
+            else
+            {
+                contextService.SetRecordReference(reference, value);
+            }
         }
     }
 }

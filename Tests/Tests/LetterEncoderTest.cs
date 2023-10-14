@@ -31,7 +31,7 @@ namespace Tests.Tests
         [TestInitialize]
         public void Initialize()
         {
-            XmlConfigurator.Configure();
+            Helpers.ConfigureLogger();
         }
 
         [TestMethod]

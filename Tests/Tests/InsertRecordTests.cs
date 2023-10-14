@@ -66,7 +66,7 @@ namespace Tests.Tests
         [TestInitialize]
         public void Initialize()
         {
-            XmlConfigurator.Configure();
+            Helpers.ConfigureLogger();
 
             this.attributeDecoratorMock = new Mock<IAttributeDecorator>();
 

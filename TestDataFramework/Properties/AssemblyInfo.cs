@@ -20,16 +20,6 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-[assembly: AssemblyTitle("Test Data Framework")]
-[assembly: AssemblyDescription("Unit test data population tool.")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Alexander Kuperman")]
-[assembly: AssemblyProduct("Test Data Framework")]
-[assembly: AssemblyCopyright("Copyright © Alexander Kuperman 2016, 2017, 2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: InternalsVisibleTo("Tests, PublicKey=" +
@@ -52,16 +42,3 @@ using System.Runtime.InteropServices;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("ad19d50d-adec-40be-8142-256e3a24d8f8")]
-
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Build and Revision Numbers 
-// by using the '*' as shown below:
-// [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("3.6.0")]
-[assembly: AssemblyFileVersion("3.6.0")]

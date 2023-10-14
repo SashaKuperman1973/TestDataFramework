@@ -21,7 +21,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using IntegrationTests.CommonIntegrationTests.TestModels;
-using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDataFramework.Factories;
 using TestDataFramework.Populator.Interfaces;
@@ -36,7 +35,7 @@ namespace IntegrationTests.CommonIntegrationTests.Tests.GuaranteePropertiesTests
         [TestInitialize]
         public void Initialize()
         {
-            XmlConfigurator.Configure();
+            global::Tests.Helpers.ConfigureLogger();
 
             this.factory = new PopulatorFactory();
         }

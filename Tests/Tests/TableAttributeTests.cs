@@ -103,13 +103,13 @@ namespace Tests.Tests
         public void TableNameRequiredException_Test()
         {
             Helpers.ExceptionTest(() => new TableAttribute(null, null, null), typeof(ArgumentNullException),
-                "Value cannot be null.\r\nParameter name: name");
+                "Value cannot be null. (Parameter 'name')");
 
             Helpers.ExceptionTest(() => new TableAttribute(null, null), typeof(ArgumentNullException),
-                "Value cannot be null.\r\nParameter name: name");
+                "Value cannot be null. (Parameter 'name')");
 
             Helpers.ExceptionTest(() => new TableAttribute(null), typeof(ArgumentNullException),
-                "Value cannot be null.\r\nParameter name: name");
+                "Value cannot be null. (Parameter 'name')");
         }
 
         [TestMethod]

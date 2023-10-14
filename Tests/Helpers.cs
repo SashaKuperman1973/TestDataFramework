@@ -22,6 +22,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using log4net;
+using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using TestDataFramework;
@@ -43,6 +45,11 @@ namespace Tests
 
     public static class Helpers
     {
+        public static void ConfigureLogger()
+        {
+            XmlConfigurator.Configure(LogManager.GetRepository(Assembly.GetCallingAssembly()));
+        }
+
         public static IEnumerable<Column> ColumnSymbolToColumn(IEnumerable<ExtendedColumnSymbol> columnsSymbol)
         {
             return columnsSymbol.Select(fkc => new Column {Name = fkc.ColumnName, Value = fkc.Value});

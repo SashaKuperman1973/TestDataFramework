@@ -22,7 +22,9 @@ using System.Collections.Specialized;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using log4net;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -53,7 +55,7 @@ namespace Tests.Tests
         [TestInitialize]
         public void Initialize()
         {
-            XmlConfigurator.Configure();
+            Helpers.ConfigureLogger();
 
             this.dbProviderFactoryMock = new Mock<DbProviderFactory>();
             this.formatterMock = new Mock<IValueFormatter>();

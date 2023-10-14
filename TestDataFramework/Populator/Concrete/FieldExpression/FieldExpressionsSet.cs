@@ -27,6 +27,20 @@ namespace TestDataFramework.Populator.Concrete.FieldExpression
             this.objectGraphService = objectGraphService;
         }
 
+        public virtual IEnumerable<TListElement> RecordObjects => this.OperableList.RecordObjects;
+
+        public virtual IEnumerable<TListElement> Make()
+        {
+            FieldExpressionsSet<TListElement>.Logger.Debug("Calling Make");
+            return this.OperableList.Make();
+        }
+
+        public virtual IEnumerable<TListElement> BindAndMake()
+        {
+            FieldExpressionsSet<TListElement>.Logger.Debug("Calling BindAndMake");
+            return this.OperableList.BindAndMake();
+        }
+
         public virtual FieldExpressionsSet<TListElement> GuaranteePropertiesByFixedQuantity<TProperty>(
             Expression<Func<TListElement, TProperty>> expression,
             IEnumerable<object> guaranteedValues,
@@ -64,6 +78,50 @@ namespace TestDataFramework.Populator.Concrete.FieldExpression
             return this;
         }
 
+        public virtual FieldExpressionsSet<TListElement> GuaranteePropertiesByFixedQuantity<TProperty>(
+            Expression<Func<TListElement, TProperty>> expression,
+            IEnumerable<Func<TProperty>> guaranteedValues, int fixedQuantity,
+            ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
+        {
+            return this.GuaranteePropertiesByFixedQuantity(expression, guaranteedValues.Cast<object>(), fixedQuantity,
+                valueCountRequestOption);
+        }
+
+        public virtual FieldExpressionsSet<TListElement> GuaranteePropertiesByFixedQuantity<TProperty>(
+            Expression<Func<TListElement, TProperty>> expression,
+            IEnumerable<TProperty> guaranteedValues, int fixedQuantity,
+            ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
+        {
+            return this.GuaranteePropertiesByFixedQuantity(expression, guaranteedValues.Cast<object>(), fixedQuantity,
+                valueCountRequestOption);
+        }
+
+        public virtual FieldExpressionsSet<TListElement> GuaranteePropertiesByFixedQuantity<TProperty>(
+            Expression<Func<TListElement, TProperty>> expression,
+            IEnumerable<object> guaranteedValues,
+            ValueCountRequestOption valueCountRequestOption =
+                ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
+        {
+            return this.GuaranteePropertiesByFixedQuantity(expression, guaranteedValues, 0, valueCountRequestOption);
+        }
+
+        public virtual FieldExpressionsSet<TListElement> GuaranteePropertiesByFixedQuantity<TProperty>(
+            Expression<Func<TListElement, TProperty>> expression,
+            IEnumerable<Func<TProperty>> guaranteedValues,
+            ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
+        {
+            return this.GuaranteePropertiesByFixedQuantity(expression, guaranteedValues.Cast<object>(), valueCountRequestOption);
+        }
+
+        public virtual FieldExpressionsSet<TListElement> GuaranteePropertiesByFixedQuantity<TProperty>(
+            Expression<Func<TListElement, TProperty>> expression,
+            IEnumerable<TProperty> guaranteedValues,
+            ValueCountRequestOption valueCountRequestOption =
+                ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
+        {
+            return this.GuaranteePropertiesByFixedQuantity(expression, guaranteedValues.Cast<object>(), valueCountRequestOption);
+        }
+
         public virtual FieldExpressionsSet<TListElement> GuaranteePropertiesByPercentageOfTotal<TProperty>(
             Expression<Func<TListElement, TProperty>> expression,
             IEnumerable<object> guaranteedValues, 
@@ -93,6 +151,53 @@ namespace TestDataFramework.Populator.Concrete.FieldExpression
 
             FieldExpressionsSet<TListElement>.Logger.Exiting(nameof(this.GuaranteePropertiesByPercentageOfTotal));
             return this;
+        }
+
+        public virtual FieldExpressionsSet<TListElement> GuaranteePropertiesByPercentageOfTotal<TProperty>(
+            Expression<Func<TListElement, TProperty>> expression,
+            IEnumerable<Func<TProperty>> guaranteedValues, int frequencyPercentage,
+            ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
+        {
+            return this.GuaranteePropertiesByPercentageOfTotal(expression, guaranteedValues.Cast<object>(), frequencyPercentage,
+                valueCountRequestOption);
+        }
+
+        public virtual FieldExpressionsSet<TListElement> GuaranteePropertiesByPercentageOfTotal<TProperty>(
+            Expression<Func<TListElement, TProperty>> expression,
+            IEnumerable<TProperty> guaranteedValues,
+            int frequencyPercentage, ValueCountRequestOption valueCountRequestOption = ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
+        {
+            return this.GuaranteePropertiesByPercentageOfTotal(expression, guaranteedValues.Cast<object>(), frequencyPercentage,
+                valueCountRequestOption);
+        }
+
+        public virtual FieldExpressionsSet<TListElement> GuaranteePropertiesByPercentageOfTotal<TProperty>(
+            Expression<Func<TListElement, TProperty>> expression,
+            IEnumerable<object> guaranteedValues,
+            ValueCountRequestOption valueCountRequestOption =
+                ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
+        {
+            return this.GuaranteePropertiesByPercentageOfTotal(expression, guaranteedValues, 10, valueCountRequestOption);
+        }
+
+        public virtual FieldExpressionsSet<TListElement> GuaranteePropertiesByPercentageOfTotal<TProperty>(
+            Expression<Func<TListElement, TProperty>> expression,
+            IEnumerable<Func<TProperty>> guaranteedValues,
+            ValueCountRequestOption valueCountRequestOption =
+                ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
+        {
+            return this.GuaranteePropertiesByPercentageOfTotal(expression, guaranteedValues.Cast<object>(),
+                valueCountRequestOption);
+        }
+
+        public virtual FieldExpressionsSet<TListElement> GuaranteePropertiesByPercentageOfTotal<TProperty>(
+            Expression<Func<TListElement, TProperty>> expression,
+            IEnumerable<TProperty> guaranteedValues,
+            ValueCountRequestOption valueCountRequestOption =
+                ValueCountRequestOption.ThrowIfValueCountRequestedIsTooSmall)
+        {
+            return this.GuaranteePropertiesByPercentageOfTotal(expression, guaranteedValues.Cast<object>(),
+                valueCountRequestOption);
         }
     }
 }

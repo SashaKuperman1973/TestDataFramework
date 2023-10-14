@@ -565,17 +565,8 @@ namespace Tests.Tests.TableTypeCacheServiceTests
         [TestMethod]
         public void CreateDomain_Test()
         {
-            AppDomainWrapper wrapper = null;
-
-            try
-            {
-                wrapper = this.service.CreateDomain();
-                Assert.IsNotNull(wrapper);
-            }
-            finally
-            {
-                wrapper?.Unload();
-            }
+            AppDomainWrapper wrapper = this.service.CreateDomain();
+            Assert.IsNotNull(wrapper);
         }
     }
 }

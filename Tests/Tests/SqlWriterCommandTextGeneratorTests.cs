@@ -43,7 +43,7 @@ namespace Tests.Tests
         [TestInitialize]
         public void Initialize()
         {
-            XmlConfigurator.Configure();
+            Helpers.ConfigureLogger();
 
             this.sqlWriterCommandTextMock = new Mock<SqlWriterCommandText>();
             this.attributeDecoratorMock = new Mock<IAttributeDecorator>();

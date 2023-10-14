@@ -39,7 +39,7 @@ namespace IntegrationTests.CommonIntegrationTests.Tests
 
         public SqlClientAndMemoryTests()
         {
-            XmlConfigurator.Configure();
+            global::Tests.Helpers.ConfigureLogger();
         }
 
         [TestInitialize]

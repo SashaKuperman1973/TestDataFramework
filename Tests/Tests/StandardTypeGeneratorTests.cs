@@ -49,7 +49,7 @@ namespace Tests.Tests
         [TestInitialize]
         public void Initialize()
         {
-            XmlConfigurator.Configure();
+            Helpers.ConfigureLogger();
 
             this.valueGeneratorMock = new Mock<IValueGenerator>();
             this.handledTypeGeneratorMock = new Mock<IHandledTypeGenerator>();

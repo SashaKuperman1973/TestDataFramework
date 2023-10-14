@@ -101,8 +101,6 @@ namespace TestDataFramework.AttributeDecorator.Concrete
                     this.tableTypeCacheService.TryAssociateTypeToTable, assemblyLookupContext);
             });
 
-            domain.Unload();
-
             StandardTableTypeCache.Logger.Debug("Exiting PopulateAssemblyCache");
         }
     }

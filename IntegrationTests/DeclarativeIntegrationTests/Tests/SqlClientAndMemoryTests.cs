@@ -39,7 +39,7 @@ namespace IntegrationTests.DeclarativeIntegrationTests.Tests
         [TestInitialize]
         public void Initialize()
         {
-            XmlConfigurator.Configure();
+            global::Tests.Helpers.ConfigureLogger();
 
             this.factory = new PopulatorFactory();
         }

@@ -40,7 +40,7 @@ namespace Tests.Tests
         [TestInitialize]
         public void Initialize()
         {
-            XmlConfigurator.Configure();
+            Helpers.ConfigureLogger();
 
             this.stringGeneratorMock = new Mock<LetterEncoder>();
             this.accumulator = new StandardPropertyValueAccumulator(this.stringGeneratorMock.Object,

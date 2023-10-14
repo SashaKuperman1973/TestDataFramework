@@ -1,15 +1,15 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26430.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestDataFramework", "TestDataFramework\TestDataFramework.csproj", "{AD19D50D-ADEC-40BE-8142-256E3A24D8F8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestDataFramework", "TestDataFramework\TestDataFramework.csproj", "{AD19D50D-ADEC-40BE-8142-256E3A24D8F8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{FE195F47-2BB4-4FCC-99C6-21FA3B33E196}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{FE195F47-2BB4-4FCC-99C6-21FA3B33E196}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocumentationExamples", "DocumentationExamples\DocumentationExamples.csproj", "{C77CFAA9-5CB5-4225-AE6B-8570BED5C98D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocumentationExamples", "DocumentationExamples\DocumentationExamples.csproj", "{C77CFAA9-5CB5-4225-AE6B-8570BED5C98D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests", "IntegrationTests\IntegrationTests.csproj", "{1642E415-58D1-488D-8B0A-9320F61E965D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationTests", "IntegrationTests\IntegrationTests.csproj", "{1642E415-58D1-488D-8B0A-9320F61E965D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

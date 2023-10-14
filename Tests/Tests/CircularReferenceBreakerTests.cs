@@ -33,7 +33,7 @@ namespace Tests.Tests
         [TestMethod]
         public void CircularReferenceBreaker_Test()
         {
-            XmlConfigurator.Configure();
+            Helpers.ConfigureLogger();
 
             var breaker = new CircularReferenceBreaker();
 

@@ -50,7 +50,7 @@ namespace IntegrationTests.CommonIntegrationTests.Tests.GuaranteeTests
         [TestInitialize]
         public void Initialize()
         {
-            XmlConfigurator.Configure();
+            global::Tests.Helpers.ConfigureLogger();
 
             this.factory = new PopulatorFactory();
         }

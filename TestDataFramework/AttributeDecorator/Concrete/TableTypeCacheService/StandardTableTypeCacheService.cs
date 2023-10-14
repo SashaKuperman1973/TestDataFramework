@@ -100,9 +100,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete.TableTypeCacheService
 
         public virtual AppDomainWrapper CreateDomain()
         {
-            AppDomain domain = AppDomain.CreateDomain("TestDataFramework_" + Guid.NewGuid(), null,
-                AppDomain.CurrentDomain.SetupInformation);
-            var result = new AppDomainWrapper(domain);
+            var result = new AppDomainWrapper();
             return result;
         }
 

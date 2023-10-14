@@ -30,7 +30,7 @@ namespace Tests.Tests
         [TestMethod]
         public void RandomSymbolStringGenerator_Test()
         {
-            XmlConfigurator.Configure();
+            Helpers.ConfigureLogger();
 
             // Arrange
 

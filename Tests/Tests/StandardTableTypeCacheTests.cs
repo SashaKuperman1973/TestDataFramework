@@ -224,8 +224,6 @@ namespace Tests.Tests
 
                     Times.Once
                 ));
-
-            domainMock.Verify(m => m.Unload());
         }
     }
 }

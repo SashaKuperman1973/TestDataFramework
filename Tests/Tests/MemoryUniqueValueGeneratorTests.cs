@@ -44,7 +44,7 @@ namespace Tests.Tests
         [TestInitialize]
         public void Initialize()
         {
-            XmlConfigurator.Configure();
+            Helpers.ConfigureLogger();
 
             this.attributeDecorator = new StandardAttributeDecorator(null, new AssemblyWrapper(), new Schema());
 

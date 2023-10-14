@@ -71,7 +71,7 @@ namespace Tests.Tests
         public void Constructor_NoPrimaryTableType_Exception()
         {
             Helpers.ExceptionTest(() => { new ForeignKeyAttribute((Type) null, "xxx"); }, typeof(ArgumentNullException),
-                "Value cannot be null.\r\nParameter name: primaryTableType");
+                "Value cannot be null. (Parameter 'primaryTableType')");
         }
 
         [TestMethod]

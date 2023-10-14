@@ -1,240 +1,50 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{FE195F47-2BB4-4FCC-99C6-21FA3B33E196}</ProjectGuid>
+    <TargetFramework>net6.0</TargetFramework>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Tests</RootNamespace>
-    <AssemblyName>Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
-    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
-    <IsCodedUITest>False</IsCodedUITest>
-    <TestProjectType>UnitTest</TestProjectType>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>TestDataFramework.snk</AssemblyOriginatorKeyFile>
+    <AssemblyTitle>Tests</AssemblyTitle>
+    <Description>Unit tests.</Description>
+    <Company>Alexander Kuperman</Company>
+    <Product>Tests</Product>
+    <Copyright>Copyright © Alexander Kuperman 2016, 2017, 2018</Copyright>
+    <AssemblyVersion>3.6.0</AssemblyVersion>
+    <FileVersion>3.6.0</FileVersion>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="Castle.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
-      <HintPath>..\packages\Castle.Core.4.2.1\lib\net45\Castle.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Castle.Windsor, Version=4.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
-      <HintPath>..\packages\Castle.Windsor.4.1.0\lib\net45\Castle.Windsor.dll</HintPath>
-    </Reference>
-    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
-    </Reference>
-    <Reference Include="Moq, Version=4.8.0.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
-      <HintPath>..\packages\Moq.4.8.2\lib\net45\Moq.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Threading.Tasks.Extensions, Version=4.1.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.3.0\lib\portable-net45+win8+wp8+wpa81\System.Threading.Tasks.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Transactions" />
-    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.ValueTuple.4.4.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.XML" />
-  </ItemGroup>
   <Choose>
-    <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
-      <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-      </ItemGroup>
-    </When>
-    <Otherwise>
-      <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework">
-          <Private>False</Private>
-        </Reference>
-      </ItemGroup>
-    </Otherwise>
+    <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'" />
+    <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="Helpers.cs" />
-    <Compile Include="Mocks\MockDbCommand.cs" />
-    <Compile Include="Mocks\MockPersistence.cs" />
-    <Compile Include="TestModels\ConstructorTestClasses.cs" />
-    <Compile Include="TestModels\DeepPropertyClasses.cs" />
-    <Compile Include="TestModels\IntegralManualPrimarkKeyClasses.cs" />
-    <Compile Include="TestModels\MultiNamespaceClasses.cs" />
-    <Compile Include="TestModels\PrimaryForeignReferenceSubjectClasses.cs" />
-    <Compile Include="TestModels\SubjectClasses.cs" />
-    <Compile Include="Tests\CircularReferenceBreakerTests.cs" />
-    <Compile Include="Tests\ColumnAttributeTests.cs" />
-    <Compile Include="Tests\DataTests.cs" />
-    <Compile Include="Tests\DbClientTransactionTests.cs" />
-    <Compile Include="Tests\DbProviderWritePrimitivesTests.cs" />
-    <Compile Include="Tests\DeepCollectionSettingConverterTests.cs" />
-    <Compile Include="Tests\DefaultInitialCountGeneratorTests.cs" />
-    <Compile Include="Tests\ExplicitlyIgnoredValueTests.cs" />
-    <Compile Include="Tests\ExplicitPropertySetterContextServiceTests.cs" />
-    <Compile Include="Tests\FieldExpressionHelperTests.cs" />
-    <Compile Include="Tests\FieldExpressionTests\FieldExpression\GuaranteePropertiesByFixedQuantity\DoNotThrowCountRequestOption.cs" />
-    <Compile Include="Tests\FieldExpressionTests\FieldExpression\GuaranteePropertiesByFixedQuantity\ThrowCountRequestOption.cs" />
-    <Compile Include="Tests\FieldExpressionTests\FieldExpression\GuaranteePropertiesByPercentageOfTotal\DoNotThrowCountRequestOption.cs" />
-    <Compile Include="Tests\FieldExpressionTests\FieldExpression\GuaranteePropertiesByPercentageOfTotal\ThrowCountRequestOption.cs" />
-    <Compile Include="Tests\FieldExpressionTests\FieldExpression\FieldExpressionTests.cs" />
-    <Compile Include="Tests\FieldExpressionTests\FieldExpression\TestContext.cs" />
-    <Compile Include="Tests\FieldExpressionTests\RootReferenceParentFieldExpression\GuaranteePropertiesByFixedQuantity\DoNotThrowCountRequestOption.cs" />
-    <Compile Include="Tests\FieldExpressionTests\RootReferenceParentFieldExpression\GuaranteePropertiesByFixedQuantity\ThrowCountRequestOption.cs" />
-    <Compile Include="Tests\FieldExpressionTests\RootReferenceParentFieldExpression\GuaranteePropertiesByPercentageOfTotal\DoNotThrowCountRequestOption.cs" />
-    <Compile Include="Tests\FieldExpressionTests\RootReferenceParentFieldExpression\GuaranteePropertiesByPercentageOfTotal\ThrowCountRequestOption.cs" />
-    <Compile Include="Tests\FieldExpressionTests\RootReferenceParentFieldExpression\ReferenceParentFieldExpressionTests.cs" />
-    <Compile Include="Tests\FieldExpressionTests\RootReferenceParentFieldExpression\TestContext.cs" />
-    <Compile Include="Tests\FieldExpressionTests\ReferenceParentFieldExpression\GuaranteePropertiesByFixedQuantity\DoNotThrowCountRequestOption.cs" />
-    <Compile Include="Tests\FieldExpressionTests\ReferenceParentFieldExpression\GuaranteePropertiesByFixedQuantity\ThrowCountRequestOption.cs" />
-    <Compile Include="Tests\FieldExpressionTests\ReferenceParentFieldExpression\GuaranteePropertiesByPercentageOfTotal\DoNotThrowCountRequestOption.cs" />
-    <Compile Include="Tests\FieldExpressionTests\ReferenceParentFieldExpression\GuaranteePropertiesByPercentageOfTotal\ThrowCountRequestOption.cs" />
-    <Compile Include="Tests\FieldExpressionTests\ReferenceParentFieldExpression\ReferenceParentFieldExpressionTests.cs" />
-    <Compile Include="Tests\FieldExpressionTests\ReferenceParentFieldExpression\TestContext.cs" />
-    <Compile Include="Tests\FieldExpressionTests\ListParentFieldExpression\TestContext.cs" />
-    <Compile Include="Tests\FieldExpressionTests\ListParentFieldExpression\ListParentFieldExpressionTests.cs" />
-    <Compile Include="Tests\FieldExpressionTests\ListParentFieldExpression\GuaranteePropertiesByPercentageOfTotal\DoNotThrowCountRequestOption.cs" />
-    <Compile Include="Tests\FieldExpressionTests\ListParentFieldExpression\GuaranteePropertiesByPercentageOfTotal\ThrowCountRequestOption.cs" />
-    <Compile Include="Tests\FieldExpressionTests\ListParentFieldExpression\GuaranteePropertiesByFixedQuantity\DoNotThrowCountRequestOption.cs" />
-    <Compile Include="Tests\FieldExpressionTests\ListParentFieldExpression\GuaranteePropertiesByFixedQuantity\ThrowCountRequestOption.cs" />
-    <Compile Include="Tests\FieldExpressionValidatorTests.cs" />
-    <Compile Include="Tests\MakeableEnumerableTests\ReferenceParentMakeableEnumerableTests.cs" />
-    <Compile Include="Tests\MakeableEnumerableTests\ListParentMakeableEnumerableTests.cs" />
-    <Compile Include="Tests\MaxAttributeTests.cs" />
-    <Compile Include="Tests\MemoryValueGeneratorTests.cs" />
-    <Compile Include="Tests\MinAttributeTests.cs" />
-    <Compile Include="Tests\ObjectGraphServiceTest.cs" />
-    <Compile Include="Tests\OperableListTests\ListParentOperableList\GuaranteePropertiesByFixedQuantity\DoNotThrowCountRequestOption.cs" />
-    <Compile Include="Tests\OperableListTests\ListParentOperableList\GuaranteePropertiesByFixedQuantity\ThrowCountRequestOption.cs" />
-    <Compile Include="Tests\OperableListTests\ListParentOperableList\GuaranteePropertiesByPercentageOfTotal\DoNotThrowCountRequestOption.cs" />
-    <Compile Include="Tests\OperableListTests\ListParentOperableList\GuaranteePropertiesByPercentageOfTotal\ThrowCountRequestOption.cs" />
-    <Compile Include="Tests\OperableListTests\ListParentOperableList\Common.cs" />
-    <Compile Include="Tests\OperableListTests\ListParentOperableList\TestContext.cs" />
-    <Compile Include="Tests\OperableListTests\OperableList\MainTests\Common.cs" />
-    <Compile Include="Tests\OperableListTests\OperableList\MainTests\ListInterfaceImplementation.cs" />
-    <Compile Include="Tests\OperableListTests\OperationListParentOperableListTests.cs" />
-    <Compile Include="Tests\OperableListTests\OperationReferenceParentOperableListTests.cs" />
-    <Compile Include="Tests\OperableListTests\ReferenceParentOperableList\Common.cs" />
-    <Compile Include="Tests\OperableListTests\RootReferenceParentOperableList\Common.cs" />
-    <Compile Include="Tests\OperableListTests\RootReferenceParentOperableList\GuaranteePropertiesByFixedQuantity\DoNotThrowCountRequestOption.cs" />
-    <Compile Include="Tests\OperableListTests\RootReferenceParentOperableList\GuaranteePropertiesByFixedQuantity\ThrowCountRequestOption.cs" />
-    <Compile Include="Tests\OperableListTests\RootReferenceParentOperableList\GuaranteePropertiesByPercentageOfTotal\DoNotThrowCountRequestOption.cs" />
-    <Compile Include="Tests\OperableListTests\RootReferenceParentOperableList\GuaranteePropertiesByPercentageOfTotal\ThrowCountRequestOption.cs" />
-    <Compile Include="Tests\OperableListTests\RootReferenceParentOperableList\TestContext.cs" />
-    <Compile Include="Tests\OperableListTests\ReferenceParentOperableList\GuaranteePropertiesByFixedQuantity\DoNotThrowCountRequestOption.cs" />
-    <Compile Include="Tests\OperableListTests\ReferenceParentOperableList\GuaranteePropertiesByFixedQuantity\ThrowCountRequestOption.cs" />
-    <Compile Include="Tests\OperableListTests\ReferenceParentOperableList\GuaranteePropertiesByPercentageOfTotal\DoNotThrowCountRequestOption.cs" />
-    <Compile Include="Tests\OperableListTests\ReferenceParentOperableList\GuaranteePropertiesByPercentageOfTotal\ThrowCountRequestOption.cs" />
-    <Compile Include="Tests\OperableListTests\ReferenceParentOperableList\TestContext.cs" />
-    <Compile Include="Tests\OperableListTests\OperableListEx\GuaranteePropertiesByFixedQuantity\DoNotThrowCountRequestOption.cs" />
-    <Compile Include="Tests\OperableListTests\OperableListEx\GuaranteePropertiesByFixedQuantity\ThrowCountRequestOption.cs" />
-    <Compile Include="Tests\OperableListTests\OperableListEx\GuaranteePropertiesByPercentageOfTotal\DoNotThrowCountRequestOption.cs" />
-    <Compile Include="Tests\OperableListTests\OperableListEx\GuaranteePropertiesByPercentageOfTotal\ThrowCountRequestOption.cs" />
-    <Compile Include="Tests\OperableListTests\OperableListEx\Common.cs" />
-    <Compile Include="Tests\OperableListTests\OperableListEx\TestContext.cs" />
-    <Compile Include="Tests\OperableListTests\OperableList\GuaranteePropertiesByPercentageOfTotal\DoNotThrowCountRequestOption.cs" />
-    <Compile Include="Tests\OperableListTests\OperableList\GuaranteePropertiesByPercentageOfTotal\ThrowCountRequestOption.cs" />
-    <Compile Include="Tests\OperableListTests\OperableList\GuaranteePropertiesByFixedQuantity\DoNotThrowCountRequestOption.cs" />
-    <Compile Include="Tests\OperableListTests\OperableList\GuaranteePropertiesByFixedQuantity\ThrowCountRequestOption.cs" />
-    <Compile Include="Tests\OperableListTests\OperableList\MainTests\Populate.cs" />
-    <Compile Include="Tests\OperableListTests\OperableList\TestContext.cs" />
-    <Compile Include="Tests\PopulatableTest.cs" />
-    <Compile Include="Tests\PopulatorFactoryTests\PopulatorFactoryTests.cs" />
-    <Compile Include="Tests\RecursionGuardTests\TestPusher.cs" />
-    <Compile Include="Tests\RecursionGuardTests\RecursionGuardTests.cs" />
-    <Compile Include="Tests\SqlClientPersistenceServiceTests.cs" />
-    <Compile Include="Tests\SqlClientPersistenceTests.cs" />
-    <Compile Include="Tests\SqlClientPopulatorTests.cs" />
-    <Compile Include="Tests\SqlClientValueGeneratorTests.cs" />
-    <Compile Include="Tests\StandardHandledTypeGeneratorTests.cs" />
-    <Compile Include="Tests\MemoryUniqueValueGeneratorTests.cs" />
-    <Compile Include="Tests\StandardLogManagerTests.cs" />
-    <Compile Include="Tests\StandardPopulatorTests.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tests\StandardPropertyValueAccumulatorTests.cs" />
-    <Compile Include="Tests\StandardTypeGeneratorServiceTests.cs" />
-    <Compile Include="Tests\StandardTypeGeneratorTests.cs" />
-    <Compile Include="Tests\StandardRandomizerTests.cs" />
-    <Compile Include="Tests\RandomSymbolStringGeneratorTest.cs" />
-    <Compile Include="Tests\ArrayRandomizerTests.cs" />
-    <Compile Include="Tests\SqlClientPersistenceComponentTests.cs" />
-    <Compile Include="Tests\RecordReferenceTests.cs" />
-    <Compile Include="Tests\InsertRecordTests.cs" />
-    <Compile Include="Tests\InsertRecordServiceTest.cs" />
-    <Compile Include="Tests\SqlClientWritePrimitivesTests.cs" />
-    <Compile Include="Tests\DbValueFormatterTests.cs" />
     <None Include="Tests\PopulatorFactoryTests.cs" />
-    <Compile Include="Tests\BaseValueGeneratorTests.cs" />
-    <Compile Include="Tests\LetterEncoderTest.cs" />
-    <Compile Include="Tests\StandardDeferredValueGeneratorTests.cs" />
-    <Compile Include="Tests\SqlClientInitialCountGeneratorTests.cs" />
-    <Compile Include="Tests\MemoryPersistenceTests.cs" />
-    <Compile Include="Tests\PopulatorFactoryTests\StaticPopulatorFactoryTests.cs" />
-    <Compile Include="Tests\TableTypeCacheServiceTests\EqualityHelperTests.cs" />
-    <Compile Include="Tests\TableTypeCacheServiceTests\StandardTableTypeCacheServiceTests.cs" />
-    <Compile Include="Tests\TableTypeCacheServiceTests\TableTypeLookupTests.cs" />
-    <Compile Include="Tests\TableTypeCacheServiceTests\TypeInfoWrapperTests.cs" />
-    <Compile Include="Tests\TableTypeCriteriaTests.cs" />
-    <Compile Include="Tests\UniqueValueTypeGeneratorTests.cs" />
-    <Compile Include="Tests\ValueGuaranteePopulatorTests.cs" />
-    <Compile Include="Tests\GenericRecordReferenceTests.cs" />
-    <Compile Include="Tests\LargeIntegerTests.cs" />
-    <Compile Include="Tests\SqlWriterDictionaryTests.cs" />
-    <Compile Include="Tests\KeyTypeUniqueValueGeneratorTests.cs" />
-    <Compile Include="Tests\BaseUniqueValueGeneratorTests.cs" />
-    <Compile Include="Tests\SqlClientValueFormatterTests.cs" />
-    <Compile Include="Tests\AccumulatorValueProviderTests.cs" />
-    <Compile Include="Tests\StandardAttributeDecoratorTests.cs" />
-    <Compile Include="Tests\StandardTableTypeCacheTests.cs" />
-    <Compile Include="Tests\TableTests.cs" />
-    <Compile Include="Tests\TableAttributeTests.cs" />
-    <Compile Include="Tests\SqlWriterCommandTextGeneratorTests.cs" />
-    <Compile Include="Tests\ForeignKeyAttributeTest.cs" />
-    <Compile Include="Tests\SqlWriterCommandTextGeneratorTest.cs" />
-    <Compile Include="Tests\ValueSetContextServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TestDataFramework\TestDataFramework.csproj">
-      <Project>{ad19d50d-adec-40be-8142-256e3a24d8f8}</Project>
-      <Name>TestDataFramework</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\TestDataFramework\TestDataFramework.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Tests\App.config">
+    <None Update="Tests\App.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="packages.config" />
-    <None Include="TestDataFramework.snk" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <PackageReference Include="Castle.Core" Version="4.2.1" />
+    <PackageReference Include="Castle.Windsor" Version="4.1.0" />
+    <PackageReference Include="log4net" Version="2.0.8" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.2" />
+    <PackageReference Include="Moq" Version="4.8.2" />
+    <PackageReference Include="MSTest.TestAdapter" Version="3.1.1" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.1.1" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Tests\PopulatorFactoryTests.cs" />
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
@@ -253,13 +63,4 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

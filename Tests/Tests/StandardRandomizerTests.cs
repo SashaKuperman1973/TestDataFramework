@@ -43,7 +43,7 @@ namespace Tests.Tests
         [TestInitialize]
         public void Initialize()
         {
-            XmlConfigurator.Configure();
+            Helpers.ConfigureLogger();
 
             this.randomMock = new Mock<Random>();
             this.stringGeneratorMock = new Mock<IRandomSymbolStringGenerator>();
@@ -273,7 +273,7 @@ namespace Tests.Tests
         public void NegativePrecisionThrows_Test()
         {
             Helpers.ExceptionTest(() => this.randomizer.GetDecimal(-1, null, null), typeof(ArgumentOutOfRangeException),
-                Messages.PrecisionMustBeNonNegative + "\r\nParameter name: precision\r\nActual value was -1.");
+                Messages.PrecisionMustBeNonNegative + " (Parameter 'precision')\r\nActual value was -1.");
         }
 
         [TestMethod]

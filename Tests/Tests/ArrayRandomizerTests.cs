@@ -18,8 +18,6 @@
 */
 
 using System;
-using System.Reflection;
-using Castle.Components.DictionaryAdapter.Xml;
 using log4net.Config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -55,7 +53,7 @@ namespace Tests.Tests
 
             this.randomMock.Setup(m => m.Next(It.IsAny<int>())).Returns(ArrayRandomizerTests.ElementLength - 1);
 
-            XmlConfigurator.Configure();
+            Helpers.ConfigureLogger();
         }
 
         [TestMethod]

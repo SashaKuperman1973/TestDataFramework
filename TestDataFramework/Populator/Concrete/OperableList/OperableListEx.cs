@@ -161,6 +161,12 @@ namespace TestDataFramework.Populator.Concrete.OperableList
             return result;
         }
 
+        public virtual FieldExpressionsSet<TListElement> SetMultipleProperties()
+        {
+            var result = new FieldExpressionsSet<TListElement>(this, this.objectGraphService);
+            return result;
+        }
+
         public new virtual OperableListEx<TListElement> Set<TProperty>(
             Expression<Func<TListElement, TProperty>> fieldExpression, TProperty value)
         {

@@ -78,7 +78,7 @@ namespace Tests.Tests
             this.dbProviderFactoryMock.Setup(m => m.CreateCommand()).Returns(insertCommandMock.Object);
             this.dbProviderFactoryMock.Setup(m => m.CreateConnection()).Returns(this.connectionMock.Object);
 
-            XmlConfigurator.Configure();
+            Helpers.ConfigureLogger();
         }
 
         [TestMethod]

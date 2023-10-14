@@ -42,7 +42,7 @@ namespace IntegrationTests.CommonIntegrationTests.Tests
         [TestInitialize]
         public void Initialize()
         {
-            XmlConfigurator.Configure();
+            global::Tests.Helpers.ConfigureLogger();
 
             this.factory = new PopulatorFactory();
         }
@@ -824,6 +824,28 @@ namespace IntegrationTests.CommonIntegrationTests.Tests
             tasks.ToList().ForEach(t => t.Start());
 
             Task.WaitAll(tasks);
+        }
+
+        [TestMethod]
+        public void TestMultiPropertyGuaranteedSetter()
+        {
+            IPopulator populator = this.factory.CreateMemoryPopulator();
+
+            List<MultiPropertyClass> result = populator.Add<MultiPropertyClass>(20)
+                .SetMultipleProperties()
+                .GuaranteePropertiesByFixedQuantity(p => p.I1, new[] {1, 2, 3}, 5)
+                .GuaranteePropertiesByFixedQuantity(p => p.I2, new[] {4, 5}, 3)
+                .GuaranteePropertiesByFixedQuantity(p => p.S, new[] {"S1", "S2", "S3", "S4"}, 5)
+
+                .OperableList.SetMultipleProperties()
+
+                .GuaranteePropertiesByPercentageOfTotal(p => p.I1, new [] {10, 11, 12}, 20)
+                .GuaranteePropertiesByFixedQuantity(p => p.I2, new[] { 13, 14 })
+
+                .Make().ToList();
+
+            int i = 1;
+            result.ForEach(r => Console.WriteLine(i++.ToString() + ": " + r));
         }
     }
 }

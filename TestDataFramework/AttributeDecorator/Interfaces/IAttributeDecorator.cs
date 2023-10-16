@@ -1,5 +1,5 @@
 /*
-    Copyright 2016, 2017, 2018, 2019 Alexander Kuperman
+    Copyright 2016, 2017, 2018, 2019, 2023 Alexander Kuperman
 
     This file is part of TestDataFramework.
 
@@ -50,6 +50,6 @@ namespace TestDataFramework.AttributeDecorator.Interfaces
 
         void DecorateType(Type type, Attribute attribute);
 
-        Type GetTableType(ForeignKeyAttribute foreignAttribute, TypeInfoWrapper foreignType);
+        Type GetPrimaryTableType(ForeignKeyAttribute foreignAttribute, TypeInfoWrapper foreignType);
     }
 }

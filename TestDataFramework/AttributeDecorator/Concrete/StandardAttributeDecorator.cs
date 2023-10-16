@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2016, 2017, 2018, 2019 Alexander Kuperman
+    Copyright 2016, 2017, 2018, 2019, 2023 Alexander Kuperman
 
     This file is part of TestDataFramework.
 
@@ -148,7 +148,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete
             return result;
         }
 
-        public virtual Type GetTableType(ForeignKeyAttribute foreignAttribute, TypeInfoWrapper foreignType)
+        public virtual Type GetPrimaryTableType(ForeignKeyAttribute foreignAttribute, TypeInfoWrapper foreignType)
         {
             StandardAttributeDecorator.Logger.Debug(
                 $"Entering GetTableType. ForeignAttribute : {foreignAttribute}. ForeignType: {foreignType}");
@@ -180,8 +180,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete
             }
 
             if (this.tableTypeCache.IsAssemblyCachePopulated(foreignType.Assembly))
-                throw new AttributeDecoratorException(Messages.CannotResolveForeignKey, foreignAttribute,
-                    foreignType);
+                return null;
 
             StandardAttributeDecorator.Logger.Debug("Populating table-type cache with foreign type's assembly.");
 
@@ -192,8 +191,7 @@ namespace TestDataFramework.AttributeDecorator.Concrete
                 this.GetSingleAttribute<TableAttribute>, false);
 
             if (cachedType == null)
-                throw new AttributeDecoratorException(Messages.CannotResolveForeignKey, foreignAttribute,
-                    foreignType);
+                return null;
 
             StandardAttributeDecorator.Logger.Debug(
                 $"Cache hit based on call with foreign type's assembly. Returning {cachedType}.");

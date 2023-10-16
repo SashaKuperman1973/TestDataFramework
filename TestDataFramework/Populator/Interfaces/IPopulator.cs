@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2016, 2017, 2018, 2019 Alexander Kuperman
+    Copyright 2016, 2017, 2018, 2019, 2023 Alexander Kuperman
 
     This file is part of TestDataFramework.
 
@@ -31,8 +31,6 @@ namespace TestDataFramework.Populator.Interfaces
         IValueGenerator ValueGenerator { get; }
 
         void Bind();
-
-        IDbClientTransaction BindInATransaction();
 
         T Make<T>();
 

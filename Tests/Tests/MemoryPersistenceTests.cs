@@ -151,7 +151,7 @@ namespace Tests.Tests
                 .Returns(new[] { foreignKeyPropertyAttribute });
 
             attributeDecoratorMock
-                .Setup(m => m.GetTableType(foreignKeyPropertyAttribute.Attribute, It.IsAny<TypeInfoWrapper>()))
+                .Setup(m => m.GetPrimaryTableType(foreignKeyPropertyAttribute.Attribute, It.IsAny<TypeInfoWrapper>()))
                 .Returns(typeof(SecondClass));
 
             // Act

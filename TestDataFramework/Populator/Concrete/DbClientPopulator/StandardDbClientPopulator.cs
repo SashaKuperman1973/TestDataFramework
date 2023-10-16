@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2016, 2017, 2018, 2019 Alexander Kuperman
+    Copyright 2016, 2017, 2018, 2019, 2023 Alexander Kuperman
 
     This file is part of TestDataFramework.
 
@@ -44,7 +44,7 @@ namespace TestDataFramework.Populator.Concrete.DbClientPopulator
             this.persistence = persistence;
         }
 
-        public override IDbClientTransaction BindInATransaction()
+        public IDbClientTransaction BindInATransaction()
         {
             if (this.transactionOptions == null)
             {

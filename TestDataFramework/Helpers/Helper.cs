@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2016, 2017, 2018, 2019 Alexander Kuperman
+    Copyright 2016, 2017, 2018, 2019, 2023 Alexander Kuperman
 
     This file is part of TestDataFramework.
 
@@ -195,7 +195,7 @@ namespace TestDataFramework.Helpers
 
                 &&
 
-                primaryKeyReference.RecordType == attributeDecorator.GetTableType(fkpa.Attribute,
+                primaryKeyReference.RecordType == attributeDecorator.GetPrimaryTableType(fkpa.Attribute,
                     new TypeInfoWrapper(foreignRecordReference.RecordType.GetTypeInfo()));
 
             return result;

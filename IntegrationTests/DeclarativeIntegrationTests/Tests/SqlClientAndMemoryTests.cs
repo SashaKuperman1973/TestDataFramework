@@ -165,7 +165,7 @@ namespace IntegrationTests.DeclarativeIntegrationTests.Tests
         [TestMethod]
         public void SqlCient_Declarative_Test()
         {
-            IPopulator populator = this.factory.CreateSqlClientPopulator(
+            IDbClientPopulator populator = this.factory.CreateSqlClientPopulator(
                 @"Data Source=localhost;Initial Catalog=TestDataFramework;Integrated Security=SSPI;");
 
             SqlClientAndMemoryTests.RunPrimaryKeyForeignKeyTest(populator);
@@ -177,7 +177,7 @@ namespace IntegrationTests.DeclarativeIntegrationTests.Tests
         [TestMethod]
         public void SqlCient_Declarative_Test_With_Deletion()
         {
-            IPopulator populator = this.factory.CreateSqlClientPopulator(
+            IDbClientPopulator populator = this.factory.CreateSqlClientPopulator(
                 @"Data Source=localhost;Initial Catalog=TestDataFramework;Integrated Security=SSPI;");
 
             SqlClientAndMemoryTests.RunPrimaryKeyForeignKeyTest(populator);
@@ -185,7 +185,7 @@ namespace IntegrationTests.DeclarativeIntegrationTests.Tests
             populator.DeleteAll();
         }
 
-        private static void RunPrimaryKeyForeignKeyTest(IPopulator populator)
+        private static void RunPrimaryKeyForeignKeyTest(IDbClientPopulator populator)
         {
             SqlClientAndMemoryTests.PrimaryKeyForeignKeyTest(populator, new DeclarativeGeneratorIntegrationTest(), () =>
             {
@@ -233,7 +233,7 @@ namespace IntegrationTests.DeclarativeIntegrationTests.Tests
         [Ignore]
 #endif
         [TestMethod]
-        public void EmptyForeignReference_Test()
+        public void UnresolvedKeyTable_Test()
         {
             IPopulator populator = this.factory.CreateSqlClientPopulator(
                 @"Data Source=localhost;Initial Catalog=TestDataFramework;Integrated Security=SSPI;");

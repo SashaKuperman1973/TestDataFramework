@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2016, 2017, 2018, 2019 Alexander Kuperman
+    Copyright 2016, 2017, 2018, 2019, 2023 Alexander Kuperman
 
     This file is part of TestDataFramework.
 
@@ -67,7 +67,7 @@ namespace TestDataFramework.Factories
 {
     public static class StaticPopulatorFactory
     {
-        public static IPopulator CreateSqlClientPopulator(string connectionStringWithDefaultCatalogue,
+        public static IDbClientPopulator CreateSqlClientPopulator(string connectionStringWithDefaultCatalogue,
             bool mustBeInATransaction = true, string defaultSchema = "dbo",
             bool enforceKeyReferenceCheck = true, bool throwIfUnhandledPrimaryKeyType = true,
             DeepCollectionSettingConverter deepCollectionSettingConverter = null)

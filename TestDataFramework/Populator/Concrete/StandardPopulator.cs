@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2016, 2017, 2018, 2019 Alexander Kuperman
+    Copyright 2016, 2017, 2018, 2019, 2023 Alexander Kuperman
 
     This file is part of TestDataFramework.
 
@@ -18,17 +18,12 @@
 */
 
 using log4net;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Castle.Components.DictionaryAdapter;
 using TestDataFramework.AttributeDecorator.Interfaces;
 using TestDataFramework.DeepSetting.Interfaces;
 using TestDataFramework.HandledTypeGenerator;
 using TestDataFramework.ListOperations.Concrete;
 using TestDataFramework.Logger;
 using TestDataFramework.Persistence.Interfaces;
-using TestDataFramework.Populator.Concrete.DbClientPopulator;
 using TestDataFramework.Populator.Concrete.OperableList;
 using TestDataFramework.Populator.Interfaces;
 using TestDataFramework.TypeGenerator.Interfaces;
@@ -164,12 +159,6 @@ namespace TestDataFramework.Populator.Concrete
             this.Persist();
 
             StandardPopulator.Logger.Debug("Exiting Bind()");
-        }
-
-        public virtual IDbClientTransaction BindInATransaction()
-        {
-            this.Bind();
-            return new NoOpDbClientTransaction();
         }
 
         internal override void Bind(RecordReference recordReference)

@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2016, 2017, 2018, 2019 Alexander Kuperman
+    Copyright 2016, 2017, 2018, 2019, 2023 Alexander Kuperman
 
     This file is part of TestDataFramework.
 
@@ -94,7 +94,7 @@ namespace TestDataFramework.Populator
                             foreignKeyPropertyAttributes.Any(
                                 fkPa =>
                                     pkPa.PropertyInfoProxy.DeclaringType ==
-                                    this.AttributeDecorator.GetTableType(fkPa.Attribute,
+                                    this.AttributeDecorator.GetPrimaryTableType(fkPa.Attribute,
                                         new TypeInfoWrapper(this.RecordType.GetTypeInfo()))
                                     &&
                                     Helper.GetColumnName(pkPa.PropertyInfoProxy, this.AttributeDecorator)

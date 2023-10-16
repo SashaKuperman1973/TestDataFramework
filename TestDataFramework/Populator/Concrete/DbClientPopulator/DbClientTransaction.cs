@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2016, 2017, 2018, 2019 Alexander Kuperman
+    Copyright 2016, 2017, 2018, 2019, 2023 Alexander Kuperman
 
     This file is part of TestDataFramework.
 
@@ -17,7 +17,6 @@
     along with TestDataFramework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-using System;
 using System.Data.Common;
 using System.Transactions;
 using TestDataFramework.Exceptions;
@@ -27,7 +26,7 @@ namespace TestDataFramework.Populator.Concrete.DbClientPopulator
 {
     public class DbClientTransaction : IDbClientTransaction
     {
-        internal DbTransaction DbTransaction { get; set; }
+        public DbTransaction DbTransaction { get; internal set; }
 
         public DbClientTransaction(DbClientTransactionOptions options)
         {

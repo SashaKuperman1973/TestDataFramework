@@ -447,7 +447,7 @@ namespace Tests.Tests
         #region GetTableType tests
 
         [TestMethod]
-        public void GetTableType_PrimaryTableType_Test()
+        public void GetPrimaryTableType_PrimaryTableType_Test()
         {
             // Arrange
 
@@ -455,7 +455,7 @@ namespace Tests.Tests
 
             // Act
 
-            Type result = this.attributeDecorator.GetTableType(foreignKeyAtribute, null);
+            Type result = this.attributeDecorator.GetPrimaryTableType(foreignKeyAtribute, null);
 
             // Assert
 
@@ -463,7 +463,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void GetTableType_AssemblyCacheIsNotPopulated_Test()
+        public void GetPrimaryTableType_AssemblyCacheIsNotPopulated_Test()
         {
             // Arrange
 
@@ -493,7 +493,7 @@ namespace Tests.Tests
 
             // Act
 
-            Type result = this.attributeDecorator.GetTableType(foreignKeyAtribute, foreignTypeMock.Object);
+            Type result = this.attributeDecorator.GetPrimaryTableType(foreignKeyAtribute, foreignTypeMock.Object);
 
             // Assert
 
@@ -503,7 +503,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void GetTableType_TableTypeCache_IsNot_Populated_Test()
+        public void GetPrimaryTableType_TableTypeCache_IsNot_Populated_Test()
         {
             // Arrange
 
@@ -530,10 +530,8 @@ namespace Tests.Tests
             // Act
             // Assert
 
-            Helpers.ExceptionTest(
-                () => this.attributeDecorator.GetTableType(foreignKeyAtribute, foreignTypeMock.Object),
-                typeof(AttributeDecoratorException),
-                string.Format(Messages.CannotResolveForeignKey, foreignKeyAtribute, foreignTypeMock.Object));
+
+            Assert.IsNull(this.attributeDecorator.GetPrimaryTableType(foreignKeyAtribute, foreignTypeMock.Object));
 
             this.tableTypeCacheMock.Verify();
 
@@ -545,7 +543,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void GetTableType_TableTypeCache_Is_Populated_ButCannot_Resolve_ForeignKey_Test()
+        public void GetPrimaryTableType_TableTypeCache_Is_Populated_ButCannot_Resolve_ForeignKey_Test()
         {
             // Arrange
 
@@ -568,10 +566,7 @@ namespace Tests.Tests
             // Act
             // Assert
 
-            Helpers.ExceptionTest(
-                () => this.attributeDecorator.GetTableType(foreignKeyAtribute, foreignTypeMock.Object),
-                typeof(AttributeDecoratorException),
-                string.Format(Messages.CannotResolveForeignKey, foreignKeyAtribute, foreignTypeMock.Object));
+            Assert.IsNull(this.attributeDecorator.GetPrimaryTableType(foreignKeyAtribute, foreignTypeMock.Object));
 
             this.tableTypeCacheMock.Verify();
 
@@ -587,7 +582,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void GetTableType_Cannot_Find_ForeignKey_In_ForeignKeyType_Assembly()
+        public void GetPrimaryTableType_Cannot_Find_ForeignKey_In_ForeignKeyType_Assembly()
         {
             // Arrange
 
@@ -600,9 +595,7 @@ namespace Tests.Tests
             // Act
             // Assert
 
-            Helpers.ExceptionTest(() => this.attributeDecorator.GetTableType(foreignKeyAtribute, foreignType),
-                typeof(AttributeDecoratorException),
-                string.Format(Messages.CannotResolveForeignKey, foreignKeyAtribute, foreignType));
+            Assert.IsNull(this.attributeDecorator.GetPrimaryTableType(foreignKeyAtribute, foreignType));
 
             this.tableTypeCacheMock.Verify(m => m.PopulateAssemblyCache(It.IsAny<AssemblyWrapper>(),
                 this.attributeDecorator.GetSingleAttribute<TableAttribute>, null), Times.Exactly(2));
@@ -617,7 +610,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void GetTableType_ForeignKey_Found_In_ForeignKeyType_Assembly()
+        public void GetPrimaryTableType_ForeignKey_Found_In_ForeignKeyType_Assembly()
         {
             // Arrange
 
@@ -636,7 +629,7 @@ namespace Tests.Tests
 
             // Act
 
-            Type result = this.attributeDecorator.GetTableType(foreignKeyAtribute, foreignType);
+            Type result = this.attributeDecorator.GetPrimaryTableType(foreignKeyAtribute, foreignType);
 
             // Assert
 
@@ -655,7 +648,7 @@ namespace Tests.Tests
         }
 
         [TestMethod]
-        public void GetTableType_AssemblyCacheIsPopulated_Test()
+        public void GetPrimaryTableType_AssemblyCacheIsPopulated_Test()
         {
             // Arrange
 
@@ -680,7 +673,7 @@ namespace Tests.Tests
 
             // Act
 
-            Type result = this.attributeDecorator.GetTableType(foreignKeyAtribute, foreignTypeMock.Object);
+            Type result = this.attributeDecorator.GetPrimaryTableType(foreignKeyAtribute, foreignTypeMock.Object);
 
             // Assert
 
